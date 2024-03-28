@@ -1,4 +1,7 @@
 $(document).ready(function(){
+
+    const na_tab = [[NaN, NaN], [NaN, NaN]]  // define NA-table.
+
     console.log("App started");
 
     // Likely we want to have an OOP table representation, where we can calculate margin sums of interest etc.!
@@ -11,7 +14,7 @@ $(document).ready(function(){
     // console.log("Sum margin 2: " + testtab.margin2_sum());
 
     // Now test a table with missings (create through update function):
-    // Note: missings shuld be handled as NaN, to be ignored in calculations!
+    // Note: missings should be handled as NaN, to be ignored in calculations!
     testtab.update([[2850, 150], [NaN, 50]]);
     // console.log(testtab);
     // console.log("Sum margin 1: ");
@@ -19,101 +22,166 @@ $(document).ready(function(){
     // console.log("Mean margin 1: ");
     // console.log(testtab.margin1_mean());
 
-    // Create a risk object:
-    let testobj = new RiskArray([[2800, 200], [2950, 50]], [[NaN, NaN], [NaN, NaN]], 2000);
-    console.log(testobj);
+    // New usecase:
 
-    // Update to work:
-    testobj = new RiskArray([[2800, 200], [2950, 50]], [[NaN, NaN], [NaN, NaN]]);
-    console.log(testobj);
+    // Eventual example:
+    // Basic tables:
+    const ntab = new Basetable([[NaN, NaN], [NaN, 141]], [NaN, NaN], [NaN, NaN], 32449);
+    const ptab = new Basetable(na_tab, [NaN, 0.67], [NaN, NaN], 1);
+    const mtab1 = new Margintable(na_tab, [NaN, 1-0.79], [NaN, NaN]);
+    const mtab2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
+
+    const testcase = new RiskCollection(ntab, ptab, mtab1, mtab2);
+
+    // Simple example:
+    const ntab2 = new Basetable([[NaN, 332], [NaN, 141]], [11040, NaN], [NaN, NaN], 32449);
+    const ptab2 = new Basetable(na_tab, [NaN, 0.67], [NaN, NaN], 1);
+    console.log(ntab2);
+    console.log(ntab2.complete_table());
+    ntab2.complete_table();
+    console.log(ntab2);
+
+    // console.log(ptab2);
+    // console.log(ptab2.tab.count_missings());
+
 
 })
 
 
-// Class to construct risk arrays:
-class RiskArray {
-    constructor(n_tab, p_tab, N=NaN, risk_ratio=NaN) {
+/*
+Possible flow:
+1. Fill the provided information into tables (in the HTML maybe make content-cases toggelable.
+2. Complete the provided cases in a risk array
+criterion: ntab is complete
+3. Extract requested information based on underlying rules for each content case.
+*/
 
-        // TODO: Maybe pass table objects as inputs instead of creating them here?
+/*
+ELements are (annotations for vaccination/treatment case):
+ntab, absolute ptab (less interesting),
+ptab_m1 (sublist-level, risks in each group, lower row follows RR),
+ptab_m2 (rows, transposed sublist-level, proportion vaccinated and unvaccinated among healthy and sick -- also sometimes provided!),
+N (total cases),
+ntab_m1 (margin table "columns", number in each group), ntab_m2 (margin table "rows", numer of healthy and infected)
+*/
 
-        // Set fields:
-        this.n_tab = new Table2x2(n_tab);
-        this.p_tab = new Table2x2(p_tab);
 
-        this.risk_ratio = risk_ratio;
+// Collection of tables:
+class RiskCollection {
+    constructor(ntab, ptab, mtab1, mtab2) {
+    }
+}
 
-        console.log(n_tab);
 
-        // Define total number of cases:
-            let N_tab = this.n_tab.N;  // N from table.
-
-            console.log("N provided: " + N + ", N calculated: " + N_tab);
-
-            // Check N:
-            if(!isNaN(N) && !isNaN(N_tab)){
-                if(N !== N_tab){
-                    console.error("Total number of cases in table and provided do not match. Please check!");
-                    // no_N = true;
-                    // TODO: Proper error handling!
-                    N = NaN;
-                }
-            } else if(isNaN(N)) {
-                // If N is NAN use calculated N (results in NaN if it cannot be provided!):
-                N = N_tab;
-            }
-
-            // If they are equal or only one was provided:
-            this.N = N;
+// Table types (basic table is Table2x2):
+class Basetable {
+    // A basic table with margin sums:
+    constructor(nested_list, msums1, msums2, N) {
+        this.tab = new Table2x2(nested_list);
+        this.N = this.get_N(N);
+        this.msums1 = msums1;  // this.tab.margin1_sum();
+        this.msums2 = this.tab.margin2_sum();
+        // TODO: Eventually compare them with provided info?
     }
 
-    // Next: Add function to complete the information!
+    // Function to get total number N:
+    get_N(N){
+        let N_tab = this.tab.sum_table();
+        return compare_vals(N, N_tab);
+    }
+
+
+
+    // Function to complete the table based on the available information *within* the table:
+    complete_table(){
+        const nmiss = this.tab.count_missings();
+        let curtab = this.tab.tab2x2;
+
+        // Check if can be completed with N:
+        if(nmiss === 1){
+            // Define the replacement value:
+            const repval = this.N - this.tab.sum_table(true);
+
+            // Replace the NaN value:
+            for(let i = 0; i < 2; i++){
+                curtab[i] = curtab[i].map(val => isNaN(val) ? repval : val);
+            }
+        } else {
+            // Check if can be completed based on margin sums:
+            for(let i = 0; i < 2; i++){
+                let repval = this.msums1[i] - curtab[i].reduce((d, i) => d + (isNaN(i) ? 0 : i), 0);
+                console.log(this.msums1[i] - curtab[i].reduce((d, i) => d + (isNaN(i) ? 0 : i), 0));
+                curtab[i] = curtab[i].map(val => isNaN(val) ? repval : val);
+            }
+
+            // For margin 2 transpose and re-transpose:
+        }
+
+
+    }
+}
+
+
+class Margintable {
+    // A marginal table with known relations:
+    constructor(nested_list, rel1, rel2) {
+        this.tab = new Table2x2(nested_list);
+    }
 }
 
 
 // Class to contruct 2x2 Tables, with functions to calculate the margins:
 class Table2x2 {
     constructor(nested_list) {
-        this.tab = nested_list;  // pass the class a nested list to operate on.
-        this.N = nested_list.flat().reduce((d, i) => d + i);  // Will be 1 for probability table!
-        // Add risk ratio here?
+        this.tab2x2 = nested_list;  // pass the class a nested list to operate on.
     }
 
     // Function to update the table:
     // Eventually this should go automatically!
     update(nested_list){
-        this.tab = nested_list;
-        this.N = nested_list.flat().reduce((d, i) => d + i);
+        this.tab2x2 = nested_list;
     }
 
-    check_missings(){
-
+    // Function to count missings:
+    count_missings(){
+        return this.tab2x2.flat().reduce((d, i) => d + isNaN(i), 0);
     }
 
     // Implement functions to check for missings and complete them!
     // Potentially use a new (super?) class that contains the tables plus additional information?
     // could be a class RiskArray, containing 2 tables, an N (supplied or calculated), and relations (e.g., RRR).
-    complete_table(){
+
+    // Calculate sums:
+    sum_table(ignore_na= false){
+        if(ignore_na){
+            return this.tab2x2.flat().reduce((d, i) => d + (isNaN(i) ? 0 : i), 0)
+        } else {
+            return this.tab2x2.flat().reduce((d, i) => d + i);
+        }
 
     }
 
     // Calculate margin sums and means:
     margin1_sum(){
-        return sumNestedLists(this.tab);
+        return sumNestedLists(this.tab2x2);
     }
     margin1_mean(){
-        return meanNestedLists(this.tab);
+        return meanNestedLists(this.tab2x2);
     }
 
     margin2_sum(){
-        let t_tab = transpose(this.tab);
+        let t_tab = transpose(this.tab2x2);
         return sumNestedLists(t_tab);
     }
     margin2_mean(){
-        let t_tab = transpose(this.tab);
+        let t_tab = transpose(this.tab2x2);
         return meanNestedLists(t_tab);
     }
 }
 
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// FUNCTION DEFINITIONS: ---------------------------------------
 // Function for summing up:
 function sumNestedLists(list) {
     return list.map(subList => {
@@ -138,5 +206,23 @@ function transpose(matrix) {
     return matrix[0].map((_, i) => matrix.map(row => row[i]));
 }
 
+
+// Function to compare two values and take the one that is not missing (if any):
+function compare_vals(val1, val2){
+    if(!isNaN(val1) && !isNaN(val2)){
+            if(val1 !== val2){
+                console.error("Provided values do not match. Please check!");
+                // no_N = true;
+                // TODO: Proper error handling!
+                val1 = NaN;  // set val1 NaN to return NaN.
+            }
+        } else if(isNaN(val1)) {
+            // If N is NAN use calculated N (results in NaN if it cannot be provided!):
+            val1 = val2;
+        }
+
+        // If they are equal or only one was provided:
+        return(val1);
+}
 
 
