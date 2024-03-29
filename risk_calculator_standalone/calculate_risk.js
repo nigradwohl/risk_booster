@@ -36,11 +36,11 @@ $(document).ready(function(){
     // Simple example:
     const ntab2 = new Basetable([[10708, NaN], [NaN, 141]], [NaN, NaN], [11040, NaN], 32449);
     const ptab2 = new Basetable(na_tab, [NaN, 0.67], [NaN, NaN], 1);
-    console.log(ntab2);
-    console.log(ntab2.complete_margins());
-    console.log(ntab2.complete_table());
-    // ntab2.complete_table();
-    console.log(ntab2);
+    // console.log(ntab2);
+    // console.log(ntab2.complete_margins());
+    // console.log(ntab2.complete_table());
+    // // ntab2.complete_table();
+    // console.log(ntab2);
 
     // console.log(ptab2);
     // console.log(ptab2.tab.count_missings());
@@ -48,13 +48,15 @@ $(document).ready(function(){
     const simple_risk = new RiskCollection(ntab2, ptab2, mtab1, mtab2);
     simple_risk.ptab.complete_margins();
     simple_risk.n_from_p();
-    console.log(simple_risk);
+    // console.log(simple_risk);
 
     // How far are we with out testcase?
     console.log("Main testcase");
-    testcase.ptab.complete_margins();
-    testcase.n_from_p();
-    testcase.ntab.complete_table();
+    // testcase.ptab.complete_margins();
+    // testcase.n_from_p();
+    // testcase.ntab.complete_table();
+    testcase.try_completion();
+    testcase.try_completion();
     console.log(testcase);
     console.log(testcase.ntab.tab.tab2x2);
 
@@ -79,6 +81,13 @@ N (total cases),
 ntab_m1 (margin table "columns", number in each group), ntab_m2 (margin table "rows", numer of healthy and infected)
 */
 
+function arrayEquals(a, b) {
+    return Array.isArray(a) &&
+        Array.isArray(b) &&
+        a.length === b.length &&
+        a.every((val, index) => val === b[index]);
+}
+
 
 // Collection of tables:
 class RiskCollection {
@@ -91,12 +100,45 @@ class RiskCollection {
 
     // Method to combine information in ntab and ptab:
     n_from_p(){
+        console.log("n from p");
+        let refsums = Object.assign([], this.ntab.msums1);
         this.ntab.msums1 = this.ptab.msums1.map(val => Math.round(val * this.ntab.N));
+
+        console.log(refsums);
+        console.log(this.ntab.msums1);
+        console.log(arrayEquals(refsums, this.ntab.msums1));
+
+        return !arrayEquals(refsums, this.ntab.msums1);
     }
 
 
     // Method to try and complete the set:
+    try_completion(){
+        // Clone reference tables to compare:
+        // https://www.freecodecamp.org/news/clone-an-object-in-javascript/  on cloning...
+        let reftab_n = Object.assign([], this.ntab.tab.tab2x2);
+        let reftab_p = {...this.ptab.tab.tab2x2};
 
+        let nchange = 0;
+
+        nchange += this.ptab.complete_margins();
+        nchange += this.n_from_p();
+        nchange += this.ntab.complete_table();
+
+        console.log("n changes: " + nchange);
+
+        console.log("Reftabs:");
+        console.log(reftab_n);
+        console.log(this.ntab.tab.tab2x2);
+        console.log(arrayEquals(reftab_n.flat(), this.ntab.tab.tab2x2.flat()));
+        console.log(reftab_p);
+        // Recursively retry, when there was a change:
+        // if(reftab_n !== this.ntab.tab.tab2x2 || reftab_p !== this.ptab.tab.tab2x2){
+        //     this.try_completion();
+        // } else {
+        //     alert("Done changing stuff!");
+        // }
+    }
 }
 
 
@@ -137,6 +179,9 @@ class Basetable {
             this.msums2 = this.msums2.map(val => isNaN(val) ? repval : val);
         }
 
+        // Return whether change was made:
+        return repval !== -99;
+
     }
 
 
@@ -144,13 +189,16 @@ class Basetable {
     complete_table(){
         const nmiss = this.tab.count_missings();
         let curtab = this.tab.tab2x2;
+        let repval = NaN;
 
-        console.log(transpose(transpose(curtab)));
+        let reftab = Object.assign([], this.tab.tab2x2);  // {...curtab};
+        console.log("Complete the table from within");
+        // console.log(transpose(transpose(curtab)));  // tweak the printout!
 
         // Check if can be completed with N:
         if(nmiss === 1){
             // Define the replacement value:
-            const repval = this.N - this.tab.sum_table(true);
+            repval = this.N - this.tab.sum_table(true);
 
             // Replace the NaN value:
             for(let i = 0; i < 2; i++){
@@ -182,6 +230,9 @@ class Basetable {
             }
             this.tab.tab2x2 = transpose(curtab);  // re-assign the result.
         }
+
+        // Log whether a change was made (may need updating in the future):
+        return !isNaN(repval);
 
 
     }
