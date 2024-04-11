@@ -53,3 +53,22 @@
   visibility: visible;
   opacity: 1;
 }
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Styles for risk calculator ~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+.canvas-container {
+
+    width: 220px;
+    height: 220px;
+    margin: 0 auto;
+}
+
+canvas {
+    display: none;
+    background: white;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    margin: 0 auto;
+    border: 1px solid black;
+}
