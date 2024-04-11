@@ -16,7 +16,6 @@
 </div>
 
 
-
 <!-- The flexible grid (content) -->
 <div class="row">
     <div class="full-column">
@@ -27,22 +26,33 @@
 <div class="row">
 
 
-  <div class="input-col text-input">
-    <textarea class="longtext" name="description" id="text-query"></textarea>
-      <br>
-      <button class="input-button" id="check-text">Prüfe meinen Text</button>
-  </div>
+    <div class="input-col text-input">
+        <textarea class="longtext" name="description" id="text-query"></textarea>
+        <br>
+        <button class="input-button" id="check-text">Prüfe meinen Text</button>
+    </div>
 
-  <div class="output-col text-output">
+    <div class="output-col text-notes">
+        <p id="text-note-general"></p>
+        <div id="text-notes-list"></div>
+    </div>
 
-      <div id="text-result"></div>
+</div>
 
-  </div>
+<div class="row">
+
+
+    <!--    The resulting text with intext annotations:-->
+    <div class="output-col text-output">
+
+        <div id="text-result"></div>
+
+    </div>
 </div>
 
 <!-- Footer -->
 <div class="footer">
-  <h2>Footer</h2>
+    <h2>Footer</h2>
 </div>
 
 
@@ -52,13 +62,6 @@
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~ SCRIPTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <script src="scripts/check_text.js"></script>
-
-
-
-
-
-
-
 
 
 </body>

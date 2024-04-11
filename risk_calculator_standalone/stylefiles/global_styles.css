@@ -102,20 +102,25 @@ body {
 .text-input {
     display: flex;
     flex-direction: column;
-    flex: 45%;
+    flex: 55%;
     height: 20em;
 }
 
+.text-notes {
+    flex: 45%;
+    height: 20em;
+    overflow-y: scroll;
+}
+
 .text-output {
-    flex: 55%;
-        height: 20em;
+    /*flex: 55%;*/
+    max-height: 20em;
     overflow-y: scroll;
 }
 
 .text-input > textarea {
     flex: 1;
 }
-
 
 
 /*Styling input elements */
