@@ -47,6 +47,7 @@ body {
     text-align: center;
     background: #ddd;
 }
+
 /* Style the navigation bar links */
 .navbar-foot a {
     color: black;
@@ -54,6 +55,7 @@ body {
     text-decoration: none;
     text-align: center;
 }
+
 /* Change color on hover */
 .navbar-foot a:hover {
     background-color: slategray;
@@ -98,14 +100,21 @@ body {
 }
 
 .text-input {
-    flex: 40%;
+    display: flex;
+    flex-direction: column;
+    flex: 45%;
+    height: 20em;
 }
 
 .text-output {
-    flex: 40%;
+    flex: 55%;
+        height: 20em;
+    overflow-y: scroll;
 }
 
-
+.text-input > textarea {
+    flex: 1;
+}
 
 
 

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="stylefiles/global_styles.css">
+    <link rel="stylesheet" href="stylefiles/functional_styles.css">
 
     <script src="jquery/jquery-3.7.1.min.js"></script>
 
@@ -27,11 +28,14 @@
 
 
   <div class="input-col text-input">
-    <textarea rows="10" cols="80" class="longtext" name="description"></textarea>
+    <textarea class="longtext" name="description" id="text-query"></textarea>
       <br>
       <button class="input-button" id="check-text">Prüfe meinen Text</button>
   </div>
+
   <div class="output-col text-output">
+
+      <div id="text-result"></div>
 
   </div>
 </div>
@@ -46,7 +50,8 @@
 <!--https://www.w3schools.com/css/css3_flexbox_responsive.asp-->
 
 
-
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~ SCRIPTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<script src="scripts/check_text.js"></script>
 
 
 
