@@ -1,5 +1,14 @@
 /*
 Simple script to highlight numbers (eventually percentages) in a text.
+
+Eventual functionality:
+Judge an input text based on a fixed set of rules, e.g.:
+    * if it reports effectivity it also must report harm
+    * if it reports evidence it should report numbers (if available)
+    * if it reports numbers they need to have a reference (or be otherwise clearly defined)
+
+ Therefore, it will be able to process texts, output adherence to the criteria, and highlight corresponding information in text.
+
 */
 
 const regex_num = /(\d+)/g;  // regex to detect numbers.
@@ -15,7 +24,7 @@ $(document).ready(function () {
 
         let procText = inputText;
 
-        console.log(procText);
+        console.log(sentence_tokenizer(procText));
 
         // Highlight the number and add a simple tooltip:
         // Note: Eventually match and process different types of numbers and adjust the tooltips.
@@ -74,6 +83,24 @@ $(document).ready(function () {
 
 // ~~~~~~~~~~~~~~~~~~~~~~~ DICTIONARIES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // TODO: Eventually define an object prototype (class)
+/*
+Maybe use regex to find matches and then indexOf() --> but still returns first match only
+("You can do that by passing in a value that's greater than the index of the previous occurrence as the second parameter to the method.)!
+Will however need the string detected via regex!
+
+Source for string manipulation:
+https://developer.mozilla.org/en-US/docs/Learn/JavaScript/First_steps/Useful_string_methods
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String
+
+Possible parts:
+* Basic sentence tokenizer --> analyse co-occurrence in sentences
+* Basic word tokenizer --> move from word to word, analyse word surroundings for nouns (easier in German!)
+
+*/
+
+/*
+Other formats to detect: Odds ratio, ARR/RRR, NNT...
+*/
 
 const check_numbers_dict = {
     "Prozentzahl": {
@@ -91,3 +118,9 @@ const check_numbers_dict = {
 // Testcase: Die Wahrscheinlichkeit für Regen ist 50% oder 60 Prozent? Jedenfalls irgendwas unter 100. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Die Wahrscheinlichkeit für Regen ist 50%  oder 60 Prozent? Jedenfalls irgendwas unter 100. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue.
 
 // ~~~~~~~~~~~~~~~~~~~~~~~ FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function sentence_tokenizer(text){
+    const split = text.split(/(?<=[.?!])[ \r\n]/g);
+
+    // Remove empty tokens:
+    return split.filter(x => x);
+}
