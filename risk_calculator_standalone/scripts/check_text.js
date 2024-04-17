@@ -11,7 +11,10 @@ Judge an input text based on a fixed set of rules, e.g.:
 
 */
 
-const regex_num = /(\d+)/g;  // regex to detect numbers.
+// const pat_num = "\\d"  //
+const pat_num =  "(?:(?<![\\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,][0-9]+)?))(?!\\\.[0-9A-Za-z]|[a-zA-Z0-9])"
+const regex_num = new RegExp("(" + pat_num + ")", "g");  // regex to detect numbers.
+// From R: (?:(?<![\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,][0-9]+)?))(?!\\.[0-9A-Za-z]|[a-zA-Z0-9])
 const note_set = ["Den Zahlen fehlt eine Referenz", "Keine ganzen Zahlen verwendet", "Behauptung ohne Evidenz aufgestellt"];  // Set of possible notes.
 
 $(document).ready(function () {
@@ -104,14 +107,16 @@ Possible parts:
 Other formats to detect: Odds ratio, ARR/RRR, NNT...
 */
 
+const regex_perc = new RegExp("(" + pat_num + " ?(%|\\\-?[Pp]rozent\\\w*(?=[ .?!]))" + ")", "g");
+
 const check_numbers_dict = {
     "Prozentzahl": {
-        "regex": /(\d+ ?(%|Prozent))/g,
+        "regex":  regex_perc,
         "tooltip": "Ich bin eine Prozentzahl und möchte gerne eine Referenz",
         "note": "Sie haben eine Prozentzahl verwendet. Stellen Sie sicher, dass eine Referenz vorhanden ist [mögliche Referenz ggf. ausflaggen!]. klicken Sie [HIER] um mehr zu erfahren."
     },
     "Andere": {
-        "regex": /(\d+)/g,
+        "regex": regex_num,
         "tooltip": "Ich weiß nicht, was ich für eine Zahl bin",
         "note": "Sie haben eine Zahl verwendet, für die wir nicht bestimmen konnten, was sie bedeutet. Stellen Sie sicher, dass die Bedeutung der Zahl klar ist."
     }
