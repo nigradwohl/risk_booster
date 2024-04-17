@@ -12,7 +12,7 @@ Judge an input text based on a fixed set of rules, e.g.:
 */
 
 // const pat_num = "\\d"  //
-const pat_num =  "(?:(?<![\\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,][0-9]+)?))(?!\\\.[0-9A-Za-z]|[a-zA-Z0-9])"
+const pat_num = "(?:(?<![\\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,][0-9]+)?))(?!\\\.[0-9A-Za-z]|[a-zA-Z0-9])"
 const regex_num = new RegExp("(" + pat_num + ")", "g");  // regex to detect numbers.
 // From R: (?:(?<![\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,][0-9]+)?))(?!\\.[0-9A-Za-z]|[a-zA-Z0-9])
 const note_set = ["Den Zahlen fehlt eine Referenz", "Keine ganzen Zahlen verwendet", "Behauptung ohne Evidenz aufgestellt"];  // Set of possible notes.
@@ -50,6 +50,30 @@ $(document).ready(function () {
         // Loop over dictionary with rules:
         for (const [key, value] of Object.entries(check_numbers_dict)) {
             console.log(`${key} ${value["note"]}`); // "a 5", "b 7", "c 9"
+
+            // Get matches
+            // (eventually migrate to object method?)
+            const cur_matches = procText.match(value["regex"]);
+            console.log(cur_matches);
+
+            // Get duplicates:
+            const duplicates = cur_matches.filter((item, index) => cur_matches.indexOf(item) !== index);
+
+            console.log(duplicates); // Output: [2, 4, 5]
+
+            // TODO!
+            // Determine the indices for each match:
+            // For the duplicates count up the indices to get them all!
+            // https://stackoverflow.com/questions/1960473/get-all-unique-values-in-a-javascript-array-remove-duplicates
+            let unique = [...new Set(cur_matches)];
+            console.log(unique);
+            for (const mtc in unique){
+                if(duplicates.has(mtc)){
+                    console.log(mtc);
+                }
+            }
+
+
 
             // Highlight the corresponding numbers:
             // procText = procText.replace(value["regex"], '<div class="highlight-num has-tooltip">$1<span class="tooltip-wrapper"><span class="tooltiptext">' +
@@ -111,7 +135,7 @@ const regex_perc = new RegExp("(" + pat_num + " ?(%|\\\-?[Pp]rozent\\\w*(?=[ .?!
 
 const check_numbers_dict = {
     "Prozentzahl": {
-        "regex":  regex_perc,
+        "regex": regex_perc,
         "tooltip": "Ich bin eine Prozentzahl und möchte gerne eine Referenz",
         "note": "Sie haben eine Prozentzahl verwendet. Stellen Sie sicher, dass eine Referenz vorhanden ist [mögliche Referenz ggf. ausflaggen!]. klicken Sie [HIER] um mehr zu erfahren."
     },
@@ -123,9 +147,13 @@ const check_numbers_dict = {
 }
 
 // Testcase: Die Wahrscheinlichkeit für Regen ist 50% oder 60 Prozent? Jedenfalls irgendwas unter 100. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Die Wahrscheinlichkeit für Regen ist 50%  oder 60 Prozent? Jedenfalls irgendwas unter 100. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue.
-
+// Testcase 2: Vergangene Woche hatten Biontech und Pfizer bekanntgegeben, dass ihr Impfstoff nach Zwischenergebnissen klinischer Studien einen mehr als 90-prozentigen Schutz vor Covid-19 bietet. Der US-Pharmakonzern Moderna hatte zuletzt für sein ähnliches Präparat eine Wirksamkeit von 94,5 Prozent errechnet.
+// 94,5 Prozent
+// 100 Leute.
+// 1000 Leute.
+// 100 Leute
 // ~~~~~~~~~~~~~~~~~~~~~~~ FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function word_tokenizer(str){
+function word_tokenizer(str) {
     const split = str.split(/\s/g);
 
     // Remove empty tokens and punctuation:
@@ -135,7 +163,7 @@ function word_tokenizer(str){
     return split.filter(x => !/(?<!\W)[.,/#!$%^&*;:{}=_`~()](?!\W)/g.test(x));
 }
 
-function sentence_tokenizer(text){
+function sentence_tokenizer(text) {
     const split = text.split(/(?<=[.?!])[ \r\n]/g);
 
     // Remove empty tokens:
