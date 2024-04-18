@@ -53,33 +53,31 @@ $(document).ready(function () {
 
             // Get matches
             // (eventually migrate to object method?)
-            const cur_matches = procText.match(value["regex"]);
-            console.log(cur_matches);
-
-            // Get duplicates:
-            const duplicates = cur_matches.filter((item, index) => cur_matches.indexOf(item) !== index);
-
-            console.log("Duplicates are: ");
-            console.log(duplicates); // Output: [2, 4, 5]
-
-            // TODO!
-            // Determine the indices for each match:
-            // For the duplicates count up the indices to get them all!
-            // https://stackoverflow.com/questions/1960473/get-all-unique-values-in-a-javascript-array-remove-duplicates
-            const unique_mtc = [...new Set(cur_matches)];
-            console.log("Unique elements are:");
-            console.log(unique_mtc);
-            for (let i = 0; i < unique_mtc.length; i++) {
-                if (duplicates.includes(unique_mtc[i])) {
-                    console.log(unique_mtc[i] + " is a duplicate");
-                }
-            }
+            // const cur_matches = procText.match(value["regex"]);
+            // console.log(cur_matches);
+            //
+            // // Get duplicates:
+            // const duplicates = cur_matches.filter((item, index) => cur_matches.indexOf(item) !== index);
+            //
+            // console.log("Duplicates are: ");
+            // console.log(duplicates); // Output: [2, 4, 5]
+            //
+            // // Determine the indices for each match:
+            // // For the duplicates count up the indices to get them all!
+            // // https://stackoverflow.com/questions/1960473/get-all-unique-values-in-a-javascript-array-remove-duplicates
+            // const unique_mtc = [...new Set(cur_matches)];
+            // console.log("Unique elements are:");
+            // console.log(unique_mtc);
+            // for (let i = 0; i < unique_mtc.length; i++) {
+            //     if (duplicates.includes(unique_mtc[i])) {
+            //         console.log(unique_mtc[i] + " is a duplicate");
+            //     }
+            // }
 
             // Variant with exec:
             const matches = get_regex_matches(procText, value["regex"]);
             console.log("Match object:");
-            console.log(matches[2]);
-
+            console.log(matches);
 
             // Highlight the corresponding numbers:
             // procText = procText.replace(value["regex"], '<div class="highlight-num has-tooltip">$1<span class="tooltip-wrapper"><span class="tooltiptext">' +
@@ -91,7 +89,25 @@ $(document).ready(function () {
 
             // Amend the notes:
             arr_li = arr_li.concat(value["note"]);
+
         }
+
+        // Clean up the matches from all for redundancy:
+        // If a match is fully included in another, the match can be removed.
+        // There is also some hierarchy (undefined numbers should only be output when
+
+        // Loop over all remaining matches:
+        // TODO
+        // Highlight the corresponding numbers:
+        //     // procText = procText.replace(value["regex"], '<div class="highlight-num has-tooltip">$1<span class="tooltip-wrapper"><span class="tooltiptext">' +
+        //     //     value["tooltip"] + '</span></span></div>');
+        //     procText = procText.replace(value["regex"], '<div class="highlight-num tooltip">$1<span class="tooltiptext">' +
+        //         value["tooltip"] + '</span></div>');
+        //     // console.log(procText);
+        //
+        //
+        //     // Amend the notes:
+        //     arr_li = arr_li.concat(value["note"]);
 
         // If there are any entries:
         if (arr_li.length > 0) {
@@ -160,19 +176,27 @@ const check_numbers_dict = {
 // 100 Leute
 // ~~~~~~~~~~~~~~~~~~~~~~~ FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /**
- * Splits a text into an array of words
+ * Splits a text into an array of words and punctuation
  * @return {Array}     An array of words (as defined by space delimiters)
- * @param txt {String} A text, in which words are delimited by spaces.
+ * @param txt {String} A text, in which words are delimited by spaces and punctuation is followed by space, newline or end of line $.
  */
 function word_tokenizer(txt) {
-    const split = txt.split(/[\s\n]/g);
+
+
+    const split = txt
+        .replace(/([.,?!])(?=\s|$)/g, ' $1')  // Ensure that punctuations becomes their own by adding a space before.
+        .split(/\s/g);
+
+    // console.log(split);
 
     // Remove empty tokens and punctuation:
     // const clean_split = split.replace(/(?<!\W)[.,/#!$%^&*;:{}=_`~()](?!\W)/g,"");
     // Remove punctuation that is not within words.
     // Punctuation list: !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
-    return split.filter(x => !/(?<!\W)[.,/#!$%^&*;:{}=_`~()](?!\W)/g.test(x));
+    // return split.filter(x => !/(?<!\w)[.,/#!$%^&*;:{}=_`~()](?!\w)/g.test(x));
+    return split.filter(x => x);
 }
+
 
 /**
  * Splits a text into an array of sentences
