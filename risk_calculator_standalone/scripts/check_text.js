@@ -36,7 +36,8 @@ $(document).ready(function () {
 
         let cur_token;
         let token_set = new Set();
-        let token_position = [];
+        let tpos_start = [];
+        let tpos_end = [];
 
         let sentence_ids = [];
         let cur_sentence_id = 0;
@@ -46,8 +47,10 @@ $(document).ready(function () {
             cur_token = text_tokens[i];
 
             let token_pat;
+            let curpos;
+
             // Regex for token to ensure exact matching:
-            if([".", ",", "?"].includes(cur_token)){
+            if ([".", ",", "?"].includes(cur_token)) {
                 // Punctuation follows somewhat different rules.
                 // NOTE: Overlaps with other entities, likely because of the lack of spaces.
                 token_pat = "\\" + cur_token + "(?=\\s|\\n|$)";
@@ -61,27 +64,30 @@ $(document).ready(function () {
                 // If the token has already been there, start searching from this previous token:
                 // Index of previous occurrence:
                 // const prev_ix = token_position[text_tokens.indexOf(cur_token, -0)];  // search array from the back.
-                const prev_tokens = text_tokens.slice(0, i-1);
+                const prev_tokens = text_tokens.slice(0, i - 1);
                 // console.log(prev_tokens);
                 const ix_prev = prev_tokens.lastIndexOf(cur_token);  // index of previous token in array.
                 // console.log("Previous index of \"" + cur_token + "\" in array: " + ix_prev);
                 // token_position = token_position.concat(procText.indexOf(cur_token, prev_ix + 1));
-                token_rex.lastIndex = token_position[ix_prev] + text_tokens[ix_prev].length;
+                token_rex.lastIndex = tpos_start[ix_prev] + text_tokens[ix_prev].length;
                 // search array from the back to find index of previous and update regex index.
                 // console.log("Last index is: " + token_rex.lastIndex);
-                let curpos = token_rex.exec(procText).index;
-                token_position = token_position.concat(curpos);
+                curpos = token_rex.exec(procText).index;
+                // tpos_start = tpos_start.concat(curpos);
                 // search only after previous index.
             } else {
                 // If token is new, provide the unique index:
                 // token_position = token_position.concat(procText.indexOf(cur_token));
-                token_position = token_position.concat(procText.search(token_rex));
+                curpos = procText.search(token_rex);
                 // Add cur_token to set to check for duplicates:
                 token_set.add(cur_token);
 
                 // Problem with words which are part of another word (like "hatte" < "hatten").
                 // They already match the first, longer word but are not in the set!
             }
+
+            tpos_start = tpos_start.concat(curpos);
+            tpos_end = tpos_end.concat(curpos + cur_token.length - 1);
 
             // Assign sentence ID:
             sentence_ids = sentence_ids.concat(cur_sentence_id);
@@ -90,7 +96,7 @@ $(document).ready(function () {
             }  // increment the id when a punctuation token is found.
 
             // Display info side by side:
-            console.log("\"" + cur_token + "\", ", + token_position[i] + "-" + Number(token_position[i] + cur_token.length - 1) + ", " + sentence_ids[i]);
+            // console.log("\"" + cur_token + "\", ", + token_position[i] + "-" + Number(token_position[i] + cur_token.length - 1) + ", " + sentence_ids[i]);
 
         }
 
@@ -145,6 +151,24 @@ $(document).ready(function () {
         // There is also some hierarchy (undefined numbers should only be output when
 
         // Add the matches to the text data:
+        let token_match = Array(text_tokens.length).fill(-1);
+        for (let match of arr_match) {
+            console.log(match.start_end);
+
+            // For a token to be part of a match, the following conditions must be fulfilled:
+            // Match start must be greater or equal than token start and smaller than token end
+            // Match end must be smaller or equal to token end and larger than token start
+
+        }
+
+        // Show all info:
+        for (let i = 0; i < text_tokens.length; i++) {
+            // Ask for each token if it is part of a match (other way round may also work).
+
+            // Display info side by side:
+            console.log("\"" + text_tokens[i] + "\", " + token_match[i] + ", " + tpos_start[i] + "-" + tpos_end[i] + ", " + sentence_ids[i]);
+
+        }
 
 
         // Loop over all remaining matches:
