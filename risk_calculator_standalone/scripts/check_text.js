@@ -76,13 +76,9 @@ $(document).ready(function () {
             }
 
             // Variant with exec:
-            let myArray;
-            while ((myArray = value["regex"].exec(procText)) !== null) {
-                let msg = `Found ${Object.keys(myArray.groups)}. `;
-                msg += `Next match starts at ${value["regex"].lastIndex}`;
-                console.log(msg);
-                console.log(myArray);
-            }
+            const matches = get_regex_matches(procText, value["regex"]);
+            console.log("Match object:");
+            console.log(matches[2]);
 
 
             // Highlight the corresponding numbers:
@@ -163,8 +159,13 @@ const check_numbers_dict = {
 // 1000 Leute.
 // 100 Leute
 // ~~~~~~~~~~~~~~~~~~~~~~~ FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function word_tokenizer(str) {
-    const split = str.split(/\s/g);
+/**
+ * Splits a text into an array of words
+ * @return {Array}     An array of words (as defined by space delimiters)
+ * @param txt {String} A text, in which words are delimited by spaces.
+ */
+function word_tokenizer(txt) {
+    const split = txt.split(/[\s\n]/g);
 
     // Remove empty tokens and punctuation:
     // const clean_split = split.replace(/(?<!\W)[.,/#!$%^&*;:{}=_`~()](?!\W)/g,"");
@@ -173,8 +174,13 @@ function word_tokenizer(str) {
     return split.filter(x => !/(?<!\W)[.,/#!$%^&*;:{}=_`~()](?!\W)/g.test(x));
 }
 
-function sentence_tokenizer(text) {
-    const split = text.split(/(?<=[.?!])[ \r\n]/g);
+/**
+ * Splits a text into an array of sentences
+ * @return {Array}     An array of sentences
+ * @param txt {String} A text, in which sentences are delimited by [.?!].
+ */
+function sentence_tokenizer(txt) {
+    const split = txt.split(/(?<=[.?!])[ \r\n]/g);
 
     // Remove empty tokens:
     return split.filter(x => x);
@@ -182,4 +188,37 @@ function sentence_tokenizer(text) {
 
 // Use exec()
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec
-// function
+/**
+ * Find matches from a named regex group
+ * @return {Object}     All matches from a named regex group, with their beginning and end indices.
+ * @param txt {String} A text string (full text, paragraph, sentence or words).
+ * @param regex {RegExp} A regular expression (must include a single named group).
+ */
+function get_regex_matches(txt, regex) {
+    let arr_tmp;  // initialize temporary array.
+    let arr_out = [];
+    while ((arr_tmp = regex.exec(txt)) !== null) {
+
+        // Testing output:
+        // let msg = `Found ${Object.keys(arr_tmp.groups)}. `;
+        // msg += `Next match starts at ${regex.lastIndex}`;
+        // console.log(msg);
+        // console.log(arr_tmp);
+
+        // Note: regex is updated to save the last index of each match,
+        // so that the next match can be obtained in the next iteration.
+
+        // Add the information to the output array:
+        const key = Object.keys(arr_tmp.groups);
+
+        if(key.length < 1){Error("No group provided. Please provide a regex with a named group using (?<GROUPNAME>).")}
+        if(key.length > 1){Error("More than one group provided. Please provide a regex with a single named group using (?<GROUPNAME>).")}
+        const curmatch = {"group": key[0], "match": arr_tmp.groups[key], "start_end": arr_tmp.indices.groups[key]};
+        // console.log(curmatch);
+        arr_out = arr_out.concat(curmatch);  // append match object to array.
+    }
+
+
+    return arr_out;
+}
+
