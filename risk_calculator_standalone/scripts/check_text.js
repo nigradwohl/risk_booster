@@ -13,7 +13,7 @@ Judge an input text based on a fixed set of rules, e.g.:
 
 // const pat_num = "\\d"  //
 const pat_num = "(?:(?<![\\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,][0-9]+)?))(?!\\\.[0-9A-Za-z]|[a-zA-Z0-9])"
-const regex_num = new RegExp("(" + pat_num + ")", "g");  // regex to detect numbers.
+const regex_num = new RegExp("(?<num>" + pat_num + ")", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
 // From R: (?:(?<![\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,][0-9]+)?))(?!\\.[0-9A-Za-z]|[a-zA-Z0-9])
 const note_set = ["Den Zahlen fehlt eine Referenz", "Keine ganzen Zahlen verwendet", "Behauptung ohne Evidenz aufgestellt"];  // Set of possible notes.
 
@@ -75,6 +75,14 @@ $(document).ready(function () {
                 }
             }
 
+            // Variant with exec:
+            let myArray;
+            while ((myArray = value["regex"].exec(procText)) !== null) {
+                let msg = `Found ${myArray[0]}. `;
+                msg += `Next match starts at ${value["regex"].lastIndex}`;
+                console.log(msg);
+                console.log(myArray);
+            }
 
 
             // Highlight the corresponding numbers:
@@ -133,7 +141,7 @@ Possible parts:
 Other formats to detect: Odds ratio, ARR/RRR, NNT...
 */
 
-const regex_perc = new RegExp("(" + pat_num + " ?(%|\\\-?[Pp]rozent\\\w*(?=[ .?!]))" + ")", "g");
+const regex_perc = new RegExp("(?<perc>" + pat_num + " ?(%|\\\-?[Pp]rozent\\\w*(?=[ .?!]))" + ")", "dg");
 
 const check_numbers_dict = {
     "Prozentzahl": {
