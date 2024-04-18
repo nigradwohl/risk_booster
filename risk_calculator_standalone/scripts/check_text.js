@@ -30,7 +30,7 @@ $(document).ready(function () {
         // console.log(sentence_tokenizer(procText));
 
         console.log(word_tokenizer(procText));
-        console.log(sentence_tokenizer(procText).map(word_tokenizer));
+        // console.log(sentence_tokenizer(procText).map(word_tokenizer));
 
         const text_tokens = word_tokenizer(procText);  // Define the text as word and punctuation tokens.
 
@@ -50,7 +50,7 @@ $(document).ready(function () {
             if([".", ",", "?"].includes(cur_token)){
                 // Punctuation follows somewhat different rules.
                 // NOTE: Overlaps with other entities, likely because of the lack of spaces.
-                token_pat = "\\" + cur_token + "(?=\\s|\\n)";
+                token_pat = "\\" + cur_token + "(?=\\s|\\n|$)";
             } else {
                 token_pat = "(?<!\\w)" + cur_token + "(?!\\w)";
             }
@@ -62,14 +62,15 @@ $(document).ready(function () {
                 // Index of previous occurrence:
                 // const prev_ix = token_position[text_tokens.indexOf(cur_token, -0)];  // search array from the back.
                 const prev_tokens = text_tokens.slice(0, i-1);
-                console.log(prev_tokens);
+                // console.log(prev_tokens);
                 const ix_prev = prev_tokens.lastIndexOf(cur_token);  // index of previous token in array.
-                console.log("Previous index of \"" + cur_token + "\" in array: " + ix_prev);
+                // console.log("Previous index of \"" + cur_token + "\" in array: " + ix_prev);
                 // token_position = token_position.concat(procText.indexOf(cur_token, prev_ix + 1));
                 token_rex.lastIndex = token_position[ix_prev] + text_tokens[ix_prev].length;
                 // search array from the back to find index of previous and update regex index.
                 // console.log("Last index is: " + token_rex.lastIndex);
-                token_position = token_position.concat(token_rex.exec(procText).index);
+                let curpos = token_rex.exec(procText).index;
+                token_position = token_position.concat(curpos);
                 // search only after previous index.
             } else {
                 // If token is new, provide the unique index:
@@ -93,16 +94,7 @@ $(document).ready(function () {
 
         }
 
-        console.log(token_set);
-
-
-        // Highlight the number and add a simple tooltip:
-        // Note: Eventually match and process different types of numbers and adjust the tooltips.
-        // Note: in case of multiple categories handle overlap!
-        // procText = procText.replace(regex_num, '<div class="highlight-num tooltip">$1<span class="tooltiptext">Hi, ich bin eine Zahl!</span></div>');
-
-
-        // Basic processing (highlighting):
+        // console.log(token_set);
 
 
         // Annotations:
@@ -151,6 +143,9 @@ $(document).ready(function () {
         console.log(arr_match);
         // If a match is fully included in another, the match can be removed.
         // There is also some hierarchy (undefined numbers should only be output when
+
+        // Add the matches to the text data:
+
 
         // Loop over all remaining matches:
         // TODO
