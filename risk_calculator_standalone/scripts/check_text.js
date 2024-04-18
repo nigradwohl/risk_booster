@@ -49,7 +49,7 @@ $(document).ready(function () {
 
         // Loop over dictionary with rules:
         for (const [key, value] of Object.entries(check_numbers_dict)) {
-            console.log(`${key} ${value["note"]}`); // "a 5", "b 7", "c 9"
+            // console.log(`${key} ${value["note"]}`); // "a 5", "b 7", "c 9"
 
             // Get matches
             // (eventually migrate to object method?)
@@ -78,17 +78,6 @@ $(document).ready(function () {
             const matches = get_regex_matches(procText, value["regex"]);
             console.log("Match object:");
             console.log(matches);
-
-            // Highlight the corresponding numbers:
-            // procText = procText.replace(value["regex"], '<div class="highlight-num has-tooltip">$1<span class="tooltip-wrapper"><span class="tooltiptext">' +
-            //     value["tooltip"] + '</span></span></div>');
-            procText = procText.replace(value["regex"], '<div class="highlight-num tooltip">$1<span class="tooltiptext">' +
-                value["tooltip"] + '</span></div>');
-            // console.log(procText);
-
-
-            // Amend the notes:
-            arr_li = arr_li.concat(value["note"]);
 
         }
 
@@ -166,6 +155,7 @@ const check_numbers_dict = {
         "tooltip": "Ich weiß nicht, was ich für eine Zahl bin",
         "note": "Sie haben eine Zahl verwendet, für die wir nicht bestimmen konnten, was sie bedeutet. Stellen Sie sicher, dass die Bedeutung der Zahl klar ist."
     }
+
 }
 
 // Testcase: Die Wahrscheinlichkeit für Regen ist 50% oder 60 Prozent? Jedenfalls irgendwas unter 100. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Die Wahrscheinlichkeit für Regen ist 50%  oder 60 Prozent? Jedenfalls irgendwas unter 100. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue.
@@ -214,32 +204,55 @@ function sentence_tokenizer(txt) {
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec
 /**
  * Find matches from a named regex group
- * @return {Object}     All matches from a named regex group, with their beginning and end indices.
+ * @return {Object}     All first matches in text from a regex, with their beginning and end indices.
  * @param txt {String} A text string (full text, paragraph, sentence or words).
- * @param regex {RegExp} A regular expression (must include a single named group).
+ * @param regexp {RegExp} A regular expression.
  */
-function get_regex_matches(txt, regex) {
-    let arr_tmp;  // initialize temporary array.
-    let arr_out = [];
-    while ((arr_tmp = regex.exec(txt)) !== null) {
+function get_regex_matches(txt, regexp) {
+    // Testing:
+    // console.log(txt);
+    // console.log(regexp);
 
-        // Testing output:
-        // let msg = `Found ${Object.keys(arr_tmp.groups)}. `;
-        // msg += `Next match starts at ${regex.lastIndex}`;
-        // console.log(msg);
-        // console.log(arr_tmp);
+    // let arr_tmp;  // initialize temporary array.
+    let arr_out = [];  // initialize output array.
 
-        // Note: regex is updated to save the last index of each match,
-        // so that the next match can be obtained in the next iteration.
+    // Note: exec() may only be interesting if wen need the named groups.
+    // while ((arr_tmp = regexp.exec(txt)) !== null) {
+    //
+    //     // Testing output:
+    //     // let msg = `Found ${Object.keys(arr_tmp.groups)}. `;
+    //     // msg += `Next match starts at ${regex.lastIndex}`;
+    //     // console.log(msg);
+    //     // console.log(arr_tmp);
+    //
+    //     // Note: regex is updated to save the last index of each match,
+    //     // so that the next match can be obtained in the next iteration.
+    //
+    //     // Add the information to the output array:
+    //     const key = Object.keys(arr_tmp.groups);
+    //
+    //     if (key.length < 1) {
+    //         Error("No group provided. Please provide a regex with a named group using (?<GROUPNAME>).")
+    //     }
+    //     if (key.length > 1) {
+    //         Error("More than one group provided. Please provide a regex with a single named group using (?<GROUPNAME>).")
+    //     }
+    //     const curmatch = {"group": key[0], "match": arr_tmp.groups[key], "start_end": arr_tmp.indices.groups[key]};
+    //     // console.log(curmatch);
+    //     arr_out = arr_out.concat(curmatch);  // append match object to array.
+    // }
 
-        // Add the information to the output array:
-        const key = Object.keys(arr_tmp.groups);
+    const matches = txt.matchAll(regexp);
 
-        if(key.length < 1){Error("No group provided. Please provide a regex with a named group using (?<GROUPNAME>).")}
-        if(key.length > 1){Error("More than one group provided. Please provide a regex with a single named group using (?<GROUPNAME>).")}
-        const curmatch = {"group": key[0], "match": arr_tmp.groups[key], "start_end": arr_tmp.indices.groups[key]};
-        // console.log(curmatch);
+    for (const match of matches) {
+        // console.log(
+        //     `Found ${match[0]} start=${match.index} end=${
+        //         match.index + match[0].length
+        //     }.`,
+        // );
+        const curmatch = {"match": match[0], "start_end": [match.index, match.index + match[0].length]};
         arr_out = arr_out.concat(curmatch);  // append match object to array.
+
     }
 
 
