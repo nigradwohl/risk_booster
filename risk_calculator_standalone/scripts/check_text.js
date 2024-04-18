@@ -157,16 +157,27 @@ $(document).ready(function () {
 
             // For a token to be part of a match, the following conditions must be fulfilled:
             // Match start must be greater or equal than token start and smaller than token end
+            const match_start = tpos_start.findIndex(x => x >= match.start_end[0] && x < match.start_end[1]);
             // Match end must be smaller or equal to token end and larger than token start
+            const match_end = tpos_start.findIndex(x => x <= match.start_end[1] && x > match.start_end[0]);
+
+            // console.log(match_start, match_end);
+
+            token_match[match_start] = "match";
+            token_match[match_end] = "match";
 
         }
 
+        console.log(token_match);
+
         // Show all info:
         for (let i = 0; i < text_tokens.length; i++) {
-            // Ask for each token if it is part of a match (other way round may also work).
 
             // Display info side by side:
-            console.log("\"" + text_tokens[i] + "\", " + token_match[i] + ", " + tpos_start[i] + "-" + tpos_end[i] + ", " + sentence_ids[i]);
+            console.log(("\"" + text_tokens[i] + "\"").padEnd(25) + "  " +
+                token_match[i].toString().padEnd(5) + "  " +
+                (tpos_start[i] + "-" + tpos_end[i]).padStart(7) + "  " +
+                sentence_ids[i].toString().padEnd(2));
 
         }
 
