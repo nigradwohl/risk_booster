@@ -45,16 +45,26 @@ $(document).ready(function () {
         for (let i = 0; i < text_tokens.length; i++) {
             cur_token = text_tokens[i];
 
+            let token_pat;
             // Regex for token to ensure exact matching:
-            const token_rex = RegExp("(?<!\\w)" + cur_token + "(?!\\w)", "g");
+            if([".", ",", "?"].includes(cur_token)){
+                // Punctuation follows somewhat different rules.
+                // NOTE: Overlaps with other entities, likely because of the lack of spaces.
+                token_pat = "\\" + cur_token + "(?=\\s|\\n)";
+            } else {
+                token_pat = "(?<!\\w)" + cur_token + "(?!\\w)";
+            }
+            const token_rex = RegExp(token_pat, "gm");  // global needed for exec to work and m to match across multiple lines
+            // console.log(token_rex);
 
             if (token_set.has(cur_token)) {
                 // If the token has already been there, start searching from this previous token:
                 // Index of previous occurrence:
                 // const prev_ix = token_position[text_tokens.indexOf(cur_token, -0)];  // search array from the back.
-                const prev_tokens = text_tokens.slice(0, i);
-                const ix_prev = prev_tokens.indexOf(cur_token, -0);  // index of previous token in array.
-                // console.log("Previous index in array: " + ix_prev);
+                const prev_tokens = text_tokens.slice(0, i-1);
+                console.log(prev_tokens);
+                const ix_prev = prev_tokens.lastIndexOf(cur_token);  // index of previous token in array.
+                console.log("Previous index of \"" + cur_token + "\" in array: " + ix_prev);
                 // token_position = token_position.concat(procText.indexOf(cur_token, prev_ix + 1));
                 token_rex.lastIndex = token_position[ix_prev] + text_tokens[ix_prev].length;
                 // search array from the back to find index of previous and update regex index.
@@ -79,7 +89,7 @@ $(document).ready(function () {
             }  // increment the id when a punctuation token is found.
 
             // Display info side by side:
-            console.log("\"" + cur_token + "\", ", + token_position[i] + "-" + Number(token_position[i] + cur_token.length) + ", " + sentence_ids[i]);
+            console.log("\"" + cur_token + "\", ", + token_position[i] + "-" + Number(token_position[i] + cur_token.length - 1) + ", " + sentence_ids[i]);
 
         }
 
