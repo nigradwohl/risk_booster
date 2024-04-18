@@ -78,7 +78,7 @@ $(document).ready(function () {
             // Variant with exec:
             let myArray;
             while ((myArray = value["regex"].exec(procText)) !== null) {
-                let msg = `Found ${myArray[0]}. `;
+                let msg = `Found ${Object.keys(myArray.groups)}. `;
                 msg += `Next match starts at ${value["regex"].lastIndex}`;
                 console.log(msg);
                 console.log(myArray);
