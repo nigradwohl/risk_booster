@@ -29,7 +29,57 @@ $(document).ready(function () {
 
         // console.log(sentence_tokenizer(procText));
 
+        console.log(word_tokenizer(procText));
         console.log(sentence_tokenizer(procText).map(word_tokenizer));
+
+        const text_tokens = word_tokenizer(procText);  // Define the text as word and punctuation tokens.
+
+        let cur_token;
+        let token_set = new Set();
+        let token_position = [];
+
+        let sentence_ids = [];
+        let cur_sentence_id = 0;
+
+        // Assign each token its beginning index:
+        for (let i = 0; i < text_tokens.length; i++) {
+            cur_token = text_tokens[i];
+
+            // Regex for token to ensure exact matching:
+            const token_rex = RegExp("(?<!\\w)" + cur_token + "(?!\\w)");
+
+            if (token_set.has(cur_token)) {
+                // If the token has already been there, start searching from this previous token:
+                // Index of previous occurrence:
+                // const prev_ix = token_position[text_tokens.indexOf(cur_token, -0)];  // search array from the back.
+                // console.log(prev_ix);
+                // token_position = token_position.concat(procText.indexOf(cur_token, prev_ix + 1));
+                token_rex.lastIndex = token_position[text_tokens.indexOf(cur_token, -0)];
+                // search array from the back to find index of previous and update regex index.
+                token_position = token_position.concat(procText.search(token_rex));
+                // search only after previous index.
+            } else {
+                // If token is new, provide the unique index:
+                // token_position = token_position.concat(procText.indexOf(cur_token));
+                token_position = token_position.concat(procText.search(token_rex));
+                // Add cur_token to set to check for duplicates:
+                token_set.add(cur_token);
+
+                // Problem with words which are part of another word (like "hatte" < "hatten").
+                // They already match the first, longer word but are not in the set!
+            }
+
+            // Assign sentence ID:
+            sentence_ids = sentence_ids.concat(cur_sentence_id);
+            if (["?", ".", "!"].includes(text_tokens[i])) {
+                cur_sentence_id++
+            }  // increment the id when a punctuation token is found.
+
+            // Display info side by side:
+            console.log("\"" + cur_token + "\", ", + token_position[i] + "-" + Number(token_position[i] + cur_token.length) + ", " + sentence_ids[i]);
+
+        }
+
 
         // Highlight the number and add a simple tooltip:
         // Note: Eventually match and process different types of numbers and adjust the tooltips.
@@ -46,6 +96,7 @@ $(document).ready(function () {
         // Create HTML for the list:
 
         let arr_li = [];
+        let arr_match = [];
 
         // Loop over dictionary with rules:
         for (const [key, value] of Object.entries(check_numbers_dict)) {
@@ -76,12 +127,13 @@ $(document).ready(function () {
 
             // Variant with exec:
             const matches = get_regex_matches(procText, value["regex"]);
-            console.log("Match object:");
-            console.log(matches);
+            arr_match = arr_match.concat(matches);
 
         }
 
         // Clean up the matches from all for redundancy:
+        console.log("Match objects:");
+        console.log(arr_match);
         // If a match is fully included in another, the match can be removed.
         // There is also some hierarchy (undefined numbers should only be output when
 
@@ -149,8 +201,7 @@ const check_numbers_dict = {
         "regex": regex_perc,
         "tooltip": "Ich bin eine Prozentzahl und möchte gerne eine Referenz",
         "note": "Sie haben eine Prozentzahl verwendet. Stellen Sie sicher, dass eine Referenz vorhanden ist [mögliche Referenz ggf. ausflaggen!]. klicken Sie [HIER] um mehr zu erfahren."
-    },
-    "Andere": {
+    }, "Andere": {
         "regex": regex_num,
         "tooltip": "Ich weiß nicht, was ich für eine Zahl bin",
         "note": "Sie haben eine Zahl verwendet, für die wir nicht bestimmen konnten, was sie bedeutet. Stellen Sie sicher, dass die Bedeutung der Zahl klar ist."
@@ -174,7 +225,8 @@ function word_tokenizer(txt) {
 
 
     const split = txt
-        .replace(/([.,?!])(?=\s|$)/g, ' $1')  // Ensure that punctuations becomes their own by adding a space before.
+        .replace(/([.,?!:)])(?=\s|$)/g, ' $1')  // Ensure that punctuations becomes their own by adding a space before.
+        .replace(/((?<=\s)[(])/g, ' $1')  // opening parentheses.
         .split(/\s/g);
 
     // console.log(split);
