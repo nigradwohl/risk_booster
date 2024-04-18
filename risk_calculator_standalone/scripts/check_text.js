@@ -46,17 +46,20 @@ $(document).ready(function () {
             cur_token = text_tokens[i];
 
             // Regex for token to ensure exact matching:
-            const token_rex = RegExp("(?<!\\w)" + cur_token + "(?!\\w)");
+            const token_rex = RegExp("(?<!\\w)" + cur_token + "(?!\\w)", "g");
 
             if (token_set.has(cur_token)) {
                 // If the token has already been there, start searching from this previous token:
                 // Index of previous occurrence:
                 // const prev_ix = token_position[text_tokens.indexOf(cur_token, -0)];  // search array from the back.
-                // console.log(prev_ix);
+                const prev_tokens = text_tokens.slice(0, i);
+                const ix_prev = prev_tokens.indexOf(cur_token, -0);  // index of previous token in array.
+                // console.log("Previous index in array: " + ix_prev);
                 // token_position = token_position.concat(procText.indexOf(cur_token, prev_ix + 1));
-                token_rex.lastIndex = token_position[text_tokens.indexOf(cur_token, -0)];
+                token_rex.lastIndex = token_position[ix_prev] + text_tokens[ix_prev].length;
                 // search array from the back to find index of previous and update regex index.
-                token_position = token_position.concat(procText.search(token_rex));
+                // console.log("Last index is: " + token_rex.lastIndex);
+                token_position = token_position.concat(token_rex.exec(procText).index);
                 // search only after previous index.
             } else {
                 // If token is new, provide the unique index:
@@ -79,6 +82,8 @@ $(document).ready(function () {
             console.log("\"" + cur_token + "\", ", + token_position[i] + "-" + Number(token_position[i] + cur_token.length) + ", " + sentence_ids[i]);
 
         }
+
+        console.log(token_set);
 
 
         // Highlight the number and add a simple tooltip:
