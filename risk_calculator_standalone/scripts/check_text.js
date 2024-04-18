@@ -27,7 +27,7 @@ $(document).ready(function () {
 
         let procText = inputText;
 
-        console.log(sentence_tokenizer(procText));
+        // console.log(sentence_tokenizer(procText));
 
         console.log(sentence_tokenizer(procText).map(word_tokenizer));
 
@@ -59,17 +59,19 @@ $(document).ready(function () {
             // Get duplicates:
             const duplicates = cur_matches.filter((item, index) => cur_matches.indexOf(item) !== index);
 
+            console.log("Duplicates are: ");
             console.log(duplicates); // Output: [2, 4, 5]
 
             // TODO!
             // Determine the indices for each match:
             // For the duplicates count up the indices to get them all!
             // https://stackoverflow.com/questions/1960473/get-all-unique-values-in-a-javascript-array-remove-duplicates
-            let unique = [...new Set(cur_matches)];
-            console.log(unique);
-            for (const mtc in unique){
-                if(duplicates.has(mtc)){
-                    console.log(mtc);
+            const unique_mtc = [...new Set(cur_matches)];
+            console.log("Unique elements are:");
+            console.log(unique_mtc);
+            for (let i = 0; i < unique_mtc.length; i++) {
+                if (duplicates.includes(unique_mtc[i])) {
+                    console.log(unique_mtc[i] + " is a duplicate");
                 }
             }
 
@@ -80,7 +82,7 @@ $(document).ready(function () {
             //     value["tooltip"] + '</span></span></div>');
             procText = procText.replace(value["regex"], '<div class="highlight-num tooltip">$1<span class="tooltiptext">' +
                 value["tooltip"] + '</span></div>');
-            console.log(procText);
+            // console.log(procText);
 
 
             // Amend the notes:
@@ -169,3 +171,7 @@ function sentence_tokenizer(text) {
     // Remove empty tokens:
     return split.filter(x => x);
 }
+
+// Use exec()
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec
+// function
