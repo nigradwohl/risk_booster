@@ -118,7 +118,7 @@ $(document).ready(function () {
 
         // Create HTML for the list:
 
-        let arr_li = [];
+        let arr_li = new Set;
         let arr_match = [];
 
         // Loop over dictionary with rules:
@@ -259,24 +259,35 @@ $(document).ready(function () {
                     '<span class="tooltiptext">' +
                     cur_tooltip +
                     '</span></div>');
-            console.log(procText);
+            // console.log(procText);
 
             cur_ix = match.start_end[1];
 
 
             // Amend the notes:
-            arr_li = arr_li.concat(match.type.map((x) => check_numbers_dict[x].note));
+            // console.log(match.type.map((x) => check_numbers_dict[x].note));
+            for (let note of match.type.map((x) => check_numbers_dict[x].note)) {
+                console.log(note);
+                arr_li = arr_li.add(note);
+            }
 
         }
 
+        console.log(arr_li);
+
 
         // If there are any entries:
-        if (arr_li.length > 0) {
+        if (arr_li.size > 0) {
 
             let str_li = ""
 
-            for (let i = 0; i < arr_li.length; i++) {
-                str_li += "<li>" + arr_li[i] + "</li>";
+            // for (let i = 0; i < arr_li.size; i++) {
+            //     str_li += "<li>" + arr_li[i] + "</li>";
+            //
+            // }
+
+            for (const note of arr_li) {
+                str_li += "<li>" + note + "</li>";
 
             }
 
