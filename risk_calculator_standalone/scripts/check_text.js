@@ -163,6 +163,8 @@ $(document).ready(function () {
         // Add the matches to the text data:
         let token_match = Array(text_tokens.length).fill(-1);
         let i = 0;
+        let droplist = [];
+
         for (let match of arr_match) {
             console.log(match.start_end);
 
@@ -172,22 +174,44 @@ $(document).ready(function () {
             // Match end must be smaller or equal to token end and larger than token start
             const match_end = tpos_start.findIndex(x => x <= match.start_end[1] && x > match.start_end[0]);
 
-            console.log(match_start, match_end);
+            // console.log(match_start, match_end);
 
-            if(match_start !== -1){
-                if (token_match[match_start] !== -1) {
-                    token_match[match_start] = token_match[match_start].concat(i);
-                } else {
+            if (match_start !== -1) {
+                if (token_match[match_start] === -1) {
                     token_match[match_start] = [i];
+                } else {
+                    // Note: If we can establish a clear hierarchical structure, we could drop the match here:
+                    // arr_match.splice(i);
+                    droplist = droplist.concat(i);
+                    const prev_ix = token_match[match_start]
+
+                    // Also amend the previous match to include the other type?
+                    arr_match[prev_ix[0]].type = arr_match[prev_ix[0]].type.concat(match.type);
+
+                    // Add index:
+                    token_match[match_start] = prev_ix.concat(i);
+
                 }
 
             }
-            if(match_end !== -1){
+            if (match_end !== -1) {
 
-                if (token_match[match_end] !== -1) {
-                    token_match[match_end] = token_match[match_end].concat(i);
-                } else {
+                if (token_match[match_end] === -1) {
                     token_match[match_end] = [i];
+                } else {
+
+
+                    // Note: If we can establish a clear hierarchical structure, we could drop the match here:
+                    // arr_match.splice(i);
+                    droplist = droplist.concat(i);
+
+                    const prev_ix = token_match[match_end]
+
+                    // Also amend the previous match to include the other type?
+                    arr_match[prev_ix[0]].type = arr_match[prev_ix[0]].type.concat(match.type);
+
+                    // Add index:
+                    token_match[match_end] = prev_ix.concat(i);
                 }
             }
 
@@ -197,6 +221,9 @@ $(document).ready(function () {
         }
 
         console.log(token_match);
+
+        arr_match = arr_match.filter((ele, index) => !droplist.includes(index));
+        console.log(arr_match);
 
         // Show all info:
         for (let i = 0; i < text_tokens.length; i++) {
@@ -210,9 +237,11 @@ $(document).ready(function () {
         }
 
 
-        // Loop over all remaining matches:
+        // Loop over all remaining matches to highlight them:
         // TODO
-        // Highlight the corresponding numbers:
+        // for (let match of arr_match) {
+        //
+        //     // Highlight the corresponding numbers:
         //     // procText = procText.replace(value["regex"], '<div class="highlight-num has-tooltip">$1<span class="tooltip-wrapper"><span class="tooltiptext">' +
         //     //     value["tooltip"] + '</span></span></div>');
         //     procText = procText.replace(value["regex"], '<div class="highlight-num tooltip">$1<span class="tooltiptext">' +
@@ -222,6 +251,9 @@ $(document).ready(function () {
         //
         //     // Amend the notes:
         //     arr_li = arr_li.concat(value["note"]);
+        //
+        // }
+
 
         // If there are any entries:
         if (arr_li.length > 0) {
@@ -396,7 +428,7 @@ function get_regex_matches(txt, regexp) {
             throw new Error("More than one group provided. Please provide a regex with a single named group using (?<GROUPNAME>).")
         }
 
-        const curmatch = {"type": key[0], "match": match.groups[key], "start_end": match.indices.groups[key]};
+        const curmatch = {"type": [key[0]], "match": match.groups[key], "start_end": match.indices.groups[key]};
         // console.log(curmatch);
         arr_out = arr_out.concat(curmatch);  // append match object to array.
 
