@@ -88,7 +88,7 @@ $(document).ready(function () {
 
         // console.log(sentence_tokenizer(inputText));
 
-        console.log(word_tokenizer(inputText));
+        // console.log(word_tokenizer(inputText));
         // console.log(sentence_tokenizer(inputText).map(word_tokenizer));
 
         const token_dat = get_token_data(inputText);
@@ -107,28 +107,6 @@ $(document).ready(function () {
         for (const [key, value] of Object.entries(check_numbers_dict)) {
             // console.log(`${key} ${value["note"]}`); // "a 5", "b 7", "c 9"
 
-            // Get matches
-            // (eventually migrate to object method?)
-            // const cur_matches = inputText.match(value["regex"]);
-            // console.log(cur_matches);
-            //
-            // // Get duplicates:
-            // const duplicates = cur_matches.filter((item, index) => cur_matches.indexOf(item) !== index);
-            //
-            // console.log("Duplicates are: ");
-            // console.log(duplicates); // Output: [2, 4, 5]
-            //
-            // // Determine the indices for each match:
-            // // For the duplicates count up the indices to get them all!
-            // // https://stackoverflow.com/questions/1960473/get-all-unique-values-in-a-javascript-array-remove-duplicates
-            // const unique_mtc = [...new Set(cur_matches)];
-            // console.log("Unique elements are:");
-            // console.log(unique_mtc);
-            // for (let i = 0; i < unique_mtc.length; i++) {
-            //     if (duplicates.includes(unique_mtc[i])) {
-            //         console.log(unique_mtc[i] + " is a duplicate");
-            //     }
-            // }
 
             // Variant with exec:
             const matches = get_regex_matches(inputText, value["regex"]);
@@ -153,9 +131,9 @@ $(document).ready(function () {
 
             // For a token to be part of a match, the following conditions must be fulfilled:
             // Match start must be greater or equal than token start and smaller than token end
-            const match_start = token_dat.tpos_start.findIndex(x => x >= match.start_end[0] && x < match.start_end[1]);
+            const match_start = token_dat.start.findIndex(x => x >= match.start_end[0] && x < match.start_end[1]);
             // Match end must be smaller or equal to token end and larger than token start
-            const match_end = token_dat.tpos_start.findIndex(x => x <= match.start_end[1] && x > match.start_end[0]);
+            const match_end = token_dat.start.findIndex(x => x <= match.start_end[1] && x > match.start_end[0]);
 
             // console.log(match_start, match_end);
 
@@ -203,7 +181,12 @@ $(document).ready(function () {
 
         }
 
-        console.log(token_match);
+        // console.log(token_match);
+
+        // Add to object:
+        // token_dat.token_match = token_match;
+        token_dat.add_column(token_match, "match");
+        console.log(token_dat);
 
         // Remove the indices that have to be dropped:
         arr_match = arr_match.filter((ele, index) => !droplist.includes(index));
@@ -226,6 +209,7 @@ $(document).ready(function () {
         // }
 
         token_dat.print();  // print data from object.
+        console.log(token_dat.get_row(1));  // print row.
 
 
         // Loop over all remaining matches to highlight them:
@@ -299,7 +283,6 @@ $(document).ready(function () {
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~ DICTIONARIES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// TODO: Eventually define an object prototype (class)
 /*
 Maybe use regex to find matches and then indexOf() --> but still returns first match only
 ("You can do that by passing in a value that's greater than the index of the previous occurrence as the second parameter to the method.)!
@@ -358,30 +341,63 @@ class TokenData {
 
     constructor(tokens, tpos_start, tpos_end, sentence_id) {
         this.tokens = tokens;
-        this.tpos_start = tpos_start;
-        this.tpos_end = tpos_end;
-        this.sentence_id = sentence_id;
+        this.start = tpos_start;
+        this.end = tpos_end;
+        this.sent = sentence_id;
 
         // Also check for equal length in the future!
+        // Also check for equal types!
 
     }
 
     // Function to output all:
     print() {
-        for (let i = 0; i < this.tokens.length; i++) {
 
-            // Display info side by side:
-            console.log(("\"" + this.tokens[i] + "\"").padEnd(25) + "  " +
-                // token_match[i].toString().padEnd(5) + "  " +
-                (this.tpos_start[i] + "-" + this.tpos_end[i]).padStart(7) + "  " +
-                this.sentence_id[i].toString().padEnd(2));
+        // console.log(Object.keys(this));
+
+        // Determine column widths:
+        let colwidths = [];
+        for (const [key, value] of Object.entries(this)) {
+            const col = value.concat(key);  // add the key.
+            let curwidth = Math.max(...(col.map(el => el.toString().length)));
+            colwidths = colwidths.concat(curwidth);
+
+        }
+
+        // Possible feature: Column alignment (change padding fron/end)
+
+
+        for (let ix_token = -1; ix_token < this.tokens.length; ix_token++) {
+
+            const currow = ix_token > -1 ? this.get_row(ix_token) : Object.keys(this);
+            let rowstr = "";
+
+
+            for (let ix_col = 0; ix_col < Object.keys(this).length; ix_col++) {
+
+                // Display info side by side:
+                rowstr += currow[ix_col].toString().padEnd(colwidths[ix_col] + 2);
+            }
+
+            console.log(rowstr);
 
         }
     }
 
     // Function to output row:
+    get_row(rix) {
+        let row = [];
+        for (const [key, value] of Object.entries(this)) {
+            row = row.concat(value[rix]);
+        }
 
-    // Function to add feature (e.g., number etc.)
+        return (row);
+    }
+
+    // Function to add feature (e.g., number etc.):
+    add_column(content, column_name) {
+        this[column_name] = content;
+    }
 
 }
 
@@ -581,3 +597,21 @@ function get_regex_matches(txt, regexp) {
     return arr_out;
 }
 
+// ~~~~~~~~~~~~~~~~~~~~ Unused functionality ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// // Get duplicates:
+// const duplicates = cur_matches.filter((item, index) => cur_matches.indexOf(item) !== index);
+//
+// console.log("Duplicates are: ");
+// console.log(duplicates); // Output: [2, 4, 5]
+//
+// // Determine the indices for each match:
+// // For the duplicates count up the indices to get them all!
+// // https://stackoverflow.com/questions/1960473/get-all-unique-values-in-a-javascript-array-remove-duplicates
+// const unique_mtc = [...new Set(cur_matches)];
+// console.log("Unique elements are:");
+// console.log(unique_mtc);
+// for (let i = 0; i < unique_mtc.length; i++) {
+//     if (duplicates.includes(unique_mtc[i])) {
+//         console.log(unique_mtc[i] + " is a duplicate");
+//     }
+// }
