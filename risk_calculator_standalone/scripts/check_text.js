@@ -186,7 +186,8 @@ $(document).ready(function () {
         // Add to object:
         // token_dat.token_match = token_match;
         token_dat.add_column(token_match, "match");
-        console.log(token_dat);
+        token_dat.add_number_info();
+        // console.log(token_dat);
 
         // Remove the indices that have to be dropped:
         arr_match = arr_match.filter((ele, index) => !droplist.includes(index));
@@ -324,13 +325,20 @@ const check_numbers_dict = {
 /**
  * A text object to collect features from processing
  * @return {Object}     An object with a text and its features
- * @param txt {String} A text, in which words are delimited by spaces and punctuation is followed by space, newline or end of line $.
+ * @param text {String} A text, in which words are delimited by spaces and punctuation is followed by space, newline or end of line $.
  */
 
 class TextObj {
-    constructor(txt) {
-        this.txt = txt;
+    constructor(text) {
+        this.text = text;
     }
+
+    // Method to get corresponding token data:
+    tokenize(){
+        this.tokens = get_token_data(this.text);
+    }
+
+    // Method to get matches:
 }
 
 /**
@@ -399,6 +407,10 @@ class TokenData {
         this[column_name] = content;
     }
 
+    // Functions to add specific information:
+    add_number_info(){
+        this.is_num = this.tokens.map((x) => regex_num.test(x));
+    }
 }
 
 
@@ -476,6 +488,13 @@ function get_token_data(text) {
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~ FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/**
+ * Finds the unit to a number from token data
+ * @return {Array}     An array of units for numeric data
+ * @param token_data {Object} A token data object with information about numbers.
+ */
+
+
 /**
  * Splits a text into an array of words and punctuation
  * @return {Array}     An array of words (as defined by space delimiters)
