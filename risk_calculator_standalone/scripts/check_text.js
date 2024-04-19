@@ -27,21 +27,46 @@ Testcase 3:
 Der Impfstoff wird nach Angaben der beiden Unternehmen 2mal im Abstand von 3Wochen verabreicht. In der Altersgruppe der Über-65-Jährigen wurde 7Tage nach der 2 Dosis eine Wirksamkeit von 94 Prozent ermittelt. Der Impfstoff sei von den Teilnehmern der weltweiten Studie gut vertragen worden, ernste Nebenwirkungen seien nicht beobachtet worden, berichteten die Unternehmen. Basis sind Angaben von mindestens 8000 zufällig ausgewählten Teilnehmern.
 Bei der immer noch in zahlreichen Ländern laufenden Studie erhält eine Hälfte der insgesamt 43.000 Teilnehmer den Impfstoff, die andere Hälfte fungiert als Kontrollgruppe und bekommt ein Placebo-Mittel. Bislang erkrankten den Angaben zufolge insgesamt 170 Teilnehmer an Covid-19. Davon entfielen nur 8 Fälle auf die tatsächlich geimpften Probanden, 162 Fälle wurden in der Placebo-Gruppe diagnostiziert. Daraus errechnet sich eine Wirksamkeit von rund 95 Prozent. Nach Angaben von Biontech und Pfizer gab es unter allen Covid-19-Erkrankungen 10 schwere Verläufe - 9 in der Kontroll- und einen in der Impfgruppe.
 
+Test statements:
+- In der Kontrollgruppe erkranken 5 von 100, in der Behandlungsgruppe einer aus 100. --> gut
+- Das Risiko zu erkranken ist 30-mal so hoch. Das heißt es erkranken 30 von 10000 mit dem bösen Verhalten und nur einer von 10000 ohne.
+Das entspricht einem Risikoanstieg von 3000% --> Prozentzahl, vorsicht (mit 1. Satz okay-ish)
+- Das Risiko zu erkranken ist unter rauchern doppelt so hoch. --> Referenz fehlt
+
  */
 
 /*
-Phraselist relevance:
+Phraselist:
 
-risk-
-* verhindern + Erkrankung
-
-
+* risk-
+    + verhindern + Erkrankung
 
 */
 
 /*
-Feature ideas:
+Output terms:
+- bezugsgröße (worauf bezieht sich die Zahl?)
+
+ */
+
+/*
+~~Feature ideas:~~
+
+Structual ideas:
+* make the token data an object with its own class, so that columns can be indexed accordingly.
+* make the text an object which has associated: tokens (maybe as object), an array of matches
+
+Content ideas:
+* identify numbers and their units and types in token data? --> 95,4 [Prozent] is <perc>, 20 [Fälle] is <case>, etc.
+    + use a regex identifier {NUMBER}(?<unit>)
+    + use a unit dictionary to identify whether these are relevant units (can also be used to remove age etc.)
+    + possibly replace or complement with token-based detector?
+
+* identify other types of numbers (cases etc.)
+* identify number ranges
 * count occurrence of percentages: a large number (or density) may be hard to comprehend
+* Identify whether any risk is communicated and whether both effectivity and harm are addressed.
+* identify number references (e.g., adjacent nouns or verbs) --> may use a dictionary of nouns and verbs (or their regexes)!
 
 */
 
@@ -66,75 +91,8 @@ $(document).ready(function () {
         console.log(word_tokenizer(inputText));
         // console.log(sentence_tokenizer(inputText).map(word_tokenizer));
 
-        const text_tokens = word_tokenizer(inputText);  // Define the text as word and punctuation tokens.
-
-        let cur_token;
-        let token_set = new Set();  // set of unique tokens.
-        let tpos_start = [];  // starting position of token.
-        let tpos_end = [];  // end position of token in basic text.
-
-        let sentence_ids = [];
-        let cur_sentence_id = 0;
-
-        // Assign each token its beginning index:
-        for (let i = 0; i < text_tokens.length; i++) {
-            cur_token = text_tokens[i];
-
-            let token_pat;
-            let curpos;
-
-            // Regex for token to ensure exact matching:
-            if ([".", ",", "?"].includes(cur_token)) {
-                // Punctuation follows somewhat different rules.
-                // NOTE: Overlaps with other entities, likely because of the lack of spaces.
-                token_pat = "\\" + cur_token + "(?=\\s|\\n|$)";
-            } else {
-                token_pat = "(?<!\\w)" + cur_token + "(?!\\w)";
-            }
-            const token_rex = RegExp(token_pat, "gm");  // global needed for exec to work and m to match across multiple lines
-            // console.log(token_rex);
-
-            if (token_set.has(cur_token)) {
-                // If the token has already been there, start searching from this previous token:
-                // Index of previous occurrence:
-                // const prev_ix = token_position[text_tokens.indexOf(cur_token, -0)];  // search array from the back.
-                const prev_tokens = text_tokens.slice(0, i - 1);
-                // console.log(prev_tokens);
-                const ix_prev = prev_tokens.lastIndexOf(cur_token);  // index of previous token in array.
-                // console.log("Previous index of \"" + cur_token + "\" in array: " + ix_prev);
-                // token_position = token_position.concat(inputText.indexOf(cur_token, prev_ix + 1));
-                token_rex.lastIndex = tpos_start[ix_prev] + text_tokens[ix_prev].length;
-                // search array from the back to find index of previous and update regex index.
-                // console.log("Last index is: " + token_rex.lastIndex);
-                curpos = token_rex.exec(inputText).index;
-                // tpos_start = tpos_start.concat(curpos);
-                // search only after previous index.
-            } else {
-                // If token is new, provide the unique index:
-                // token_position = token_position.concat(inputText.indexOf(cur_token));
-                curpos = inputText.search(token_rex);
-                // Add cur_token to set to check for duplicates:
-                token_set.add(cur_token);
-
-                // Problem with words which are part of another word (like "hatte" < "hatten").
-                // They already match the first, longer word but are not in the set!
-            }
-
-            tpos_start = tpos_start.concat(curpos);
-            tpos_end = tpos_end.concat(curpos + cur_token.length - 1);
-
-            // Assign sentence ID:
-            sentence_ids = sentence_ids.concat(cur_sentence_id);
-            if (["?", ".", "!"].includes(text_tokens[i])) {
-                cur_sentence_id++
-            }  // increment the id when a punctuation token is found.
-
-            // Display info side by side:
-            // console.log("\"" + cur_token + "\", ", + token_position[i] + "-" + Number(token_position[i] + cur_token.length - 1) + ", " + sentence_ids[i]);
-
-        }
-
-        // console.log(token_set);
+        const token_dat = get_token_data(inputText);
+        console.log(token_dat);
 
 
         // Annotations:
@@ -185,7 +143,8 @@ $(document).ready(function () {
         // There is also some hierarchy (undefined numbers should only be output when
 
         // Add the matches to the text data:
-        let token_match = Array(text_tokens.length).fill(-1);
+        let token_match = Array(token_dat.tokens.length).fill(-1);
+        // TODO: Add to object!
         let i = 0;
         let droplist = [];
 
@@ -194,9 +153,9 @@ $(document).ready(function () {
 
             // For a token to be part of a match, the following conditions must be fulfilled:
             // Match start must be greater or equal than token start and smaller than token end
-            const match_start = tpos_start.findIndex(x => x >= match.start_end[0] && x < match.start_end[1]);
+            const match_start = token_dat.tpos_start.findIndex(x => x >= match.start_end[0] && x < match.start_end[1]);
             // Match end must be smaller or equal to token end and larger than token start
-            const match_end = tpos_start.findIndex(x => x <= match.start_end[1] && x > match.start_end[0]);
+            const match_end = token_dat.tpos_start.findIndex(x => x <= match.start_end[1] && x > match.start_end[0]);
 
             // console.log(match_start, match_end);
 
@@ -256,15 +215,17 @@ $(document).ready(function () {
         console.log(arr_match);
 
         // Show all token info:
-        for (let i = 0; i < text_tokens.length; i++) {
+        // for (let i = 0; i < text_tokens.length; i++) {
+        //
+        //     // Display info side by side:
+        //     console.log(("\"" + text_tokens[i] + "\"").padEnd(25) + "  " +
+        //         token_match[i].toString().padEnd(5) + "  " +
+        //         (tpos_start[i] + "-" + tpos_end[i]).padStart(7) + "  " +
+        //         sentence_ids[i].toString().padEnd(2));
+        //
+        // }
 
-            // Display info side by side:
-            console.log(("\"" + text_tokens[i] + "\"").padEnd(25) + "  " +
-                token_match[i].toString().padEnd(5) + "  " +
-                (tpos_start[i] + "-" + tpos_end[i]).padStart(7) + "  " +
-                sentence_ids[i].toString().padEnd(2));
-
-        }
+        token_dat.print();  // print data from object.
 
 
         // Loop over all remaining matches to highlight them:
@@ -306,7 +267,7 @@ $(document).ready(function () {
         // Add text trailing after the last match:
         procText += inputText.slice(cur_ix, inputText.length);
 
-        console.log(procText);
+        // console.log(procText);
 
 
         // If there are any entries:
@@ -372,6 +333,129 @@ const check_numbers_dict = {
         "note": "Sie haben eine Zahl verwendet, für die wir nicht bestimmen konnten, was sie bedeutet. Stellen Sie sicher, dass die Bedeutung der Zahl klar ist."
     }
 
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~ CLASSES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+/**
+ * A text object to collect features from processing
+ * @return {Object}     An object with a text and its features
+ * @param txt {String} A text, in which words are delimited by spaces and punctuation is followed by space, newline or end of line $.
+ */
+
+class TextObj {
+    constructor(txt) {
+        this.txt = txt;
+    }
+}
+
+/**
+ * Class for a text tokenized into words
+ * @param txt {String} A text, in which words are delimited by spaces and punctuation is followed by space, newline or end of line $.
+ */
+class TokenData {
+
+    constructor(tokens, tpos_start, tpos_end, sentence_id) {
+        this.tokens = tokens;
+        this.tpos_start = tpos_start;
+        this.tpos_end = tpos_end;
+        this.sentence_id = sentence_id;
+
+        // Also check for equal length in the future!
+
+    }
+
+    // Function to output all:
+    print() {
+        for (let i = 0; i < this.tokens.length; i++) {
+
+            // Display info side by side:
+            console.log(("\"" + this.tokens[i] + "\"").padEnd(25) + "  " +
+                // token_match[i].toString().padEnd(5) + "  " +
+                (this.tpos_start[i] + "-" + this.tpos_end[i]).padStart(7) + "  " +
+                this.sentence_id[i].toString().padEnd(2));
+
+        }
+    }
+
+    // Function to output row:
+
+    // Function to add feature (e.g., number etc.)
+
+}
+
+
+/**
+ * Output of token data from function
+ * @return {Object}     Object containing word and punctuation tokens from a text and their positions.
+ * @param text {String} A text, in which words are delimited by spaces and punctuation is followed by space, newline or end of line $.
+ */
+function get_token_data(text) {
+
+    const text_tokens = word_tokenizer(text);  // Define the text as word and punctuation tokens.
+
+    let token_i;
+    let token_set = new Set();  // set of unique tokens.
+    let tpos_start = [];  // starting position of token.
+    let tpos_end = [];  // end position of token in basic text.
+    let token_pat;
+    let curpos;
+
+    let sentence_ids = [];
+    let cur_sentence_id = 0;
+
+    // Assign each token its beginning index:
+    for (let i = 0; i < text_tokens.length; i++) {
+
+        token_i = text_tokens[i];
+
+        // Regex for token to ensure exact matching:
+        if ([".", ",", "?"].includes(token_i)) {
+            // Punctuation follows somewhat different rules.
+            // NOTE: Overlaps with other entities, likely because of the lack of spaces.
+            token_pat = "\\" + token_i + "(?=\\s|\\n|$)";
+        } else {
+            token_pat = "(?<!\\w)" + token_i + "(?!\\w)";
+        }
+        const token_rex = RegExp(token_pat, "gm");  // global needed for exec to work and m to match across multiple lines
+        // console.log(token_rex);
+
+        if (token_set.has(token_i)) {
+            // If the token has already been there, start searching from this previous token:
+            // Index of previous occurrence:
+            const prev_tokens = text_tokens.slice(0, i - 1);
+            // console.log(prev_tokens);
+            const ix_prev = prev_tokens.lastIndexOf(token_i);  // index of previous token in array.
+            // console.log("Previous index of \"" + cur_token + "\" in array: " + ix_prev);
+            token_rex.lastIndex = tpos_start[ix_prev] + text_tokens[ix_prev].length;
+            // search array from the back to find index of previous and update regex index.
+            curpos = token_rex.exec(text).index;
+            // tpos_start = tpos_start.concat(curpos);
+            // search only after previous index.
+        } else {
+            // If token is new, provide the unique index:
+            // token_position = token_position.concat(inputText.indexOf(cur_token));
+            curpos = text.search(token_rex);
+            // Add cur_token to set to check for duplicates:
+            token_set.add(token_i);
+
+            // Problem with words which are part of another word (like "hatte" < "hatten").
+            // They already match the first, longer word but are not in the set!
+        }
+
+        tpos_start = tpos_start.concat(curpos);
+        tpos_end = tpos_end.concat(curpos + token_i.length - 1);
+
+        // Assign sentence ID:
+        sentence_ids = sentence_ids.concat(cur_sentence_id);
+        if (["?", ".", "!"].includes(text_tokens[i])) {
+            cur_sentence_id++
+        }  // increment the id when a punctuation token is found
+
+    }
+
+    return new TokenData(text_tokens, tpos_start, tpos_end, sentence_ids);
 }
 
 
