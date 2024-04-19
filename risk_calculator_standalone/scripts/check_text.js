@@ -45,9 +45,9 @@ $(document).ready(function () {
         const text_tokens = word_tokenizer(inputText);  // Define the text as word and punctuation tokens.
 
         let cur_token;
-        let token_set = new Set();
-        let tpos_start = [];
-        let tpos_end = [];
+        let token_set = new Set();  // set of unique tokens.
+        let tpos_start = [];  // starting position of token.
+        let tpos_end = [];  // end position of token in basic text.
 
         let sentence_ids = [];
         let cur_sentence_id = 0;
@@ -166,7 +166,7 @@ $(document).ready(function () {
         let droplist = [];
 
         for (let match of arr_match) {
-            console.log(match.start_end);
+            // console.log(match.start_end);
 
             // For a token to be part of a match, the following conditions must be fulfilled:
             // Match start must be greater or equal than token start and smaller than token end
@@ -222,10 +222,16 @@ $(document).ready(function () {
 
         console.log(token_match);
 
+        // Remove the indices that have to be dropped:
         arr_match = arr_match.filter((ele, index) => !droplist.includes(index));
+
+        // Sort the array by the starting position of each match:
+        arr_match = arr_match.sort((a, b) => a.start_end[0] - b.start_end[0]);
+
+        console.log("Sorted and cleaned matches");
         console.log(arr_match);
 
-        // Show all info:
+        // Show all token info:
         for (let i = 0; i < text_tokens.length; i++) {
 
             // Display info side by side:
@@ -238,7 +244,6 @@ $(document).ready(function () {
 
 
         // Loop over all remaining matches to highlight them:
-        // TODO
         let cur_ix = 0;  // current index in original text.
         let procText = "";
 
@@ -246,13 +251,14 @@ $(document).ready(function () {
 
             // Get types for each tooltip:
             const cur_tooltip = match.type.map((x) => check_numbers_dict[x].tooltip);
-            console.log(cur_tooltip)
+            // console.log(cur_tooltip)
 
             // Highlight the corresponding numbers:
             // inputText = inputText.replace(value["regex"], '<div class="highlight-num has-tooltip">$1<span class="tooltip-wrapper"><span class="tooltiptext">' +
             //     value["tooltip"] + '</span></span></div>');
             // procText = procText.replace(value["regex"], '<div class="highlight-num tooltip">$1<span class="tooltiptext">' +
             //     value["tooltip"] + '</span></div>');
+            console.log(match);
 
             procText += inputText.slice(cur_ix, match.start_end[0]) +
                 ('<div class="highlight-num tooltip">' + match.match +
@@ -267,7 +273,7 @@ $(document).ready(function () {
             // Amend the notes:
             // console.log(match.type.map((x) => check_numbers_dict[x].note));
             for (let note of match.type.map((x) => check_numbers_dict[x].note)) {
-                console.log(note);
+                // console.log(note);
                 arr_li = arr_li.add(note);
             }
 
