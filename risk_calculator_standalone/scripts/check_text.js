@@ -309,7 +309,7 @@ function sentence_tokenizer(txt) {
  * Find matches from a named regex group
  * @return {Object}     All first matches in text from a regex, with their beginning and end indices and the name of the group.
  * @param txt {String} A text string (full text, paragraph, sentence or words).
- * @param regexp {RegExp} A regular expression with a single named group.
+ * @param regexp {RegExp} A regular expression with a single named group of the form (?<GROUPNAME>REGEX).
  */
 function get_regex_matches(txt, regexp) {
     // Testing:
@@ -358,14 +358,26 @@ function get_regex_matches(txt, regexp) {
         // arr_out = arr_out.concat(curmatch);  // append match object to array.
 
         // Add the information to the output array:
+
+        // Check for errors:
+        /*
+        Tests:
+        new RegExp("(?" + pat_num + " ?(%|\\\-?[Pp]rozent\\\w*(?=[\\s.?!]))" + ")", "dg");
+        new RegExp("(?<perc>" + pat_num + " ?(?<percname>%|\\\-?[Pp]rozent\\\w*(?=[\\s.?!]))" + ")", "dg");
+                 */
+
+        if (match.groups === undefined) {
+            console.log(match.groups);
+            throw new Error("No group provided. Please provide a regex with a named group using (?<GROUPNAME>REGEX).")
+        }
+
+        // If a group was provided check if it is orderly:
         const key = Object.keys(match.groups);
 
-        if (key.length < 1) {
-            Error("No group provided. Please provide a regex with a named group using (?<GROUPNAME>).")
-        }
         if (key.length > 1) {
-            Error("More than one group provided. Please provide a regex with a single named group using (?<GROUPNAME>).")
+            throw new Error("More than one group provided. Please provide a regex with a single named group using (?<GROUPNAME>).")
         }
+
         const curmatch = {"group": key[0], "match": match.groups[key], "start_end": match.indices.groups[key]};
         // console.log(curmatch);
         arr_out = arr_out.concat(curmatch);  // append match object to array.
