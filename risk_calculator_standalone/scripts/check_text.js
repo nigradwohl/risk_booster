@@ -162,6 +162,7 @@ $(document).ready(function () {
 
         // Add the matches to the text data:
         let token_match = Array(text_tokens.length).fill(-1);
+        let i = 0;
         for (let match of arr_match) {
             console.log(match.start_end);
 
@@ -171,10 +172,27 @@ $(document).ready(function () {
             // Match end must be smaller or equal to token end and larger than token start
             const match_end = tpos_start.findIndex(x => x <= match.start_end[1] && x > match.start_end[0]);
 
-            // console.log(match_start, match_end);
+            console.log(match_start, match_end);
 
-            token_match[match_start] = "match";
-            token_match[match_end] = "match";
+            if(match_start !== -1){
+                if (token_match[match_start] !== -1) {
+                    token_match[match_start] = token_match[match_start].concat(i);
+                } else {
+                    token_match[match_start] = [i];
+                }
+
+            }
+            if(match_end !== -1){
+
+                if (token_match[match_end] !== -1) {
+                    token_match[match_end] = token_match[match_end].concat(i);
+                } else {
+                    token_match[match_end] = [i];
+                }
+            }
+
+            // Increment match ID:
+            i++;
 
         }
 
@@ -378,7 +396,7 @@ function get_regex_matches(txt, regexp) {
             throw new Error("More than one group provided. Please provide a regex with a single named group using (?<GROUPNAME>).")
         }
 
-        const curmatch = {"group": key[0], "match": match.groups[key], "start_end": match.indices.groups[key]};
+        const curmatch = {"type": key[0], "match": match.groups[key], "start_end": match.indices.groups[key]};
         // console.log(curmatch);
         arr_out = arr_out.concat(curmatch);  // append match object to array.
 
