@@ -35,14 +35,14 @@ $(document).ready(function () {
         // console.log("Check my text");
         const inputText = $("#text-query").val();
 
-        let procText = inputText;
+        // let procText = inputText;
 
-        // console.log(sentence_tokenizer(procText));
+        // console.log(sentence_tokenizer(inputText));
 
-        console.log(word_tokenizer(procText));
-        // console.log(sentence_tokenizer(procText).map(word_tokenizer));
+        console.log(word_tokenizer(inputText));
+        // console.log(sentence_tokenizer(inputText).map(word_tokenizer));
 
-        const text_tokens = word_tokenizer(procText);  // Define the text as word and punctuation tokens.
+        const text_tokens = word_tokenizer(inputText);  // Define the text as word and punctuation tokens.
 
         let cur_token;
         let token_set = new Set();
@@ -78,17 +78,17 @@ $(document).ready(function () {
                 // console.log(prev_tokens);
                 const ix_prev = prev_tokens.lastIndexOf(cur_token);  // index of previous token in array.
                 // console.log("Previous index of \"" + cur_token + "\" in array: " + ix_prev);
-                // token_position = token_position.concat(procText.indexOf(cur_token, prev_ix + 1));
+                // token_position = token_position.concat(inputText.indexOf(cur_token, prev_ix + 1));
                 token_rex.lastIndex = tpos_start[ix_prev] + text_tokens[ix_prev].length;
                 // search array from the back to find index of previous and update regex index.
                 // console.log("Last index is: " + token_rex.lastIndex);
-                curpos = token_rex.exec(procText).index;
+                curpos = token_rex.exec(inputText).index;
                 // tpos_start = tpos_start.concat(curpos);
                 // search only after previous index.
             } else {
                 // If token is new, provide the unique index:
-                // token_position = token_position.concat(procText.indexOf(cur_token));
-                curpos = procText.search(token_rex);
+                // token_position = token_position.concat(inputText.indexOf(cur_token));
+                curpos = inputText.search(token_rex);
                 // Add cur_token to set to check for duplicates:
                 token_set.add(cur_token);
 
@@ -127,7 +127,7 @@ $(document).ready(function () {
 
             // Get matches
             // (eventually migrate to object method?)
-            // const cur_matches = procText.match(value["regex"]);
+            // const cur_matches = inputText.match(value["regex"]);
             // console.log(cur_matches);
             //
             // // Get duplicates:
@@ -149,7 +149,7 @@ $(document).ready(function () {
             // }
 
             // Variant with exec:
-            const matches = get_regex_matches(procText, value["regex"]);
+            const matches = get_regex_matches(inputText, value["regex"]);
             arr_match = arr_match.concat(matches);
 
         }
@@ -239,20 +239,35 @@ $(document).ready(function () {
 
         // Loop over all remaining matches to highlight them:
         // TODO
-        // for (let match of arr_match) {
-        //
-        //     // Highlight the corresponding numbers:
-        //     // procText = procText.replace(value["regex"], '<div class="highlight-num has-tooltip">$1<span class="tooltip-wrapper"><span class="tooltiptext">' +
-        //     //     value["tooltip"] + '</span></span></div>');
-        //     procText = procText.replace(value["regex"], '<div class="highlight-num tooltip">$1<span class="tooltiptext">' +
-        //         value["tooltip"] + '</span></div>');
-        //     // console.log(procText);
-        //
-        //
-        //     // Amend the notes:
-        //     arr_li = arr_li.concat(value["note"]);
-        //
-        // }
+        let cur_ix = 0;  // current index in original text.
+        let procText = "";
+
+        for (let match of arr_match) {
+
+            // Get types for each tooltip:
+            const cur_tooltip = match.type.map((x) => check_numbers_dict[x].tooltip);
+            console.log(cur_tooltip)
+
+            // Highlight the corresponding numbers:
+            // inputText = inputText.replace(value["regex"], '<div class="highlight-num has-tooltip">$1<span class="tooltip-wrapper"><span class="tooltiptext">' +
+            //     value["tooltip"] + '</span></span></div>');
+            // procText = procText.replace(value["regex"], '<div class="highlight-num tooltip">$1<span class="tooltiptext">' +
+            //     value["tooltip"] + '</span></div>');
+
+            procText += inputText.slice(cur_ix, match.start_end[0]) +
+                ('<div class="highlight-num tooltip">' + match.match +
+                    '<span class="tooltiptext">' +
+                    cur_tooltip +
+                    '</span></div>');
+            console.log(procText);
+
+            cur_ix = match.start_end[1];
+
+
+            // Amend the notes:
+            arr_li = arr_li.concat(match.type.map((x) => check_numbers_dict[x].note));
+
+        }
 
 
         // If there are any entries:
@@ -307,7 +322,7 @@ const check_numbers_dict = {
         "tooltip": "Ich bin eine Prozentzahl und möchte gerne eine Referenz",
         "note": "Sie haben eine Prozentzahl verwendet. Stellen Sie sicher, dass eine Referenz vorhanden ist [mögliche Referenz ggf. ausflaggen!]. klicken Sie [HIER] um mehr zu erfahren."
     },
-    "num_other": {
+    "num": {
         "regex": regex_num,
         "tooltip": "Ich weiß nicht, was ich für eine Zahl bin",
         "note": "Sie haben eine Zahl verwendet, für die wir nicht bestimmen konnten, was sie bedeutet. Stellen Sie sicher, dass die Bedeutung der Zahl klar ist."
