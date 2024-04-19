@@ -121,7 +121,7 @@ $(document).ready(function () {
         // There is also some hierarchy (undefined numbers should only be output when
 
         // Add the matches to the text data:
-        let token_match = Array(token_dat.tokens.length).fill(-1);
+        let token_match = Array(token_dat.token.length).fill(-1);
         // TODO: Add to object!
         let i = 0;
         let droplist = [];
@@ -187,6 +187,7 @@ $(document).ready(function () {
         // token_dat.token_match = token_match;
         token_dat.add_column(token_match, "match");
         token_dat.add_number_info();
+        detect_unit(token_dat);
         // console.log(token_dat);
 
         // Remove the indices that have to be dropped:
@@ -334,8 +335,8 @@ class TextObj {
     }
 
     // Method to get corresponding token data:
-    tokenize(){
-        this.tokens = get_token_data(this.text);
+    tokenize() {
+        this.token = get_token_data(this.text);
     }
 
     // Method to get matches:
@@ -348,13 +349,20 @@ class TextObj {
 class TokenData {
 
     constructor(tokens, tpos_start, tpos_end, sentence_id) {
-        this.tokens = tokens;
+        this.token = tokens;
+
+        // Add global properties like number of rows (and columns) as properties:
+        this.global_keys = ["global_keys", "nrow", "ncol"];
+        this.nrow = this.token.length;
+        this.ncol = 4;
+
         this.start = tpos_start;
         this.end = tpos_end;
         this.sent = sentence_id;
 
         // Also check for equal length in the future!
         // Also check for equal types!
+
 
     }
 
@@ -366,22 +374,26 @@ class TokenData {
         // Determine column widths:
         let colwidths = [];
         for (const [key, value] of Object.entries(this)) {
-            const col = value.concat(key);  // add the key.
-            let curwidth = Math.max(...(col.map(el => el.toString().length)));
-            colwidths = colwidths.concat(curwidth);
+
+            if (!this.global_keys.includes(key)) {  // exclude global keys.
+
+                const col = value.concat(key);  // add the key.
+                let curwidth = Math.max(...(col.map(el => el.toString().length)));
+                colwidths = colwidths.concat(curwidth);
+
+            }
+
 
         }
 
         // Possible feature: Column alignment (change padding fron/end)
-
-
-        for (let ix_token = -1; ix_token < this.tokens.length; ix_token++) {
+        for (let ix_token = -1; ix_token < this.token.length; ix_token++) {
 
             const currow = ix_token > -1 ? this.get_row(ix_token) : Object.keys(this);
             let rowstr = "";
 
 
-            for (let ix_col = 0; ix_col < Object.keys(this).length; ix_col++) {
+            for (let ix_col = 0; ix_col < this.ncol; ix_col++) {
 
                 // Display info side by side:
                 rowstr += currow[ix_col].toString().padEnd(colwidths[ix_col] + 2);
@@ -396,7 +408,9 @@ class TokenData {
     get_row(rix) {
         let row = [];
         for (const [key, value] of Object.entries(this)) {
-            row = row.concat(value[rix]);
+            if (!this.global_keys.includes(key)) {
+                row = row.concat(value[rix]);
+            }
         }
 
         return (row);
@@ -405,11 +419,13 @@ class TokenData {
     // Function to add feature (e.g., number etc.):
     add_column(content, column_name) {
         this[column_name] = content;
+        this.ncol++;
     }
 
     // Functions to add specific information:
-    add_number_info(){
-        this.is_num = this.tokens.map((x) => regex_num.test(x));
+    add_number_info() {
+        this.add_column(this.token.map((x) => regex_num.test(x)), "is_num");
+
     }
 }
 
@@ -493,6 +509,46 @@ function get_token_data(text) {
  * @return {Array}     An array of units for numeric data
  * @param token_data {Object} A token data object with information about numbers.
  */
+function detect_unit(token_data) {
+    // If missing add number info!
+    if (token_data.is_num === undefined) {
+        token_data.add_number_info();
+    }
+
+    // Initialize unit info:
+    let unit_info = Array(token_data.nrow).fill(-1);
+
+    // Migrate later! Maybe to JSON
+    // Lookup table:
+    // ALTERNATIVELY use dict etc.?
+    const unit_lookup = [
+        [/(%|[Pp]rozent\w*)/, "perc"],
+        [/Teilnehm|F[aä]ll/, "case"]
+    ]
+    // Note: Percentage signs may also be contained in the number token!
+
+    // Simplest case: Next entry is unit
+    let cur_token;
+    for (let ix_tok = 0; ix_tok < token_data.nrow; ix_tok++) {
+        if (token_data.is_num[ix_tok]) {
+            cur_token = token_data.token[ix_tok];
+
+            // Check the next adjacent indices:
+            // Eventually we also will look back!
+            for(let ix_nxt = ix_tok; ix_nxt < ix_tok + 3; ix_nxt++){
+
+                let nxt_token = token_data.token[ix_nxt];
+
+                console.log(unit_lookup.map((x) => x[0].test(nxt_token) ? x[1] : false));
+
+
+            }
+
+        }
+    }
+
+
+}
 
 
 /**
