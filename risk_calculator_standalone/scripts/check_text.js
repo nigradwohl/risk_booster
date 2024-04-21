@@ -122,7 +122,7 @@ $(document).ready(function () {
 
         // Add the matches to the text data:
         let token_match = Array(token_dat.token.length).fill(-1);
-        // TODO: Add to object!
+
         let i = 0;
         let droplist = [];
 
@@ -187,7 +187,9 @@ $(document).ready(function () {
         // token_dat.token_match = token_match;
         token_dat.add_column(token_match, "match");
         token_dat.add_number_info();
-        detect_unit(token_dat);
+        token_dat.detect_unit();
+        console.log(token_dat);
+        console.log(`${token_dat.nrow} rows and ${token_dat.ncol} columns`);
         // console.log(token_dat);
 
         // Remove the indices that have to be dropped:
@@ -352,14 +354,15 @@ class TokenData {
         this.token = tokens;
 
         // Add global properties like number of rows (and columns) as properties:
-        this.global_keys = ["global_keys", "nrow", "ncol"];
+        this.global_keys = ["global_keys", "nrow", "ncol", "colnames"];
         this.nrow = this.token.length;
-        this.ncol = 4;
 
         this.start = tpos_start;
         this.end = tpos_end;
         this.sent = sentence_id;
 
+        this.ncol = 4;
+        this.colnames = Object.keys(this).filter((x) => !this.global_keys.includes(x));
         // Also check for equal length in the future!
         // Also check for equal types!
 
@@ -387,9 +390,9 @@ class TokenData {
         }
 
         // Possible feature: Column alignment (change padding fron/end)
-        for (let ix_token = -1; ix_token < this.token.length; ix_token++) {
+        for (let ix_token = -1; ix_token < this.nrow; ix_token++) {
 
-            const currow = ix_token > -1 ? this.get_row(ix_token) : Object.keys(this);
+            const currow = ix_token > -1 ? this.get_row(ix_token) : this.colnames;
             let rowstr = "";
 
 
@@ -420,12 +423,17 @@ class TokenData {
     add_column(content, column_name) {
         this[column_name] = content;
         this.ncol++;
+        this.colnames = this.colnames.concat(column_name);
     }
 
     // Functions to add specific information:
     add_number_info() {
         this.add_column(this.token.map((x) => regex_num.test(x)), "is_num");
 
+    }
+
+    detect_unit(){
+        this.add_column(detect_unit(this), "unit");
     }
 }
 
@@ -511,12 +519,13 @@ function get_token_data(text) {
  */
 function detect_unit(token_data) {
     // If missing add number info!
-    if (token_data.is_num === undefined) {
+    if (!Object.keys(token_data).includes("is_num")) {
+        // console.log(token_data);
         token_data.add_number_info();
     }
 
     // Initialize unit info:
-    let unit_info = Array(token_data.nrow).fill(-1);
+    let unit_info = Array(token_data.nrow).fill([-1]);
 
     // Migrate later! Maybe to JSON
     // Lookup table:
@@ -535,17 +544,29 @@ function detect_unit(token_data) {
 
             // Check the next adjacent indices:
             // Eventually we also will look back!
-            for(let ix_nxt = ix_tok; ix_nxt < ix_tok + 3; ix_nxt++){
+            for (let ix_nxt = ix_tok; ix_nxt < ix_tok + 3; ix_nxt++) {
 
                 let nxt_token = token_data.token[ix_nxt];
 
-                console.log(unit_lookup.map((x) => x[0].test(nxt_token) ? x[1] : false));
+                // Add to info array:
+                let cur_info = unit_lookup.map((x) => x[0].test(nxt_token) ? x[1] : false).filter((x) => x);
+                console.log(cur_info);
+                if(cur_info.length > 0){
+                    unit_info[ix_tok] = cur_info;
+                } else {
+                    unit_info[ix_tok] = "unknown";
+                }
 
 
             }
 
         }
     }
+
+    // Output:
+    console.log("Unit info");
+    console.log(unit_info);
+    return unit_info;
 
 
 }
