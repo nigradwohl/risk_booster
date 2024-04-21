@@ -557,9 +557,15 @@ function detect_unit(token_data) {
 
                 // Add to info array:
                 let cur_info = unit_lookup.map((x) => x[0].test(nxt_token) ? x[1] : false).filter((x) => x);
-                console.log(cur_info + ", " + cur_info.length);
+                // console.log(cur_info + ", " + cur_info.length);
                 if (cur_info.length > 0 && unit_info[ix_tok] === -1) {
-                    unit_info[ix_tok] = cur_info;
+                    // unit_info[ix_tok] = cur_info;
+
+                    // Fill in Info to all before:
+                    let n_ele = ix_nxt - ix_tok + 1;
+                    unit_info.splice(ix_tok, n_ele, Array(n_ele).fill(cur_info));
+                    unit_info = unit_info.flat();
+                    console.log(unit_info);
                 }
 
 
@@ -569,8 +575,8 @@ function detect_unit(token_data) {
     }
 
     // Output:
-    console.log("Unit info");
-    console.log(unit_info);
+    // console.log("Unit info");
+    // console.log(unit_info);
     return unit_info;
 
 
