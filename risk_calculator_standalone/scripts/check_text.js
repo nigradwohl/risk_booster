@@ -213,7 +213,7 @@ $(document).ready(function () {
         const unit_note_dict = {
             "perc": {
                 "tooltip": "Prozentzahl",
-                "note": "Der Text verwendet Prozentzahlen. Achten Sie darauf, dass klar ist, auf welche Größe sich die <a href=\"risk_wiki.html/#wiki-prozent\">Prozentangabe</a> bezieht."
+                "note": "Der Text verwendet Prozentzahlen. Achten Sie darauf, dass klar ist, auf welche Größe sich die <a href=\"risk_wiki.html\">Prozentangabe</a> bezieht."
             },
             "case": {
                 "tooltip": "Personen oder Fälle",
