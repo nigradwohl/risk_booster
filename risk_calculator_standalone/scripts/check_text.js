@@ -412,7 +412,14 @@ class TokenData {
         let row = [];
         for (const [key, value] of Object.entries(this)) {
             if (!this.global_keys.includes(key)) {
-                row = row.concat(value[rix]);
+                if (Array.isArray(value[rix])) {
+                    // console.log(value[rix]);
+                    row = row.concat([value[rix]]);
+                } else {
+                    row = row.concat(value[rix]);
+                }
+
+
             }
         }
 
@@ -432,7 +439,7 @@ class TokenData {
 
     }
 
-    detect_unit(){
+    detect_unit() {
         this.add_column(detect_unit(this), "unit");
     }
 }
@@ -525,7 +532,7 @@ function detect_unit(token_data) {
     }
 
     // Initialize unit info:
-    let unit_info = Array(token_data.nrow).fill([-1]);
+    let unit_info = Array(token_data.nrow).fill(-1);
 
     // Migrate later! Maybe to JSON
     // Lookup table:
@@ -550,11 +557,9 @@ function detect_unit(token_data) {
 
                 // Add to info array:
                 let cur_info = unit_lookup.map((x) => x[0].test(nxt_token) ? x[1] : false).filter((x) => x);
-                console.log(cur_info);
-                if(cur_info.length > 0){
+                console.log(cur_info + ", " + cur_info.length);
+                if (cur_info.length > 0 && unit_info[ix_tok] === -1) {
                     unit_info[ix_tok] = cur_info;
-                } else {
-                    unit_info[ix_tok] = "unknown";
                 }
 
 
