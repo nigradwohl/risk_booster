@@ -99,6 +99,17 @@ body {
     flex: 70%;
 }
 
+.wiki-overview {
+    flex: 35%;
+    background-color: lightblue;
+    border: 2px solid cornflowerblue;
+    border-radius: 10px;
+}
+
+.wiki-text {
+    flex: 65%;
+}
+
 .text-input {
     display: flex;
     flex-direction: column;
