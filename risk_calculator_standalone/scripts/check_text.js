@@ -220,40 +220,90 @@ $(document).ready(function () {
         let cur_ix = 0;  // current index in original text.
         let procText = "";
 
-        for (let match of arr_match) {
+        // Detect the matches in token set:
+        console.log(token_dat.unit);
 
-            // Get types for each tooltip:
-            const cur_tooltip = match.type.map((x) => check_numbers_dict[x].tooltip);
-            // console.log(cur_tooltip)
+        const unit_note_dict = {
+            "perc": "Prozentzahl",
+            "case": "Fälle",
+            "unknown": "Unbekannt"
+        }
 
-            // Highlight the corresponding numbers:
-            // inputText = inputText.replace(value["regex"], '<div class="highlight-num has-tooltip">$1<span class="tooltip-wrapper"><span class="tooltiptext">' +
-            //     value["tooltip"] + '</span></span></div>');
-            // procText = procText.replace(value["regex"], '<div class="highlight-num tooltip">$1<span class="tooltiptext">' +
-            //     value["tooltip"] + '</span></div>');
-            console.log(match);
+        for (i = 0; i < token_dat.nrow; i++) {
 
-            procText += inputText.slice(cur_ix, match.start_end[0]) +
-                ('<div class="highlight-num tooltip">' + match.match +
-                    '<span class="tooltiptext">' +
-                    cur_tooltip +
-                    '</span></div>');
-            // console.log(procText);
+            // console.log(i);
 
-            cur_ix = match.start_end[1];
+            if (token_dat.unit[i] !== -1) {
+                // Text prior to match:
+                let text_pre = inputText.slice(cur_ix, token_dat.start[i]);
 
+                // Get types for each tooltip:
+                const cur_tooltip = unit_note_dict[token_dat.unit[i]];
 
-            // Amend the notes:
-            // console.log(match.type.map((x) => check_numbers_dict[x].note));
-            for (let note of match.type.map((x) => check_numbers_dict[x].note)) {
-                // console.log(note);
-                arr_li = arr_li.add(note);
+                let match_len = 0;
+                // let match = token_dat.token.slice(i);
+
+                while (token_dat.unit[i + match_len] !== -1) {
+                    // match = token_dat.token[i];
+                    // i++;
+                    console.log(token_dat.token[i + match_len]);
+                    match_len++;
+                }
+
+                // console.log("Start: " + token_dat.start[i] + ", end: " + token_dat.end[i + match_len - 1] +
+                //     ", match length: " + match_len);
+                cur_ix = token_dat.end[i + match_len - 1] + 1;
+
+                procText += text_pre +
+                    ('<div class="highlight-num tooltip">' +
+                        inputText.slice(token_dat.start[i], cur_ix) +
+                        '<span class="tooltiptext">' +
+                        cur_tooltip +
+                        '</span></div>');
+                // console.log(procText);
+
+                i += match_len;
             }
 
         }
+        procText += inputText.slice(cur_ix, inputText.length);
+
+
+        // // OLD:
+        // for (let match of arr_match) {
+        //
+        //     // Get types for each tooltip:
+        //     const cur_tooltip = match.type.map((x) => check_numbers_dict[x].tooltip);
+        //     // console.log(cur_tooltip)
+        //
+        //     // Highlight the corresponding numbers:
+        //     // inputText = inputText.replace(value["regex"], '<div class="highlight-num has-tooltip">$1<span class="tooltip-wrapper"><span class="tooltiptext">' +
+        //     //     value["tooltip"] + '</span></span></div>');
+        //     // procText = procText.replace(value["regex"], '<div class="highlight-num tooltip">$1<span class="tooltiptext">' +
+        //     //     value["tooltip"] + '</span></div>');
+        //     console.log(match);
+        //
+        //     procText += inputText.slice(cur_ix, match.start_end[0]) +
+        //         ('<div class="highlight-num tooltip">' + match.match +
+        //             '<span class="tooltiptext">' +
+        //             cur_tooltip +
+        //             '</span></div>');
+        //     // console.log(procText);
+        //
+        //     cur_ix = match.start_end[1];
+        //
+        //
+        //     // Amend the notes:
+        //     // console.log(match.type.map((x) => check_numbers_dict[x].note));
+        //     for (let note of match.type.map((x) => check_numbers_dict[x].note)) {
+        //         // console.log(note);
+        //         arr_li = arr_li.add(note);
+        //     }
+        //
+        // }
 
         // Add text trailing after the last match:
-        procText += inputText.slice(cur_ix, inputText.length);
+        // procText += inputText.slice(cur_ix, inputText.length);
 
         // console.log(procText);
 
@@ -572,7 +622,7 @@ function detect_unit(token_data) {
             }
 
             // If no info was found:
-            if(unit_info[ix_tok] === -1){
+            if (unit_info[ix_tok] === -1) {
                 unit_info[ix_tok] = "unknown";
             }
 
