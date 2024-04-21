@@ -201,19 +201,8 @@ $(document).ready(function () {
         console.log("Sorted and cleaned matches");
         console.log(arr_match);
 
-        // Show all token info:
-        // for (let i = 0; i < text_tokens.length; i++) {
-        //
-        //     // Display info side by side:
-        //     console.log(("\"" + text_tokens[i] + "\"").padEnd(25) + "  " +
-        //         token_match[i].toString().padEnd(5) + "  " +
-        //         (tpos_start[i] + "-" + tpos_end[i]).padStart(7) + "  " +
-        //         sentence_ids[i].toString().padEnd(2));
-        //
-        // }
-
         token_dat.print();  // print data from object.
-        console.log(token_dat.get_row(1));  // print row.
+        // console.log(token_dat.get_row(1));  // print row.
 
 
         // Loop over all remaining matches to highlight them:
@@ -221,12 +210,19 @@ $(document).ready(function () {
         let procText = "";
 
         // Detect the matches in token set:
-        console.log(token_dat.unit);
-
         const unit_note_dict = {
-            "perc": "Prozentzahl",
-            "case": "Fälle",
-            "unknown": "Unbekannt"
+            "perc": {
+                "tooltip": "Prozentzahl",
+                "note": "Der Text verwendet Prozentzahlen. Achten Sie darauf, dass klar ist, auf welche Größe sich die Prozentangabe bezieht."
+            },
+            "case": {
+                "tooltip": "Personen oder Fälle",
+                "note": ""
+            },
+            "unknown": {
+                "tooltip": "Konnte nicht identifiziert werden",
+                "note": ""
+            }
         }
 
         for (i = 0; i < token_dat.nrow; i++) {
@@ -236,9 +232,10 @@ $(document).ready(function () {
             if (token_dat.unit[i] !== -1) {
                 // Text prior to match:
                 let text_pre = inputText.slice(cur_ix, token_dat.start[i]);
+                let cur_unit = token_dat.unit[i];
 
                 // Get types for each tooltip:
-                const cur_tooltip = unit_note_dict[token_dat.unit[i]];
+                const cur_tooltip = unit_note_dict[cur_unit].tooltip;
 
                 let match_len = 0;
                 // let match = token_dat.token.slice(i);
@@ -263,6 +260,8 @@ $(document).ready(function () {
                 // console.log(procText);
 
                 i += match_len;
+
+                arr_li = arr_li.add(unit_note_dict[cur_unit].note);
             }
 
         }
