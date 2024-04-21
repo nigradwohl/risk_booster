@@ -571,6 +571,11 @@ function detect_unit(token_data) {
 
             }
 
+            // If no info was found:
+            if(unit_info[ix_tok] === -1){
+                unit_info[ix_tok] = "unknown";
+            }
+
         }
     }
 
