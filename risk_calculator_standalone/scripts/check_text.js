@@ -25,6 +25,7 @@ heute 5 94,5 Prozent
 
 Testcase 3:
 Der Impfstoff wird nach Angaben der beiden Unternehmen 2mal im Abstand von 3Wochen verabreicht. In der Altersgruppe der Über-65-Jährigen wurde 7Tage nach der 2 Dosis eine Wirksamkeit von 94 Prozent ermittelt. Der Impfstoff sei von den Teilnehmern der weltweiten Studie gut vertragen worden, ernste Nebenwirkungen seien nicht beobachtet worden, berichteten die Unternehmen. Basis sind Angaben von mindestens 8000 zufällig ausgewählten Teilnehmern.
+
 Bei der immer noch in zahlreichen Ländern laufenden Studie erhält eine Hälfte der insgesamt 43.000 Teilnehmer den Impfstoff, die andere Hälfte fungiert als Kontrollgruppe und bekommt ein Placebo-Mittel. Bislang erkrankten den Angaben zufolge insgesamt 170 Teilnehmer an Covid-19. Davon entfielen nur 8 Fälle auf die tatsächlich geimpften Probanden, 162 Fälle wurden in der Placebo-Gruppe diagnostiziert. Daraus errechnet sich eine Wirksamkeit von rund 95 Prozent. Nach Angaben von Biontech und Pfizer gab es unter allen Covid-19-Erkrankungen 10 schwere Verläufe - 9 in der Kontroll- und einen in der Impfgruppe.
 
 Test statements:
@@ -94,9 +95,6 @@ $(document).ready(function () {
         const token_dat = get_token_data(inputText);
         console.log(token_dat);
 
-
-        // Annotations:
-        $("#text-note-general").text("Dieser Text ist einfach hervorragend! Hier sind trotzdem ein paar Anmerkungen, was man noch verbessern könnte:");
 
         // Create HTML for the list:
 
@@ -188,6 +186,12 @@ $(document).ready(function () {
         token_dat.add_column(token_match, "match");
         token_dat.add_number_info();
         token_dat.detect_unit();
+
+        // Detect topis:
+        token_dat.detect_topic("eff", ["Nutz", "(?!Neben)[Ww]irks(am|ung)"]);
+        token_dat.detect_topic("side", ["Nebenwirk"]);
+        token_dat.detect_topic("impf", ["(?<!(gl|sch))[Ii]mpf"]);  // must be preceded
+
         console.log(token_dat);
         console.log(`${token_dat.nrow} rows and ${token_dat.ncol} columns`);
         // console.log(token_dat);
@@ -217,11 +221,11 @@ $(document).ready(function () {
             },
             "case": {
                 "tooltip": "Personen oder Fälle",
-                "note": ""
+                "note": "Der Text enthält Anzahlen von Fällen. Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
             },
             "unknown": {
                 "tooltip": "Konnte nicht identifiziert werden",
-                "note": ""
+                "note": "Einige Zahlen konnten nicht identifiziert werden."
             }
         }
 
@@ -306,7 +310,89 @@ $(document).ready(function () {
 
         // console.log(procText);
 
+        let notes_html = "";
 
+        // Annotations:
+        // $("#text-note-general").text("Dieser Text ist einfach hervorragend! Hier sind trotzdem ein paar Anmerkungen, was man noch verbessern könnte:");
+        // $("#text-note-general").text("Dieser Text ist einfach hervorragend! Hier sind trotzdem ein paar Anmerkungen, was man noch verbessern könnte:");
+
+        // Notes about topics:
+        const key_topic_dict = {"impf": "Impfung"};  // {"impf": "Impfung", "eff": "Wirksamkeit", "side": "Nebenwirkungen"};
+        let key_topics = [];
+        let key_topics_str = "";
+
+        const feature_dict = {"eff": "Nutzen", "side": "Schaden"};
+        let feature_arr = [];
+        let feature_str = "";
+
+        // Get the content-topics:
+        // Maybe differentiate this in a text-object!
+        for(const topic of token_dat.topics){
+            // Topics:
+            let curtopic = key_topic_dict[topic];
+
+            if(curtopic !== undefined){
+                key_topics = key_topics.concat(curtopic);
+            }
+
+            // Features:
+            let curfeature = feature_dict[topic];
+            if(curfeature !== undefined){
+                feature_arr = feature_arr.concat(curfeature);
+            }
+
+        }
+
+        // console.log(key_topics);
+
+        const n_topics = key_topics.length;
+        const n_features = key_topics.length;
+
+        if(n_topics === 1){
+            key_topics_str += "Dieser Text behandelt das Thema " + key_topics[0]
+        } else if (n_topics > 1){
+
+            key_topics_str += "Dieser Text behandelt die Themen "
+
+            for(i = 0; i < n_topics; i++){
+                if(i < n_topics - 1){
+                    key_topics_str += key_topics[i] + (i === n_topics - 2 ? " und " : ", ");
+                } else {
+                    key_topics_str += key_topics[i] + ".";
+                }
+
+            }
+
+        } else {
+            key_topics_str = "Das Thema dieses Textes konnte keinem Thema der Risikokommunikation zugeordnet werden.";
+        }
+
+        // Notes about features (e.g., effectivity and side-effects):
+        console.log(feature_arr);
+        const eff = feature_arr.includes("Nutzen");
+        const side = feature_arr.includes("Schaden");
+
+        if(eff && side){
+            feature_str += "Es werden Schaden und Nutzen thematisiert. Sehr gut!"
+        } else if (eff){
+            feature_str += "Es wird nur der Nutzen thematisiert. Es sollte auch der Schaden thematisiert werden"
+
+        } else if (side){
+            feature_str += "Es wird nur der Schaden thematisiert. Es sollte auch der nutzen thematisiert werden"
+
+        } else {
+            feature_str = "Es werden weder Schaden noch Nutzen thematisiert.";
+        }
+
+        // Add to string:
+        let feature_list = "<ul><li>" + feature_str + "</li></ul>";
+
+
+
+        $("#text-note-general").html("<p id=\"text-note-general\">" + key_topics_str + "</p>");
+
+
+        // List of notes on numbers:
         // If there are any entries:
         if (arr_li.size > 0) {
 
@@ -323,8 +409,15 @@ $(document).ready(function () {
             }
 
             // Add the list entries:
-            $("#text-notes-list").html("<ul>" + str_li + "</ul>");
+            notes_html += "<p>Zahleninformation:</p><ul>" + str_li + "</ul>";
+
         }
+
+
+
+
+        // Update the notes:
+        $("#text-notes-list").html(feature_list + notes_html);
 
         // Update the text:
         $("#text-result").html('<h3>Ihr Text</h3><br>' + procText);
@@ -402,18 +495,20 @@ class TokenData {
     constructor(tokens, tpos_start, tpos_end, sentence_id) {
         this.token = tokens;
 
-        // Add global properties like number of rows (and columns) as properties:
-        this.global_keys = ["global_keys", "nrow", "ncol", "colnames"];
-        this.nrow = this.token.length;
-
+        // Token information:
         this.start = tpos_start;
         this.end = tpos_end;
         this.sent = sentence_id;
 
+        // Also check for equal length in the future!
+        // Also check for equal types per column!
+
+        // Add global properties like number of rows (and columns) as properties:
+        this.global_keys = ["global_keys", "nrow", "ncol", "colnames", "topics"];
+        this.nrow = this.token.length;
         this.ncol = 4;
         this.colnames = Object.keys(this).filter((x) => !this.global_keys.includes(x));
-        // Also check for equal length in the future!
-        // Also check for equal types!
+        this.topics = [];  // initialize empty topic list.
 
 
     }
@@ -488,8 +583,37 @@ class TokenData {
 
     }
 
+    // Method to detect and add units to detected numbers:
     detect_unit() {
         this.add_column(detect_unit(this), "unit");
+    }
+
+    // Method to detect topic information:
+    detect_topic(topic, key_list) {
+        // Eventually we may wnt to do this on the level of sentences or paragraphs; for now we judge the whole text.
+        // These topics may inform also keywords (Impfung may make "schwerer Verlauf" relevant etc.
+        // This will imply some tree structures -- our non-random grove.
+
+        let topic_present = false;
+
+        let keystr = "";
+        for(let i = 0; i < key_list.length; i++){
+            keystr += key_list[i] + (i < key_list.length - 1 ? "|" : "");
+        }
+
+        const regex = RegExp(keystr, "g");
+        console.log(regex);
+
+        // Simple regex on tokens:
+        for (const token of this.token) {
+            if(topic_present){
+                this.topics = this.topics.concat(topic);
+                break;
+            }  // move out of loop if topic could already be discerned.
+            topic_present = regex.test(token);
+
+        }
+
     }
 }
 
@@ -522,7 +646,7 @@ function get_token_data(text) {
         if ([".", ",", "?"].includes(token_i)) {
             // Punctuation follows somewhat different rules.
             // NOTE: Overlaps with other entities, likely because of the lack of spaces.
-            token_pat = "\\" + token_i + "(?=\\s|\\n|$)";
+            token_pat = "\\" + token_i + "(?=\\s|\\n)";
         } else {
             token_pat = "(?<!\\w)" + token_i + "(?!\\w)";
         }
@@ -646,7 +770,7 @@ function word_tokenizer(txt) {
 
 
     const split = txt
-        .replace(/([.,?!:)])(?=\s|$)/g, ' $1')  // Ensure that punctuations becomes their own by adding a space before.
+        .replace(/([.,?!:)])(?=\s)/g, ' $1')  // Ensure that punctuations becomes their own by adding a space before.
         .replace(/((?<=\s)[(])/g, ' $1')  // opening parentheses.
         .split(/\s/g);
 
