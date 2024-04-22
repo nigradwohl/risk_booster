@@ -213,7 +213,7 @@ $(document).ready(function () {
         const unit_note_dict = {
             "perc": {
                 "tooltip": "Prozentzahl",
-                "note": "Der Text verwendet Prozentzahlen. Achten Sie darauf, dass klar ist, auf welche Größe sich die <a href=\"risk_wiki.html\">Prozentangabe</a> bezieht."
+                "note": "Der Text verwendet Prozentzahlen. Achten Sie darauf, dass klar ist, auf welche Größe sich die <a href=\"risk_wiki.html#wiki-prozent\">Prozentangabe</a> bezieht."
             },
             "case": {
                 "tooltip": "Personen oder Fälle",
@@ -240,10 +240,10 @@ $(document).ready(function () {
                 let match_len = 0;
                 // let match = token_dat.token.slice(i);
 
-                while (token_dat.unit[i + match_len] !== -1) {
+                while (token_dat.unit[i + match_len] !== -1 && i + match_len < token_dat.nrow) {
                     // match = token_dat.token[i];
                     // i++;
-                    console.log(token_dat.token[i + match_len]);
+                    // console.log(token_dat.token[i + match_len]);
                     match_len++;
                 }
 
