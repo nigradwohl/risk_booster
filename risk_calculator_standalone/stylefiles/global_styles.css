@@ -237,13 +237,13 @@ body {
 /* CSS for paragraph */
 p {
     color: #333;
-    font-size: 14px;
+    font-size: 1em;
     line-height: 1.2;
     margin: 0 0 10px;
 }
 
 ul {
-    font-size: 14px;
+    font-size: 0.9em;
     line-height: 1.2;
 }
 

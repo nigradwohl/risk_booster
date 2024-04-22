@@ -42,6 +42,10 @@ Phraselist:
 * risk-
     + verhindern + Erkrankung
 
+ * relative_risk:
+    + [Ii]mpf + wirksam + Prozent
+    + Risiko + n-fach/n-mal so hoch
+
 */
 
 /*
@@ -192,6 +196,9 @@ $(document).ready(function () {
         token_dat.detect_topic("side", ["Nebenwirk"]);
         token_dat.detect_topic("impf", ["(?<!(gl|sch))[Ii]mpf"]);  // must be preceded
 
+        // Detect number types (may need topics!)
+        token_dat.detect_number_type();
+
         console.log(token_dat);
         console.log(`${token_dat.nrow} rows and ${token_dat.ncol} columns`);
         // console.log(token_dat);
@@ -327,17 +334,17 @@ $(document).ready(function () {
 
         // Get the content-topics:
         // Maybe differentiate this in a text-object!
-        for(const topic of token_dat.topics){
+        for (const topic of token_dat.topics) {
             // Topics:
             let curtopic = key_topic_dict[topic];
 
-            if(curtopic !== undefined){
+            if (curtopic !== undefined) {
                 key_topics = key_topics.concat(curtopic);
             }
 
             // Features:
             let curfeature = feature_dict[topic];
-            if(curfeature !== undefined){
+            if (curfeature !== undefined) {
                 feature_arr = feature_arr.concat(curfeature);
             }
 
@@ -348,14 +355,14 @@ $(document).ready(function () {
         const n_topics = key_topics.length;
         const n_features = key_topics.length;
 
-        if(n_topics === 1){
+        if (n_topics === 1) {
             key_topics_str += "Dieser Text behandelt das Thema " + key_topics[0]
-        } else if (n_topics > 1){
+        } else if (n_topics > 1) {
 
             key_topics_str += "Dieser Text behandelt die Themen "
 
-            for(i = 0; i < n_topics; i++){
-                if(i < n_topics - 1){
+            for (i = 0; i < n_topics; i++) {
+                if (i < n_topics - 1) {
                     key_topics_str += key_topics[i] + (i === n_topics - 2 ? " und " : ", ");
                 } else {
                     key_topics_str += key_topics[i] + ".";
@@ -372,12 +379,12 @@ $(document).ready(function () {
         const eff = feature_arr.includes("Nutzen");
         const side = feature_arr.includes("Schaden");
 
-        if(eff && side){
+        if (eff && side) {
             feature_str += "Es werden Schaden und Nutzen thematisiert. Sehr gut! <i class=\"fa fa-thumbs-up\" style=\"font-size:24px\"></i>"
-        } else if (eff){
+        } else if (eff) {
             feature_str += "Es wird nur der Nutzen thematisiert. Es sollte auch der Schaden thematisiert werden"
 
-        } else if (side){
+        } else if (side) {
             feature_str += "Es wird nur der Schaden thematisiert. Es sollte auch der nutzen thematisiert werden"
 
         } else {
@@ -386,7 +393,6 @@ $(document).ready(function () {
 
         // Add to string:
         let feature_list = "<ul><li>" + feature_str + "</li></ul>";
-
 
 
         $("#text-note-general").html("<p id=\"text-note-general\">" + key_topics_str + "</p>");
@@ -412,8 +418,6 @@ $(document).ready(function () {
             notes_html += "<p>Zahleninformation:</p><ul>" + str_li + "</ul>";
 
         }
-
-
 
 
         // Update the notes:
@@ -495,7 +499,11 @@ class TokenData {
     constructor(tokens, tpos_start, tpos_end, sentence_id) {
         this.token = tokens;
 
+        this.nrow = this.token.length;
+        this.ncol = 4;
+
         // Token information:
+        this.id = [...Array(this.nrow).keys()];
         this.start = tpos_start;
         this.end = tpos_end;
         this.sent = sentence_id;
@@ -505,8 +513,6 @@ class TokenData {
 
         // Add global properties like number of rows (and columns) as properties:
         this.global_keys = ["global_keys", "nrow", "ncol", "colnames", "topics"];
-        this.nrow = this.token.length;
-        this.ncol = 4;
         this.colnames = Object.keys(this).filter((x) => !this.global_keys.includes(x));
         this.topics = [];  // initialize empty topic list.
 
@@ -597,7 +603,7 @@ class TokenData {
         let topic_present = false;
 
         let keystr = "";
-        for(let i = 0; i < key_list.length; i++){
+        for (let i = 0; i < key_list.length; i++) {
             keystr += key_list[i] + (i < key_list.length - 1 ? "|" : "");
         }
 
@@ -606,7 +612,7 @@ class TokenData {
 
         // Simple regex on tokens:
         for (const token of this.token) {
-            if(topic_present){
+            if (topic_present) {
                 this.topics = this.topics.concat(topic);
                 break;
             }  // move out of loop if topic could already be discerned.
@@ -614,6 +620,11 @@ class TokenData {
 
         }
 
+    }
+
+    // Method to detect number types:
+    detect_number_type() {
+        this.add_column(detect_number_type(this), "num_type");
     }
 }
 
@@ -692,6 +703,92 @@ function get_token_data(text) {
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~ FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/**
+ * Tries to detect the type of each number by using its unit and additional context information
+ * @return {Array}     An array of number types for numeric token data
+ * @param token_data {Object} A token data object with information about numbers.
+ */
+function detect_number_type(token_data) {
+// If missing add unit info!
+    if (!Object.keys(token_data).includes("unit")) {
+        // console.log(token_data);
+        token_data.detect_unit();
+    }
+
+    let num_types = Array(token_data.nrow).fill("none");
+
+    // Also check for topics?
+    const sentence_set = new Set(token_data.sent);
+    const count = (arr) => arr.reduce((ac, a) => (ac[a] = ac[a] + 1 || 1, ac), {});
+    console.log("Sentence counts");
+
+    const sentence_counts = count(token_data.sent);
+    console.log(sentence_counts);
+
+
+    // Case: topic is vaccination and percentage and effectivity are present
+    // Currently only sentence level!
+    // If the topic is vaccination:
+    if (token_data.topics.includes("impf")) {
+        // check for "Wirksamkeit"/"Effektivität" etc.
+        // let cursent_id = 0;  // ID of current sentence.
+        // for (let i = 0; i < token_data.nrow + 1; i++) {
+        //
+        //     if (token_data.sent[i] === cursent_id) {
+        //
+        //     }
+        // }
+
+        // Sentence partitioning may also be done with slice, when sentence IDs and their length are saved somewhere...
+        let last_token = 0;
+        for (const [key, value] of Object.entries(sentence_counts)) {
+
+            // Get tokens in sentence:
+            const final_token = last_token + value;
+
+            const token_ids = token_data.id.slice(last_token, final_token);
+            const num_info = token_data.is_num.slice(last_token, final_token);
+            const sentence_tokens = token_data.token.slice(last_token, final_token);
+            const sentence_units = token_data.unit.slice(last_token, final_token);
+
+            console.log(last_token + ", " + final_token);
+            console.log(token_ids);
+            console.log(sentence_tokens);
+            console.log(num_info);
+            // Issue is that we want to use regular expressions, which do not work so well on arrays!
+
+            // Loop over tokens in sentence; maybe also use a token ID to assign number values?
+
+            // Get positions of numbers:
+            console.log("Number positions");
+            // console.log(token_ids.filter((d, ind) => num_info[ind]));
+            const num_array = token_ids.filter((d, ind) => num_info[ind]);
+            console.log(num_array);
+
+            for (const num of num_array) {
+                // const curnum_id = token_ids[num];  // Get ID of current number in sentence.
+                // console.log(num + ", " + curnum_id);
+
+                num_types[token_data.id[num]] = "rrr";  // arbitrarily assign flag for relative information for testing.
+
+                // Check if they include "Wirksamkeit"/"Effektivität" etc.
+
+
+            }
+
+            // Update last token:
+            last_token = final_token;
+
+        }
+
+    }
+
+    console.log(num_types);
+    return num_types;
+
+}
+
+
 /**
  * Finds the unit to a number from token data
  * @return {Array}     An array of units for numeric data
