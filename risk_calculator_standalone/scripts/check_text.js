@@ -336,14 +336,14 @@ $(document).ready(function () {
             }
 
             // Features:
-            let curfeature = key_topic_dict[topic];
+            let curfeature = feature_dict[topic];
             if(curfeature !== undefined){
                 feature_arr = feature_arr.concat(curfeature);
             }
 
         }
 
-        console.log(key_topics);
+        // console.log(key_topics);
 
         const n_topics = key_topics.length;
         const n_features = key_topics.length;
@@ -368,6 +368,7 @@ $(document).ready(function () {
         }
 
         // Notes about features (e.g., effectivity and side-effects):
+        console.log(feature_arr);
         const eff = feature_arr.includes("Nutzen");
         const side = feature_arr.includes("Schaden");
 
@@ -408,7 +409,7 @@ $(document).ready(function () {
             }
 
             // Add the list entries:
-            notes_html += "<ul>" + str_li + "</ul>";
+            notes_html += "<p>Zahleninformation:</p><ul>" + str_li + "</ul>";
 
         }
 
