@@ -157,7 +157,82 @@ body {
     .row, .navbar {
         flex-direction: column;
     }
+
+    .tile-row {
+        width: 95%;
+    }
+
+    .content-container {
+        width: 100%;
+    }
 }
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.container > * {
+    flex: 1 1 calc(100px + 1em); /* 1em margin als Spaltenabstand berücksichtigt, calc() nicht notwendig */
+}
+
+.card {
+    display: flex;
+    flex-wrap: wrap;
+    flex-basis: calc(960px * 999 - 100% * 999);
+    background: silver;
+    margin: 1em;
+    min-height: 19em;
+}
+
+.card > * {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 100px;
+}
+
+.card a {
+    padding: 14px 20px;
+    text-decoration: none;
+}
+
+.content {
+    padding: 1em 2em;
+}
+
+
+/*.content > * {*/
+/*    background: silver;*/
+/*    color: black;*/
+/*}*/
+
+.card:hover {
+    background-color: #ddd;
+    color: black;
+}
+
+.media {
+    background: black;
+    min-height: 120px;
+}
+
+/* Display logic:*/
+.content-icon {
+    color: black;
+}
+
+.content-text {
+    display: none;
+}
+
+.card:hover .content-icon {
+    display: none;
+}
+
+.card:hover .content-text {
+    display: inline;
+}
+
 
 /* CSS for paragraph */
 p {
@@ -168,7 +243,7 @@ p {
 }
 
 ul {
-   font-size: 14px;
+    font-size: 14px;
     line-height: 1.2;
 }
 

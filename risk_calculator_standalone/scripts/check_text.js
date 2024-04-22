@@ -373,7 +373,7 @@ $(document).ready(function () {
         const side = feature_arr.includes("Schaden");
 
         if(eff && side){
-            feature_str += "Es werden Schaden und Nutzen thematisiert. Sehr gut!"
+            feature_str += "Es werden Schaden und Nutzen thematisiert. Sehr gut! <i class=\"fa fa-thumbs-up\" style=\"font-size:24px\"></i>"
         } else if (eff){
             feature_str += "Es wird nur der Nutzen thematisiert. Es sollte auch der Schaden thematisiert werden"
 
