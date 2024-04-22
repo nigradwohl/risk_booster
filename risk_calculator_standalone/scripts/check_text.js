@@ -600,7 +600,7 @@ function detect_unit(token_data) {
 
             // Check the next adjacent indices:
             // Eventually we also will look back!
-            for (let ix_nxt = ix_tok; ix_nxt < ix_tok + 3; ix_nxt++) {
+            for (let ix_nxt = ix_tok; ix_nxt < ix_tok + 4; ix_nxt++) {
 
                 let nxt_token = token_data.token[ix_nxt];
 
