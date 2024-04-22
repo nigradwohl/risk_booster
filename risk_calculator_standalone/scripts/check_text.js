@@ -221,11 +221,11 @@ $(document).ready(function () {
             },
             "case": {
                 "tooltip": "Personen oder Fälle",
-                "note": ""
+                "note": "Der Text enthält Anzahlen von Fällen. Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
             },
             "unknown": {
                 "tooltip": "Konnte nicht identifiziert werden",
-                "note": ""
+                "note": "Einige Zahlen konnten nicht identifiziert werden."
             }
         }
 
@@ -321,13 +321,24 @@ $(document).ready(function () {
         let key_topics = [];
         let key_topics_str = "";
 
+        const feature_dict = {"eff": "Nutzen", "side": "Schaden"};
+        let feature_arr = [];
+        let feature_str = "";
+
         // Get the content-topics:
         // Maybe differentiate this in a text-object!
         for(const topic of token_dat.topics){
+            // Topics:
             let curtopic = key_topic_dict[topic];
 
             if(curtopic !== undefined){
                 key_topics = key_topics.concat(curtopic);
+            }
+
+            // Features:
+            let curfeature = key_topic_dict[topic];
+            if(curfeature !== undefined){
+                feature_arr = feature_arr.concat(curfeature);
             }
 
         }
@@ -335,6 +346,7 @@ $(document).ready(function () {
         console.log(key_topics);
 
         const n_topics = key_topics.length;
+        const n_features = key_topics.length;
 
         if(n_topics === 1){
             key_topics_str += "Dieser Text behandelt das Thema " + key_topics[0]
@@ -356,6 +368,23 @@ $(document).ready(function () {
         }
 
         // Notes about features (e.g., effectivity and side-effects):
+        const eff = feature_arr.includes("Nutzen");
+        const side = feature_arr.includes("Schaden");
+
+        if(eff && side){
+            feature_str += "Es werden Schaden und Nutzen thematisiert. Sehr gut!"
+        } else if (eff){
+            feature_str += "Es wird nur der Nutzen thematisiert. Es sollte auch der Schaden thematisiert werden"
+
+        } else if (side){
+            feature_str += "Es wird nur der Schaden thematisiert. Es sollte auch der nutzen thematisiert werden"
+
+        } else {
+            feature_str = "Es werden weder Schaden noch Nutzen thematisiert.";
+        }
+
+        // Add to string:
+        let feature_list = "<ul><li>" + feature_str + "</li></ul>";
 
 
 
@@ -387,7 +416,7 @@ $(document).ready(function () {
 
 
         // Update the notes:
-        $("#text-notes-list").html(notes_html);
+        $("#text-notes-list").html(feature_list + notes_html);
 
         // Update the text:
         $("#text-result").html('<h3>Ihr Text</h3><br>' + procText);
