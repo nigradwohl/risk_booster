@@ -117,8 +117,8 @@ $(document).ready(function () {
         }
 
         // Clean up the matches from all for redundancy:
-        console.log("Match objects:");
-        console.log(arr_match);
+        // console.log("Match objects:");
+        // console.log(arr_match);
         // If a match is fully included in another, the match can be removed.
         // There is also some hierarchy (undefined numbers should only be output when
 
@@ -657,7 +657,7 @@ function get_token_data(text) {
         if ([".", ",", "?", "!"].includes(token_i)) {
             // Punctuation follows somewhat different rules.
             // NOTE: Overlaps with other entities, likely because of the lack of spaces.
-            token_pat = "\\" + token_i + "(?=\\s|\\n)";
+            token_pat = "\\" + token_i + "(?=\\s|\\n|$)";
         } else {
             token_pat = "(?<!\\w)" + token_i + "(?!\\w)";
         }
@@ -715,21 +715,22 @@ function detect_number_type(token_data) {
         token_data.detect_unit();
     }
 
-    let num_types = Array(token_data.nrow).fill("none");
+    let num_types = Array(token_data.nrow).fill(-1);  // was: "none"
 
     // Also check for topics?
     const sentence_set = new Set(token_data.sent);
     const count = (arr) => arr.reduce((ac, a) => (ac[a] = ac[a] + 1 || 1, ac), {});
-    console.log("Sentence counts");
-
     const sentence_counts = count(token_data.sent);
-    console.log(sentence_counts);
+
+    // console.log("Sentence counts");
+    // console.log(sentence_counts);
 
     /*
     Overview of the pipeline (tree-like structures?)
     1. Text-level properties (e.g. topic --> may inform the list of patterns to be tested
         (e.g., ([Ww]irk(sam|ung)) & <Prozentzahl> for the topic of vaccination)
-    2. Sentence-level patterns: Co-occurrence of tokens and number types
+    2. Sentence-level properties: Does the sentence contain any number? Otherwise we can skip it for number detection!
+    3. Sentence-level patterns: Co-occurrence of tokens and number types
         [note: regex on whole sentence may be faster, but may ignore meaning of number]
 
     In the future we may try to add in paragraph-level features (topic etc.)
@@ -754,39 +755,48 @@ function detect_number_type(token_data) {
         for (const [key, value] of Object.entries(sentence_counts)) {
 
             // Get tokens in sentence:
-            const final_token = last_token + value;
+            const final_token = last_token + value;  // Get the final token of the sentence:
 
             const token_ids = token_data.id.slice(last_token, final_token);
             const num_info = token_data.is_num.slice(last_token, final_token);
-            const sentence_tokens = token_data.token.slice(last_token, final_token);
-            const sentence_units = token_data.unit.slice(last_token, final_token);
 
-            console.log(last_token + ", " + final_token);
-            console.log(token_ids);
-            console.log(sentence_tokens);
-            console.log(num_info);
-            // Issue is that we want to use regular expressions, which do not work so well on arrays!
+            // Only continue if any numbers are present:
+            if (num_info.includes(true)) {
 
-            // Loop over tokens in sentence; maybe also use a token ID to assign number values?
+                const sentence_tokens = token_data.token.slice(last_token, final_token);
 
-            // Get positions of numbers:
-            console.log("Number positions");
-            // console.log(token_ids.filter((d, ind) => num_info[ind]));
-            const num_array = token_ids.filter((d, ind) => num_info[ind]);
-            console.log(num_array);
+                // Get unit info:
+                const sentence_units = token_data.unit.slice(last_token, final_token);
 
-            // Testcase: Der Impfschutz bei Erwachsenen über 65 Jahren lag bei über 94 %.
+                console.log(last_token + ", " + final_token);
+                console.log(token_ids);
+                console.log(sentence_tokens);
+                console.log(num_info);
+                // Issue is that we want to use regular expressions, which do not work so well on arrays!
 
-            for (const num of num_array) {
-                // const curnum_id = token_ids[num];  // Get ID of current number in sentence.
-                // console.log(num + ", " + curnum_id);
+                // Loop over tokens in sentence; maybe also use a token ID to assign number values?
 
-                num_types[token_data.id[num]] = "rrr";  // arbitrarily assign flag for relative information for testing.
+                // Get positions of numbers:
+                console.log("Number positions");
+                // console.log(token_ids.filter((d, ind) => num_info[ind]));
+                const num_array = token_ids.filter((d, ind) => num_info[ind]);
+                console.log(num_array);
 
-                // Check if they include "Wirksamkeit"/"Effektivität" etc.
+                // Testcase: Der Impfschutz bei Erwachsenen über 65 Jahren lag bei über 94 %.
 
+                for (const num of num_array) {
+                    // const curnum_id = token_ids[num];  // Get ID of current number in sentence.
+                    // console.log(num + ", " + curnum_id);
+
+                    num_types[token_data.id[num]] = "rrr";  // arbitrarily assign flag for relative information for testing.
+
+                    // Check if they include "Wirksamkeit"/"Effektivität" etc.
+
+
+                }
 
             }
+
 
             // Update last token:
             last_token = final_token;
@@ -880,12 +890,13 @@ function word_tokenizer(txt) {
     // console.log(txt);
 
     const split = txt
-        .replace(/([.,?!:)])(?=\s|$)/g, ' $1')  // Ensure that punctuations becomes their own by adding a space before.
+        .replace(/([.,?!:)])(?=\s)/g, ' $1')  // Ensure that punctuations becomes their own by adding a space before.
+        .replace(/([.,?!:)])(?=$)/g, ' $1')
         .replace(/((?<=\s)[(])/g, '$1 ')  // space after opening parentheses.
         .split(/\s/g);
 
-    // console.log("Token split");
-    // console.log(split);
+    console.log("Token split");
+    console.log(split);
 
     // Remove empty tokens and punctuation:
     // const clean_split = split.replace(/(?<!\W)[.,/#!$%^&*;:{}=_`~()](?!\W)/g,"");

@@ -165,6 +165,10 @@ body {
     .content-container {
         width: 100%;
     }
+
+    .text-input{
+        flex: 20em;
+    }
 }
 
 .container {
