@@ -97,7 +97,9 @@ $(document).ready(function () {
         // console.log(sentence_tokenizer(inputText).map(word_tokenizer));
 
         const token_dat = get_token_data(inputText);
-        console.log(token_dat);
+
+        // console.log("Initial token data:");
+        // console.log(token_dat);
 
 
         // Create HTML for the list:
@@ -199,6 +201,7 @@ $(document).ready(function () {
         // Detect number types (may need topics!)
         token_dat.detect_number_type();
 
+        console.log("Updated token data:");
         console.log(token_dat);
         console.log(`${token_dat.nrow} rows and ${token_dat.ncol} columns`);
         // console.log(token_dat);
@@ -500,7 +503,7 @@ class TokenData {
         this.token = tokens;
 
         this.nrow = this.token.length;
-        this.ncol = 4;
+        this.ncol = 5;
 
         // Token information:
         this.id = [...Array(this.nrow).keys()];
@@ -538,6 +541,10 @@ class TokenData {
 
 
         }
+
+        console.log(`Colwidths and -names of ${this.ncol} columns:`);
+        console.log(colwidths);
+        console.log(this.colnames);
 
         // Possible feature: Column alignment (change padding fron/end)
         for (let ix_token = -1; ix_token < this.nrow; ix_token++) {
@@ -624,7 +631,7 @@ class TokenData {
 
     // Method to detect number types:
     detect_number_type() {
-        this.add_column(detect_number_type(this), "num_type");
+        this.add_column(detect_number_type(this), "numtype");
     }
 }
 
@@ -709,7 +716,10 @@ function get_token_data(text) {
  * @param token_data {Object} A token data object with information about numbers.
  */
 function detect_number_type(token_data) {
-// If missing add unit info!
+
+    console.log("Detecting the number type");
+
+    // If missing add unit info!
     if (!Object.keys(token_data).includes("unit")) {
         // console.log(token_data);
         token_data.detect_unit();
@@ -751,27 +761,30 @@ function detect_number_type(token_data) {
         // }
 
         // Sentence partitioning may also be done with slice, when sentence IDs and their length are saved somewhere...
-        let last_token = 0;
+        let prev_token = 0;
         for (const [key, value] of Object.entries(sentence_counts)) {
 
             // Get tokens in sentence:
-            const final_token = last_token + value;  // Get the final token of the sentence:
+            const final_token = prev_token + value;  // Get the final token of the sentence:
 
-            const token_ids = token_data.id.slice(last_token, final_token);
-            const num_info = token_data.is_num.slice(last_token, final_token);
+            const token_ids = token_data.id.slice(prev_token, final_token);
+            const num_info = token_data.is_num.slice(prev_token, final_token);
 
             // Only continue if any numbers are present:
             if (num_info.includes(true)) {
 
-                const sentence_tokens = token_data.token.slice(last_token, final_token);
+                const sentence_tokens = token_data.token.slice(prev_token, final_token);
 
                 // Get unit info:
-                const sentence_units = token_data.unit.slice(last_token, final_token);
+                const sentence_units = token_data.unit.slice(prev_token, final_token);
 
-                console.log(last_token + ", " + final_token);
-                console.log(token_ids);
+                // console.log("First token in sentence: " + prev_token + ", Last token in sentence: " + final_token);
+                // console.log("Ids in token data");
+                // console.log(token_ids);
+                console.log("Tokens in sentence and their numeric info:");
                 console.log(sentence_tokens);
                 console.log(num_info);
+                console.log(sentence_units);
                 // Issue is that we want to use regular expressions, which do not work so well on arrays!
 
                 // Loop over tokens in sentence; maybe also use a token ID to assign number values?
@@ -785,10 +798,17 @@ function detect_number_type(token_data) {
                 // Testcase: Der Impfschutz bei Erwachsenen über 65 Jahren lag bei über 94 %.
 
                 for (const num of num_array) {
-                    // const curnum_id = token_ids[num];  // Get ID of current number in sentence.
+                    const curnum_id = token_data.id[num];  // Get global ID of current number in sentence.
                     // console.log(num + ", " + curnum_id);
 
-                    num_types[token_data.id[num]] = "rrr";  // arbitrarily assign flag for relative information for testing.
+                    // Check for unit:
+                    let numtype = "other";
+
+                    if(token_data.unit[curnum_id] === "perc"){
+                        numtype = "rr";
+                    }
+
+                    num_types[curnum_id] = numtype;  // arbitrarily assign flag for relative information for testing.
 
                     // Check if they include "Wirksamkeit"/"Effektivität" etc.
 
@@ -799,12 +819,13 @@ function detect_number_type(token_data) {
 
 
             // Update last token:
-            last_token = final_token;
+            prev_token = final_token;
 
         }
 
     }
 
+    console.log("Output numtypes");
     console.log(num_types);
     return num_types;
 
@@ -895,8 +916,8 @@ function word_tokenizer(txt) {
         .replace(/((?<=\s)[(])/g, '$1 ')  // space after opening parentheses.
         .split(/\s/g);
 
-    console.log("Token split");
-    console.log(split);
+    // console.log("Token split");
+    // console.log(split);
 
     // Remove empty tokens and punctuation:
     // const clean_split = split.replace(/(?<!\W)[.,/#!$%^&*;:{}=_`~()](?!\W)/g,"");
