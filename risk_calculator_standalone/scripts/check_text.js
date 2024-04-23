@@ -792,11 +792,15 @@ function detect_number_type(token_data) {
 
             // Conjunctions:
             // Risiko & erhöh & <Prozentzahl>
-            let keyset = []
+            let keyset = [
+                // A first entry to a domain-general keyset for risk:
+                        [RegExp(collapse_regex_or(["Risiko", "[Ww]ahrscheinlich"])),
+                        RegExp(collapse_regex_or(["höher", "erhöht", "reduziert", "(ge|ver)ringert?"]))]
+                    ]
 
             // If the topic is vaccination, include a topic specific keyset:
             if (token_data.topics.includes("impf")) {
-                const keyset_impf = ["([Ww]irk(sam|t))", "[Ee]ffektiv"];
+                const keyset_impf = [[RegExp(collapse_regex_or(["([Ww]irk(sam|t))", "[Ee]ffektiv"]))]];
                 // Check number surroundings for tokens related to "Wirksamkeit":
                 // Do so as an inclusive disjunction.
                 keyset = keyset.concat(keyset_impf);
@@ -825,34 +829,17 @@ function detect_number_type(token_data) {
                     console.log("It's a percentage!");
 
                     // Test the keyset for rrr:
-                    // This is an inclusive disjunction:
-                    let keyrex = new RegExp(collapse_regex_or(keyset));
-                    // console.log(collapse_regex_or(keyset));
-                    // console.log(keyrex);
+                    const keys_present = keyset
+                        .map((keylist) => keylist
+                            .filter((keyex) => sentence_tokens
+                                .filter((token) => keyex.test(token)).length > 0).length === keylist.length);
 
                     // Check each token:
-                    const key_present = sentence_tokens.filter((x) => keyrex.test(x));
-                    console.log(key_present);
-
-                    // Test by using a conjuctive set:
-                    const conjunctive_set = [
-                        RegExp(collapse_regex_or(["Risiko", "[Ww]ahrscheinlich"])),
-                        RegExp(collapse_regex_or(["höher", "erhöht", "reduziert", "(ge|ver)ringert?"]))
-                    ];
-
-                    console.log("Full keyset");
-                    console.log(conjunctive_set);
-
-                    console.log("Present keyset:");
-                    const conjunction1 = conjunctive_set.filter(
-                        (x) => sentence_tokens.filter(
-                            (y) => x.test(y)).length > 0);
-                    console.log(conjunction1);
-                    console.log(`The keyset suggests that it is 
-                    ${conjunction1.length === conjunctive_set.length}`);
+                    // const key_present = sentence_tokens.filter((x) => keyrex.test(x));
+                    console.log(keys_present);
 
                     // If any key is present, assign the corresponding flag:
-                    if(key_present.length > 0){
+                    if(keys_present.includes(true)){
                         numtype = "rr";
                     }
 
