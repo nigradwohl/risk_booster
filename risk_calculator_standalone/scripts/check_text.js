@@ -840,7 +840,9 @@ function detect_number_type(token_data) {
 
                     // If any key is present, assign the corresponding flag:
                     if(keys_present.includes(true)){
-                        numtype = "rr";
+                        numtype = "REL";
+                    } else {
+                        numtype = "ABS";
                     }
 
                 }
