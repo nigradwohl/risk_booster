@@ -575,8 +575,6 @@ class TokenData {
                 } else {
                     row = row.concat(value[rix]);
                 }
-
-
             }
         }
 
@@ -593,7 +591,6 @@ class TokenData {
     // Functions to add specific information:
     add_number_info() {
         this.add_column(this.token.map((x) => regex_num.test(x)), "is_num");
-
     }
 
     // Method to detect and add units to detected numbers:
@@ -609,12 +606,7 @@ class TokenData {
 
         let topic_present = false;
 
-        let keystr = "";
-        for (let i = 0; i < key_list.length; i++) {
-            keystr += key_list[i] + (i < key_list.length - 1 ? "|" : "");
-        }
-
-        const regex = RegExp(keystr, "g");
+        const regex = RegExp(collapse_regex_or(key_list), "g");
         console.log(regex);
 
         // Simple regex on tokens:
@@ -749,83 +741,139 @@ function detect_number_type(token_data) {
 
     // Case: topic is vaccination and percentage and effectivity are present
     // Currently only sentence level!
-    // If the topic is vaccination:
-    if (token_data.topics.includes("impf")) {
-        // check for "Wirksamkeit"/"Effektivität" etc.
-        // let cursent_id = 0;  // ID of current sentence.
-        // for (let i = 0; i < token_data.nrow + 1; i++) {
-        //
-        //     if (token_data.sent[i] === cursent_id) {
-        //
-        //     }
-        // }
 
-        // Sentence partitioning may also be done with slice, when sentence IDs and their length are saved somewhere...
-        let prev_token = 0;
-        for (const [key, value] of Object.entries(sentence_counts)) {
+    // check for "Wirksamkeit"/"Effektivität" etc.
+    // let cursent_id = 0;  // ID of current sentence.
+    // for (let i = 0; i < token_data.nrow + 1; i++) {
+    //
+    //     if (token_data.sent[i] === cursent_id) {
+    //
+    //     }
+    // }
 
-            // Get tokens in sentence:
-            const final_token = prev_token + value;  // Get the final token of the sentence:
+    // Sentence partitioning may also be done with slice, when sentence IDs and their length are saved somewhere...
+    let prev_token = 0;
+    for (const [key, value] of Object.entries(sentence_counts)) {
 
-            const token_ids = token_data.id.slice(prev_token, final_token);
-            const num_info = token_data.is_num.slice(prev_token, final_token);
+        // Get tokens in sentence:
+        const final_token = prev_token + value;  // Get the final token of the sentence:
 
-            // Only continue if any numbers are present:
-            if (num_info.includes(true)) {
+        const token_ids = token_data.id.slice(prev_token, final_token);
+        const num_info = token_data.is_num.slice(prev_token, final_token);
 
-                const sentence_tokens = token_data.token.slice(prev_token, final_token);
+        // Only continue if any numbers are present:
+        if (num_info.includes(true)) {
 
-                // Get unit info:
-                const sentence_units = token_data.unit.slice(prev_token, final_token);
+            const sentence_tokens = token_data.token.slice(prev_token, final_token);
 
-                // console.log("First token in sentence: " + prev_token + ", Last token in sentence: " + final_token);
-                // console.log("Ids in token data");
-                // console.log(token_ids);
-                console.log("Tokens in sentence and their numeric info:");
-                console.log(sentence_tokens);
-                console.log(num_info);
-                console.log(sentence_units);
-                // Issue is that we want to use regular expressions, which do not work so well on arrays!
+            // Get unit info:
+            const sentence_units = token_data.unit.slice(prev_token, final_token);
 
-                // Loop over tokens in sentence; maybe also use a token ID to assign number values?
+            // console.log("First token in sentence: " + prev_token + ", Last token in sentence: " + final_token);
+            // console.log("Ids in token data");
+            // console.log(token_ids);
+            console.log("Tokens in sentence and their numeric info:");
+            console.log(sentence_tokens);
+            console.log(num_info);
+            console.log(sentence_units);
+            // Issue is that we want to use regular expressions, which do not work so well on arrays!
 
-                // Get positions of numbers:
-                console.log("Number positions");
-                // console.log(token_ids.filter((d, ind) => num_info[ind]));
-                const num_array = token_ids.filter((d, ind) => num_info[ind]);
-                console.log(num_array);
+            // Loop over tokens in sentence; maybe also use a token ID to assign number values?
 
-                // Testcase: Der Impfschutz bei Erwachsenen über 65 Jahren lag bei über 94 %.
+            // Get positions of numbers:
+            console.log("Number positions");
+            // console.log(token_ids.filter((d, ind) => num_info[ind]));
+            const num_array = token_ids.filter((d, ind) => num_info[ind]);
+            console.log(num_array);
 
-                for (const num of num_array) {
-                    const curnum_id = token_data.id[num];  // Get global ID of current number in sentence.
-                    // console.log(num + ", " + curnum_id);
+            // Testcase: Der Impfschutz bei Erwachsenen über 65 Jahren lag bei über 94 %.
 
-                    // Check for unit:
-                    let numtype = "other";
+            // Example keyset (eventually define elsewhere and translate into dictionary):
 
-                    if(token_data.unit[curnum_id] === "perc"){
+            // Conjunctions:
+            // Risiko & erhöh & <Prozentzahl>
+            let keyset = []
+
+            // If the topic is vaccination, include a topic specific keyset:
+            if (token_data.topics.includes("impf")) {
+                const keyset_impf = ["([Ww]irk(sam|t))", "[Ee]ffektiv"];
+                // Check number surroundings for tokens related to "Wirksamkeit":
+                // Do so as an inclusive disjunction.
+                keyset = keyset.concat(keyset_impf);
+            }
+
+            console.log("Current keyset:");
+            console.log(keyset);
+
+            // // Try to devise a key-object:
+            // const key_obj = {
+            //     // Keys for relative risk:
+            //     "rr": {}
+            // }
+
+
+            for (const num of num_array) {
+                const curnum_id = token_data.id[num];  // Get global ID of current number in sentence.
+                console.log(num + ", " + curnum_id + ", unit: " + token_data.unit[curnum_id]);
+
+                // Check for unit:
+                let numtype = "other";
+
+                if (token_data.unit[curnum_id].includes("perc")) {
+                    // Note: may also apply to other number types like
+                    // "30-faches Risiko", "das Risiko ist zweimal so hoch"
+                    console.log("It's a percentage!");
+
+                    // Test the keyset for rrr:
+                    // This is an inclusive disjunction:
+                    let keyrex = new RegExp(collapse_regex_or(keyset));
+                    // console.log(collapse_regex_or(keyset));
+                    // console.log(keyrex);
+
+                    // Check each token:
+                    const key_present = sentence_tokens.filter((x) => keyrex.test(x));
+                    console.log(key_present);
+
+                    // Test by using a conjuctive set:
+                    const conjunctive_set = [
+                        RegExp(collapse_regex_or(["Risiko", "[Ww]ahrscheinlich"])),
+                        RegExp(collapse_regex_or(["höher", "erhöht", "reduziert", "(ge|ver)ringert?"]))
+                    ];
+
+                    console.log("Full keyset");
+                    console.log(conjunctive_set);
+
+                    console.log("Present keyset:");
+                    const conjunction1 = conjunctive_set.filter(
+                        (x) => sentence_tokens.filter(
+                            (y) => x.test(y)).length > 0);
+                    console.log(conjunction1);
+                    console.log(`The keyset suggests that it is 
+                    ${conjunction1.length === conjunctive_set.length}`);
+
+                    // If any key is present, assign the corresponding flag:
+                    if(key_present.length > 0){
                         numtype = "rr";
                     }
 
-                    num_types[curnum_id] = numtype;  // arbitrarily assign flag for relative information for testing.
-
-                    // Check if they include "Wirksamkeit"/"Effektivität" etc.
-
-
                 }
+
+                // Assign the numtype to the corresponding number token!
+                num_types[curnum_id] = numtype;
+
 
             }
 
-
-            // Update last token:
-            prev_token = final_token;
-
         }
+
+
+        // Update last token:
+        prev_token = final_token;
 
     }
 
-    console.log("Output numtypes");
+
+    console.log("Output numtypes:");
     console.log(num_types);
     return num_types;
 
@@ -1023,6 +1071,21 @@ function get_regex_matches(txt, regexp) {
 
 
     return arr_out;
+}
+
+
+/**
+ * Convert array of regular expression strings to a single string any of which may match.
+ * @return {String} Returns a string of string expressions separated by a vertical dash that can be converted into a regex.
+ * @param key_list {Array} An array of strings that can be converted into regular expressions. Special characters must be escaped accordingly.
+ */
+function collapse_regex_or(key_list) {
+    let keystr = "";
+    for (let i = 0; i < key_list.length; i++) {
+        keystr += key_list[i] + (i < key_list.length - 1 ? "|" : "");
+    }
+
+    return keystr;
 }
 
 // ~~~~~~~~~~~~~~~~~~~~ Unused functionality ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
