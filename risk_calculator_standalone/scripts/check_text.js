@@ -226,15 +226,15 @@ $(document).ready(function () {
         // Detect the matches in token set:
         const unit_note_dict = {
             "perc": {
-                "tooltip": "Prozentzahl",
-                "note": "Der Text verwendet Prozentzahlen. Achten Sie darauf, dass klar ist, auf welche Größe sich die <a href=\"risk_wiki.html#wiki-prozent\">Prozentangabe</a> bezieht."
+                "tooltip": {"ABS": "Absolute Prozentzahl", "REL": "Relative Prozentzahl"},
+                "note": "Der Text verwendet Prozentzahlen. Achten Sie darauf, das klar ist, auf welche Größe sich die <a href=\"risk_wiki.html#wiki-prozent\">Prozentangabe</a> bezieht."
             },
             "case": {
-                "tooltip": "Personen oder Fälle",
+                "tooltip": {"other": "Personen oder Fälle"},
                 "note": "Der Text enthält Anzahlen von Fällen. Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
             },
             "unknown": {
-                "tooltip": "Konnte nicht identifiziert werden",
+                "tooltip": {"other": "Konnte nicht identifiziert werden"},
                 "note": "Einige Zahlen konnten nicht identifiziert werden."
             }
         }
@@ -247,9 +247,10 @@ $(document).ready(function () {
                 // Text prior to match:
                 let text_pre = inputText.slice(cur_ix, token_dat.start[i]);
                 let cur_unit = token_dat.unit[i];
+                let cur_numtype = token_dat.numtype[i];
 
                 // Get types for each tooltip:
-                const cur_tooltip = unit_note_dict[cur_unit].tooltip;
+                const cur_tooltip = unit_note_dict[cur_unit].tooltip[cur_numtype];
 
                 let match_len = 0;
                 // let match = token_dat.token.slice(i);
@@ -889,7 +890,7 @@ function detect_unit(token_data) {
     // ALTERNATIVELY use dict etc.?
     const unit_lookup = [
         [/(%|[Pp]rozent\w*)/, "perc"],
-        [/Teilnehm|F[aä]ll/, "case"]
+        [/Teilnehm|F[aä]ll|Proband/, "case"]
     ]
     // Note: Percentage signs may also be contained in the number token!
 
