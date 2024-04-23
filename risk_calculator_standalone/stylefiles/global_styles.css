@@ -94,6 +94,30 @@ body {
 
 }
 
+.checklist-question {
+    margin: 1em 20%;
+        flex: 60%;
+    background-color: silver;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.checklist-input{
+    border-radius: 5px;
+    line-height: 1.2em;
+}
+
+.checklist-button{
+    margin: 0.2em;
+    padding: 0.3em;
+    font-size: 1em;
+    text-align: center;
+    min-width: 5em;
+    flex: 20%;
+    background-color: #1abc9c;
+    border-radius: 5px;
+}
+
 /* Main column */
 .number-output {
     flex: 70%;
@@ -166,7 +190,7 @@ body {
         width: 100%;
     }
 
-    .text-input{
+    .text-input {
         flex: 20em;
     }
 }
