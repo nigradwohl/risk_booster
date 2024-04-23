@@ -755,22 +755,22 @@ function detect_number_type(token_data) {
 
             // Conjunctions:
             // Risiko & erhöh & <Prozentzahl>
-            let keyset = [
-                // A first entry to a domain-general keyset for risk:
-                        [RegExp(collapse_regex_or(["Risiko", "[Ww]ahrscheinlich"])),
-                        RegExp(collapse_regex_or(["höher", "erhöht", "reduziert", "(ge|ver)ringert?"]))]
-                    ]
+            // let keyset = [
+            //     // A first entry to a domain-general keyset for risk:
+            //     [RegExp(collapse_regex_or(["Risiko", "[Ww]ahrscheinlich"])),
+            //         RegExp(collapse_regex_or(["höher", "erhöht", "reduziert", "(ge|ver)ringert?"]))]
+            // ]
 
             // If the topic is vaccination, include a topic specific keyset:
-            if (token_data.topics.includes("impf")) {
-                const keyset_impf = [[RegExp(collapse_regex_or(["([Ww]irk(sam|t))", "[Ee]ffektiv"]))]];
-                // Check number surroundings for tokens related to "Wirksamkeit":
-                // Do so as an inclusive disjunction.
-                keyset = keyset.concat(keyset_impf);
-            }
+            // if (token_data.topics.includes("impf")) {
+            //     const keyset_impf = [[RegExp(collapse_regex_or(["([Ww]irk(sam|t))", "[Ee]ffektiv"]))]];
+            //     // Check number surroundings for tokens related to "Wirksamkeit":
+            //     // Do so as an inclusive disjunction.
+            //     keyset = keyset.concat(keyset_impf);
+            // }
 
-            console.log("Current keyset:");
-            console.log(keyset);
+            // console.log("Current keyset:");
+            // console.log(keyset);
 
             // // Try to devise a key-object:
             // const key_obj = {
@@ -786,29 +786,85 @@ function detect_number_type(token_data) {
                 // Check for unit:
                 let numtype = "other";
 
-                if (token_data.unit[curnum_id].includes("perc")) {
-                    // Note: may also apply to other number types like
-                    // "30-faches Risiko", "das Risiko ist zweimal so hoch"
-                    console.log("It's a percentage!");
+                // Check for percentage:
+                /*
+                Eventually, we will likely want to have an object with different types and their
+                keywords like
 
-                    // Test the keyset for rrr:
-                    const keys_present = keyset
-                        .map((keylist) => keylist
-                            .filter((keyex) => sentence_tokens
-                                .filter((token) => keyex.test(token)).length > 0).length === keylist.length);
+                 */
 
-                    // Check each token:
-                    // const key_present = sentence_tokens.filter((x) => keyrex.test(x));
-                    console.log(keys_present);
+                const key_obj = {
+                    "REL": {
+                        "number_type": "perc",  // add in other types eventually! 30-fach etc.
+                        "keyset": [
+                            // A first entry to a domain-general keyset for risk:
+                            [RegExp(collapse_regex_or(["Risiko", "[Ww]ahrscheinlich"])),
+                                RegExp(collapse_regex_or(["höher", "erhöht", "reduziert", "(ge|ver)ringert?"]))]
+                        ]
+                    },
+                    "N_TOT": {
+                        "number_type": "case",
+                        "keyset": [
+                            // TODO: Double check these!
+                            [RegExp("Proband|[Tt]eilnehme|Versuchspers")],
+                            [RegExp("insgesamt|Studie")]
+                        ]
+                    }
+                }
 
-                    // If any key is present, assign the corresponding flag:
-                    if(keys_present.includes(true)){
-                        numtype = "REL";
-                    } else {
-                        numtype = "ABS";
+                if (token_data.topics.includes("impf")) {
+                    const keyset_impf = [[RegExp(collapse_regex_or(["([Ww]irk(sam|t))", "[Ee]ffektiv"]))]];
+                    // Check number surroundings for tokens related to "Wirksamkeit":
+                    // Do so as an inclusive disjunction.
+                    key_obj.REL.keyset = key_obj.REL.keyset.concat(keyset_impf);
+                }
+
+                console.log("Current key_obj:");
+                console.log(key_obj);
+
+                for (const [key, value] of Object.entries(key_obj)) {
+
+                    console.log("Data judged:");
+                    console.log(`Token: ${token_data.token[curnum_id]}, Unit: ${token_data.unit[curnum_id]}`);
+                    console.log(value);
+
+                    if (token_data.unit[curnum_id].includes(value.number_type)) {
+                        // Note: may also apply to other number types like
+                        // "30-faches Risiko", "das Risiko ist zweimal so hoch"
+                        // console.log("It's a percentage!");
+
+                        const keyset = value.keyset;  // Get keyset from object.
+
+                        console.log("Current keyset:");
+                        console.log(keyset);
+
+                        // Test the keyset for rrr:
+                        const keys_present = keyset
+                            .map((keylist) => keylist
+                                .filter((keyex) => sentence_tokens
+                                    .filter((token) => keyex.test(token)).length > 0).length === keylist.length);
+
+                        // Check each token:
+                        // const key_present = sentence_tokens.filter((x) => keyrex.test(x));
+                        console.log(keys_present);
+
+                        // If any key is present for percentage, assign the corresponding flag:
+                        if (keys_present.includes(true)) {
+                            numtype = key;
+
+                            // Eventually fix!
+                            // if (token_data.unit[curnum_id].includes("perc")) {
+                            //     numtype = "REL";
+                            // } else {
+                            //     numtype = "ABS";
+                            // }
+                        }
+
+
                     }
 
                 }
+
 
                 // Assign the numtype to the corresponding number token!
                 num_types[curnum_id] = numtype;
