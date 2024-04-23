@@ -654,7 +654,7 @@ function get_token_data(text) {
         token_i = text_tokens[i];
 
         // Regex for token to ensure exact matching:
-        if ([".", ",", "?"].includes(token_i)) {
+        if ([".", ",", "?", "!"].includes(token_i)) {
             // Punctuation follows somewhat different rules.
             // NOTE: Overlaps with other entities, likely because of the lack of spaces.
             token_pat = "\\" + token_i + "(?=\\s|\\n)";
@@ -725,6 +725,16 @@ function detect_number_type(token_data) {
     const sentence_counts = count(token_data.sent);
     console.log(sentence_counts);
 
+    /*
+    Overview of the pipeline (tree-like structures?)
+    1. Text-level properties (e.g. topic --> may inform the list of patterns to be tested
+        (e.g., ([Ww]irk(sam|ung)) & <Prozentzahl> for the topic of vaccination)
+    2. Sentence-level patterns: Co-occurrence of tokens and number types
+        [note: regex on whole sentence may be faster, but may ignore meaning of number]
+
+    In the future we may try to add in paragraph-level features (topic etc.)
+     */
+
 
     // Case: topic is vaccination and percentage and effectivity are present
     // Currently only sentence level!
@@ -764,6 +774,8 @@ function detect_number_type(token_data) {
             // console.log(token_ids.filter((d, ind) => num_info[ind]));
             const num_array = token_ids.filter((d, ind) => num_info[ind]);
             console.log(num_array);
+
+            // Testcase: Der Impfschutz bei Erwachsenen über 65 Jahren lag bei über 94 %.
 
             for (const num of num_array) {
                 // const curnum_id = token_ids[num];  // Get ID of current number in sentence.
@@ -865,12 +877,14 @@ function detect_unit(token_data) {
  */
 function word_tokenizer(txt) {
 
+    // console.log(txt);
 
     const split = txt
-        .replace(/([.,?!:)])(?=\s)/g, ' $1')  // Ensure that punctuations becomes their own by adding a space before.
-        .replace(/((?<=\s)[(])/g, ' $1')  // opening parentheses.
+        .replace(/([.,?!:)])(?=\s|$)/g, ' $1')  // Ensure that punctuations becomes their own by adding a space before.
+        .replace(/((?<=\s)[(])/g, '$1 ')  // space after opening parentheses.
         .split(/\s/g);
 
+    // console.log("Token split");
     // console.log(split);
 
     // Remove empty tokens and punctuation:
