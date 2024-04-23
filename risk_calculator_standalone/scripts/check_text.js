@@ -282,50 +282,11 @@ $(document).ready(function () {
         }
         procText += inputText.slice(cur_ix, inputText.length);
 
-
-        // // OLD:
-        // for (let match of arr_match) {
-        //
-        //     // Get types for each tooltip:
-        //     const cur_tooltip = match.type.map((x) => check_numbers_dict[x].tooltip);
-        //     // console.log(cur_tooltip)
-        //
-        //     // Highlight the corresponding numbers:
-        //     // inputText = inputText.replace(value["regex"], '<div class="highlight-num has-tooltip">$1<span class="tooltip-wrapper"><span class="tooltiptext">' +
-        //     //     value["tooltip"] + '</span></span></div>');
-        //     // procText = procText.replace(value["regex"], '<div class="highlight-num tooltip">$1<span class="tooltiptext">' +
-        //     //     value["tooltip"] + '</span></div>');
-        //     console.log(match);
-        //
-        //     procText += inputText.slice(cur_ix, match.start_end[0]) +
-        //         ('<div class="highlight-num tooltip">' + match.match +
-        //             '<span class="tooltiptext">' +
-        //             cur_tooltip +
-        //             '</span></div>');
-        //     // console.log(procText);
-        //
-        //     cur_ix = match.start_end[1];
-        //
-        //
-        //     // Amend the notes:
-        //     // console.log(match.type.map((x) => check_numbers_dict[x].note));
-        //     for (let note of match.type.map((x) => check_numbers_dict[x].note)) {
-        //         // console.log(note);
-        //         arr_li = arr_li.add(note);
-        //     }
-        //
-        // }
-
-        // Add text trailing after the last match:
-        // procText += inputText.slice(cur_ix, inputText.length);
-
         // console.log(procText);
 
         let notes_html = "";
 
-        // Annotations:
-        // $("#text-note-general").text("Dieser Text ist einfach hervorragend! Hier sind trotzdem ein paar Anmerkungen, was man noch verbessern könnte:");
-        // $("#text-note-general").text("Dieser Text ist einfach hervorragend! Hier sind trotzdem ein paar Anmerkungen, was man noch verbessern könnte:");
+        // Annotations: ---------------------------------------------
 
         // Notes about topics:
         const key_topic_dict = {"impf": "Impfung"};  // {"impf": "Impfung", "eff": "Wirksamkeit", "side": "Nebenwirkungen"};
@@ -357,7 +318,7 @@ $(document).ready(function () {
         // console.log(key_topics);
 
         const n_topics = key_topics.length;
-        const n_features = key_topics.length;
+        const n_features = feature_arr.length;
 
         if (n_topics === 1) {
             key_topics_str += "Dieser Text behandelt das Thema " + key_topics[0]
@@ -473,8 +434,6 @@ const check_numbers_dict = {
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~ CLASSES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
 /**
  * A text object to collect features from processing
  * @return {Object}     An object with a text and its features
@@ -702,7 +661,11 @@ function get_token_data(text) {
 }
 
 
+// ----------------------------------------------------------------
 // ~~~~~~~~~~~~~~~~~~~~~~~ FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ----------------------------------------------------------------
+
+// ~~~~~~~~~~~~~~~~~~~ PROCESSING FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~
 /**
  * Tries to detect the type of each number by using its unit and additional context information
  * @return {Array}     An array of number types for numeric token data
@@ -722,7 +685,6 @@ function detect_number_type(token_data) {
 
     // Also check for topics?
     const sentence_set = new Set(token_data.sent);
-    const count = (arr) => arr.reduce((ac, a) => (ac[a] = ac[a] + 1 || 1, ac), {});
     const sentence_counts = count(token_data.sent);
 
     // console.log("Sentence counts");
@@ -994,52 +956,9 @@ function get_regex_matches(txt, regexp) {
     // let arr_tmp;  // initialize temporary array.
     let arr_out = [];  // initialize output array.
 
-    // Note: exec() may only be interesting if we need the named groups.
-    // while ((arr_tmp = regexp.exec(txt)) !== null) {
-    //
-    //     // Testing output:
-    //     // let msg = `Found ${Object.keys(arr_tmp.groups)}. `;
-    //     // msg += `Next match starts at ${regex.lastIndex}`;
-    //     // console.log(msg);
-    //     // console.log(arr_tmp);
-    //
-    //     // Note: regex is updated to save the last index of each match,
-    //     // so that the next match can be obtained in the next iteration.
-    //
-    //     // Add the information to the output array:
-    //     const key = Object.keys(arr_tmp.groups);
-    //
-    //     if (key.length < 1) {
-    //         Error("No group provided. Please provide a regex with a named group using (?<GROUPNAME>).")
-    //     }
-    //     if (key.length > 1) {
-    //         Error("More than one group provided. Please provide a regex with a single named group using (?<GROUPNAME>).")
-    //     }
-    //     const curmatch = {"group": key[0], "match": arr_tmp.groups[key], "start_end": arr_tmp.indices.groups[key]};
-    //     // console.log(curmatch);
-    //     arr_out = arr_out.concat(curmatch);  // append match object to array.
-    // }
-
     const matches = txt.matchAll(regexp);
 
     for (const match of matches) {
-        // console.log(
-        //     `Found ${match[0]} start=${match.index} end=${
-        //         match.index + match[0].length
-        //     }.`,
-        // );
-        // console.log(match);
-        // const curmatch = {"match": match[0], "start_end": [match.index, match.index + match[0].length]};
-        // arr_out = arr_out.concat(curmatch);  // append match object to array.
-
-        // Add the information to the output array:
-
-        // Check for errors:
-        /*
-        Tests:
-        new RegExp("(?" + pat_num + " ?(%|\\\-?[Pp]rozent\\\w*(?=[\\s.?!]))" + ")", "dg");
-        new RegExp("(?<perc>" + pat_num + " ?(?<percname>%|\\\-?[Pp]rozent\\\w*(?=[\\s.?!]))" + ")", "dg");
-                 */
 
         if (match.groups === undefined) {
             console.log(match.groups);
@@ -1063,6 +982,20 @@ function get_regex_matches(txt, regexp) {
     return arr_out;
 }
 
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ~~~~~~~~~~~~~~~~~~~~~~~~~ UTILITY FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/*
+Functions that convey some basic utilities
+ */
+
+/**
+ * Count occurrence of each unique array element, similar to table() in R.
+ * @return {Object} Object of the form {element: count}.
+ * @param arr {Array} An array.
+ */
+const count = (arr) => arr.reduce((ac, a) => (ac[a] = ac[a] + 1 || 1, ac), {});
 
 /**
  * Convert array of regular expression strings to a single string any of which may match.
