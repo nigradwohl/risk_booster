@@ -433,6 +433,30 @@ const check_numbers_dict = {
 
 }
 
+//
+const key_obj = {
+    "REL": {
+        "number_type": "perc",  // add in other types eventually! 30-fach etc.
+        "keyset": [
+            // A first entry to a domain-general keyset for risk:
+            [RegExp(collapse_regex_or(["Risiko", "[Ww]ahrscheinlich"])),
+                RegExp(collapse_regex_or(["höher", "erhöht", "reduziert", "(ge|ver)ringert?"]))]
+        ]
+    },
+    "N_TOT": {
+        "number_type": "case",
+        "keyset": [
+            // TODO: Double check these!
+            [RegExp("Proband|[Tt]eilnehme|Versuchspers")],
+            [RegExp("insgesamt|Studie")]
+        ]
+    }
+}
+
+// Additional set for vaccination topic:
+const keyset_impf = [[RegExp(collapse_regex_or(["([Ww]irk(sam|t))", "[Ee]ffektiv"]))]];
+
+
 // ~~~~~~~~~~~~~~~~~~~~~~~ CLASSES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /**
  * A text object to collect features from processing
@@ -772,49 +796,16 @@ function detect_number_type(token_data) {
             // console.log("Current keyset:");
             // console.log(keyset);
 
-            // // Try to devise a key-object:
-            // const key_obj = {
-            //     // Keys for relative risk:
-            //     "rr": {}
-            // }
-
-
             for (const num of num_array) {
                 const curnum_id = token_data.id[num];  // Get global ID of current number in sentence.
                 console.log(num + ", " + curnum_id + ", unit: " + token_data.unit[curnum_id]);
 
-                // Check for unit:
+                // Check for type:
                 let numtype = "other";
 
-                // Check for percentage:
-                /*
-                Eventually, we will likely want to have an object with different types and their
-                keywords like
-
-                 */
-
-                const key_obj = {
-                    "REL": {
-                        "number_type": "perc",  // add in other types eventually! 30-fach etc.
-                        "keyset": [
-                            // A first entry to a domain-general keyset for risk:
-                            [RegExp(collapse_regex_or(["Risiko", "[Ww]ahrscheinlich"])),
-                                RegExp(collapse_regex_or(["höher", "erhöht", "reduziert", "(ge|ver)ringert?"]))]
-                        ]
-                    },
-                    "N_TOT": {
-                        "number_type": "case",
-                        "keyset": [
-                            // TODO: Double check these!
-                            [RegExp("Proband|[Tt]eilnehme|Versuchspers")],
-                            [RegExp("insgesamt|Studie")]
-                        ]
-                    }
-                }
-
+                // Include topic-specific keywords:
                 if (token_data.topics.includes("impf")) {
-                    const keyset_impf = [[RegExp(collapse_regex_or(["([Ww]irk(sam|t))", "[Ee]ffektiv"]))]];
-                    // Check number surroundings for tokens related to "Wirksamkeit":
+                    // Include Impf-specific keys
                     // Do so as an inclusive disjunction.
                     key_obj.REL.keyset = key_obj.REL.keyset.concat(keyset_impf);
                 }
