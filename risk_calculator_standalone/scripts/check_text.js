@@ -892,14 +892,21 @@ function detect_unit(token_data) {
     }
 
     // Initialize unit info:
-    let unit_info = Array(token_data.nrow).fill(-1);
+    // If no unit info exists:
+    let unit_info = [];
+    if (!Object.keys(token_data).includes("unit")) {
+        unit_info = Array(token_data.nrow).fill(-1);
+    } else {
+        unit_info = token_data.unit;
+    }
 
     // Migrate later! Maybe to JSON
     // Lookup table:
     // ALTERNATIVELY use dict etc.?
     const unit_lookup = [
-        [/(%|[Pp]rozent\w*)/, "perc"],
-        [/Teilnehm|F[aä]ll|Proband/, "case"]
+        [/(%|[Pp]rozent\w*)/, "perc"],  // percentages.
+        [/Teilnehm|F[aä]ll|Proband/, "case"],  // frequencies.
+        // natural/relative frequencies.
     ]
     // Note: Percentage signs may also be contained in the number token!
 
@@ -927,6 +934,8 @@ function detect_unit(token_data) {
                     unit_info = unit_info.flat();
                     console.log(unit_info);
                 }
+
+                // Here we could also add to ambiguous unit info!
 
 
             }
