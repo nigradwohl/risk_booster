@@ -124,8 +124,11 @@ $(document).ready(function () {
         // If a match is fully included in another, the match can be removed.
         // There is also some hierarchy (undefined numbers should only be output when
 
+        // TODO: Function to loop over the tokens and ask for each if it is part of a match!
+
         // Add the matches to the text data:
         let token_match = Array(token_dat.token.length).fill(-1);
+        let match_unit = Array(token_dat.token.length).fill(-1);
 
         let i = 0;
         let droplist = [];
@@ -144,6 +147,7 @@ $(document).ready(function () {
             if (match_start !== -1) {
                 if (token_match[match_start] === -1) {
                     token_match[match_start] = [i];
+                    match_unit[match_start] = match.type;
                 } else {
                     // Note: If we can establish a clear hierarchical structure, we could drop the match here:
                     // arr_match.splice(i);
@@ -184,6 +188,13 @@ $(document).ready(function () {
             i++;
 
         }
+
+        console.log("Match data:");
+        console.log(token_match);
+        console.log(match_unit);
+
+        // Is it more efficient to check for the matches or the tokens?
+        // Likely the matches, because there are fewer by design!
 
         // console.log(token_match);
 
