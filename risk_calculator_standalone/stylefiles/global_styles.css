@@ -337,3 +337,11 @@ h3 {
     font-size: 1.2em;
     margin-bottom: 10px;
 }
+
+ /*Color blocks for visualizing example palettes:*/
+.color-block{
+    height: 3em;
+    width: 3em;
+
+    margin: 0 0.5em;
+}
