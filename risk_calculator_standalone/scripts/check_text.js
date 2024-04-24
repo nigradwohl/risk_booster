@@ -429,11 +429,19 @@ Other formats to detect: Odds ratio, ARR/RRR, NNT...
 */
 
 const regex_perc = new RegExp("(?<perc>" + pat_num + " ?(%|\\\-?[Pp]rozent\\\w*(?=[\\s.?!]))" + ")", "dg");
+const regex_nh = new RegExp("(?<nh>" + pat_num + " (von|aus) " + pat_num + ")", "dg");
+// Note: in regex_nh we may also try to get the denominator.
+// nh must also be identified from tokens (e.g., In der Gruppe von 1000[case] Leuten sterben 4[num/case].
 
 const check_numbers_dict = {
     "perc": {
         "regex": regex_perc,
         "tooltip": "Ich bin eine Prozentzahl und möchte gerne eine Referenz",
+        "note": "Sie haben eine Prozentzahl verwendet. Stellen Sie sicher, dass eine Referenz vorhanden ist [mögliche Referenz ggf. ausflaggen!]. klicken Sie [HIER] um mehr zu erfahren."
+    },
+    "nh": {
+        "regex": regex_nh,
+        "tooltip": "Ich bin eine \"natürliche\" Häufigkeit",
         "note": "Sie haben eine Prozentzahl verwendet. Stellen Sie sicher, dass eine Referenz vorhanden ist [mögliche Referenz ggf. ausflaggen!]. klicken Sie [HIER] um mehr zu erfahren."
     },
     "num": {
