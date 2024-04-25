@@ -599,7 +599,13 @@ class TokenData {
 
     // Method to detect and add units to detected numbers:
     detect_unit() {
-        this.add_column(detect_unit(this), "unit");
+        if (this.colnames.includes("unit")) {
+            // If there already was a unit column replace it:
+            this.unit = detect_unit(this);
+        } else {
+            this.add_column(detect_unit(this), "unit");
+        }
+
     }
 
     // Method to detect topic information:
