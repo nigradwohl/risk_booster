@@ -24,7 +24,7 @@ heute 5 94,5 Prozent
 100 Leute
 
 Testcase 3:
-Der Impfstoff wird nach Angaben der beiden Unternehmen 2mal im Abstand von 3Wochen verabreicht. In der Altersgruppe der Über-65-Jährigen wurde 7Tage nach der 2 Dosis eine Wirksamkeit von 94 Prozent ermittelt. Der Impfstoff sei von den Teilnehmern der weltweiten Studie gut vertragen worden, ernste Nebenwirkungen seien nicht beobachtet worden, berichteten die Unternehmen. Basis sind Angaben von mindestens 8000 zufällig ausgewählten Teilnehmern.
+Der Impfstoff wird nach Angaben der beiden Unternehmen 2 mal im Abstand von 3Wochen verabreicht. In der Altersgruppe der Über-65-Jährigen wurde 7 Tage nach der 2 Dosis eine Wirksamkeit von 94 Prozent ermittelt. Der Impfstoff sei von den Teilnehmern der weltweiten Studie gut vertragen worden, ernste Nebenwirkungen seien nicht beobachtet worden, berichteten die Unternehmen. Basis sind Angaben von mindestens 8000 zufällig ausgewählten Teilnehmern.
 
 Bei der immer noch in zahlreichen Ländern laufenden Studie erhält eine Hälfte der insgesamt 43.000 Teilnehmer den Impfstoff, die andere Hälfte fungiert als Kontrollgruppe und bekommt ein Placebo-Mittel. Bislang erkrankten den Angaben zufolge insgesamt 170 Teilnehmer an Covid-19. Davon entfielen nur 8 Fälle auf die tatsächlich geimpften Probanden, 162 Fälle wurden in der Placebo-Gruppe diagnostiziert. Daraus errechnet sich eine Wirksamkeit von rund 95 Prozent. Nach Angaben von Biontech und Pfizer gab es unter allen Covid-19-Erkrankungen 10 schwere Verläufe - 9 in der Kontroll- und einen in der Impfgruppe.
 
@@ -153,7 +153,7 @@ $(document).ready(function () {
             // console.log("current unit (is array: " + Array.isArray(cur_unit) + ")");
             // console.log(cur_unit);
 
-            if(Array.isArray(cur_unit)){
+            if (Array.isArray(cur_unit)) {
                 cur_unit = cur_unit[0];  // for now thake the first array element.
             }
 
@@ -332,16 +332,16 @@ Other formats to detect: Odds ratio, ARR/RRR, NNT...
 */
 
 // Constants:
-const pat_num = "(?:(?<![\\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,][0-9]+)?))(?!\\\.[0-9A-Za-z]|[a-zA-Z0-9])"
+const pat_num = "(?:(?<![\\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,:][0-9]+)?))(?!\\\.[0-9A-Za-z]|[a-zA-Z0-9])"
 
 const regex_num = new RegExp("(?<unknown>" + pat_num + ")", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
 const regex_perc = new RegExp("(?<perc>" + pat_num + " ?(%|\\\-?[Pp]rozent\\\w*(?=[\\s.?!]))" + ")", "dg");
 const regex_nh = new RegExp("(?<nh>" + pat_num + " (von|aus) " + pat_num + ")", "dg");
-// Note: in regex_nh we may also try to get the denominator.
+// Note: in regex_nh we may also try to get the denominator as a group or as its own entity.
 // nh must also be identified from tokens (e.g., In der Gruppe von 1000[case] Leuten sterben 4[num/case].
 
 // Define units to not consider further:
-const units_exc = ["age", "currency", "time", "date", "legal"];
+const units_exc = ["age", "currency", "time", "date", "duration", "legal"];
 
 /*
 Tests for simple units:
@@ -363,9 +363,12 @@ const check_numbers_dict = {
         "note": "Sie haben eine natürliche Häufigkeit verwendet. Das ist sehr gut. Am besten sollte der Nenner über Vergleiche der Gleiche sein (z.B. 1 aus 100 Geimpften erkrankt, während 3 aus 100 ungeimpften erkranken)."
     },
     // Simple matches:
-    "age": {
-        "regex": RegExp("(?<age>" + pat_num + "( Jahre|\-jährig)" + ")", "dg")
+    "age":{
+      "regex": /(?<age>(\d+ bis )*\d+([.|,]{1}\d+){0,1}( Jahr[a-z]*[ |.]?|-[Jj]ährig))/dg
     },
+    // "age2": {
+    //     "regex": RegExp("(?<age>" + pat_num + "( Jahre|\-jährig)" + ")", "dg")
+    // },
     "currency_post": {
         "regex": RegExp("(?<currency>" + pat_num + " ?(EUR|€|Euro|Dollar)" + ")", "dg")
     },
@@ -378,8 +381,11 @@ const check_numbers_dict = {
     "date": {
         "regex": /(?<date>\d{1,2}\.\d{1,2}\.(18|19|20)\d{2})/dg
     },
+    "duration": {
+      "regex": /(?<duration>[0-9]+(-stündig|-tägig| Stunden?| Tagen?| Wochen?))/dg
+    },
     "legal": {
-        "regex": /(?<legal>(Artikel|§|Absatz") ?\d+)/dg
+        "regex": /(?<legal>(Artikel|§|Absatz) ?\d+)/dg
     },
     // Default number match:
     "other_num": {
@@ -779,7 +785,7 @@ function detect_number_type(token_data) {
 
             for (const num of num_array) {
                 const curnum_id = token_data.id[num];  // Get global ID of current number in sentence.
-                console.log(num + ", " + curnum_id + ", unit: " + token_data.unit[curnum_id]);
+                // console.log(num + ", " + curnum_id + ", unit: " + token_data.unit[curnum_id]);
 
                 // Check for type:
                 let numtype = "other";
@@ -791,14 +797,14 @@ function detect_number_type(token_data) {
                     key_obj.REL.keyset = key_obj.REL.keyset.concat(keyset_impf);
                 }
 
-                console.log("Current key_obj:");
-                console.log(key_obj);
+                // console.log("Current key_obj:");
+                // console.log(key_obj);
 
                 for (const [key, value] of Object.entries(key_obj)) {
 
-                    console.log("Data judged:");
-                    console.log(`Token: ${token_data.token[curnum_id]}, Unit: ${token_data.unit[curnum_id]}`);
-                    console.log(value);
+                    // console.log("Data judged:");
+                    // console.log(`Token: ${token_data.token[curnum_id]}, Unit: ${token_data.unit[curnum_id]}`);
+                    // console.log(value);
 
                     if (token_data.unit[curnum_id].includes(value.number_type)) {
                         // Note: may also apply to other number types like
@@ -807,8 +813,8 @@ function detect_number_type(token_data) {
 
                         const keyset = value.keyset;  // Get keyset from object.
 
-                        console.log("Current keyset:");
-                        console.log(keyset);
+                        // console.log("Current keyset:");
+                        // console.log(keyset);
 
                         // Test the keyset for rrr:
                         const keys_present = keyset
@@ -944,8 +950,6 @@ function detect_unit(token_data) {
 function detect_regex_match(txt, token_dat, check_dict) {
     let arr_match = [];
 
-    check_dict = check_numbers_dict;
-
     // Loop over dictionary with rules:
     for (const [key, value] of Object.entries(check_dict)) {
         // console.log(`${key} ${value["note"]}`); // "a 5", "b 7", "c 9"
@@ -953,17 +957,19 @@ function detect_regex_match(txt, token_dat, check_dict) {
 
         // Variant with exec:
         const matches = get_regex_matches(txt, value["regex"]);
+
+        console.log(`Raw matches for ${key}:`);
+        console.log(matches);
+
         arr_match = arr_match.concat(matches);
 
     }
 
     // Clean up the matches from all for redundancy:
-    // console.log("Match objects:");
-    // console.log(arr_match);
+    console.log("Match objects:");
+    console.log(arr_match);
     // If a match is fully included in another, the match can be removed.
     // There is also some hierarchy (undefined numbers should only be output when
-
-    // TODO: Function to loop over the tokens and ask for each if it is part of a match!
 
     // Add the matches to the text data:
     let token_match = Array(token_dat.token.length).fill(-1);
@@ -980,7 +986,7 @@ function detect_regex_match(txt, token_dat, check_dict) {
         const match_start = token_dat.start.findIndex(x => x >= match.start_end[0] && x < match.start_end[1]);
         // Match end must be smaller or equal to token end and larger than token start
         // Search from the back!
-        const match_end = token_dat.end.findLastIndex(x => x <= match.start_end[1] && x > match.start_end[0]);
+        const match_end = token_dat.end.findLastIndex(x => x <= (match.start_end[1] - 1) && x > match.start_end[0]);
 
         // console.log("Match start and end: " + match_start + ", " + match_end);
 
@@ -988,7 +994,9 @@ function detect_regex_match(txt, token_dat, check_dict) {
             if (token_match[match_start] === -1) {
                 token_match[match_start] = [i];
                 match_type[match_start] = match.type;
-            } else {
+            } else if (match.type[0] !== "unknown") {
+                console.log("Match type");
+                console.log(match.type);
                 // Note: If we can establish a clear hierarchical structure, we could drop the match here:
                 // arr_match.splice(i);
                 droplist = droplist.concat(i);
@@ -1008,7 +1016,7 @@ function detect_regex_match(txt, token_dat, check_dict) {
             if (token_match[match_end] === -1) {
                 token_match[match_end] = [i];
                 match_type[match_end] = match.type;
-            } else {
+            } else if (match.type[0] !== "unknown") {
                 // Note: If we can establish a clear hierarchical structure, we could drop the match here:
                 // arr_match.splice(i);
                 droplist = droplist.concat(i);
@@ -1027,6 +1035,15 @@ function detect_regex_match(txt, token_dat, check_dict) {
         i++;
 
     }
+
+    // Remove the indices that have to be dropped:
+    arr_match = arr_match.filter((ele, index) => !droplist.includes(index));
+
+    // Sort the array by the starting position of each match:
+    arr_match = arr_match.sort((a, b) => a.start_end[0] - b.start_end[0]);
+
+    console.log("Sorted and cleaned matches");
+    console.log(arr_match);
 
     console.log("Match data:");
     console.log(arr_match);
@@ -1112,6 +1129,9 @@ function get_regex_matches(txt, regexp) {
         if (key.length > 1) {
             throw new Error("More than one group provided. Please provide a regex with a single named group using (?<GROUPNAME>).")
         }
+
+        // console.log("Key:");
+        // console.log(key);
 
         const curmatch = {"type": [key[0]], "match": match.groups[key], "start_end": match.indices.groups[key]};
         // console.log(curmatch);
