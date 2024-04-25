@@ -201,6 +201,7 @@ $(document).ready(function () {
         // Add to object:
         // token_dat.token_match = token_match;
         token_dat.add_column(token_match, "match");
+        token_dat.add_column(match_unit, "unit");
         token_dat.add_number_info();
         token_dat.detect_unit();
 
@@ -924,7 +925,7 @@ function detect_unit(token_data) {
     // ALTERNATIVELY use dict etc.?
     const unit_lookup = [
         [/(%|[Pp]rozent\w*)/, "perc"],  // percentages.
-        [/Teilnehm|F[aä]ll|Proband/, "case"],  // frequencies.
+        [/Teilnehm|F[aä]ll|Proband/, "case"]  // frequencies.
         // natural/relative frequencies.
     ]
     // Note: Percentage signs may also be contained in the number token!
@@ -943,8 +944,9 @@ function detect_unit(token_data) {
 
                 // Add to info array:
                 let cur_info = unit_lookup.map((x) => x[0].test(nxt_token) ? x[1] : false).filter((x) => x);
-                // console.log(cur_info + ", " + cur_info.length);
-                if (cur_info.length > 0 && unit_info[ix_tok] === -1) {
+                console.log("Cur info: " + cur_info + ", " + cur_info.length);
+                if (cur_info.length > 0 && (unit_info[ix_tok] === -1 || unit_info[ix_tok].includes("num"))) {
+                    // If there is a match or only an unspecified number from matching is contained, update.
                     // unit_info[ix_tok] = cur_info;
 
                     // Fill in Info to all before:
@@ -968,8 +970,8 @@ function detect_unit(token_data) {
     }
 
     // Output:
-    // console.log("Unit info");
-    // console.log(unit_info);
+    console.log("Unit info");
+    console.log(unit_info);
     return unit_info;
 
 
