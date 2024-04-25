@@ -26,6 +26,8 @@ heute 5 94,5 Prozent
 Testcase 3:
 Der Impfstoff wird nach Angaben der beiden Unternehmen 2 mal im Abstand von 3Wochen verabreicht. In der Altersgruppe der Über-65-Jährigen wurde 7 Tage nach der 2 Dosis eine Wirksamkeit von 94 Prozent ermittelt. Der Impfstoff sei von den Teilnehmern der weltweiten Studie gut vertragen worden, ernste Nebenwirkungen seien nicht beobachtet worden, berichteten die Unternehmen. Basis sind Angaben von mindestens 8000 zufällig ausgewählten Teilnehmern.
 
+Wer zum Selbstschutz eine Maske trägt, die dicht am Gesicht anliegt, der sei etwa 100-mal besser vor einer Infektion geschützt als ohne Maske
+
 Bei der immer noch in zahlreichen Ländern laufenden Studie erhält eine Hälfte der insgesamt 43.000 Teilnehmer den Impfstoff, die andere Hälfte fungiert als Kontrollgruppe und bekommt ein Placebo-Mittel. Bislang erkrankten den Angaben zufolge insgesamt 170 Teilnehmer an Covid-19. Davon entfielen nur 8 Fälle auf die tatsächlich geimpften Probanden, 162 Fälle wurden in der Placebo-Gruppe diagnostiziert. Daraus errechnet sich eine Wirksamkeit von rund 95 Prozent. Nach Angaben von Biontech und Pfizer gab es unter allen Covid-19-Erkrankungen 10 schwere Verläufe - 9 in der Kontroll- und einen in der Impfgruppe.
 
 Test statements:
@@ -337,6 +339,7 @@ const pat_num = "(?:(?<![\\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,:][0-9]+)
 const regex_num = new RegExp("(?<unknown>" + pat_num + ")", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
 const regex_perc = new RegExp("(?<perc>" + pat_num + " ?(%|\\\-?[Pp]rozent\\\w*(?=[\\s.?!]))" + ")", "dg");
 const regex_nh = new RegExp("(?<nh>" + pat_num + " (von|aus) " + pat_num + ")", "dg");
+const regex_multi = new RegExp("(?<multi>" + pat_num + "[ \\-]?([Mm]al|[Ff]ach)(?=[\\s.?!])" + ")", "dg");
 // Note: in regex_nh we may also try to get the denominator as a group or as its own entity.
 // nh must also be identified from tokens (e.g., In der Gruppe von 1000[case] Leuten sterben 4[num/case].
 
@@ -354,17 +357,25 @@ Das steht so in §12 Artikel 13, Absatz 10.
 const check_numbers_dict = {
     "perc": {
         "regex": regex_perc,
-        "tooltip": "Ich bin eine Prozentzahl und möchte gerne eine Referenz",
-        "note": "Sie haben eine Prozentzahl verwendet. Stellen Sie sicher, dass eine Referenz vorhanden ist [mögliche Referenz ggf. ausflaggen!]. klicken Sie [HIER] um mehr zu erfahren."
+        // "tooltip": "Ich bin eine Prozentzahl und möchte gerne eine Referenz",
+        // "note": "Sie haben eine Prozentzahl verwendet. Stellen Sie sicher, dass eine Referenz vorhanden ist [mögliche Referenz ggf. ausflaggen!]. klicken Sie [HIER] um mehr zu erfahren."
     },
     "nh": {
         "regex": regex_nh,
-        "tooltip": "Ich bin eine \"natürliche\" Häufigkeit",
-        "note": "Sie haben eine natürliche Häufigkeit verwendet. Das ist sehr gut. Am besten sollte der Nenner über Vergleiche der Gleiche sein (z.B. 1 aus 100 Geimpften erkrankt, während 3 aus 100 ungeimpften erkranken)."
+        // "tooltip": "Ich bin eine \"natürliche\" Häufigkeit",
+        // "note": "Sie haben eine natürliche Häufigkeit verwendet. Das ist sehr gut. Am besten sollte der Nenner über Vergleiche der Gleiche sein (z.B. 1 aus 100 Geimpften erkrankt, während 3 aus 100 ungeimpften erkranken)."
     },
+    // Multitude of something (e.g. 20-fach).
+    "multi": {
+        "regex": regex_multi
+    },
+    "multi2": {
+        "regex": /(?<multi>([Hh]alb|[Dd]oppelt|[Dd]reifach|[Dd]reimal) so( ?viele|groß|hoch|niedrig))/dg
+    },
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Simple matches:
-    "age":{
-      "regex": /(?<age>(\d+ bis )*\d+([.|,]{1}\d+){0,1}( Jahr[a-z]*[ |.]?|-[Jj]ährig))/dg
+    "age": {
+      "regex": /(?<age>(\d+ bis )*\d+([.|,]\d+)?( Jahr[a-z]*[ |.]?|-[Jj]ährig))/dg
     },
     // "age2": {
     //     "regex": RegExp("(?<age>" + pat_num + "( Jahre|\-jährig)" + ")", "dg")
@@ -382,7 +393,7 @@ const check_numbers_dict = {
         "regex": /(?<date>\d{1,2}\.\d{1,2}\.(18|19|20)\d{2})/dg
     },
     "duration": {
-      "regex": /(?<duration>[0-9]+(-stündig|-tägig| Stunden?| Tagen?| Wochen?))/dg
+      "regex": /(?<duration>[0-9]+(-stündig|-tägig| Minuten?| Stunden?| Tagen?| Wochen?))/dg
     },
     "legal": {
         "regex": /(?<legal>(Artikel|§|Absatz) ?\d+)/dg
@@ -390,8 +401,8 @@ const check_numbers_dict = {
     // Default number match:
     "other_num": {
         "regex": regex_num,
-        "tooltip": "Ich weiß nicht, was ich für eine Zahl bin",
-        "note": "Sie haben eine Zahl verwendet, für die wir nicht bestimmen konnten, was sie bedeutet. Stellen Sie sicher, dass die Bedeutung der Zahl klar ist."
+        // "tooltip": "Ich weiß nicht, was ich für eine Zahl bin",
+        // "note": "Sie haben eine Zahl verwendet, für die wir nicht bestimmen konnten, was sie bedeutet. Stellen Sie sicher, dass die Bedeutung der Zahl klar ist."
     }
 
 }
@@ -423,12 +434,18 @@ const keyset_impf = [[RegExp(collapse_regex_or(["([Ww]irk(sam|t))", "[Ee]ffektiv
 // Detect the matches in token set:
 const unit_note_dict = {
     "perc": {
-        "tooltip": {"ABS": "Absolute Prozentzahl", "REL": "Relative Prozentzahl"},
+        "tooltip": {"ABS": "Absolute Prozentzahl", "REL": "Relative Prozentzahl", "other": "andere Prozentzahl[?]"},
         "note": "Der Text verwendet Prozentzahlen. Achten Sie darauf, das klar ist, auf welche Größe sich die <a href=\"risk_wiki.html#wiki-prozent\">Prozentangabe</a> bezieht."
     },
     "case": {
         "tooltip": {"other": "Personen oder Fälle", "N_TOT": "Anzahl an Personen"},
         "note": "Der Text enthält Anzahlen von Fällen. Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
+    },
+    "multi": {
+        "tooltip": {"other": "Relative Angabe"},
+        "note": "Der Text enthält relative Vergleiche (10-mal so groß, halb so groß)." +
+            "Bitte achten Sie darauf, auch die absoluten Risiken in jeder Gruppe anzugeben -- am besten als natürliche Häufigkeit " +
+            "(z.B., unter denen ohne Impfung steckten sich 2 aus 1000 an unter den geimpften nur 1 aus 1000)."
     },
     // Unidentified matches:
     "unknown": {
