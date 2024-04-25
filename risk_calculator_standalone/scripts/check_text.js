@@ -624,10 +624,11 @@ function get_token_data(text) {
         token_i = text_tokens[i];
 
         // Regex for token to ensure exact matching:
-        if ([".", ",", "?", "!"].includes(token_i)) {
+        if ([".", ",", "?", "!", "(", ")", "/"].includes(token_i)) {
             // Punctuation follows somewhat different rules.
             // NOTE: Overlaps with other entities, likely because of the lack of spaces.
-            token_pat = "\\" + token_i + "(?=\\s|\\n|$)";
+
+            token_pat = token_i.replace(/([.?()/])/dgm, "\\$1") + "(?=\\s|\\n|$)";
         } else {
             token_pat = "(?<!\\w)" + token_i + "(?!\\w)";
         }
@@ -1068,7 +1069,8 @@ function word_tokenizer(txt) {
 
     const split = txt
         .replace(/([.,?!:)])(?=\s)/g, ' $1')  // Ensure that punctuations becomes their own by adding a space before.
-        .replace(/([.,?!:)])(?=$)/g, ' $1')
+        .replace(/([.,?!:])(?=$)/g, ' $1')
+        .replace(/([)])/g, ' $1')  // space before any parenthesis.
         .replace(/((?<=\s)[(])/g, '$1 ')  // space after opening parentheses.
         .split(/\s/g);
 
