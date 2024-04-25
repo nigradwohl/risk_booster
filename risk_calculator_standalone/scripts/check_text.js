@@ -75,12 +75,8 @@ Content ideas:
 
 */
 
-// const pat_num = "\\d"  //
-const pat_num = "(?:(?<![\\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,][0-9]+)?))(?!\\\.[0-9A-Za-z]|[a-zA-Z0-9])"
-const regex_num = new RegExp("(?<num>" + pat_num + ")", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
-// From R: (?:(?<![\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,][0-9]+)?))(?!\\.[0-9A-Za-z]|[a-zA-Z0-9])
-const note_set = ["Den Zahlen fehlt eine Referenz", "Keine ganzen Zahlen verwendet", "Behauptung ohne Evidenz aufgestellt"];  // Set of possible notes.
 
+// Trigger the functionality:
 $(document).ready(function () {
 
     // When the button is clicked, process and output the text:
@@ -105,103 +101,16 @@ $(document).ready(function () {
         // Create HTML for the list:
 
         let arr_li = new Set;
-        let arr_match = [];
-
-        // Loop over dictionary with rules:
-        for (const [key, value] of Object.entries(check_numbers_dict)) {
-            // console.log(`${key} ${value["note"]}`); // "a 5", "b 7", "c 9"
-
-
-            // Variant with exec:
-            const matches = get_regex_matches(inputText, value["regex"]);
-            arr_match = arr_match.concat(matches);
-
-        }
-
-        // Clean up the matches from all for redundancy:
-        // console.log("Match objects:");
-        // console.log(arr_match);
-        // If a match is fully included in another, the match can be removed.
-        // There is also some hierarchy (undefined numbers should only be output when
-
-        // TODO: Function to loop over the tokens and ask for each if it is part of a match!
-
-        // Add the matches to the text data:
-        let token_match = Array(token_dat.token.length).fill(-1);
-        let match_unit = Array(token_dat.token.length).fill(-1);
-
-        let i = 0;
-        let droplist = [];
-
-        for (let match of arr_match) {
-            // console.log(match.start_end);
-
-            // For a token to be part of a match, the following conditions must be fulfilled:
-            // Match start must be greater or equal than token start and smaller than token end
-            const match_start = token_dat.start.findIndex(x => x >= match.start_end[0] && x < match.start_end[1]);
-            // Match end must be smaller or equal to token end and larger than token start
-            const match_end = token_dat.start.findIndex(x => x <= match.start_end[1] && x > match.start_end[0]);
-
-            // console.log(match_start, match_end);
-
-            if (match_start !== -1) {
-                if (token_match[match_start] === -1) {
-                    token_match[match_start] = [i];
-                    match_unit[match_start] = match.type;
-                } else {
-                    // Note: If we can establish a clear hierarchical structure, we could drop the match here:
-                    // arr_match.splice(i);
-                    droplist = droplist.concat(i);
-                    const prev_ix = token_match[match_start]
-
-                    // Also amend the previous match to include the other type?
-                    arr_match[prev_ix[0]].type = arr_match[prev_ix[0]].type.concat(match.type);
-
-                    // Add index:
-                    token_match[match_start] = prev_ix.concat(i);
-
-                }
-
-            }
-            if (match_end !== -1) {
-
-                if (token_match[match_end] === -1) {
-                    token_match[match_end] = [i];
-                } else {
-
-
-                    // Note: If we can establish a clear hierarchical structure, we could drop the match here:
-                    // arr_match.splice(i);
-                    droplist = droplist.concat(i);
-
-                    const prev_ix = token_match[match_end]
-
-                    // Also amend the previous match to include the other type?
-                    arr_match[prev_ix[0]].type = arr_match[prev_ix[0]].type.concat(match.type);
-
-                    // Add index:
-                    token_match[match_end] = prev_ix.concat(i);
-                }
-            }
-
-            // Increment match ID:
-            i++;
-
-        }
-
-        console.log("Match data:");
-        console.log(token_match);
-        console.log(match_unit);
-
-        // Is it more efficient to check for the matches or the tokens?
-        // Likely the matches, because there are fewer by design!
 
         // console.log(token_match);
 
+        // Get regex-based matches:
+        const regex_matches = detect_regex_match(inputText, token_dat, check_numbers_dict);
+
         // Add to object:
         // token_dat.token_match = token_match;
-        token_dat.add_column(token_match, "match");
-        token_dat.add_column(match_unit, "unit");
+        token_dat.add_column(regex_matches.match_id, "match");
+        token_dat.add_column(regex_matches.match_type, "unit");
         token_dat.add_number_info();
         token_dat.detect_unit();
 
@@ -218,40 +127,25 @@ $(document).ready(function () {
         console.log(`${token_dat.nrow} rows and ${token_dat.ncol} columns`);
         // console.log(token_dat);
 
-        // Remove the indices that have to be dropped:
-        arr_match = arr_match.filter((ele, index) => !droplist.includes(index));
-
-        // Sort the array by the starting position of each match:
-        arr_match = arr_match.sort((a, b) => a.start_end[0] - b.start_end[0]);
-
-        console.log("Sorted and cleaned matches");
-        console.log(arr_match);
+        // // Remove the indices that have to be dropped:
+        // let arr_match = regex_matches.arr_match;
+        // arr_match = arr_match.filter((ele, index) => !droplist.includes(index));
+        //
+        // // Sort the array by the starting position of each match:
+        // arr_match = arr_match.sort((a, b) => a.start_end[0] - b.start_end[0]);
+        //
+        // console.log("Sorted and cleaned matches");
+        // console.log(arr_match);
 
         token_dat.print();  // print data from object.
         // console.log(token_dat.get_row(1));  // print row.
 
-
+        // ~~~~~~~~~~~~~~ HIGHLIGHTING ~~~~~~~~~~~~~~~~~~~~
         // Loop over all remaining matches to highlight them:
         let cur_ix = 0;  // current index in original text.
         let procText = "";
 
-        // Detect the matches in token set:
-        const unit_note_dict = {
-            "perc": {
-                "tooltip": {"ABS": "Absolute Prozentzahl", "REL": "Relative Prozentzahl"},
-                "note": "Der Text verwendet Prozentzahlen. Achten Sie darauf, das klar ist, auf welche Größe sich die <a href=\"risk_wiki.html#wiki-prozent\">Prozentangabe</a> bezieht."
-            },
-            "case": {
-                "tooltip": {"other": "Personen oder Fälle"},
-                "note": "Der Text enthält Anzahlen von Fällen. Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
-            },
-            "unknown": {
-                "tooltip": {"other": "Konnte nicht identifiziert werden"},
-                "note": "Einige Zahlen konnten nicht identifiziert werden."
-            }
-        }
-
-        for (i = 0; i < token_dat.nrow; i++) {
+        for (let i = 0; i < token_dat.nrow; i++) {
 
             // console.log(i);
 
@@ -429,10 +323,15 @@ Possible parts:
 Other formats to detect: Odds ratio, ARR/RRR, NNT...
 */
 
+// Constants:
+const pat_num = "(?:(?<![\\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,][0-9]+)?))(?!\\\.[0-9A-Za-z]|[a-zA-Z0-9])"
+
+const regex_num = new RegExp("(?<unknown>" + pat_num + ")", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
 const regex_perc = new RegExp("(?<perc>" + pat_num + " ?(%|\\\-?[Pp]rozent\\\w*(?=[\\s.?!]))" + ")", "dg");
 const regex_nh = new RegExp("(?<nh>" + pat_num + " (von|aus) " + pat_num + ")", "dg");
 // Note: in regex_nh we may also try to get the denominator.
 // nh must also be identified from tokens (e.g., In der Gruppe von 1000[case] Leuten sterben 4[num/case].
+
 
 const check_numbers_dict = {
     "perc": {
@@ -443,7 +342,7 @@ const check_numbers_dict = {
     "nh": {
         "regex": regex_nh,
         "tooltip": "Ich bin eine \"natürliche\" Häufigkeit",
-        "note": "Sie haben eine Prozentzahl verwendet. Stellen Sie sicher, dass eine Referenz vorhanden ist [mögliche Referenz ggf. ausflaggen!]. klicken Sie [HIER] um mehr zu erfahren."
+        "note": "Sie haben eine natürliche Häufigkeit verwendet. Das ist sehr gut. Am besten sollte der Nenner über Vergleiche der Gleiche sein (z.B. 1 aus 100 Geimpften erkrankt, während 3 aus 100 ungeimpften erkranken)."
     },
     "num": {
         "regex": regex_num,
@@ -475,6 +374,23 @@ const key_obj = {
 
 // Additional set for vaccination topic:
 const keyset_impf = [[RegExp(collapse_regex_or(["([Ww]irk(sam|t))", "[Ee]ffektiv"]))]];
+
+
+// Detect the matches in token set:
+const unit_note_dict = {
+    "perc": {
+        "tooltip": {"ABS": "Absolute Prozentzahl", "REL": "Relative Prozentzahl"},
+        "note": "Der Text verwendet Prozentzahlen. Achten Sie darauf, das klar ist, auf welche Größe sich die <a href=\"risk_wiki.html#wiki-prozent\">Prozentangabe</a> bezieht."
+    },
+    "case": {
+        "tooltip": {"other": "Personen oder Fälle", "N_TOT": "Anzahl an Personen"},
+        "note": "Der Text enthält Anzahlen von Fällen. Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
+    },
+    "unknown": {
+        "tooltip": {"other": "Konnte nicht identifiziert werden"},
+        "note": "Einige Zahlen konnten nicht identifiziert werden."
+    }
+}
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~ CLASSES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -951,7 +867,7 @@ function detect_unit(token_data) {
                 // Add to info array:
                 let cur_info = unit_lookup.map((x) => x[0].test(nxt_token) ? x[1] : false).filter((x) => x);
                 console.log("Cur info: " + cur_info + ", " + cur_info.length);
-                if (cur_info.length > 0 && (unit_info[ix_tok] === -1 || unit_info[ix_tok].includes("num"))) {
+                if (cur_info.length > 0 && (unit_info[ix_tok] === -1 || unit_info[ix_tok].includes("unknown"))) {
                     // If there is a match or only an unspecified number from matching is contained, update.
                     // unit_info[ix_tok] = cur_info;
 
@@ -980,6 +896,107 @@ function detect_unit(token_data) {
     console.log(unit_info);
     return unit_info;
 
+
+}
+
+/**
+ *
+ */
+function detect_regex_match(txt, token_dat, check_dict) {
+    let arr_match = [];
+
+    check_dict = check_numbers_dict;
+
+    // Loop over dictionary with rules:
+    for (const [key, value] of Object.entries(check_dict)) {
+        // console.log(`${key} ${value["note"]}`); // "a 5", "b 7", "c 9"
+
+
+        // Variant with exec:
+        const matches = get_regex_matches(txt, value["regex"]);
+        arr_match = arr_match.concat(matches);
+
+    }
+
+    // Clean up the matches from all for redundancy:
+    // console.log("Match objects:");
+    // console.log(arr_match);
+    // If a match is fully included in another, the match can be removed.
+    // There is also some hierarchy (undefined numbers should only be output when
+
+    // TODO: Function to loop over the tokens and ask for each if it is part of a match!
+
+    // Add the matches to the text data:
+    let token_match = Array(token_dat.token.length).fill(-1);
+    let match_type = Array(token_dat.token.length).fill(-1);
+
+    let i = 0;
+    let droplist = [];
+
+    for (let match of arr_match) {
+        // console.log(match.start_end);
+
+        // For a token to be part of a match, the following conditions must be fulfilled:
+        // Match start must be greater or equal than token start and smaller than token end
+        const match_start = token_dat.start.findIndex(x => x >= match.start_end[0] && x < match.start_end[1]);
+        // Match end must be smaller or equal to token end and larger than token start
+        // Search from the back!
+        const match_end = token_dat.end.findLastIndex(x => x <= match.start_end[1] && x > match.start_end[0]);
+
+        // console.log("Match start and end: " + match_start + ", " + match_end);
+
+        if (match_start !== -1) {
+            if (token_match[match_start] === -1) {
+                token_match[match_start] = [i];
+                match_type[match_start] = match.type;
+            } else {
+                // Note: If we can establish a clear hierarchical structure, we could drop the match here:
+                // arr_match.splice(i);
+                droplist = droplist.concat(i);
+                const prev_ix = token_match[match_start]
+
+                // Also amend the previous match to include the other type?
+                arr_match[prev_ix[0]].type = arr_match[prev_ix[0]].type.concat(match.type);
+
+                // Add index:
+                token_match[match_start] = prev_ix.concat(i);
+
+            }
+
+        }
+        if (match_end !== -1) {
+
+            if (token_match[match_end] === -1) {
+                token_match[match_end] = [i];
+                match_type[match_end] = match.type;
+            } else {
+                // Note: If we can establish a clear hierarchical structure, we could drop the match here:
+                // arr_match.splice(i);
+                droplist = droplist.concat(i);
+
+                const prev_ix = token_match[match_end]
+
+                // Also amend the previous match to include the other type?
+                arr_match[prev_ix[0]].type = arr_match[prev_ix[0]].type.concat(match.type);
+
+                // Add index:
+                token_match[match_end] = prev_ix.concat(i);
+            }
+        }
+
+        // Increment match ID:
+        i++;
+
+    }
+
+    console.log("Match data:");
+    console.log(arr_match);
+    console.log(token_match);
+    console.log(match_type);
+
+    // Is it more efficient to check for the matches or the tokens?
+    // Likely the matches, because there are fewer by design!
+    return ({"arr_match": arr_match, "match_id": token_match, "match_type": match_type})
 
 }
 
@@ -1042,6 +1059,8 @@ function get_regex_matches(txt, regexp) {
     const matches = txt.matchAll(regexp);
 
     for (const match of matches) {
+
+        // console.log(match);
 
         if (match.groups === undefined) {
             console.log(match.groups);
