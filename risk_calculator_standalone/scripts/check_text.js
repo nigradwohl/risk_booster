@@ -148,11 +148,19 @@ $(document).ready(function () {
         for (let i = 0; i < token_dat.nrow; i++) {
 
             // console.log(i);
+            let cur_unit = token_dat.unit[i];
 
-            if (token_dat.unit[i] !== -1) {
+            // console.log("current unit (is array: " + Array.isArray(cur_unit) + ")");
+            // console.log(cur_unit);
+
+            if(Array.isArray(cur_unit)){
+                cur_unit = cur_unit[0];  // for now thake the first array element.
+            }
+
+            if (cur_unit !== -1 && !units_exc.includes(cur_unit)) {
                 // Text prior to match:
                 let text_pre = inputText.slice(cur_ix, token_dat.start[i]);
-                let cur_unit = token_dat.unit[i];
+
                 let cur_numtype = token_dat.numtype[i];
 
                 // Get types for each tooltip:
@@ -332,6 +340,16 @@ const regex_nh = new RegExp("(?<nh>" + pat_num + " (von|aus) " + pat_num + ")", 
 // Note: in regex_nh we may also try to get the denominator.
 // nh must also be identified from tokens (e.g., In der Gruppe von 1000[case] Leuten sterben 4[num/case].
 
+// Define units to not consider further:
+const units_exc = ["age", "currency", "time", "date", "legal"];
+
+/*
+Tests for simple units:
+
+Das kostet 100 Euro und ist 50 Jahre alt.
+Um 17 Uhr gehen wir bis 19:00 weg und kommen um 1.00 Uhr am 2.3.2021 heim.
+Das steht so in §12 Artikel 13, Absatz 10.
+ */
 
 const check_numbers_dict = {
     "perc": {
@@ -344,7 +362,27 @@ const check_numbers_dict = {
         "tooltip": "Ich bin eine \"natürliche\" Häufigkeit",
         "note": "Sie haben eine natürliche Häufigkeit verwendet. Das ist sehr gut. Am besten sollte der Nenner über Vergleiche der Gleiche sein (z.B. 1 aus 100 Geimpften erkrankt, während 3 aus 100 ungeimpften erkranken)."
     },
-    "num": {
+    // Simple matches:
+    "age": {
+        "regex": RegExp("(?<age>" + pat_num + "( Jahre|\-jährig)" + ")", "dg")
+    },
+    "currency_post": {
+        "regex": RegExp("(?<currency>" + pat_num + " ?(EUR|€|Euro|Dollar)" + ")", "dg")
+    },
+    "currency_pre": {
+        "regex": RegExp("(?<currency>" + "(USD|\$) ?" + pat_num + ")", "dg")
+    },
+    "time": {
+        "regex": /(?<time>(\d{1,2}(\.\d{2})? Uhr)|(\d{1,2}:\d{2}))/dg
+    },
+    "date": {
+        "regex": /(?<date>\d{1,2}\.\d{1,2}\.(18|19|20)\d{2})/dg
+    },
+    "legal": {
+        "regex": /(?<legal>(Artikel|§|Absatz") ?\d+)/dg
+    },
+    // Default number match:
+    "other_num": {
         "regex": regex_num,
         "tooltip": "Ich weiß nicht, was ich für eine Zahl bin",
         "note": "Sie haben eine Zahl verwendet, für die wir nicht bestimmen konnten, was sie bedeutet. Stellen Sie sicher, dass die Bedeutung der Zahl klar ist."
@@ -386,6 +424,7 @@ const unit_note_dict = {
         "tooltip": {"other": "Personen oder Fälle", "N_TOT": "Anzahl an Personen"},
         "note": "Der Text enthält Anzahlen von Fällen. Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
     },
+    // Unidentified matches:
     "unknown": {
         "tooltip": {"other": "Konnte nicht identifiziert werden"},
         "note": "Einige Zahlen konnten nicht identifiziert werden."
