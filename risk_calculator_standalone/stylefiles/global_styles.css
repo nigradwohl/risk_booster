@@ -1,6 +1,36 @@
 /* Definition of different themes */
 .current-theme {
     ---body-background: #f0f0f0;
+    ---header-background: #B85042;
+    ---textcol-header: white;
+    ---navbar-bg: #E7E8D1;
+    ---navbar-text: #444;
+    ---navbar-hover-bg: #ddd;
+    ---navbar-hover-text: black;
+    ---footer-bg: #ddd;
+    ---footer-text: black;
+    ---footer-hover-bg: slategray;
+    ---footer-hover-text: lightgrey;
+    ---dropdown-content-bg: #f1f1f1;
+    ---dropdown-content-text: black;
+    ---dropdown-content-hover-text: #ddd;
+    ---column-bg-primary: #A7BEAE;
+    ---column-bg-secondary: #f1f1f1;
+    ---colum-bg-tertiary: white;
+    ---checklist-question-bg: silver;
+    ---button-primary: #1abc9c;
+    ---button-secondary: silver;
+    ---wiki-bg: lightblue;
+    ---wiki-border: cornflowerblue;
+    ---card-bg: silver;
+    ---card-hover-bg: #ddd;
+    ---text-color-primary: black;
+    ---text-color-secondary: #333;
+}
+
+.theme-1{
+    .current-theme {
+    ---body-background: #f0f0f0;
     ---header-background: #1abc9c;
     ---textcol-header: white;
     ---navbar-bg: slategrey;
@@ -27,7 +57,7 @@
     ---text-color-primary: black;
     ---text-color-secondary: #333;
 }
-
+                                                                                                                                                                                                               }
 
 /* CSS for body */
 body {
