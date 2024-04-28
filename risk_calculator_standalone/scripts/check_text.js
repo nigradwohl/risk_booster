@@ -26,9 +26,9 @@ heute 5 94,5 Prozent
 Testcase 3:
 Der Impfstoff wird nach Angaben der beiden Unternehmen 2 mal im Abstand von 3Wochen verabreicht. In der Altersgruppe der Über-65-Jährigen wurde 7 Tage nach der 2 Dosis eine Wirksamkeit von 94 Prozent ermittelt. Der Impfstoff sei von den Teilnehmern der weltweiten Studie gut vertragen worden, ernste Nebenwirkungen seien nicht beobachtet worden, berichteten die Unternehmen. Basis sind Angaben von mindestens 8000 zufällig ausgewählten Teilnehmern.
 
-Wer zum Selbstschutz eine Maske trägt, die dicht am Gesicht anliegt, der sei etwa 100-mal besser vor einer Infektion geschützt als ohne Maske
-
 Bei der immer noch in zahlreichen Ländern laufenden Studie erhält eine Hälfte der insgesamt 43.000 Teilnehmer den Impfstoff, die andere Hälfte fungiert als Kontrollgruppe und bekommt ein Placebo-Mittel. Bislang erkrankten den Angaben zufolge insgesamt 170 Teilnehmer an Covid-19. Davon entfielen nur 8 Fälle auf die tatsächlich geimpften Probanden, 162 Fälle wurden in der Placebo-Gruppe diagnostiziert. Daraus errechnet sich eine Wirksamkeit von rund 95 Prozent. Nach Angaben von Biontech und Pfizer gab es unter allen Covid-19-Erkrankungen 10 schwere Verläufe - 9 in der Kontroll- und einen in der Impfgruppe.
+
+Wer zum Selbstschutz eine Maske trägt, die dicht am Gesicht anliegt, der sei etwa 100-mal besser vor einer Infektion geschützt als ohne Maske.
 
 Test statements:
 - In der Kontrollgruppe erkranken 5 von 100, in der Behandlungsgruppe einer aus 100. --> gut
@@ -62,6 +62,9 @@ Output terms:
 Structual ideas:
 * make the token data an object with its own class, so that columns can be indexed accordingly.
 * make the text an object which has associated: tokens (maybe as object), an array of matches
+* color(?) code whether a display is good --> also differentiate between levels of "goodness"
+* For mobile: split into 3 blocks?
+* 1 block per topic (Prozentzahlen, relative Angaben etc.)
 
 Content ideas:
 * identify numbers and their units and types in token data? --> 95,4 [Prozent] is <perc>, 20 [Fälle] is <case>, etc.
@@ -339,7 +342,7 @@ const pat_num = "(?:(?<![\\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,:][0-9]+)
 const regex_num = new RegExp("(?<unknown>" + pat_num + ")", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
 const regex_perc = new RegExp("(?<perc>" + pat_num + " ?(%|\\\-?[Pp]rozent\\\w*(?=[\\s.?!]))" + ")", "dg");
 const regex_nh = new RegExp("(?<nh>" + pat_num + " (von|aus) " + pat_num + ")", "dg");
-const regex_multi = new RegExp("(?<multi>" + pat_num + "[ \\-]?([Mm]al|[Ff]ach)(?=[\\s.?!])" + ")", "dg");
+const regex_multi = new RegExp("(?<multi>" + pat_num + "[ \\-]?([Mm]al|[Ff]ach) (so )?( ?viele|groß|hoch|niedrig|besser)(?=[\\s.?!])" + ")", "dg");
 // Note: in regex_nh we may also try to get the denominator as a group or as its own entity.
 // nh must also be identified from tokens (e.g., In der Gruppe von 1000[case] Leuten sterben 4[num/case].
 
@@ -370,7 +373,7 @@ const check_numbers_dict = {
         "regex": regex_multi
     },
     "multi2": {
-        "regex": /(?<multi>([Hh]alb|[Dd]oppelt|[Dd]reifach|[Dd]reimal) so( ?viele|groß|hoch|niedrig))/dg
+        "regex": /(?<multi>([Hh]alb|[Dd]oppelt|[Dd]reifach|[Dd]reimal) so( ?viele|groß|hoch|niedrig|besser))/dg
     },
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Simple matches:
@@ -435,7 +438,7 @@ const keyset_impf = [[RegExp(collapse_regex_or(["([Ww]irk(sam|t))", "[Ee]ffektiv
 const unit_note_dict = {
     "perc": {
         "tooltip": {"ABS": "Absolute Prozentzahl", "REL": "Relative Prozentzahl", "other": "andere Prozentzahl[?]"},
-        "note": "Der Text verwendet Prozentzahlen. Achten Sie darauf, das klar ist, auf welche Größe sich die <a href=\"risk_wiki.html#wiki-prozent\">Prozentangabe</a> bezieht."
+        "note": "Der Text verwendet Prozentzahlen. Achten Sie darauf, dass klar ist auf welche Größe sich die <a href=\"risk_wiki.html#wiki-prozent\">Prozentangabe</a> bezieht."
     },
     "case": {
         "tooltip": {"other": "Personen oder Fälle", "N_TOT": "Anzahl an Personen"},
