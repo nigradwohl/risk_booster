@@ -28,6 +28,9 @@ Der Impfstoff wird nach Angaben der beiden Unternehmen 2 mal im Abstand von 3Woc
 
 Bei der immer noch in zahlreichen Ländern laufenden Studie erhält eine Hälfte der insgesamt 43.000 Teilnehmer den Impfstoff, die andere Hälfte fungiert als Kontrollgruppe und bekommt ein Placebo-Mittel. Bislang erkrankten den Angaben zufolge insgesamt 170 Teilnehmer an Covid-19. Davon entfielen nur 8 Fälle auf die tatsächlich geimpften Probanden, 162 Fälle wurden in der Placebo-Gruppe diagnostiziert. Daraus errechnet sich eine Wirksamkeit von rund 95 Prozent. Nach Angaben von Biontech und Pfizer gab es unter allen Covid-19-Erkrankungen 10 schwere Verläufe - 9 in der Kontroll- und einen in der Impfgruppe.
 
+Slight reformulation:
+Nur 8 Fälle ereigneten sich unter den tatsächlich geimpften Probanden, in der Kontrollgruppe wurden 162 Fälle diagnostiziert.
+
 Wer zum Selbstschutz eine Maske trägt, die dicht am Gesicht anliegt, der sei etwa 100-mal besser vor einer Infektion geschützt als ohne Maske.
 
 Test statements:
@@ -125,7 +128,7 @@ $(document).ready(function () {
         token_dat.detect_topic("impf", ["(?<!(gl|sch))[Ii]mpf"]);  // must be preceded
 
         // Detect number types (may need topics!)
-        token_dat.detect_number_type();
+        token_dat.detect_number_type(inputText);
 
         console.log("Updated token data:");
         console.log(token_dat);
@@ -378,7 +381,7 @@ const check_numbers_dict = {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Simple matches:
     "age": {
-      "regex": /(?<age>(\d+ bis )*\d+([.|,]\d+)?( Jahr[a-z]*[ |.]?|-[Jj]ährig))/dg
+        "regex": /(?<age>(\d+ bis )*\d+([.|,]\d+)?( Jahr[a-z]*[ |.]?|-[Jj]ährig))/dg
     },
     // "age2": {
     //     "regex": RegExp("(?<age>" + pat_num + "( Jahre|\-jährig)" + ")", "dg")
@@ -396,7 +399,7 @@ const check_numbers_dict = {
         "regex": /(?<date>\d{1,2}\.\d{1,2}\.(18|19|20)\d{2})/dg
     },
     "duration": {
-      "regex": /(?<duration>[0-9]+(-stündig|-tägig| Minuten?| Stunden?| Tagen?| Wochen?))/dg
+        "regex": /(?<duration>[0-9]+(-stündig|-tägig| Minuten?| Stunden?| Tagen?| Wochen?))/dg
     },
     "legal": {
         "regex": /(?<legal>(Artikel|§|Absatz) ?\d+)/dg
@@ -413,21 +416,55 @@ const check_numbers_dict = {
 //
 const key_obj = {
     "REL": {
-        "number_type": "perc",  // add in other types eventually! 30-fach etc.
+        "number_unit": "perc",  // add in other types eventually! 30-fach etc.
         "keyset": [
             // A first entry to a domain-general keyset for risk:
             [RegExp(collapse_regex_or(["Risiko", "[Ww]ahrscheinlich"])),
                 RegExp(collapse_regex_or(["höher", "erhöht", "reduziert", "(ge|ver)ringert?"]))]
         ]
     },
+    "APPROX": {
+      "number_unit": "perc",  // ACTUALLY ALSO OTHERS?
+      "keyset": []
+      // Pattern would be "mehr/weniger als; ungefähr" --> percent, nh or also cases!
+    },
     "N_TOT": {
-        "number_type": "case",
+        "number_unit": "case",
         "keyset": [
             // TODO: Double check these!
             [RegExp("Proband|[Tt]eilnehme|Versuchspers")],
             [RegExp("insgesamt|Studie")]
         ]
+    },
+    // Total nuber of cases/incidents:
+    "N_CASE_TOT": {
+        "number_unit": "case",
+        "keyset": [
+            // TODO: Double check these!
+            [RegExp("Fälle")],
+            [RegExp("insgesamt")]
+        ]
+    },
+    // Part of cases:
+    "N_AFFECTED": {
+        "number_unit": "case",
+        "keyset": [
+            [RegExp("[Ee]rkrankt|[Bb]etroffen")]
+        ]
     }
+    // Treatment and control:
+    // "N_TREAT": {
+    //     "number_unit": "case",
+    //     "keyset": [
+    //         [RegExp("(?!un)geimpft|behandelt")]
+    //     ]
+    // },
+    // "N_CONTROL": {
+    //     "number_unit": "case",
+    //     "keyset": [
+    //         [RegExp("[Ee]rkrank(t(en)?)|[Bb]etroffen")]
+    //     ]
+    // }
 }
 
 // Additional set for vaccination topic:
@@ -527,9 +564,9 @@ class TokenData {
 
         }
 
-        console.log(`Colwidths and -names of ${this.ncol} columns:`);
-        console.log(colwidths);
-        console.log(this.colnames);
+        // console.log(`Colwidths and -names of ${this.ncol} columns:`);
+        // console.log(colwidths);
+        // console.log(this.colnames);
 
         // Possible feature: Column alignment (change padding fron/end)
         for (let ix_token = -1; ix_token < this.nrow; ix_token++) {
@@ -544,6 +581,7 @@ class TokenData {
                 rowstr += currow[ix_col].toString().padEnd(colwidths[ix_col] + 2);
             }
 
+            // Output row:
             console.log(rowstr);
 
         }
@@ -598,7 +636,7 @@ class TokenData {
         let topic_present = false;
 
         const regex = RegExp(collapse_regex_or(key_list), "g");
-        console.log(regex);
+        // console.log(regex);
 
         // Simple regex on tokens:
         for (const token of this.token) {
@@ -613,8 +651,8 @@ class TokenData {
     }
 
     // Method to detect number types:
-    detect_number_type() {
-        this.add_column(detect_number_type(this), "numtype");
+    detect_number_type(txt) {
+        this.add_column(detect_number_type(this, txt), "numtype");
     }
 }
 
@@ -702,8 +740,9 @@ function get_token_data(text) {
  * Tries to detect the type of each number by using its unit and additional context information
  * @return {Array}     An array of number types for numeric token data
  * @param token_data {Object} A token data object with information about numbers.
+ * @param txt {String} The text corresponding to the token data, allowing to detect matches.
  */
-function detect_number_type(token_data) {
+function detect_number_type(token_data, txt) {
 
     console.log("Detecting the number type");
 
@@ -767,19 +806,19 @@ function detect_number_type(token_data) {
             // console.log("First token in sentence: " + prev_token + ", Last token in sentence: " + final_token);
             // console.log("Ids in token data");
             // console.log(token_ids);
-            console.log("Tokens in sentence and their numeric info:");
-            console.log(sentence_tokens);
-            console.log(num_info);
-            console.log(sentence_units);
+            // console.log("Tokens in sentence and their numeric info:");
+            // console.log(sentence_tokens);
+            // console.log(num_info);
+            // console.log(sentence_units);
             // Issue is that we want to use regular expressions, which do not work so well on arrays!
 
             // Loop over tokens in sentence; maybe also use a token ID to assign number values?
 
             // Get positions of numbers:
-            console.log("Number positions");
+            // console.log("Number positions");
             // console.log(token_ids.filter((d, ind) => num_info[ind]));
             const num_array = token_ids.filter((d, ind) => num_info[ind]);
-            console.log(num_array);
+            // console.log(num_array);
 
             // Testcase: Der Impfschutz bei Erwachsenen über 65 Jahren lag bei über 94 %.
 
@@ -827,7 +866,8 @@ function detect_number_type(token_data) {
                     // console.log(`Token: ${token_data.token[curnum_id]}, Unit: ${token_data.unit[curnum_id]}`);
                     // console.log(value);
 
-                    if (token_data.unit[curnum_id].includes(value.number_type)) {
+                    // Check for the number type to select whether the number type (cases, percentage...) applies:
+                    if (token_data.unit[curnum_id].includes(value.number_unit)) {
                         // Note: may also apply to other number types like
                         // "30-faches Risiko", "das Risiko ist zweimal so hoch"
                         // console.log("It's a percentage!");
@@ -843,12 +883,23 @@ function detect_number_type(token_data) {
                                 .filter((keyex) => sentence_tokens
                                     .filter((token) => keyex.test(token)).length > 0).length === keylist.length);
 
+                        // Maybe: find cue-words (in, unter etc.) and then check for in/unter what.
+
                         // Check each token:
                         // const key_present = sentence_tokens.filter((x) => keyrex.test(x));
+                        console.log(`Keys from ${key} present in sentence:`);
+                        console.log(keyset);
                         console.log(keys_present);
 
-                        // If any key is present for percentage, assign the corresponding flag:
-                        if (keys_present.includes(true)) {
+                        /*
+                         Implement:
+                         - parse in some order? (first ahead, then back; turn around on comma?)
+                         - successively grow larger (sub-sentence, sentence, paragraph)s
+                         */
+
+
+                        // If all keys are present, assign the corresponding flag:
+                        if (!keys_present.includes(false)) {
                             numtype = key;
 
                             // Eventually fix!
@@ -862,6 +913,21 @@ function detect_number_type(token_data) {
 
                     }
 
+                }
+
+                // Check number if numtype remained other:
+                if(numtype === "other"){
+
+                    const relation_dict = {
+                        "controlrel": {
+                            "regex": /(?<control>(in der|unter den (Teilnehme\w+ |Proband\w+){,2} der|auf die (Teilnehme\w+ |Proband\w+){,2}) (Kontroll|Placebo)-?[Gg]ruppe)/dg
+                        }
+                    }
+
+                    const ref_matches = detect_regex_match(txt, token_data, relation_dict);
+
+                    console.log("Reference matches");
+                    console.log(ref_matches);
                 }
 
 
@@ -932,7 +998,7 @@ function detect_unit(token_data) {
 
                 // Add to info array:
                 let cur_info = unit_lookup.map((x) => x[0].test(nxt_token) ? x[1] : false).filter((x) => x);
-                console.log("Cur info: " + cur_info + ", " + cur_info.length);
+                // console.log("Cur info: " + cur_info + ", " + cur_info.length);
                 if (cur_info.length > 0 && (unit_info[ix_tok] === -1 || unit_info[ix_tok].includes("unknown"))) {
                     // If there is a match or only an unspecified number from matching is contained, update.
                     // unit_info[ix_tok] = cur_info;
@@ -979,16 +1045,16 @@ function detect_regex_match(txt, token_dat, check_dict) {
         // Variant with exec:
         const matches = get_regex_matches(txt, value["regex"]);
 
-        console.log(`Raw matches for ${key}:`);
-        console.log(matches);
+        // console.log(`Raw matches for ${key}:`);
+        // console.log(matches);
 
         arr_match = arr_match.concat(matches);
 
     }
 
     // Clean up the matches from all for redundancy:
-    console.log("Match objects:");
-    console.log(arr_match);
+    // console.log("Match objects:");
+    // console.log(arr_match);
     // If a match is fully included in another, the match can be removed.
     // There is also some hierarchy (undefined numbers should only be output when
 
@@ -1063,13 +1129,13 @@ function detect_regex_match(txt, token_dat, check_dict) {
     // Sort the array by the starting position of each match:
     arr_match = arr_match.sort((a, b) => a.start_end[0] - b.start_end[0]);
 
-    console.log("Sorted and cleaned matches");
-    console.log(arr_match);
-
-    console.log("Match data:");
-    console.log(arr_match);
-    console.log(token_match);
-    console.log(match_type);
+    // console.log("Sorted and cleaned matches");
+    // console.log(arr_match);
+    //
+    // console.log("Match data:");
+    // console.log(arr_match);
+    // console.log(token_match);
+    // console.log(match_type);
 
     // Is it more efficient to check for the matches or the tokens?
     // Likely the matches, because there are fewer by design!
