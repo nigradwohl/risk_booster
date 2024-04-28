@@ -1,9 +1,40 @@
+/* Definition of different themes */
+.current-theme {
+    ---body-background: #f0f0f0;
+    ---header-background: #1abc9c;
+    ---textcol-header: white;
+    ---navbar-bg: slategrey;
+    ---navbar-text: white;
+    ---navbar-hover-bg: #ddd;
+    ---navbar-hover-text: black;
+    ---footer-bg: #ddd;
+    ---footer-text: black;
+    ---footer-hover-bg: slategray;
+    ---footer-hover-text: lightgrey;
+    ---dropdown-content-bg: #f1f1f1;
+    ---dropdown-content-text: black;
+    ---dropdown-content-hover-text: #ddd;
+    ---column-bg-primary: #f1f1f1;
+    ---column-bg-secondary: #f1f1f1;
+    ---colum-bg-tertiary: white;
+    ---checklist-question-bg: silver;
+    ---button-primary: #1abc9c;
+    ---button-secondary: silver;
+    ---wiki-bg: lightblue;
+    ---wiki-border: cornflowerblue;
+    ---card-bg: silver;
+    ---card-hover-bg: #ddd;
+    ---text-color-primary: black;
+    ---text-color-secondary: #333;
+}
+
+
 /* CSS for body */
 body {
     font-family: Arial, sans-serif;
     margin: 0 20px;
     padding: 0;
-    background-color: #f0f0f0;
+    background-color: var(---body-background);
 }
 
 * {
@@ -15,8 +46,8 @@ body {
 .header {
     padding: 30px;
     text-align: center;
-    background: #1abc9c;
-    color: white;
+    background: var(---header-background);
+    color: var(---textcol-header);
 }
 
 /*------------------NAVIGATION------------------------*/
@@ -24,12 +55,12 @@ body {
 /* Style the top navigation bar */
 .navbar {
     display: flex;
-    background-color: #333;
+    background-color: var(---navbar-bg);
 }
 
 /* Style the navigation bar links */
 .navbar a {
-    color: white;
+    color: var(---navbar-text);
     padding: 14px 20px;
     text-decoration: none;
     text-align: center;
@@ -37,20 +68,20 @@ body {
 
 /* Change color on hover */
 .navbar a:hover {
-    background-color: #ddd;
-    color: black;
+    background-color: var(---navbar-hover-bg);
+    color: var(---navbar-hover-text);
 }
 
 /* Footer */
 .navbar-foot {
     display: flex;
     text-align: center;
-    background: #ddd;
+    background: var(---footer-bg);
 }
 
 /* Style the navigation bar links */
 .navbar-foot a {
-    color: black;
+    color: var(---footer-text);
     padding: 10px 20px;
     text-decoration: none;
     text-align: center;
@@ -58,8 +89,8 @@ body {
 
 /* Change color on hover */
 .navbar-foot a:hover {
-    background-color: slategray;
-    color: lightgrey;
+    background-color: var(---footer-hover-bg);
+    color: var(---footer-hover-text);
 }
 
 .dropbtn {
@@ -78,21 +109,21 @@ body {
 .dropdown-content {
     display: none;
     position: absolute;
-    background-color: #f1f1f1;
+    background-color: var(---dropdown-content-bg);
     min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
     z-index: 1;
 }
 
 .dropdown-content a {
-    color: black;
+    color: var(---dropdown-content-text);
     padding: 12px 16px;
     text-decoration: none;
     display: block;
 }
 
 .dropdown-content a:hover {
-    background-color: #ddd;
+    background-color: var(---dropdown-content-hover-text);
 }
 
 .dropdown:hover .dropdown-content {
@@ -114,19 +145,19 @@ body {
 
 .full-column {
     flex: 100%;
-    background-color: #f1f1f1;
+    background-color: var(---column-bg-primary);
     padding: 20px;
 }
 
 /* Create two unequal columns that sits next to each other */
 /* Sidebar/left column */
 .input-col {
-    background-color: #f1f1f1;
+    background-color: var(---column-bg-secondary);
     padding: 20px;
 }
 
 .output-col {
-    background-color: white;
+    background-color: var(---colum-bg-tertiary) te;
     padding: 20px;
 }
 
@@ -138,7 +169,7 @@ body {
 .checklist-question {
     margin: 1em 20%;
     flex: 60%;
-    background-color: silver;
+    background-color: var(---checklist-question-bg);
     padding: 20px;
     border-radius: 10px;
     flex-direction: column;
@@ -156,7 +187,7 @@ body {
     text-align: center;
     min-width: 5em;
     flex: 20%;
-    background-color: #1abc9c;
+    background-color: var(---button-primary);
     border-radius: 5px;
 }
 
@@ -167,8 +198,8 @@ body {
 
 .wiki-overview {
     flex: 35%;
-    background-color: lightblue;
-    border: 2px solid cornflowerblue;
+    background-color: var(---wiki-bg);
+    border: 2px solid var(---wiki-border);
     border-radius: 10px;
 }
 
@@ -208,7 +239,7 @@ body {
     margin: 5px 0;
     font-size: 1em;
     text-align: center;
-    background-color: #1abc9c;
+    background-color: var(---button-primary);
     border-radius: 5px;
     float: right;
 }
@@ -250,7 +281,7 @@ body {
     display: flex;
     flex-wrap: wrap;
     flex-basis: calc(960px * 999 - 100% * 999);
-    background: silver;
+    background: var(---card-bg);
     margin: 1em;
     min-height: 19em;
 }
@@ -277,7 +308,7 @@ body {
 /*}*/
 
 .card:hover {
-    background-color: #ddd;
+    background-color: var(---card-hover-bg);
     color: black;
 }
 
@@ -288,7 +319,7 @@ body {
 
 /* Display logic:*/
 .content-icon {
-    color: black;
+    color: var(---text-color-primary);
 }
 
 .content-text {
@@ -306,7 +337,7 @@ body {
 
 /* CSS for paragraph */
 p {
-    color: #333;
+    color: var(---text-color-secondary);
     font-size: 1em;
     line-height: 1.2;
     margin: 0 0 10px;
@@ -338,8 +369,8 @@ h3 {
     margin-bottom: 10px;
 }
 
- /*Color blocks for visualizing example palettes:*/
-.color-block{
+/*Color blocks for visualizing example palettes:*/
+.color-block {
     height: 3em;
     width: 3em;
 
