@@ -123,7 +123,7 @@ $(document).ready(function () {
         token_dat.detect_unit();
 
         // Detect topis:
-        token_dat.detect_topic("eff", ["Nutz", "(?!Neben)[Ww]irks(am|ung)"]);
+        token_dat.detect_topic("eff", ["Nutz", "(?<!Neben)[Ww]irks(am|ung)"]);
         token_dat.detect_topic("side", ["Nebenwirk"]);
         token_dat.detect_topic("impf", ["(?<!(gl|sch))[Ii]mpf"]);  // must be preceded
 
@@ -406,10 +406,10 @@ const check_numbers_dict = {
     },
     // Carry-forward match:
     "carry_forward_pre": {
-      "regex": RegExp("(?<carryforward>((waren|sind) es )" + pat_num + "\W)", "dg")
+        "regex": RegExp("(?<ucarryforwawrd>(waren|sind) es " + pat_num + "(?=\\W))", "dg")
     },
     "carry_forward_post": {
-      "regex": RegExp("?<carryforward>" + pat_num + " (waren|sind) es", "dg")
+        "regex": RegExp("(?<ucarryforwawrd>" + pat_num + " (waren|sind) es)", "dg")
     },
     // Default number match:
     "other_num": {
@@ -431,9 +431,9 @@ const key_obj = {
         ]
     },
     "APPROX": {
-      "number_unit": "perc",  // ACTUALLY ALSO OTHERS?
-      "keyset": []
-      // Pattern would be "mehr/weniger als; ungefähr" --> percent, nh or also cases!
+        "number_unit": "perc",  // ACTUALLY ALSO OTHERS?
+        "keyset": []
+        // Pattern would be "mehr/weniger als; ungefähr" --> percent, nh or also cases!
     },
     "N_TOT": {
         "number_unit": "case",
@@ -923,7 +923,7 @@ function detect_number_type(token_data, txt) {
                 }
 
                 // Check number if numtype remained other:
-                if(numtype === "other"){
+                if (numtype === "other") {
 
                     const relation_dict = {
                         "controlrel": {
@@ -1014,7 +1014,7 @@ function detect_unit(token_data) {
                     let n_ele = ix_nxt - ix_tok + 1;
                     unit_info.splice(ix_tok, n_ele, Array(n_ele).fill(cur_info));
                     unit_info = unit_info.flat();
-                    console.log(unit_info);
+                    // console.log(unit_info);
                 }
 
                 // Here we could also add to ambiguous unit info!
@@ -1025,6 +1025,18 @@ function detect_unit(token_data) {
             // If no info was found:
             if (unit_info[ix_tok] === -1) {
                 unit_info[ix_tok] = "unknown";
+            } else if (unit_info[ix_tok] === "ucarryforwawrd") {
+                console.log("Carrying forward...");
+                console.log(unit_info);
+                // carry previous unit forward f exists:
+                const prev_units = unit_info.slice(0, ix_tok - 1).filter((x) => x !== -1 && x !== "ucarryforwawrd");
+                // unit_info[ix_tok] = prev_units[prev_units.length - 1];
+                const n_replace = unit_info.filter((x) => x === "ucarryforwawrd");
+                console.log("Previous units");
+                console.log(prev_units[prev_units.length - 1]);
+                unit_info.splice(ix_tok, n_replace, Array(n_replace).fill(prev_units[prev_units.length - 1]));
+                unit_info = unit_info.flat();
+                // console.log(unit_info);
             }
 
         }
@@ -1080,15 +1092,27 @@ function detect_regex_match(txt, token_dat, check_dict) {
         const match_start = token_dat.start.findIndex(x => x >= match.start_end[0] && x < match.start_end[1]);
         // Match end must be smaller or equal to token end and larger than token start
         // Search from the back!
-        const match_end = token_dat.end.findLastIndex(x => x <= (match.start_end[1] - 1) && x > match.start_end[0]);
+        let match_end = token_dat.end.findLastIndex(x => x <= (match.start_end[1] - 1) && x > match.start_end[0]);
 
-        // console.log("Match start and end: " + match_start + ", " + match_end);
+        console.log("Match start and end: " + match_start + ", " + match_end);
+        console.log(match);
 
-        if (match_start !== -1) {
-            if (token_match[match_start] === -1) {
-                token_match[match_start] = [i];
-                match_type[match_start] = match.type;
+        if (match_start !== -1 || match_end !== -1) {
+            let match_id = -1;
+            let cur_type = -1;
+
+            if (match_end === -1) {
+                match_end = match_start;
+            }
+
+            const n_ele = match_end - match_start + 1;
+
+            if (token_match[match_start] === -1 && token_match[match_end] === -1) {
+                match_id = [i];
+                cur_type = match.type;
+
             } else if (match.type[0] !== "unknown") {
+
                 console.log("Match type");
                 console.log(match.type);
                 // Note: If we can establish a clear hierarchical structure, we could drop the match here:
@@ -1096,57 +1120,87 @@ function detect_regex_match(txt, token_dat, check_dict) {
                 droplist = droplist.concat(i);
                 const prev_ix = token_match[match_start]
 
-                // Also amend the previous match to include the other type?
-                arr_match[prev_ix[0]].type = arr_match[prev_ix[0]].type.concat(match.type);
-
-                // Add index:
-                token_match[match_start] = prev_ix.concat(i);
-
-            }
-
-        }
-        if (match_end !== -1) {
-
-            if (token_match[match_end] === -1) {
-                token_match[match_end] = [i];
-                match_type[match_end] = match.type;
-            } else if (match.type[0] !== "unknown") {
-                // Note: If we can establish a clear hierarchical structure, we could drop the match here:
-                // arr_match.splice(i);
-                droplist = droplist.concat(i);
-
-                const prev_ix = token_match[match_end]
+                match_id = prev_ix.concat(i)
+                cur_type = match.type;  // might also concat...
 
                 // Also amend the previous match to include the other type?
                 arr_match[prev_ix[0]].type = arr_match[prev_ix[0]].type.concat(match.type);
 
-                // Add index:
-                token_match[match_end] = prev_ix.concat(i);
             }
+
+            // Update the data:
+            console.log(`Replacing ${n_ele} elements`);
+            token_match.splice(match_start, n_ele, Array(n_ele).fill(match_id));
+            token_match = token_match.flat();
+            match_type.splice(match_start, n_ele, Array(n_ele).fill(cur_type));
+            match_type = match_type.flat();
         }
 
-        // Increment match ID:
-        i++;
 
-    }
 
-    // Remove the indices that have to be dropped:
-    arr_match = arr_match.filter((ele, index) => !droplist.includes(index));
-
-    // Sort the array by the starting position of each match:
-    arr_match = arr_match.sort((a, b) => a.start_end[0] - b.start_end[0]);
-
-    // console.log("Sorted and cleaned matches");
-    // console.log(arr_match);
+    // if (match_start !== -1) {
+    //     if (token_match[match_start] === -1) {
+    //         token_match[match_start] = [i];
+    //         match_type[match_start] = match.type;
+    //     } else if (match.type[0] !== "unknown") {
+    //         console.log("Match type");
+    //         console.log(match.type);
+    //         // Note: If we can establish a clear hierarchical structure, we could drop the match here:
+    //         // arr_match.splice(i);
+    //         droplist = droplist.concat(i);
+    //         const prev_ix = token_match[match_start]
     //
-    // console.log("Match data:");
-    // console.log(arr_match);
-    // console.log(token_match);
-    // console.log(match_type);
+    //         // Also amend the previous match to include the other type?
+    //         arr_match[prev_ix[0]].type = arr_match[prev_ix[0]].type.concat(match.type);
+    //
+    //         // Add index:
+    //         token_match[match_start] = prev_ix.concat(i);
+    //
+    //     }
+    //
+    // }
+    // if (match_end !== -1) {
+    //
+    //     if (token_match[match_end] === -1) {
+    //         token_match[match_end] = [i];
+    //         match_type[match_end] = match.type;
+    //     } else if (match.type[0] !== "unknown") {
+    //         // Note: If we can establish a clear hierarchical structure, we could drop the match here:
+    //         // arr_match.splice(i);
+    //         droplist = droplist.concat(i);
+    //
+    //         const prev_ix = token_match[match_end]
+    //
+    //         // Also amend the previous match to include the other type?
+    //         arr_match[prev_ix[0]].type = arr_match[prev_ix[0]].type.concat(match.type);
+    //
+    //         // Add index:
+    //         token_match[match_end] = prev_ix.concat(i);
+    //     }
+    // }
 
-    // Is it more efficient to check for the matches or the tokens?
-    // Likely the matches, because there are fewer by design!
-    return ({"arr_match": arr_match, "match_id": token_match, "match_type": match_type})
+    // Increment match ID:
+    i++;
+
+}
+
+// Remove the indices that have to be dropped:
+arr_match = arr_match.filter((ele, index) => !droplist.includes(index));
+
+// Sort the array by the starting position of each match:
+arr_match = arr_match.sort((a, b) => a.start_end[0] - b.start_end[0]);
+
+// console.log("Sorted and cleaned matches");
+// console.log(arr_match);
+//
+console.log("Match data:");
+console.log(arr_match);
+console.log(token_match);
+console.log(match_type);
+
+// Is it more efficient to check for the matches or the tokens?
+// Likely the matches, because there are fewer by design!
+return ({"arr_match": arr_match, "match_id": token_match, "match_type": match_type})
 
 }
 
