@@ -404,6 +404,13 @@ const check_numbers_dict = {
     "legal": {
         "regex": /(?<legal>(Artikel|§|Absatz) ?\d+)/dg
     },
+    // Carry-forward match:
+    "carry_forward_pre": {
+      "regex": RegExp("(?<carryforward>((waren|sind) es )" + pat_num + "\W)", "dg")
+    },
+    "carry_forward_post": {
+      "regex": RegExp("?<carryforward>" + pat_num + " (waren|sind) es", "dg")
+    },
     // Default number match:
     "other_num": {
         "regex": regex_num,
