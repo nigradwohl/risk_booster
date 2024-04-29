@@ -31,6 +31,8 @@ Bei der immer noch in zahlreichen Ländern laufenden Studie erhält eine Hälfte
 Slight reformulation:
 Nur 8 Fälle ereigneten sich unter den tatsächlich geimpften Probanden, in der Kontrollgruppe wurden 162 Fälle diagnostiziert.
 
+Nur 8 Fälle ereigneten sich unter den tatsächlich geimpften Probanden, in der Kontrollgruppe waren es 162.
+
 Wer zum Selbstschutz eine Maske trägt, die dicht am Gesicht anliegt, der sei etwa 100-mal besser vor einer Infektion geschützt als ohne Maske.
 
 Test statements:
@@ -208,9 +210,8 @@ $(document).ready(function () {
 
         procText = procText.replaceAll(/\n\n/g, "<br><br>");
 
-        console.log("Text after processing:");
-        console.log(procText);
-        // console.log(procText.matchAll(/[\n\r\v]/));
+        // console.log("Text after processing:");
+        // console.log(procText);
 
         let notes_html = "";
 
@@ -278,7 +279,7 @@ $(document).ready(function () {
             feature_str += "Es wird nur der Nutzen thematisiert. Es sollte auch der Schaden thematisiert werden"
 
         } else if (side) {
-            feature_str += "Es wird nur der Schaden thematisiert. Es sollte auch der nutzen thematisiert werden"
+            feature_str += "Es wird nur der Schaden thematisiert. Es sollte auch der Nutzen thematisiert werden"
 
         } else {
             feature_str = "Es werden weder Schaden noch Nutzen thematisiert.";
@@ -412,10 +413,10 @@ const check_numbers_dict = {
     },
     // Carry-forward match:
     "carry_forward_pre": {
-        "regex": RegExp("(?<ucarryforwawrd>(waren|sind) es " + pat_num + "(?=\\W))", "dg")
+        "regex": RegExp("(?<ucarryforward>(waren|sind) es " + pat_num + "(?=\\W))", "dg")
     },
     "carry_forward_post": {
-        "regex": RegExp("(?<ucarryforwawrd>" + pat_num + " (waren|sind) es)", "dg")
+        "regex": RegExp("(?<ucarryforward>" + pat_num + " (waren|sind) es)", "dg")
     },
     // Default number match:
     "other_num": {
@@ -490,7 +491,8 @@ const unit_note_dict = {
         "tooltip": {
             "ABS": "Absolute Prozentzahl",
             "REL": "Relative Prozentzahl",
-            "other": "andere Prozentzahl[?]"},
+            "other": "andere Prozentzahl[?]"
+        },
         "note": "Der Text verwendet Prozentzahlen. Achten Sie darauf, dass klar ist auf welche Größe sich die <a href=\"risk_wiki.html#wiki-prozent\">Prozentangabe</a> bezieht."
     },
     "case": {
@@ -1065,19 +1067,59 @@ function detect_unit(token_data) {
 
             }
 
+            // Function to count consecutive values:
+            const range = (start, stop, step) =>
+                Array.from({length: (stop - start) / step + 1}, (_, i) => start + i * step);
+
+            function countReps(array) {
+                let result = [];
+                let begins = [];  // vector for begins.
+
+                let counter = 1;  // initialize counter.
+                for (let i = 0; i < array.length; i++) {
+                    if (array[i] === array[i + 1]) {
+                        counter++;
+                    } else {
+                        result = result.concat(Array(counter).fill(counter));// += array[i] + counter;
+                        begins = begins.concat(Array(counter).fill(i-counter+1));
+                        counter = 1;
+                    }
+                }
+                return {"counts": result, "begins": begins};
+            }
+
+
+
             // If no info was found:
             if (unit_info[ix_tok] === -1) {
+
                 unit_info[ix_tok] = "unknown";
-            } else if (unit_info[ix_tok] === "ucarryforwawrd") {
+
+            } else if (unit_info[ix_tok] === "ucarryforward") {
+
+                // Number and beginnings of each streak of replacements.
+                const n_reps = countReps(unit_info);
+
+                console.log("Count repetitions:");
+                console.log(n_reps);
+
                 console.log("Carrying forward...");
-                console.log(unit_info);
+                console.log("[" + unit_info.toString() + "]");
                 // carry previous unit forward f exists:
-                const prev_units = unit_info.slice(0, ix_tok - 1).filter((x) => x !== -1 && x !== "ucarryforwawrd");
+
+                const prev_info = unit_info.slice(0, ix_tok - 1);
+                console.log("Previous info");
+                console.log(prev_info);
+
+
+                const prev_units = prev_info.filter((x) => x !== -1 && x !== "ucarryforward");
                 // unit_info[ix_tok] = prev_units[prev_units.length - 1];
-                const n_replace = unit_info.filter((x) => x === "ucarryforwawrd");
                 console.log("Previous units");
-                console.log(prev_units[prev_units.length - 1]);
-                unit_info.splice(ix_tok, n_replace, Array(n_replace).fill(prev_units[prev_units.length - 1]));
+                console.log(prev_units.toString() + ", unit prev: " + prev_units[prev_units.length - 1].toString());
+
+
+
+                unit_info.splice(n_reps.begins[ix_tok], n_reps.counts[ix_tok], Array(n_reps.counts[ix_tok]).fill(prev_units[prev_units.length - 1]));
                 unit_info = unit_info.flat();
                 // console.log(unit_info);
             }
@@ -1137,8 +1179,8 @@ function detect_regex_match(txt, token_dat, check_dict) {
         // Search from the back!
         let match_end = token_dat.end.findLastIndex(x => x <= (match.start_end[1] - 1) && x > match.start_end[0]);
 
-        // console.log("Match start and end: " + match_start + ", " + match_end);
-        // console.log(match);
+        console.log("Match start and end: " + match_start + ", " + match_end);
+        console.log(match);
 
         if (match_start !== -1 || match_end !== -1) {
             let match_id = -1;
@@ -1229,22 +1271,22 @@ function detect_regex_match(txt, token_dat, check_dict) {
 
     }
 
-// Remove the indices that have to be dropped:
+    // Remove the indices that have to be dropped:
     arr_match = arr_match.filter((ele, index) => !droplist.includes(index));
 
-// Sort the array by the starting position of each match:
+    // Sort the array by the starting position of each match:
     arr_match = arr_match.sort((a, b) => a.start_end[0] - b.start_end[0]);
 
-// console.log("Sorted and cleaned matches");
-// console.log(arr_match);
-//
-//     console.log("Match data:");
-//     console.log(arr_match);
-//     console.log(token_match);
-//     console.log(match_type);
+    // console.log("Sorted and cleaned matches");
+    // console.log(arr_match);
+    //
+    console.log("Match data:");
+    console.log(arr_match);
+    console.log(token_match);
+    console.log(match_type);
 
-// Is it more efficient to check for the matches or the tokens?
-// Likely the matches, because there are fewer by design!
+    // Is it more efficient to check for the matches or the tokens?
+    // Likely the matches, because there are fewer by design!
     return ({"arr_match": arr_match, "match_id": token_match, "match_type": match_type})
 
 }
