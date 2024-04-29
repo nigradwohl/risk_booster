@@ -487,14 +487,19 @@ const keyset_impf = [[RegExp(collapse_regex_or(["([Ww]irk(sam|t))", "[Ee]ffektiv
 // Detect the matches in token set:
 const unit_note_dict = {
     "perc": {
-        "tooltip": {"ABS": "Absolute Prozentzahl", "REL": "Relative Prozentzahl", "other": "andere Prozentzahl[?]"},
+        "tooltip": {
+            "ABS": "Absolute Prozentzahl",
+            "REL": "Relative Prozentzahl",
+            "other": "andere Prozentzahl[?]"},
         "note": "Der Text verwendet Prozentzahlen. Achten Sie darauf, dass klar ist auf welche Größe sich die <a href=\"risk_wiki.html#wiki-prozent\">Prozentangabe</a> bezieht."
     },
     "case": {
         "tooltip": {
             "other": "Personen oder Fälle",
             "N_TOT": "Gesamtzahl an Personen",
-            "N_AFFECTED": "gesamtzahl Betroffene (Erkrankte)"
+            "N_AFFECTED": "gesamtzahl Betroffene (Erkrankte)",
+            "treatment": "Anzahl unter den Behandelten",
+            "control": "Anzahl in der Kontrollgruppe"
         },
         "note": "Der Text enthält Anzahlen von Fällen. Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
     },
@@ -791,6 +796,29 @@ function detect_number_type(token_data, txt) {
         testcount++;
     }
 
+    // Detect matches that are indicative of certain data types:
+    const relation_dict = {
+        "treatre_pre": {
+            "regex": /(?<treatment>(\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,3}(auf die|unter den) ([a-zA-ZÄÖÜßäöü]+ ){0,2}geimpften (Proband\w+|Teilnehm\w+)))/dg  // (\w+ ){0,2} are up to 2 more words.
+            // / (auf die tatsächlich geimpften (Proband\w+|Teilnehm\w+))/
+        },
+        "controlrel_pre": {
+            "regex": /(?<control>\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,3}(in der|unter den (Teilnehme\w+ |Proband\w+){,2} der|auf die (Teilnehme\w+ |Proband\w+){,2}) (Kontroll|Placebo)-?[Gg]ruppe)/dg
+        },
+        "treatre_post": {
+            "regex": /(?<treatment>((auf die|unter den) ([a-zA-ZÄÖÜßäöü]+ ){0,2}geimpften (Proband\w+|Teilnehm\w+)) ([a-zA-ZÄÖÜßäöü]+ ){1,2}\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,2})/dg  // (\w+ ){0,2} are up to 2 more words.
+            // / (auf die tatsächlich geimpften (Proband\w+|Teilnehm\w+))/
+        },
+        "controlrel_post": {
+            "regex": /(?<control>(in der|unter den (Teilnehme\w+ |Proband\w+){,2} der|auf die (Teilnehme\w+ |Proband\w+){,2}) (Kontroll|Placebo)-?[Gg]ruppe ([a-zA-ZÄÖÜßäöü]+ ){1,2}\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,2})/dg
+        }
+    }
+
+    const ref_matches = detect_regex_match(txt, token_data, relation_dict);
+
+    console.log("Reference matches");
+    console.log(ref_matches);
+
     /*
     Overview of the pipeline (tree-like structures?)
     1. Text-level properties (e.g. topic --> may inform the list of patterns to be tested
@@ -940,16 +968,16 @@ function detect_number_type(token_data, txt) {
                 // Check number if numtype remained other:
                 if (numtype === "other") {
 
-                    const relation_dict = {
-                        "controlrel": {
-                            "regex": /(?<control>(in der|unter den (Teilnehme\w+ |Proband\w+){,2} der|auf die (Teilnehme\w+ |Proband\w+){,2}) (Kontroll|Placebo)-?[Gg]ruppe)/dg
-                        }
+                    console.log("Sentence tokens");
+                    console.log(sentence_tokens);
+
+                    console.log(`Number match from regex (num = ${num})`);
+                    console.log(ref_matches.match_type[num]);
+
+                    if (ref_matches.match_type[num].length > 0) {
+                        numtype = ref_matches.match_type[num];
                     }
 
-                    const ref_matches = detect_regex_match(txt, token_data, relation_dict);
-
-                    console.log("Reference matches");
-                    console.log(ref_matches);
                 }
 
 
