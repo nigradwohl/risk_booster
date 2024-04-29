@@ -206,7 +206,11 @@ $(document).ready(function () {
         }
         procText += inputText.slice(cur_ix, inputText.length);
 
-        // console.log(procText);
+        procText = procText.replaceAll(/\n\n/g, "<br><br>");
+
+        console.log("Text after processing:");
+        console.log(procText);
+        // console.log(procText.matchAll(/[\n\r\v]/));
 
         let notes_html = "";
 
@@ -866,7 +870,7 @@ function detect_number_type(token_data, txt) {
             //     keyset = keyset.concat(keyset_impf);
             // }
 
-            console.log(`Testcount is ${testcount}`);
+            // console.log(`Testcount is ${testcount}`);
 
             for (const num of num_array) {
                 const curnum_id = token_data.id[num];  // Get global ID of current number in sentence.
@@ -875,8 +879,8 @@ function detect_number_type(token_data, txt) {
                 // Check for type:
                 let numtype = "other";
 
-                console.log("Current key_obj:");
-                console.log(key_obj);
+                // console.log("Current key_obj:");
+                // console.log(key_obj);
 
                 for (const [key, value] of Object.entries(key_obj)) {
 
