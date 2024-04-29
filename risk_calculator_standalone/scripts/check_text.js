@@ -430,17 +430,11 @@ const key_obj = {
                 RegExp(collapse_regex_or(["höher", "erhöht", "reduziert", "(ge|ver)ringert?"]))]
         ]
     },
-    "APPROX": {
-        "number_unit": "perc",  // ACTUALLY ALSO OTHERS?
-        "keyset": []
-        // Pattern would be "mehr/weniger als; ungefähr" --> percent, nh or also cases!
-    },
     "N_TOT": {
         "number_unit": "case",
         "keyset": [
             // TODO: Double check these!
-            [RegExp("Proband|[Tt]eilnehme|Versuchspers")],
-            [RegExp("insgesamt|Studie")]
+            [RegExp("Proband|[Tt]eilnehme|Versuchspers"), RegExp("insgesamt|Studie")]
         ]
     },
     // Total nuber of cases/incidents:
@@ -448,8 +442,7 @@ const key_obj = {
         "number_unit": "case",
         "keyset": [
             // TODO: Double check these!
-            [RegExp("Fälle")],
-            [RegExp("insgesamt")]
+            [RegExp("Fälle"), RegExp("insgesamt")]
         ]
     },
     // Part of cases:
@@ -474,6 +467,13 @@ const key_obj = {
     // }
 }
 
+// The following should be its own (because numbers belong to a category and can be an approximation)
+// "APPROX": {
+//     "number_unit": "perc",  // ACTUALLY ALSO OTHERS?
+//     "keyset": []
+//     // Pattern would be "mehr/weniger als; ungefähr" --> percent, nh or also cases!
+// },
+
 // Additional set for vaccination topic:
 const keyset_impf = [[RegExp(collapse_regex_or(["([Ww]irk(sam|t))", "[Ee]ffektiv"]))]];
 
@@ -485,7 +485,11 @@ const unit_note_dict = {
         "note": "Der Text verwendet Prozentzahlen. Achten Sie darauf, dass klar ist auf welche Größe sich die <a href=\"risk_wiki.html#wiki-prozent\">Prozentangabe</a> bezieht."
     },
     "case": {
-        "tooltip": {"other": "Personen oder Fälle", "N_TOT": "Anzahl an Personen"},
+        "tooltip": {
+            "other": "Personen oder Fälle",
+            "N_TOT": "Gesamtzahl an Personen",
+            "N_AFFECTED": "gesamtzahl Betroffene (Erkrankte)"
+        },
         "note": "Der Text enthält Anzahlen von Fällen. Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
     },
     "multi": {
@@ -864,8 +868,8 @@ function detect_number_type(token_data, txt) {
                     key_obj.REL.keyset = key_obj.REL.keyset.concat(keyset_impf);
                 }
 
-                // console.log("Current key_obj:");
-                // console.log(key_obj);
+                console.log("Current key_obj:");
+                console.log(key_obj);
 
                 for (const [key, value] of Object.entries(key_obj)) {
 
@@ -1128,79 +1132,81 @@ function detect_regex_match(txt, token_dat, check_dict) {
 
             }
 
-            // Update the data:
-            console.log(`Replacing ${n_ele} elements`);
-            token_match.splice(match_start, n_ele, Array(n_ele).fill(match_id));
-            token_match = token_match.flat();
-            match_type.splice(match_start, n_ele, Array(n_ele).fill(cur_type));
-            match_type = match_type.flat();
+            if (cur_type !== -1) {
+                // Update the data when anything could be found:
+                console.log(`Replacing ${n_ele} elements with matchtype ${cur_type}`);
+                token_match.splice(match_start, n_ele, Array(n_ele).fill(match_id));
+                token_match = token_match.flat();
+                match_type.splice(match_start, n_ele, Array(n_ele).fill(cur_type));
+                match_type = match_type.flat();
+            }
+
         }
 
 
+        // if (match_start !== -1) {
+        //     if (token_match[match_start] === -1) {
+        //         token_match[match_start] = [i];
+        //         match_type[match_start] = match.type;
+        //     } else if (match.type[0] !== "unknown") {
+        //         console.log("Match type");
+        //         console.log(match.type);
+        //         // Note: If we can establish a clear hierarchical structure, we could drop the match here:
+        //         // arr_match.splice(i);
+        //         droplist = droplist.concat(i);
+        //         const prev_ix = token_match[match_start]
+        //
+        //         // Also amend the previous match to include the other type?
+        //         arr_match[prev_ix[0]].type = arr_match[prev_ix[0]].type.concat(match.type);
+        //
+        //         // Add index:
+        //         token_match[match_start] = prev_ix.concat(i);
+        //
+        //     }
+        //
+        // }
+        // if (match_end !== -1) {
+        //
+        //     if (token_match[match_end] === -1) {
+        //         token_match[match_end] = [i];
+        //         match_type[match_end] = match.type;
+        //     } else if (match.type[0] !== "unknown") {
+        //         // Note: If we can establish a clear hierarchical structure, we could drop the match here:
+        //         // arr_match.splice(i);
+        //         droplist = droplist.concat(i);
+        //
+        //         const prev_ix = token_match[match_end]
+        //
+        //         // Also amend the previous match to include the other type?
+        //         arr_match[prev_ix[0]].type = arr_match[prev_ix[0]].type.concat(match.type);
+        //
+        //         // Add index:
+        //         token_match[match_end] = prev_ix.concat(i);
+        //     }
+        // }
 
-    // if (match_start !== -1) {
-    //     if (token_match[match_start] === -1) {
-    //         token_match[match_start] = [i];
-    //         match_type[match_start] = match.type;
-    //     } else if (match.type[0] !== "unknown") {
-    //         console.log("Match type");
-    //         console.log(match.type);
-    //         // Note: If we can establish a clear hierarchical structure, we could drop the match here:
-    //         // arr_match.splice(i);
-    //         droplist = droplist.concat(i);
-    //         const prev_ix = token_match[match_start]
-    //
-    //         // Also amend the previous match to include the other type?
-    //         arr_match[prev_ix[0]].type = arr_match[prev_ix[0]].type.concat(match.type);
-    //
-    //         // Add index:
-    //         token_match[match_start] = prev_ix.concat(i);
-    //
-    //     }
-    //
-    // }
-    // if (match_end !== -1) {
-    //
-    //     if (token_match[match_end] === -1) {
-    //         token_match[match_end] = [i];
-    //         match_type[match_end] = match.type;
-    //     } else if (match.type[0] !== "unknown") {
-    //         // Note: If we can establish a clear hierarchical structure, we could drop the match here:
-    //         // arr_match.splice(i);
-    //         droplist = droplist.concat(i);
-    //
-    //         const prev_ix = token_match[match_end]
-    //
-    //         // Also amend the previous match to include the other type?
-    //         arr_match[prev_ix[0]].type = arr_match[prev_ix[0]].type.concat(match.type);
-    //
-    //         // Add index:
-    //         token_match[match_end] = prev_ix.concat(i);
-    //     }
-    // }
+        // Increment match ID:
+        i++;
 
-    // Increment match ID:
-    i++;
-
-}
+    }
 
 // Remove the indices that have to be dropped:
-arr_match = arr_match.filter((ele, index) => !droplist.includes(index));
+    arr_match = arr_match.filter((ele, index) => !droplist.includes(index));
 
 // Sort the array by the starting position of each match:
-arr_match = arr_match.sort((a, b) => a.start_end[0] - b.start_end[0]);
+    arr_match = arr_match.sort((a, b) => a.start_end[0] - b.start_end[0]);
 
 // console.log("Sorted and cleaned matches");
 // console.log(arr_match);
 //
-console.log("Match data:");
-console.log(arr_match);
-console.log(token_match);
-console.log(match_type);
+    console.log("Match data:");
+    console.log(arr_match);
+    console.log(token_match);
+    console.log(match_type);
 
 // Is it more efficient to check for the matches or the tokens?
 // Likely the matches, because there are fewer by design!
-return ({"arr_match": arr_match, "match_id": token_match, "match_type": match_type})
+    return ({"arr_match": arr_match, "match_id": token_match, "match_type": match_type})
 
 }
 
