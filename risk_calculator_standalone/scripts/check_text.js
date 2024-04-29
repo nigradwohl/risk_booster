@@ -813,8 +813,11 @@ function detect_number_type(token_data, txt) {
             "regex": /(?<treatment>((auf die|unter den) ([a-zA-ZÄÖÜßäöü]+ ){0,2}geimpften (Proband\w+|Teilnehm\w+)) ([a-zA-ZÄÖÜßäöü]+ ){1,2}\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,2})/dg  // (\w+ ){0,2} are up to 2 more words.
             // / (auf die tatsächlich geimpften (Proband\w+|Teilnehm\w+))/
         },
-        "controlrel_post": {
-            "regex": /(?<control>(in der|unter den (Teilnehme\w+ |Proband\w+){,2} der|auf die (Teilnehme\w+ |Proband\w+){,2}) (Kontroll|Placebo)-?[Gg]ruppe ([a-zA-ZÄÖÜßäöü]+ ){1,2}\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,2})/dg
+        "controlrel_post1": {
+            "regex": /(?<control>(auf die|unter den) (Teilnehme\w+ |Proband\w+){,2} ([a-zA-ZÄÖÜßäöü]+ ){1,2}(Kontroll|Placebo)-?[Gg]ruppe ([a-zA-ZÄÖÜßäöü]+ ){1,2}\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,2})/dg
+        },
+        "controlrel_post2": {
+            "regex": /(?<control>in der (Kontroll|Placebo)[- ]?[Gg]ruppe ([a-zA-ZÄÖÜßäöü]+ ){1,2}\d+( [a-zA-ZÄÖÜßäöü]+){0,2})/dg
         }
     }
 
