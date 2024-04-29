@@ -166,18 +166,14 @@ $(document).ready(function () {
             // console.log(cur_unit);
 
             if (Array.isArray(cur_unit)) {
-                cur_unit = cur_unit[0];  // for now thake the first array element.
+                cur_unit = cur_unit[0];  // for now take the first array element.
             }
 
             if (cur_unit !== -1 && !units_exc.includes(cur_unit)) {
                 // Text prior to match:
                 let text_pre = inputText.slice(cur_ix, token_dat.start[i]);
 
-                let cur_numtype = token_dat.numtype[i];
-
-                // Get types for each tooltip:
-                const cur_tooltip = unit_note_dict[cur_unit].tooltip[cur_numtype];
-
+                // Get units and legth:
                 let match_len = 0;
                 // let match = token_dat.token.slice(i);
 
@@ -188,8 +184,14 @@ $(document).ready(function () {
                     match_len++;
                 }
 
+                // Get types for each tooltip:
+                let cur_numtype = token_dat.numtype.slice(i, i + match_len).filter((x) => x !== -1);
+                // console.log(token_dat.numtype.slice(i, i + match_len));
+                const cur_tooltip = unit_note_dict[cur_unit].tooltip[cur_numtype];
+
+
                 // console.log("Start: " + token_dat.start[i] + ", end: " + token_dat.end[i + match_len - 1] +
-                //     ", match length: " + match_len);
+                //     ", match length: " + match_len + ", unit: " + cur_unit + ", numtype: " + cur_numtype);
                 cur_ix = token_dat.end[i + match_len - 1] + 1;
 
                 procText += text_pre +
