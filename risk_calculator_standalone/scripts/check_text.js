@@ -118,14 +118,16 @@ $(document).ready(function () {
         // Add to object:
         // token_dat.token_match = token_match;
         token_dat.add_column(regex_matches.match_id, "match");
-        token_dat.add_column(regex_matches.match_type, "unit");
-        token_dat.add_number_info();
-        token_dat.detect_unit();
+        token_dat.add_column(regex_matches.match_type, "unit");  // get unit info from regex matches.
+        token_dat.add_number_info();  // add info about numbers.
+        token_dat.detect_unit();  // get unti info from token data.
 
         // Detect topis:
         token_dat.detect_topic("eff", ["Nutz", "(?<!Neben)[Ww]irks(am|ung)"]);
         token_dat.detect_topic("side", ["Nebenwirk"]);
         token_dat.detect_topic("impf", ["(?<!(gl|sch))[Ii]mpf"]);  // must be preceded
+
+        // Also: placebo/treatment
 
         // Detect number types (may need topics!)
         token_dat.detect_number_type(inputText);
@@ -745,6 +747,7 @@ function get_token_data(text) {
 // ----------------------------------------------------------------
 // ~~~~~~~~~~~~~~~~~~~~~~~ FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // ----------------------------------------------------------------
+let testcount = 0;
 
 // ~~~~~~~~~~~~~~~~~~~ PROCESSING FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~
 /**
@@ -771,6 +774,18 @@ function detect_number_type(token_data, txt) {
 
     // console.log("Sentence counts");
     // console.log(sentence_counts);
+
+    // Update the keyset:
+    console.log("Current keyset:");
+    console.log(key_obj);
+
+    // Include topic-specific keywords:
+    if (token_data.topics.includes("impf")) {
+        // Include Impf-specific keys
+        // Do so as an inclusive disjunction.
+        key_obj.REL.keyset = key_obj.REL.keyset.concat(keyset_impf);
+        testcount++;
+    }
 
     /*
     Overview of the pipeline (tree-like structures?)
@@ -851,8 +866,7 @@ function detect_number_type(token_data, txt) {
             //     keyset = keyset.concat(keyset_impf);
             // }
 
-            // console.log("Current keyset:");
-            // console.log(keyset);
+            console.log(`Testcount is ${testcount}`);
 
             for (const num of num_array) {
                 const curnum_id = token_data.id[num];  // Get global ID of current number in sentence.
@@ -860,13 +874,6 @@ function detect_number_type(token_data, txt) {
 
                 // Check for type:
                 let numtype = "other";
-
-                // Include topic-specific keywords:
-                if (token_data.topics.includes("impf")) {
-                    // Include Impf-specific keys
-                    // Do so as an inclusive disjunction.
-                    key_obj.REL.keyset = key_obj.REL.keyset.concat(keyset_impf);
-                }
 
                 console.log("Current key_obj:");
                 console.log(key_obj);
@@ -909,8 +916,8 @@ function detect_number_type(token_data, txt) {
                          */
 
 
-                        // If all keys are present, assign the corresponding flag:
-                        if (!keys_present.includes(false)) {
+                        // If all keys in one of the keysets are present, assign the corresponding flag:
+                        if (keys_present.includes(true)) {
                             numtype = key;
 
                             // Eventually fix!
@@ -1098,8 +1105,8 @@ function detect_regex_match(txt, token_dat, check_dict) {
         // Search from the back!
         let match_end = token_dat.end.findLastIndex(x => x <= (match.start_end[1] - 1) && x > match.start_end[0]);
 
-        console.log("Match start and end: " + match_start + ", " + match_end);
-        console.log(match);
+        // console.log("Match start and end: " + match_start + ", " + match_end);
+        // console.log(match);
 
         if (match_start !== -1 || match_end !== -1) {
             let match_id = -1;
@@ -1117,8 +1124,8 @@ function detect_regex_match(txt, token_dat, check_dict) {
 
             } else if (match.type[0] !== "unknown") {
 
-                console.log("Match type");
-                console.log(match.type);
+                // console.log("Match type");
+                // console.log(match.type);
                 // Note: If we can establish a clear hierarchical structure, we could drop the match here:
                 // arr_match.splice(i);
                 droplist = droplist.concat(i);
@@ -1134,7 +1141,7 @@ function detect_regex_match(txt, token_dat, check_dict) {
 
             if (cur_type !== -1) {
                 // Update the data when anything could be found:
-                console.log(`Replacing ${n_ele} elements with matchtype ${cur_type}`);
+                // console.log(`Replacing ${n_ele} elements with matchtype ${cur_type}`);
                 token_match.splice(match_start, n_ele, Array(n_ele).fill(match_id));
                 token_match = token_match.flat();
                 match_type.splice(match_start, n_ele, Array(n_ele).fill(cur_type));
@@ -1199,10 +1206,10 @@ function detect_regex_match(txt, token_dat, check_dict) {
 // console.log("Sorted and cleaned matches");
 // console.log(arr_match);
 //
-    console.log("Match data:");
-    console.log(arr_match);
-    console.log(token_match);
-    console.log(match_type);
+//     console.log("Match data:");
+//     console.log(arr_match);
+//     console.log(token_match);
+//     console.log(match_type);
 
 // Is it more efficient to check for the matches or the tokens?
 // Likely the matches, because there are fewer by design!
