@@ -797,7 +797,7 @@ function detect_number_type(token_data, txt) {
         // Include Impf-specific keys
         // Do so as an inclusive disjunction.
         key_obj.REL.keyset = key_obj.REL.keyset.concat(keyset_impf);
-        testcount++;
+        // testcount++;
     }
 
     // Detect matches that are indicative of certain data types:
@@ -880,32 +880,10 @@ function detect_number_type(token_data, txt) {
             // Loop over tokens in sentence; maybe also use a token ID to assign number values?
 
             // Get positions of numbers:
-            // console.log("Number positions");
+            console.log("Number positions");
             // console.log(token_ids.filter((d, ind) => num_info[ind]));
-            const num_array = token_ids.filter((d, ind) => num_info[ind]);
-            // console.log(num_array);
-
-            // Testcase: Der Impfschutz bei Erwachsenen über 65 Jahren lag bei über 94 %.
-
-            // Example keyset (eventually define elsewhere and translate into dictionary):
-
-            // Conjunctions:
-            // Risiko & erhöh & <Prozentzahl>
-            // let keyset = [
-            //     // A first entry to a domain-general keyset for risk:
-            //     [RegExp(collapse_regex_or(["Risiko", "[Ww]ahrscheinlich"])),
-            //         RegExp(collapse_regex_or(["höher", "erhöht", "reduziert", "(ge|ver)ringert?"]))]
-            // ]
-
-            // If the topic is vaccination, include a topic specific keyset:
-            // if (token_data.topics.includes("impf")) {
-            //     const keyset_impf = [[RegExp(collapse_regex_or(["([Ww]irk(sam|t))", "[Ee]ffektiv"]))]];
-            //     // Check number surroundings for tokens related to "Wirksamkeit":
-            //     // Do so as an inclusive disjunction.
-            //     keyset = keyset.concat(keyset_impf);
-            // }
-
-            // console.log(`Testcount is ${testcount}`);
+            const num_array = token_ids.filter((d, ix) => num_info[ix]);
+            console.log(num_array);
 
             for (const num of num_array) {
                 const curnum_id = token_data.id[num];  // Get global ID of current number in sentence.
@@ -919,8 +897,8 @@ function detect_number_type(token_data, txt) {
 
                 for (const [key, value] of Object.entries(key_obj)) {
 
-                    // console.log("Data judged:");
-                    // console.log(`Token: ${token_data.token[curnum_id]}, Unit: ${token_data.unit[curnum_id]}`);
+                    console.log(`Data judged for key ${key}:`);
+                    console.log(`Token: ${token_data.token[curnum_id]}, Unit: ${token_data.unit[curnum_id]}`);
                     // console.log(value);
 
                     // Check for the number type to select whether the number type (cases, percentage...) applies:
@@ -929,24 +907,25 @@ function detect_number_type(token_data, txt) {
                         // "30-faches Risiko", "das Risiko ist zweimal so hoch"
                         // console.log("It's a percentage!");
 
-                        const keyset = value.keyset;  // Get keyset from object.
+                        // const keyset = value.keyset;  // Get keyset from object.
 
                         // console.log("Current keyset:");
                         // console.log(keyset);
 
                         // Test the keyset for rrr:
-                        const keys_present = keyset
-                            .map((keylist) => keylist
-                                .filter((keyex) => sentence_tokens
+                        const keys_present = value.keyset
+                            .map((keylist) => keylist  // got through all sublists.
+                                .filter((keyex) => sentence_tokens  // check each expression.
+                                    // ... in the sentence tokens:
                                     .filter((token) => keyex.test(token)).length > 0).length === keylist.length);
 
                         // Maybe: find cue-words (in, unter etc.) and then check for in/unter what.
 
                         // Check each token:
                         // const key_present = sentence_tokens.filter((x) => keyrex.test(x));
-                        console.log(`Keys from ${key} present in sentence:`);
-                        console.log(keyset);
-                        console.log(keys_present);
+                        // console.log(`Keys from ${key} present in sentence:`);
+                        // console.log(keyset);
+                        // console.log(keys_present);
 
                         /*
                          Implement:
@@ -957,6 +936,8 @@ function detect_number_type(token_data, txt) {
 
                         // If all keys in one of the keysets are present, assign the corresponding flag:
                         if (keys_present.includes(true)) {
+
+
                             numtype = key;
 
                             // Eventually fix!
@@ -978,15 +959,14 @@ function detect_number_type(token_data, txt) {
                     console.log("Sentence tokens");
                     console.log(sentence_tokens);
 
-                    console.log(`Number match from regex (num = ${num})`);
-                    console.log(ref_matches.match_type[num]);
+                    // console.log(`Number match from regex (num = ${num})`);
+                    // console.log(ref_matches.match_type[num]);
 
                     if (ref_matches.match_type[num].length > 0) {
                         numtype = ref_matches.match_type[num];
                     }
 
                 }
-
 
                 // Assign the numtype to the corresponding number token!
                 num_types[curnum_id] = numtype;
@@ -1002,7 +982,100 @@ function detect_number_type(token_data, txt) {
 
     }
 
+    // Back to text level:
+    /*
+        Context-window approach (number-centric):
+        1. Get the number
+        2. Identify a useful split (comma --> subsentence > fullstop --> sentence > \n --> paragraph)
+        3. Check for informative unit within split
+        4. If none is found, move on to next split and check if informative keyword-combinations occur
+        5. If ambiguous (more than one unit after concat: use disambiguation strategy (e.g., overall matches)
 
+        Identify keywords indicative of
+        - subgroups (e.g., "davon"/"unter" + "Geimpfte"/"Kontrollgruppe") vs. full groups ("insgesamt")
+        - what is counted ("cases" etc. --> unit!)
+        - what happens (VERBs like "erkranken")
+    */
+    // Get positions of numbers:
+    console.log("~~~~~~~~~~~ Context-window approach: ~~~~~~~~~~~~~ ");
+    console.log("Number positions across the text");
+    // console.log(token_ids.filter((d, ind) => num_info[ind]));
+    const num_array_all = token_data.id.filter((d, ix) => token_data.is_num[ix]);
+    console.log(num_array_all);
+
+    let stop_tokens = [",", ".", "?", "!"]
+
+    const tokens = token_data.token;
+
+    // For each number query:
+    for (const token_ix of num_array_all) {
+
+        console.log(`+++ Token number ${token_ix}: ${token_data.token[token_ix]} +++`);
+
+        // Search subgroup keywords (in, unter ...) and non-subgroup keywords (insgesamt ...):
+        const key_total = RegExp(collapse_regex_or(["insgesamt"]));
+        const key_sub = RegExp(collapse_regex_or(["in", "unter"]))
+        // What is the subgroup? (treatment, control, all cases ...)
+        const key_group = RegExp(collapse_regex_or(["Kontroll-?gruppe", "[Gg]impfte?n?"]));
+        const key_verb = RegExp(collapse_regex_or(["erkrank(t|en)"]))
+        // Maybe also distinguish "waren" vs. "sich ereignen"
+
+        // Note: One could additionally implement a list of "locks":
+        let lock_start = 0;  // could also be relative to token!
+        let lock_end = token_data.nrow;
+
+        let arr_num_feat = [];
+
+        let window_start = token_ix;
+        for (window_start = token_ix - 1; !stop_tokens.includes(token_data.token[window_start]) && window_start > lock_start; window_start--) {
+
+            let cur_pre = tokens[window_start];
+
+            console.log(cur_pre);
+            // window_start--;
+            if (key_total.test(cur_pre)) {
+                arr_num_feat = arr_num_feat.concat("total_ind");   // add subgroup indicator
+            }
+            if (key_sub.test(cur_pre)) {
+                arr_num_feat = arr_num_feat.concat("sub_ind");   // add subgroup indicator
+            }
+            if (key_group.test(cur_pre)) {
+                arr_num_feat = arr_num_feat.concat(cur_pre.match(key_group));   // add subgroup indicator
+            }
+
+        }
+
+        let window_end = 0;
+        for (window_end = token_ix; !stop_tokens.includes(token_data.token[window_end]) && window_end < lock_end; window_end++) {
+
+            let cur_post = tokens[window_start];
+            console.log(cur_post);
+        }
+
+        // // Visualize the list of tokens:
+        // const test_tokens = token_data.token.slice(window_start, window_end);
+        // console.log(test_tokens);
+
+        // Test co-occurrence patterns in window?
+        // const keys_present = value.keyset
+        //     .map((keylist) => keylist  // got through all sublists.
+        //         .filter((keyex) => sentence_tokens  // check each expression.
+        //             // ... in the sentence tokens:
+        //             .filter((token) => keyex.test(token)).length > 0).length === keylist.length);
+
+        // If it does not work: remove the first stop token (","); remove numbers for which it worked!
+
+        console.log("Description of number as array:");
+        console.log(arr_num_feat);
+
+    }
+
+
+    console.log("Number array after checking:");
+    console.log(num_array_all);
+
+
+    // OUTPUT: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     console.log("Output numtypes:");
     console.log(num_types);
     return num_types;
@@ -1086,13 +1159,12 @@ function detect_unit(token_data) {
                         counter++;
                     } else {
                         result = result.concat(Array(counter).fill(counter));// += array[i] + counter;
-                        begins = begins.concat(Array(counter).fill(i-counter+1));
+                        begins = begins.concat(Array(counter).fill(i - counter + 1));
                         counter = 1;
                     }
                 }
                 return {"counts": result, "begins": begins};
             }
-
 
 
             // If no info was found:
@@ -1121,7 +1193,6 @@ function detect_unit(token_data) {
                 // unit_info[ix_tok] = prev_units[prev_units.length - 1];
                 console.log("Previous units");
                 console.log(prev_units.toString() + ", unit prev: " + prev_units[prev_units.length - 1].toString());
-
 
 
                 unit_info.splice(n_reps.begins[ix_tok], n_reps.counts[ix_tok], Array(n_reps.counts[ix_tok]).fill(prev_units[prev_units.length - 1]));
@@ -1184,8 +1255,8 @@ function detect_regex_match(txt, token_dat, check_dict) {
         // Search from the back!
         let match_end = token_dat.end.findLastIndex(x => x <= (match.start_end[1] - 1) && x > match.start_end[0]);
 
-        console.log("Match start and end: " + match_start + ", " + match_end);
-        console.log(match);
+        // console.log("Match start and end: " + match_start + ", " + match_end);
+        // console.log(match);
 
         if (match_start !== -1 || match_end !== -1) {
             let match_id = -1;
@@ -1285,10 +1356,10 @@ function detect_regex_match(txt, token_dat, check_dict) {
     // console.log("Sorted and cleaned matches");
     // console.log(arr_match);
     //
-    console.log("Match data:");
-    console.log(arr_match);
-    console.log(token_match);
-    console.log(match_type);
+    // console.log("Match data:");
+    // console.log(arr_match);
+    // console.log(token_match);
+    // console.log(match_type);
 
     // Is it more efficient to check for the matches or the tokens?
     // Likely the matches, because there are fewer by design!
