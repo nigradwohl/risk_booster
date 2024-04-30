@@ -214,7 +214,6 @@ $(document).ready(function () {
 
                 i += match_len;
 
-                arr_li = arr_li.add(unit_note_dict[cur_unit].note);
             }
 
         }
@@ -340,6 +339,25 @@ $(document).ready(function () {
 
 
         // List of notes on numbers:
+
+        for(const [key, value] of Object.entries(unit_note_dict)){
+
+            if(token_dat.unit.includes(key)) {
+                console.log("Unit dict content:");
+                console.log(value);
+
+                let numtypes = Object.keys(value.tooltip)
+                    .filter((key) => token_dat.numtype.includes(key))
+                    .map((x) => value.tooltip[x]);
+                console.log(numtypes);
+
+                arr_li = arr_li.add(value.note(numtypes));
+            }
+
+
+        }
+
+
         // If there are any entries:
         if (arr_li.size > 0) {
 
@@ -539,32 +557,63 @@ const keyset_impf = [[RegExp(collapse_regex_or(["([Ww]irk(sam|t))", "[Ee]ffektiv
 const unit_note_dict = {
     "perc": {
         "tooltip": {
-            "ABS": "Absolute Prozentzahl",
-            "REL": "Relative Prozentzahl",
-            "other": "andere Prozentzahl[?]"
+            "ABS": "absolute Prozentzahl",
+            "REL": "relative Prozentzahl",
+            "other": "andere Prozentzahl"
         },
-        "note": "Der Text verwendet Prozentzahlen. Achten Sie darauf, dass klar ist auf welche Größe sich die <a href=\"risk_wiki.html#wiki-prozent\">Prozentangabe</a> bezieht."
+        "note": function (type_arr){
+            let types = ""
+            if(type_arr.length === 1){
+                types = type_arr.toString() + "en"
+            } else if(type_arr.length === 2) {
+                types = type_arr.join("en und ") + "en";
+            } else {
+                const last = type_arr.pop();
+                types = type_arr.join("en, ") + " und " + last + "en";
+            }
+
+            let txt_out = "Der Text verwendet ";
+
+            if(type_arr.includes("REL")){
+                if(type_arr.length === 1){
+                    txt_out += "nur " + types;
+                } else {
+                    txt_out += types + ". ";
+                }
+
+                txt_out += "Achten Sie darauf, dass Sie auch die <strong>absoluten Wahrscheinlichkeiten in den Gruppen berichten</strong> -- " +
+                    "am besten als <a href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> (d.h., 3 aus 1000 oä.).";
+
+            } else {
+                txt_out += `${types}. Achten Sie darauf, dass klar ist auf welche Größe sich die <a href=\"risk_wiki.html#wiki-prozent\">Prozentangabe</a> bezieht.`
+            }
+
+            return txt_out;
+
+        }
     },
     "case": {
         "tooltip": {
             "other": "Personen oder Fälle",
             "N_TOT": "Gesamtzahl an Personen",
-            "N_AFFECTED": "gesamtzahl Betroffene (Erkrankte)",
+            "N_AFFECTED": "Gesamtzahl Betroffene (Erkrankte)",
             "treatment": "Anzahl unter den Behandelten",
             "control": "Anzahl in der Kontrollgruppe"
         },
-        "note": "Der Text enthält Anzahlen von Fällen. Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
+        "note": function (type_arr){return "Der Text enthält Anzahlen von Fällen. Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."}
     },
     "multi": {
         "tooltip": {"other": "Relative Angabe"},
-        "note": "Der Text enthält relative Vergleiche (10-mal so groß, halb so groß)." +
+        "note": function(type_arr){
+            return "Der Text enthält relative Vergleiche (10-mal so groß, halb so groß)." +
             "Bitte achten Sie darauf, auch die absoluten Risiken in jeder Gruppe anzugeben -- am besten als natürliche Häufigkeit " +
             "(z.B., unter denen ohne Impfung steckten sich 2 aus 1000 an unter den geimpften nur 1 aus 1000)."
+        }
     },
     // Unidentified matches:
     "unknown": {
         "tooltip": {"other": "Konnte nicht identifiziert werden"},
-        "note": "Einige Zahlen konnten nicht identifiziert werden."
+        "note": function(type_arr){return "Einige Zahlen konnten nicht identifiziert werden."}
     }
 }
 
