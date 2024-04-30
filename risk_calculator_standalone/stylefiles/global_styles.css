@@ -14,50 +14,52 @@
     ---dropdown-content-bg: #f1f1f1;
     ---dropdown-content-text: black;
     ---dropdown-content-hover-text: #ddd;
-    ---column-bg-primary: #A7BEAE;
+    ---column-bg-primary: white;
     ---column-bg-secondary: #f1f1f1;
     ---colum-bg-tertiary: white;
     ---checklist-question-bg: silver;
-    ---button-primary: #1abc9c;
-    ---button-secondary: silver;
-    ---wiki-bg: lightblue;
-    ---wiki-border: cornflowerblue;
+    ---button-primary: #E7E8D1;
+    ---button-secondary: lightgrey;
+    ---wiki-bg: #E7E8D1;
+    ---wiki-example-bg: lightgrey;
+    ---wiki-overview-bg: #A7BEAE;
+    ---wiki-border: #444;
     ---card-bg: silver;
     ---card-hover-bg: #ddd;
     ---text-color-primary: black;
     ---text-color-secondary: #333;
 }
 
-.theme-1{
-    .current-theme {
-    ---body-background: #f0f0f0;
-    ---header-background: #1abc9c;
-    ---textcol-header: white;
-    ---navbar-bg: slategrey;
-    ---navbar-text: white;
-    ---navbar-hover-bg: #ddd;
-    ---navbar-hover-text: black;
-    ---footer-bg: #ddd;
-    ---footer-text: black;
-    ---footer-hover-bg: slategray;
-    ---footer-hover-text: lightgrey;
-    ---dropdown-content-bg: #f1f1f1;
-    ---dropdown-content-text: black;
-    ---dropdown-content-hover-text: #ddd;
-    ---column-bg-primary: #f1f1f1;
-    ---column-bg-secondary: #f1f1f1;
-    ---colum-bg-tertiary: white;
-    ---checklist-question-bg: silver;
-    ---button-primary: #1abc9c;
-    ---button-secondary: silver;
-    ---wiki-bg: lightblue;
-    ---wiki-border: cornflowerblue;
-    ---card-bg: silver;
-    ---card-hover-bg: #ddd;
-    ---text-color-primary: black;
-    ---text-color-secondary: #333;
-}
-                                                                                                                                                                                                               }
+/*.theme-1 {*/
+/*    .current-theme {*/
+/*        ---body-background: #f0f0f0;*/
+/*        ---header-background: #1abc9c;*/
+/*        ---textcol-header: white;*/
+/*        ---navbar-bg: slategrey;*/
+/*        ---navbar-text: white;*/
+/*        ---navbar-hover-bg: #ddd;*/
+/*        ---navbar-hover-text: black;*/
+/*        ---footer-bg: #ddd;*/
+/*        ---footer-text: black;*/
+/*        ---footer-hover-bg: slategray;*/
+/*        ---footer-hover-text: lightgrey;*/
+/*        ---dropdown-content-bg: #f1f1f1;*/
+/*        ---dropdown-content-text: black;*/
+/*        ---dropdown-content-hover-text: #ddd;*/
+/*        ---column-bg-primary: #f1f1f1;*/
+/*        ---column-bg-secondary: #f1f1f1;*/
+/*        ---colum-bg-tertiary: white;*/
+/*        ---checklist-question-bg: silver;*/
+/*        ---button-primary: #1abc9c;*/
+/*        ---button-secondary: silver;*/
+/*        ---wiki-bg: lightblue;*/
+/*        ---wiki-border: cornflowerblue;*/
+/*        ---card-bg: silver;*/
+/*        ---card-hover-bg: #ddd;*/
+/*        ---text-color-primary: black;*/
+/*        ---text-color-secondary: #333;*/
+/*    }*/
+/*}*/
 
 /* CSS for body */
 body {
@@ -228,13 +230,27 @@ body {
 
 .wiki-overview {
     flex: 35%;
-    background-color: var(---wiki-bg);
-    border: 2px solid var(---wiki-border);
-    border-radius: 10px;
+    background-color: var(---wiki-overview-bg);
+    border: 0.1em solid var(---wiki-border);
+    border-radius: 5px;
 }
 
 .wiki-text {
     flex: 65%;
+}
+
+.wiki-entry {
+    margin: 1em 0;
+    border-radius: 5px;
+    border: 1px solid var(---wiki-border);
+    background-color: var(---wiki-bg);
+}
+
+.wiki-examples {
+    /*border: 1px solid var(---wiki-border);*/
+    margin: 1em 0;
+    padding: 1em;
+    background-color: var(---wiki-example-bg);
 }
 
 .text-input {
