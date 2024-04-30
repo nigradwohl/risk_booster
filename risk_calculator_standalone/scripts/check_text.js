@@ -129,9 +129,13 @@ $(document).ready(function () {
         token_dat.detect_unit();  // get unti info from token data.
 
         // Detect topis:
+        token_dat.detect_topic("impf", ["(?<!(gl|sch))[Ii]mpf"]);  // must be preceded
+        token_dat.detect_topic("cancer_risk", ["[Rr]isiko", "Krebs"]);  // must be preceded
+        token_dat.detect_topic("cancer_drug", ["[Mm]edikament", "Krebs"])
+
+        // Detect features:
         token_dat.detect_topic("eff", ["Nutz", "(?<!Neben)[Ww]irks(am|ung)"]);
         token_dat.detect_topic("side", ["Nebenwirk"]);
-        token_dat.detect_topic("impf", ["(?<!(gl|sch))[Ii]mpf"]);  // must be preceded
         token_dat.detect_topic("treatgroup", ["(Impf|Behandlungs)-?.*[Gg]ruppe"]);
         token_dat.detect_topic("controlgroup", ["(Kontroll|Placebo)-?.*[Gg]ruppe"]);
 
@@ -226,7 +230,9 @@ $(document).ready(function () {
         // Annotations: ---------------------------------------------
 
         // Notes about topics:
-        const key_topic_dict = {"impf": "Impfung"};  // {"impf": "Impfung", "eff": "Wirksamkeit", "side": "Nebenwirkungen"};
+        const key_topic_dict = {
+            "impf": "Impfung",
+            "cancer_risk": "Krebsrisiko"};  // {"impf": "Impfung", "eff": "Wirksamkeit", "side": "Nebenwirkungen"};
         let key_topics = [];
         let key_topics_str = "";
 
