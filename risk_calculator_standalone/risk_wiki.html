@@ -23,82 +23,127 @@
 <div class="row">
     <div class="full-column">
         <h1>Wiki</h1>
+        <p>
+            [Short introduction]
+        </p>
     </div>
 
-    <!--    Dummy entry:-->
-    <div class="wiki-entry full-column">
-
-
-        <h2>[Überschrift]</h2>
-
-        <div class="wiki-overview">
-            <ul>
-                <li>Wichtiger Punkt 1</li>
-                <li>Wichtiger Punkt 2</li>
-                <li>Wichtiger Punkt 3</li>
-            </ul>
-        </div>
-        <div class="wiki-text">
-            <p>
-                Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut
-                labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et
-                ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum
-                dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore
-                magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet
-                clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit
-                amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna
-                aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita
-                kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-
-                Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum
-                dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent
-                luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet,
-                consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam
-                erat volutpat.
-
-                Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip
-                ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie
-                consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim
-                qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.
-
-                Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat
-                facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh
-                euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis
-                nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.
-
-                Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum
-                dolore eu feugiat nulla facilisis.
-
-                At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata
-                sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur
-            </p>
-        </div>
-
-
-    </div>
 
     <div class="wiki-entry full-column" id="wiki-prozent">
 
 
-        <h2>Vergleiche zwischen Gruppen</h2>
+        <h2>Prozentzahlen</h2>
 
         <div class="wiki-overview">
             <ul>
-                <li>Bezugsgröße ist entscheidend, besonders für relative Angaben (z.B., eine Erhöhung von 50%, eine
+                <li>
+                    Bezugsgröße ist entscheidend, besonders für <a href="#wiki-rel">relative Angaben</a> (z.B., eine
+                    Erhöhung von 50%, eine
                     Impfstoffwirksamkeit von 90%)
                 </li>
-                <li>Absolute Ereigniswahrscheinlichkeiten sind relativen Angaben vorzuziehen</li>
+                <li>
+                    Absolute Ereigniswahrscheinlichkeiten sind <a href="#wiki-rel">relativen Angaben</a> vorzuziehen
+                </li>
             </ul>
         </div>
         <div class="wiki-text">
             <p>
                 Prozentzahlen sollten nur bei Angaben größer als 1% verwendet werden.
             </p>
+            <p>
+                Besser als <a href="">Prozentzahlen</a> sind <a href="#wiki-nh">natürliche Häufigkeiten</a>.
+            </p>
         </div>
 
 
     </div>
 
+    <div class="wiki-entry full-column" id="wiki-nh">
+
+
+        <h2>Natürliche Häufigkeiten</h2>
+
+        [TODO: Improve design of examples!]
+        <p>Beispiele: </p>
+        <ul>
+            <li></li>
+        </ul>
+
+
+        <div class="wiki-overview">
+            <ul>
+                <li>
+                    Beispiele
+                </li>
+                <li>
+                    Bezugsgröße sollte konstant sein.
+                </li>
+                <li>
+                    Absolute Ereigniswahrscheinlichkeiten sind relativen Angaben vorzuziehen
+                </li>
+            </ul>
+        </div>
+        <div class="wiki-text">
+
+        </div>
+
+
+    </div>
+
+    <div class="wiki-entry full-column" id="wiki-rel">
+
+        <h2>Relative Angaben</h2>
+
+        <div class="wiki-overview">
+            <ul>
+                <li>Vorsicht vor relativen Angaben (20-mal so viel, Impfwirksamkeit von 90%)!</li>
+                <li>
+                    Relative Angaben sollten niemals alleine verwendet werden.
+                </li>
+                <li>
+                    Es sollte immer mindestens das Basisrisiko (die Basiswahrscheinlichkeit) in der
+                    <a>Kontrollgruppe</a> berichtet werden.
+                </li>
+                <li>
+                    Falls nur relative Angaben verwendet werden, sollten sie gleichermaßen für Nutzen und Schaden der
+                    Impfung, des Medikamentes oder des Verhaltens verwendet werden.
+                </li>
+            </ul>
+        </div>
+        <div class="wiki-text">
+            <h4>Relative Angaben können missverständlich sein.</h4>
+            <p>
+
+                Eine Impfwirksamkeit von 90% etwa bedeutet dass unter den Geimpften 90% weniger Personen erkranken.
+                Erkranken in der nicht geimpften Gruppe zum Beispiel 10 aus 1000, so erkrankt in der geimpften Gruppe
+                1 aus 1000.
+            </p>
+            <p>
+                Das entspricht einer absoluten Risikoreduktion um 0.9% (von 1% auf 0.1%).
+                [CHECK!]
+                Dieser Effekt wirkt erheblich kleiner als die relativen 90%.
+                <span id="wiki-error-rel">Da relative Angaben oft zu einer Fehleinschätzung führen</span>, sollten sie
+                vermieden werden.
+                Wenn sie verwendet werden, sollten sie gemeinsam mit <a>absoluten Risikoangaben[TODO]</a> verwendet
+                werden.
+            </p>
+
+
+            <h4>Verwendung derselben Zahlentypen für Nutzen und Schaden</h4>
+            [MAKE REFERENCEABLE?]
+            <p>
+                Falls nur relative Angaben verwendet werden, sollten sie gleichermaßen für Nutzen und Schaden
+                des Medikamentes oder des Verhaltens verwendet werden.
+                <br>
+                Wenn der Nutzen relativ ausgedrückt wird, wird er häufig überschätzt (<a href="#wiki-error-rel">s.
+                oben</a>)
+                [BEISPIEL!]
+            </p>
+
+        </div>
+
+
+    </div>
     <!--    Sources-->
 
 
