@@ -132,6 +132,8 @@ $(document).ready(function () {
         token_dat.detect_topic("eff", ["Nutz", "(?<!Neben)[Ww]irks(am|ung)"]);
         token_dat.detect_topic("side", ["Nebenwirk"]);
         token_dat.detect_topic("impf", ["(?<!(gl|sch))[Ii]mpf"]);  // must be preceded
+        token_dat.detect_topic("treatgroup", ["(Impf|Behandlungs)-?.*[Gg]ruppe"]);
+        token_dat.detect_topic("controlgroup", ["(Kontroll|Placebo)-?.*[Gg]ruppe"]);
 
         // Also: placebo/treatment
 
@@ -228,9 +230,11 @@ $(document).ready(function () {
         let key_topics = [];
         let key_topics_str = "";
 
-        const feature_dict = {"eff": "Nutzen", "side": "Schaden"};
+        const feature_dict = {
+            "eff": "Nutzen", "side": "Schaden",
+            "treatgroup": "Behandlungsgruppe", "controlgroup": "Kontrollgruppe"
+        };
         let feature_arr = [];
-        let feature_str = "";
 
         // Get the content-topics:
         // Maybe differentiate this in a text-object!
@@ -245,7 +249,7 @@ $(document).ready(function () {
             // Features:
             let curfeature = feature_dict[topic];
             if (curfeature !== undefined) {
-                feature_arr = feature_arr.concat(curfeature);
+                feature_arr = feature_arr.concat(topic);
             }
 
         }
@@ -275,24 +279,55 @@ $(document).ready(function () {
         }
 
         // Notes about features (e.g., effectivity and side-effects):
+        console.log("Feature array:");
         console.log(feature_arr);
-        const eff = feature_arr.includes("Nutzen");
-        const side = feature_arr.includes("Schaden");
 
-        if (eff && side) {
-            feature_str += "Es werden Schaden und Nutzen thematisiert. Sehr gut! <i class=\"fa fa-thumbs-up\" style=\"font-size:24px\"></i>"
-        } else if (eff) {
-            feature_str += "Es wird nur der Nutzen thematisiert. Es sollte auch der Schaden thematisiert werden"
+        let feature_list = "";
 
-        } else if (side) {
-            feature_str += "Es wird nur der Schaden thematisiert. Es sollte auch der Nutzen thematisiert werden"
-
-        } else {
-            feature_str = "Es werden weder Schaden noch Nutzen thematisiert.";
+        // Feature sets for testing:
+        const feature_set = {
+            "eff_side": {
+                "fset": ["eff", "side"],
+                "zumzur": "zum "
+            },
+            "treat_control": {
+                "fset": ["treatgroup", "controlgroup"],
+                "zumzur": "zur "
+            }
         }
 
-        // Add to string:
-        let feature_list = "<ul><li>" + feature_str + "</li></ul>";
+        for (const [key, value] of Object.entries(feature_set)) {
+
+            let feature_str = "";
+
+
+            // Get present features:
+            let feats_present = value.fset.filter((feat) => feature_arr.includes(feat));
+            let feats_missing = value.fset.filter((feat) => !feature_arr.includes(feat));
+            feats_present = feats_present.map((key) => feature_dict[key]);
+            feats_missing = feats_missing.map((key) => feature_dict[key]);
+            console.log(`Features present and missing are:`);
+            console.log(feats_present);
+            console.log(feats_missing);
+
+            feature_str = "Es";
+
+            if (feats_present.length > 1) {
+                feature_str += " werden Informationen " + value.zumzur + feats_present.join(" und ") + " berichtet.";
+            } else if(feats_present.length > 0) {
+                feature_str += " werden nur Informationen " + value.zumzur + feats_present.toString() + " berichtet. Es sollten auch Informationen "  + value.zumzur + feats_missing + " berichtet werden.";
+            } else {
+                feature_str += " werden weder Informationen zu " + value.fset.map((key) => feature_dict[key]).join(" noch " + value.zumzur) + " berichtet.";
+            }
+
+            feature_str += (feats_missing.length === 0 ? ("Sehr gut! <i class=\"fa fa-thumbs-up\" style=\"font-size:24px\"></i>") : "");
+
+
+            // Add to string:
+            feature_list += "<li>" + feature_str + "</li>";
+        }
+
+        feature_list = "<ul>" + feature_list + "</ul>";
 
 
         $("#text-note-general").html("<p id=\"text-note-general\">" + key_topics_str + "</p>");
@@ -717,7 +752,7 @@ function get_token_data(text) {
             // NOTE: Overlaps with other entities, likely because of the lack of spaces.
 
             // Escape and add lookahead or behind.
-            if(["("].includes(token_i)){
+            if (["("].includes(token_i)) {
                 token_pat = "(?<=\\s|\\n|^)" + token_i.replace(/([.?()/])/dgm, "\\$1");
             } else {
                 token_pat = token_i.replace(/([.?()/])/dgm, "\\$1") + "(?=\\s|\\n|$|\\.|,)";
