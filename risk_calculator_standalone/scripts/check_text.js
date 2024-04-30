@@ -338,11 +338,13 @@ $(document).ready(function () {
         $("#text-note-general").html("<p id=\"text-note-general\">" + key_topics_str + "</p>");
 
 
-        // List of notes on numbers:
-
+        // List of notes on number types:
         for(const [key, value] of Object.entries(unit_note_dict)){
 
-            if(token_dat.unit.includes(key)) {
+            console.log(`Get number type info for ${key}:`);
+            console.log(token_dat.unit.flat());
+
+            if(token_dat.unit.flat().includes(key)) {
                 console.log("Unit dict content:");
                 console.log(value);
 
@@ -562,6 +564,7 @@ const unit_note_dict = {
             "other": "andere Prozentzahl"
         },
         "note": function (type_arr){
+
             let types = ""
             if(type_arr.length === 1){
                 types = type_arr.toString() + "en"
@@ -574,9 +577,9 @@ const unit_note_dict = {
 
             let txt_out = "Der Text verwendet ";
 
-            if(type_arr.includes("REL")){
+            if(type_arr.includes("relative Prozentzahl")){
                 if(type_arr.length === 1){
-                    txt_out += "nur " + types;
+                    txt_out += "nur " + types + ". <a href=\"risk_wiki.html#wiki-rel\">Relative Angaben</a> ohne Basisrisiko sollten vermieden werden.";
                 } else {
                     txt_out += types + ". ";
                 }
