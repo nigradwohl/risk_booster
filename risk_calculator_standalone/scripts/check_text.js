@@ -26,7 +26,9 @@ heute 5 94,5 Prozent
 Testcase 3:
 Der Impfstoff wird nach Angaben der beiden Unternehmen 2 mal im Abstand von 3Wochen verabreicht. In der Altersgruppe der Über-65-Jährigen wurde 7 Tage nach der 2 Dosis eine Wirksamkeit von 94 Prozent ermittelt. Der Impfstoff sei von den Teilnehmern der weltweiten Studie gut vertragen worden, ernste Nebenwirkungen seien nicht beobachtet worden, berichteten die Unternehmen. Basis sind Angaben von mindestens 8000 zufällig ausgewählten Teilnehmern.
 
-Bei der immer noch in zahlreichen Ländern laufenden Studie erhält eine Hälfte der insgesamt 43.000 Teilnehmer den Impfstoff, die andere Hälfte fungiert als Kontrollgruppe und bekommt ein Placebo-Mittel. Bislang erkrankten den Angaben zufolge insgesamt 170 Teilnehmer an Covid-19. Davon entfielen nur 8 Fälle auf die tatsächlich geimpften Probanden, 162 Fälle wurden in der Placebo-Gruppe diagnostiziert. Daraus errechnet sich eine Wirksamkeit von rund 95 Prozent. Nach Angaben von Biontech und Pfizer gab es unter allen Covid-19-Erkrankungen 10 schwere Verläufe - 9 in der Kontroll- und einen in der Impfgruppe.
+Bei der immer noch in zahlreichen Ländern laufenden Studie erhält eine Hälfte der insgesamt 43.000 Teilnehmer den Impfstoff, die andere Hälfte fungiert als Kontrollgruppe und bekommt ein Placebo-Mittel.
+
+Bislang erkrankten den Angaben zufolge insgesamt 170 Teilnehmer an Covid-19. Davon entfielen nur 8 Fälle auf die tatsächlich geimpften Probanden, 162 Fälle wurden in der Placebo-Gruppe diagnostiziert. Daraus errechnet sich eine Wirksamkeit von rund 95 Prozent. Nach Angaben von Biontech und Pfizer gab es unter allen Covid-19-Erkrankungen 10 schwere Verläufe - 9 in der Kontroll- und einen in der Impfgruppe.
 
 Slight reformulation:
 Nur 8 Fälle ereigneten sich unter den tatsächlich geimpften Probanden, in der Kontrollgruppe wurden 162 Fälle diagnostiziert.
@@ -995,80 +997,181 @@ function detect_number_type(token_data, txt) {
         - subgroups (e.g., "davon"/"unter" + "Geimpfte"/"Kontrollgruppe") vs. full groups ("insgesamt")
         - what is counted ("cases" etc. --> unit!)
         - what happens (VERBs like "erkranken")
+
+        GOAL: Use as little information as possible.
     */
     // Get positions of numbers:
     console.log("~~~~~~~~~~~ Context-window approach: ~~~~~~~~~~~~~ ");
+
+    // Keyword dict:
+    // Search subgroup keywords (in, unter ...) and non-subgroup keywords (insgesamt ...):
+    // const key_total = RegExp(collapse_regex_or(["insgesamt"]));
+    // const key_sub = RegExp(collapse_regex_or(["in", "unter"]));
+    // // What is the subgroup? (treatment, control, all cases ...)
+    // const key_group = RegExp(collapse_regex_or(["Kontroll-?gruppe", "[Gg]impfte?n?"]));
+    // const key_verb = RegExp(collapse_regex_or(["erkrank(t|en)"]))
+    // // Maybe also distinguish "waren" vs. "sich ereignen"
+
+    const window_keys = {
+        "total": RegExp(collapse_regex_or(["insgesamt"])),
+        "subgroup": RegExp(collapse_regex_or(["in", "unter"])),
+        "control": RegExp(collapse_regex_or(["Kontroll-?gruppe", "Placebo-?[Gg]ruppe"])),
+        "treatment": RegExp(collapse_regex_or(["[Gg]eimpfte?n?"])),
+        // Verbs:
+        "verb_ill": RegExp(collapse_regex_or(["erkrank(t|en)"]))
+    };
+
     console.log("Number positions across the text");
     // console.log(token_ids.filter((d, ind) => num_info[ind]));
     const num_array_all = token_data.id.filter((d, ix) => token_data.is_num[ix]);
     console.log(num_array_all);
 
-    let stop_tokens = [",", ".", "?", "!"]
+    let stop_tokens = [".", "?", "!", ":", ";", ","]
 
     const tokens = token_data.token;
+
+    let testcounter = 0;
 
     // For each number query:
     for (const token_ix of num_array_all) {
 
-        console.log(`+++ Token number ${token_ix}: ${token_data.token[token_ix]} +++`);
+        console.log(`+++ Token number ${token_ix}: ${tokens[token_ix]} +++`);
 
-        // Search subgroup keywords (in, unter ...) and non-subgroup keywords (insgesamt ...):
-        const key_total = RegExp(collapse_regex_or(["insgesamt"]));
-        const key_sub = RegExp(collapse_regex_or(["in", "unter"]))
-        // What is the subgroup? (treatment, control, all cases ...)
-        const key_group = RegExp(collapse_regex_or(["Kontroll-?gruppe", "[Gg]impfte?n?"]));
-        const key_verb = RegExp(collapse_regex_or(["erkrank(t|en)"]))
-        // Maybe also distinguish "waren" vs. "sich ereignen"
+        // PREPARE THE WINDOW: ~~~~~~~~~~~~~~
+
+        // Define the absolute maximum:
+        const min_start = 0;
+        const max_end = token_data.nrow;  // could also be sentence end!
 
         // Note: One could additionally implement a list of "locks":
-        let lock_start = 0;  // could also be relative to token!
-        let lock_end = token_data.nrow;
+        let lock_start = token_ix;  // 0;
+        let lock_end = token_ix + 2;  // token_data.nrow;
+        // could also be relative to token, e.g., start at 0 tokens before and 2 after, the increase the rage based on some rules!
 
-        let arr_num_feat = [];
+        let numberfeats = new Set();
 
+        // Initialize flag for having encountered stop-tokens:
+        let stop_token_start = false;
+        let stop_token_end = false;
+
+        let description_complete = false;  // initialize condition for complete description.
+
+        // Window prior to number:
         let window_start = token_ix;
-        for (window_start = token_ix - 1; !stop_tokens.includes(token_data.token[window_start]) && window_start > lock_start; window_start--) {
+        let window_end = token_ix;
 
-            let cur_pre = tokens[window_start];
+        // OPEN THE WINDOW: ~~~~~~~~~~~~~~~~
+        while (!description_complete && (lock_start > min_start || lock_end < max_end)) {
 
-            console.log(cur_pre);
-            // window_start--;
-            if (key_total.test(cur_pre)) {
-                arr_num_feat = arr_num_feat.concat("total_ind");   // add subgroup indicator
+            console.log(`Token ${token_ix}, lock start: ${lock_start}, lock end: ${lock_end}; range before: ${token_ix - lock_start}, range after: ${lock_end - token_ix}, current stop tokens: ${stop_tokens.join(" ")}`);
+
+            while (window_start > lock_start) {
+                window_start--;
+                // Log if a stop token was encountered:
+                if (stop_tokens.includes(token_data.token[window_start])) {
+                    stop_token_start = true;
+                    break;
+                }
+
             }
-            if (key_sub.test(cur_pre)) {
-                arr_num_feat = arr_num_feat.concat("sub_ind");   // add subgroup indicator
-            }
-            if (key_group.test(cur_pre)) {
-                arr_num_feat = arr_num_feat.concat(cur_pre.match(key_group));   // add subgroup indicator
+            while (window_end < lock_end) {
+                window_end++;
+                if (stop_tokens.includes(token_data.token[window_end])) {
+                    stop_token_end = true;
+                    break;
+                }
             }
 
+            // As for-loop:
+            // for (window_start = token_ix - 1; !stop_tokens.includes(token_data.token[window_start]) && window_start > lock_start; window_start--) {
+            //
+            //     let cur_pre = tokens[window_start];
+            //
+            //     console.log(cur_pre);
+            //     // window_start--;
+            //     // Either loop here or combine all and then test re-connected string!
+            //     for (const [key, value] of Object.entries(window_keys)) {
+            //         if (value.test(cur_pre)) {
+            //             arr_num_feat = arr_num_feat.concat(key);
+            //         }
+            //     }
+            //
+            //
+            // }
+
+            // Visualize the list of tokens:
+            const test_tokens = token_data.token.slice(window_start, window_end);
+            const test_str = test_tokens.join(" ");  // Issue could be that underscore counts as word character!
+            // console.log(test_tokens);
+            console.log("TESTSTRING:\n" + test_str);
+
+            // Test the tokens here:
+            for (const [key, value] of Object.entries(window_keys)) {
+                // console.log("TESTING KEYS");
+                if (value.test(test_str)) {
+                    numberfeats = numberfeats.add(key);
+                }
+            }
+
+            // Test co-occurrence patterns in window?
+            // const keys_present = value.keyset
+            //     .map((keylist) => keylist  // got through all sublists.
+            //         .filter((keyex) => sentence_tokens  // check each expression.
+            //             // ... in the sentence tokens:
+            //             .filter((token) => keyex.test(token)).length > 0).length === keylist.length);
+
+            // If it does not work: remove the first stop token (","); remove numbers for which it worked!
+
+            // console.log("Description of number as set:");
+            // console.log(numberfeats);
+
+
+            // console.log(`Stop token at start: ${stop_token_start}, at end: ${stop_token_end}`);
+
+            // Update the stop tokens:
+            if ((stop_token_start && stop_token_end) || (stop_token_end && lock_start === min_start) || (stop_token_start === max_end)) {
+                console.log("UPDATE STOP TOKENS");
+                stop_tokens.pop();  // remove the last stop token and retry.
+                stop_token_start = false;
+                stop_token_end = false;
+            }
+
+            // Extend the window:
+            // TODO: Do before or after stop tokens?
+            lock_start = !stop_token_start && lock_start > min_start ? lock_start - 1 : lock_start;
+            lock_end = !stop_token_end && lock_end < max_end ? lock_end + 1 : lock_end;
+
+
+            // conditions for completeness:
+            // Note: Currently a dummy condition!
+            if (numberfeats.size > 3) {
+                console.log("DESCRIPTION COMPLETE");
+                description_complete = true;
+
+                console.log(numberfeats);
+            }
+
+            if(testcounter > 50){
+                console.log("BREAK DESCRIPTION");
+                description_complete = true;
+            }
+
+            testcounter++;  // should maybe remain implemented!
+
+            // console.log(`Token ${token_ix}, range before: ${token_ix - lock_start}, range after: ${lock_end - token_ix}, current stop tokens: ${stop_tokens.join(" ")}`);
+
+            console.log(`Start ${lock_start} is min: ${lock_start <= min_start}, End ${lock_end} is max: ${lock_end >= max_end}`);
+
+            // Break if at the end of the text!
+            // if (lock_start === 0 && lock_end === token_data.nrow) {
+            //     break;
+            // }
         }
 
-        let window_end = 0;
-        for (window_end = token_ix; !stop_tokens.includes(token_data.token[window_end]) && window_end < lock_end; window_end++) {
-
-            let cur_post = tokens[window_start];
-            console.log(cur_post);
-        }
-
-        // // Visualize the list of tokens:
-        // const test_tokens = token_data.token.slice(window_start, window_end);
-        // console.log(test_tokens);
-
-        // Test co-occurrence patterns in window?
-        // const keys_present = value.keyset
-        //     .map((keylist) => keylist  // got through all sublists.
-        //         .filter((keyex) => sentence_tokens  // check each expression.
-        //             // ... in the sentence tokens:
-        //             .filter((token) => keyex.test(token)).length > 0).length === keylist.length);
-
-        // If it does not work: remove the first stop token (","); remove numbers for which it worked!
-
-        console.log("Description of number as array:");
-        console.log(arr_num_feat);
 
     }
+
+    console.log("~~~~~~~~~~~~ EOF context window ~~~~~~~~~~~~~~");
 
 
     console.log("Number array after checking:");
