@@ -91,15 +91,19 @@ body {
 }
 
 /* Style the navigation bar links */
-.navbar a {
-    color: var(---navbar-text);
+.navbar .nav-container {
     padding: 14px 20px;
-    text-decoration: none;
     text-align: center;
+    margin: 0;
+}
+
+.nav-container a {
+    color: var(---navbar-text);
+    text-decoration: none;
 }
 
 /* Change color on hover */
-.navbar a:hover {
+.navbar .nav-container:hover {
     background-color: var(---navbar-hover-bg);
     color: var(---navbar-hover-text);
 }
@@ -125,17 +129,8 @@ body {
     color: var(---footer-hover-text);
 }
 
-.dropbtn {
-    background-color: #04AA6D;
-    color: white;
-    padding: 16px;
-    font-size: 16px;
-    border: none;
-}
-
 .dropdown {
     position: relative;
-    display: inline-block;
 }
 
 .dropdown-content {
