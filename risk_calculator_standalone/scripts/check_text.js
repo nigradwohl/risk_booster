@@ -999,6 +999,9 @@ function detect_number_type(token_data, txt) {
         - what happens (VERBs like "erkranken")
 
         GOAL: Use as little information as possible.
+
+        1. Check between stop tokens (punctuation)
+        2. Try to get a description that is as complete as possible --> only move beyond punctuation if incomplete
     */
     // Get positions of numbers:
     console.log("~~~~~~~~~~~ Context-window approach: ~~~~~~~~~~~~~ ");
@@ -1014,9 +1017,10 @@ function detect_number_type(token_data, txt) {
 
     const window_keys = {
         "total": RegExp(collapse_regex_or(["insgesamt"])),
-        "subgroup": RegExp(collapse_regex_or(["in", "unter"])),
+        "subgroup": RegExp(collapse_regex_or(["[Ii]n ", "[Uu]nter ", "[Dd]avon "])),
         "control": RegExp(collapse_regex_or(["Kontroll-?gruppe", "Placebo-?[Gg]ruppe"])),
-        "treatment": RegExp(collapse_regex_or(["[Gg]eimpfte?n?"])),
+        "treatment": RegExp(collapse_regex_or(["[Gg]eimpfte?n?", "Impfgruppe"])),
+        "eff": RegExp(collapse_regex_or(["[Ww]irksam"])),
         // Verbs:
         "verb_ill": RegExp(collapse_regex_or(["erkrank(t|en)"]))
     };
@@ -1026,18 +1030,18 @@ function detect_number_type(token_data, txt) {
     const num_array_all = token_data.id.filter((d, ix) => token_data.is_num[ix]);
     console.log(num_array_all);
 
-    let stop_tokens = [".", "?", "!", ":", ";", ","]
-
     const tokens = token_data.token;
 
-    let testcounter = 0;
+
 
     // For each number query:
     for (const token_ix of num_array_all) {
 
+        console.log("-------- NEW TOKEN --------");
         console.log(`+++ Token number ${token_ix}: ${tokens[token_ix]} +++`);
 
         // PREPARE THE WINDOW: ~~~~~~~~~~~~~~
+        let testcounter = 0;  // testcounter to avoid infinite loops!
 
         // Define the absolute maximum:
         const min_start = 0;
@@ -1051,8 +1055,10 @@ function detect_number_type(token_data, txt) {
         let numberfeats = new Set();
 
         // Initialize flag for having encountered stop-tokens:
+        let stop_tokens = [".", "?", "!", ":", "und", ";", ","];  // renew for each number!
         let stop_token_start = false;
         let stop_token_end = false;
+        let stop_update_count = 0;
 
         let description_complete = false;  // initialize condition for complete description.
 
@@ -1063,7 +1069,7 @@ function detect_number_type(token_data, txt) {
         // OPEN THE WINDOW: ~~~~~~~~~~~~~~~~
         while (!description_complete && (lock_start > min_start || lock_end < max_end)) {
 
-            console.log(`Token ${token_ix}, lock start: ${lock_start}, lock end: ${lock_end}; range before: ${token_ix - lock_start}, range after: ${lock_end - token_ix}, current stop tokens: ${stop_tokens.join(" ")}`);
+            // console.log(`Token ${token_ix}, lock start: ${lock_start}, lock end: ${lock_end}; range before: ${token_ix - lock_start}, range after: ${lock_end - token_ix}, current stop tokens: ${stop_tokens.join(" ")}`);
 
             while (window_start > lock_start) {
                 window_start--;
@@ -1103,7 +1109,7 @@ function detect_number_type(token_data, txt) {
             const test_tokens = token_data.token.slice(window_start, window_end);
             const test_str = test_tokens.join(" ");  // Issue could be that underscore counts as word character!
             // console.log(test_tokens);
-            console.log("TESTSTRING:\n" + test_str);
+            // console.log("TESTSTRING:\n" + test_str);
 
             // Test the tokens here:
             for (const [key, value] of Object.entries(window_keys)) {
@@ -1129,44 +1135,58 @@ function detect_number_type(token_data, txt) {
             // console.log(`Stop token at start: ${stop_token_start}, at end: ${stop_token_end}`);
 
             // Update the stop tokens:
-            if ((stop_token_start && stop_token_end) || (stop_token_end && lock_start === min_start) || (stop_token_start === max_end)) {
-                console.log("UPDATE STOP TOKENS");
+            if ((stop_token_start && stop_token_end) ||(stop_token_end && lock_start === min_start) || (stop_token_start && lock_end === max_end)) {
+                // console.log("UPDATE STOP TOKENS");
                 stop_tokens.pop();  // remove the last stop token and retry.
+                // When both are at the end, reset them.
                 stop_token_start = false;
                 stop_token_end = false;
+                stop_update_count++;
             }
 
+            // if ((stop_token_end && lock_start === min_start) || (stop_token_start && lock_end === max_end)) {
+            //     console.log("UPDATE STOP TOKENS when one window is at the end");
+            //     stop_tokens.pop();  // remove the last stop token and retry.
+            // }
+
             // Extend the window:
-            // TODO: Do before or after stop tokens?
+            // Do before or after stop tokens?
             lock_start = !stop_token_start && lock_start > min_start ? lock_start - 1 : lock_start;
             lock_end = !stop_token_end && lock_end < max_end ? lock_end + 1 : lock_end;
 
 
             // conditions for completeness:
             // Note: Currently a dummy condition!
-            if (numberfeats.size > 3) {
+            // MAYBE: Require at least one update of stop tokens to make it greedy? stop_update_count > 0
+            // If one category could be clarified, exclude it?
+            if (["control", "treatment", "total", "eff"].filter((x) => numberfeats.has(x)).length > 0) {
+                console.log("FINAL TESTSTRING:\n" + test_str);
                 console.log("DESCRIPTION COMPLETE");
                 description_complete = true;
 
                 console.log(numberfeats);
             }
 
-            if(testcounter > 50){
+            // Fix a maximum number of iterations to avoid breakdown!
+            if (testcounter > 50) {
                 console.log("BREAK DESCRIPTION");
                 description_complete = true;
+                console.log(numberfeats);
             }
 
             testcounter++;  // should maybe remain implemented!
 
             // console.log(`Token ${token_ix}, range before: ${token_ix - lock_start}, range after: ${lock_end - token_ix}, current stop tokens: ${stop_tokens.join(" ")}`);
 
-            console.log(`Start ${lock_start} is min: ${lock_start <= min_start}, End ${lock_end} is max: ${lock_end >= max_end}`);
+            // console.log(`Start ${lock_start} is min: ${lock_start <= min_start}, End ${lock_end} is max: ${lock_end >= max_end}`);
 
             // Break if at the end of the text!
             // if (lock_start === 0 && lock_end === token_data.nrow) {
             //     break;
             // }
         }
+
+        num_types[token_ix] = Array.from(numberfeats).join(",");
 
 
     }
