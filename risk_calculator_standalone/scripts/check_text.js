@@ -714,7 +714,13 @@ function get_token_data(text) {
             // Punctuation follows somewhat different rules.
             // NOTE: Overlaps with other entities, likely because of the lack of spaces.
 
-            token_pat = token_i.replace(/([.?()/])/dgm, "\\$1") + "(?=\\s|\\n|$)";
+            // Escape and add lookahead or behind.
+            if(["("].includes(token_i)){
+                token_pat = "(?<=\\s|\\n|^)" + token_i.replace(/([.?()/])/dgm, "\\$1");
+            } else {
+                token_pat = token_i.replace(/([.?()/])/dgm, "\\$1") + "(?=\\s|\\n|$|\\.|,)";
+            }
+
         } else {
             token_pat = "(?<!\\w)" + token_i + "(?!\\w)";
         }
