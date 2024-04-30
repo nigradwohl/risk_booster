@@ -1016,22 +1016,29 @@ function detect_number_type(token_data, txt) {
     // // Maybe also distinguish "waren" vs. "sich ereignen"
 
     const window_keys = {
-        "total": RegExp(collapse_regex_or(["insgesamt"])),
-        "subgroup": RegExp(collapse_regex_or(["[Ii]n ", "[Uu]nter ", "[Dd]avon "])),
-        "control": RegExp(collapse_regex_or(["Kontroll-?gruppe", "Placebo-?[Gg]ruppe"])),
-        "treatment": RegExp(collapse_regex_or(["[Gg]eimpfte?n?", "Impfgruppe"])),
-        "eff": RegExp(collapse_regex_or(["[Ww]irksam"])),
+        "total": RegExp(collapse_regex_or(["insgesamt", "alle", "Basis"]), "dg"),
+        "subgroup": RegExp(collapse_regex_or(["[Ii]n ", "[Uu]nter ", "[Dd]avon "]), "dg"),
+        // Types of subgroups:
+        "control": RegExp(collapse_regex_or(["Kontroll-?\\w*[Gg]ruppe", "Placebo-?\\w*[Gg]ruppe"]), "dg"),
+        "treatment": RegExp(collapse_regex_or(["[Gg]eimpfte?n?", "Impf-?\\w*[Gg]ruppe"]), "dg"),
+        "eff": RegExp(collapse_regex_or(["[Ww]irksam", "Impfschutz"]), "dg"),
+        "risk_incr": RegExp(collapse_regex_or([
+            "(Risiko|Wahrscheinlichkeit)\\w*(erhöht|steigt)",
+            "(erhöht|steigt)\\w*(Risiko|Wahrscheinlichkeit)"]), "dg"),
+        "risk_decr": RegExp(collapse_regex_or([
+            "(Risiko|Wahrscheinlichkeit)\\w*sinkt|verringert",
+            "sinkt|verringert\\w*(Risiko|Wahrscheinlichkeit)",
+            "schütz(en|t)\\w*(Erkrankung|Ansteckung)"]), "dg"),
         // Verbs:
-        "verb_ill": RegExp(collapse_regex_or(["erkrank(t|en)"]))
+        "ill": RegExp(collapse_regex_or(["erkrank(t|en)", "Verl[äa]uf"]), "dg")
     };
 
     console.log("Number positions across the text");
     // console.log(token_ids.filter((d, ind) => num_info[ind]));
-    const num_array_all = token_data.id.filter((d, ix) => token_data.is_num[ix]);
+    const num_array_all = token_data.id.filter((d, ix) => token_data.is_num[ix] && !units_exc.includes(token_data.unit[ix]));
     console.log(num_array_all);
 
     const tokens = token_data.token;
-
 
 
     // For each number query:
@@ -1053,9 +1060,10 @@ function detect_number_type(token_data, txt) {
         // could also be relative to token, e.g., start at 0 tokens before and 2 after, the increase the rage based on some rules!
 
         let numberfeats = new Set();
+        let key_info = {};
 
         // Initialize flag for having encountered stop-tokens:
-        let stop_tokens = [".", "?", "!", ":", "und", ";", ","];  // renew for each number!
+        let stop_tokens = [".", "?", "!", ":", "oder", "und", ";", ",", "-"];  // renew for each number!
         let stop_token_start = false;
         let stop_token_end = false;
         let stop_update_count = 0;
@@ -1107,14 +1115,25 @@ function detect_number_type(token_data, txt) {
 
             // Visualize the list of tokens:
             const test_tokens = token_data.token.slice(window_start, window_end);
-            const test_str = test_tokens.join(" ");  // Issue could be that underscore counts as word character!
+            const test_str = test_tokens.join("_");
+            // Issue could be that underscore counts as word character; will exploit this for now!!
             // console.log(test_tokens);
-            // console.log("TESTSTRING:\n" + test_str);
+            console.log("TESTSTRING:\n" + test_str);
 
             // Test the tokens here:
+            // Here we should define sets that exclude each other! (e.g., control + treatment)
             for (const [key, value] of Object.entries(window_keys)) {
                 // console.log("TESTING KEYS");
-                if (value.test(test_str)) {
+                // Also log nearest distance and number of iterations?
+
+                const match = value.exec(test_str);  // test_str.search(value);
+
+                if (match !== null) {
+
+                    if (!numberfeats.has(key)) {
+                        key_info[key] = [match.indices, testcounter];  // match positions in teststring and iteration.
+                        console.log(key_info);
+                    }
                     numberfeats = numberfeats.add(key);
                 }
             }
@@ -1132,11 +1151,11 @@ function detect_number_type(token_data, txt) {
             // console.log(numberfeats);
 
 
-            // console.log(`Stop token at start: ${stop_token_start}, at end: ${stop_token_end}`);
+            console.log(`Stop token at start: ${stop_token_start}, at end: ${stop_token_end}`);
 
             // Update the stop tokens:
-            if ((stop_token_start && stop_token_end) ||(stop_token_end && lock_start === min_start) || (stop_token_start && lock_end === max_end)) {
-                // console.log("UPDATE STOP TOKENS");
+            if ((stop_token_start && stop_token_end) || (stop_token_end && lock_start === min_start) || (stop_token_start && lock_end === max_end)) {
+                console.log("UPDATE STOP TOKENS");
                 stop_tokens.pop();  // remove the last stop token and retry.
                 // When both are at the end, reset them.
                 stop_token_start = false;
@@ -1150,6 +1169,7 @@ function detect_number_type(token_data, txt) {
             // }
 
             // Extend the window:
+            // Possible extension: Asymmetric updating (dependent on context words -- e.g., we will want to know what happens after "in").
             // Do before or after stop tokens?
             lock_start = !stop_token_start && lock_start > min_start ? lock_start - 1 : lock_start;
             lock_end = !stop_token_end && lock_end < max_end ? lock_end + 1 : lock_end;
@@ -1161,10 +1181,12 @@ function detect_number_type(token_data, txt) {
             // If one category could be clarified, exclude it?
             if (["control", "treatment", "total", "eff"].filter((x) => numberfeats.has(x)).length > 0) {
                 console.log("FINAL TESTSTRING:\n" + test_str);
+                console.log(test_tokens);
                 console.log("DESCRIPTION COMPLETE");
                 description_complete = true;
 
                 console.log(numberfeats);
+
             }
 
             // Fix a maximum number of iterations to avoid breakdown!
@@ -1186,12 +1208,13 @@ function detect_number_type(token_data, txt) {
             // }
         }
 
+        // Assign the information to the data:
         num_types[token_ix] = Array.from(numberfeats).join(",");
 
 
     }
 
-    console.log("~~~~~~~~~~~~ EOF context window ~~~~~~~~~~~~~~");
+    console.log("~~~~~~~~~~~~ EOF context window approach ~~~~~~~~~~~~~~");
 
 
     console.log("Number array after checking:");
