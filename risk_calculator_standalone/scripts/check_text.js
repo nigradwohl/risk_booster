@@ -404,7 +404,7 @@ const regex_multi = new RegExp("(?<multi>" + pat_num + "[ \\-]?([Mm]al|[Ff]ach) 
 // nh must also be identified from tokens (e.g., In der Gruppe von 1000[case] Leuten sterben 4[num/case].
 
 // Define units to not consider further:
-const units_exc = ["age", "currency", "time", "date", "duration", "legal"];
+const units_exc = ["age", "currency", "time", "date", "year", "duration", "legal"];
 
 /*
 Tests for simple units:
@@ -435,7 +435,7 @@ const check_numbers_dict = {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Simple matches:
     "age": {
-        "regex": /(?<age>(\d+ bis )*\d+([.|,]\d+)?( Jahr[a-z]*[ |.]?|-[Jj]ährig))/dg
+        "regex": /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
     },
     // "age2": {
     //     "regex": RegExp("(?<age>" + pat_num + "( Jahre|\-jährig)" + ")", "dg")
@@ -451,6 +451,9 @@ const check_numbers_dict = {
     },
     "date": {
         "regex": /(?<date>\d{1,2}\.\d{1,2}\.(18|19|20)\d{2})/dg
+    },
+    "yearrange": {
+        "regex": /(?<year>(zwischen|von) (18|19|20)\d{2} (und|bis) (18|19|20)\d{2})/dg
     },
     "duration": {
         "regex": /(?<duration>[0-9]+(-stündig|-tägig| Minuten?| Stunden?| Tagen?| Wochen?))/dg
@@ -480,7 +483,7 @@ const key_obj = {
         "number_unit": "perc",  // add in other types eventually! 30-fach etc.
         "keyset": [
             // A first entry to a domain-general keyset for risk:
-            [RegExp(collapse_regex_or(["Risiko", "[Ww]ahrscheinlich"])),
+            [RegExp(collapse_regex_or(["Risiko", "[Ww]ahrscheinlich", "Inzidenz", "Todesfälle"])),
                 RegExp(collapse_regex_or(["höher", "erhöht", "reduziert", "(ge|ver)ringert?"]))]
         ]
     },
@@ -488,7 +491,7 @@ const key_obj = {
         "number_unit": "case",
         "keyset": [
             // TODO: Double check these!
-            [RegExp("Proband|[Tt]eilnehme|Versuchspers"), RegExp("insgesamt|Studie")]
+            [RegExp("Proband|[Tt]eilnehme|Versuchspers|Menschen"), RegExp("insgesamt|Studie|umfass(t|en)")]
         ]
     },
     // Total nuber of cases/incidents:
