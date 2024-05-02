@@ -344,7 +344,8 @@ $(document).ready(function () {
             feature_num = "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> Der Text scheint Zahlen zu den genannten Risiken zu berichten. Sehr gut! ";
             // Eventually differentiate: Does it report numebrs only about effectivity? Also about side effects?
         } else {
-            feature_num = "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> Der Text scheint keine Zahlen zu den Risiken zu berichten. Eine rein verbale Beschreibung ist nicht optimal. [LINK WIKI!]" +
+            feature_num = "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> Der Text scheint keine Zahlen zu den Risiken zu berichten. " +
+                "Rein verbale Beschreibungen sollten vermieden werden. [LINK WIKI!]" +
                 "Bitte versuchen Sie Zahlen zu berichten.";
         }
 
