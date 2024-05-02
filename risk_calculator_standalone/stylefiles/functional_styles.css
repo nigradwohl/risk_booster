@@ -1,6 +1,21 @@
 /*Stylefile with functional styles for the specific tasks*/
 /*NOTE: May eventually need to be split again*/
 
+.in-text-icon{
+    font-size: 1.5em;
+}
+
+.in-text-icon.warning{
+    color: grey;
+}
+.in-text-icon.error{
+    color: #B85042;
+}
+.in-text-icon.good{
+    color: #1abc9c;
+}
+
+
 .highlight-num {
     background-color: #1abc9c;
     opacity: 60%;

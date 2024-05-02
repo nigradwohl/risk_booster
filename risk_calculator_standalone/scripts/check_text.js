@@ -231,7 +231,8 @@ $(document).ready(function () {
         // Notes about topics:
         const key_topic_dict = {
             "impf": "Impfung",
-            "cancer_risk": "Krebsrisiko"};  // {"impf": "Impfung", "eff": "Wirksamkeit", "side": "Nebenwirkungen"};
+            "cancer_risk": "Krebsrisiko"
+        };  // {"impf": "Impfung", "eff": "Wirksamkeit", "side": "Nebenwirkungen"};
         let key_topics = [];
         let key_topics_str = "";
 
@@ -263,6 +264,7 @@ $(document).ready(function () {
 
         const n_topics = key_topics.length;
         const n_features = feature_arr.length;
+        let norisk = false;
 
         if (n_topics === 1) {
             key_topics_str += "Dieser Text behandelt das Thema " + key_topics[0]
@@ -281,6 +283,7 @@ $(document).ready(function () {
 
         } else {
             key_topics_str = "Das Thema dieses Textes konnte keinem Thema der Risikokommunikation zugeordnet werden.";
+            norisk = true;
         }
 
         // Notes about features (e.g., effectivity and side-effects):
@@ -303,7 +306,7 @@ $(document).ready(function () {
 
         for (const [key, value] of Object.entries(feature_set)) {
 
-            let feature_str = "";
+            let feature_str = " Es ";
 
 
             // Get present features:
@@ -315,17 +318,19 @@ $(document).ready(function () {
             console.log(feats_present);
             console.log(feats_missing);
 
-            feature_str = "Es";
 
             if (feats_present.length > 1) {
+                feature_str = "<i class=\"fa fa-thumbs-up in-text-icon good\"></i>" + feature_str;
                 feature_str += " werden Informationen " + value.zumzur + feats_present.join(" und ") + " berichtet.";
-            } else if(feats_present.length > 0) {
-                feature_str += " werden nur Informationen " + value.zumzur + feats_present.toString() + " berichtet. Es sollten auch Informationen "  + value.zumzur + feats_missing + " berichtet werden.";
+            } else if (feats_present.length > 0) {
+                feature_str = "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i>" + feature_str;
+                feature_str += " werden nur Informationen " + value.zumzur + feats_present.toString() + " berichtet. Es sollten auch Informationen " + value.zumzur + feats_missing + " berichtet werden.";
             } else {
+                feature_str = "<i class=\"fa fa-thumbs-down in-text-icon error\"></i>" + feature_str;
                 feature_str += " werden weder Informationen zu " + value.fset.map((key) => feature_dict[key]).join(" noch " + value.zumzur) + " berichtet.";
             }
 
-            feature_str += (feats_missing.length === 0 ? ("Sehr gut! <i class=\"fa fa-thumbs-up\" style=\"font-size:24px\"></i>") : "");
+            // feature_str += (feats_missing.length === 0 ? ("Sehr gut! <i class=\"fa fa-thumbs-up in-text-icon\"></i>") : "");
 
 
             // Add to string:
@@ -334,12 +339,20 @@ $(document).ready(function () {
 
         // Flag out the use of numbers:
         let feature_num = "";
-        const any_risk_num = ["perc", "cases", "nh"];
-        if(token_dat.unit){
-
+        const any_risk_num = ["perc", "cases", "nh"].filter((x) => token_dat.unit.includes(x));
+        if (any_risk_num.length > 0) {
+            feature_num = "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> Der Text scheint Zahlen zu den genannten Risiken zu berichten. Sehr gut! ";
+            // Eventually differentiate: Does it report numebrs only about effectivity? Also about side effects?
+        } else {
+            feature_num = "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> Der Text scheint keine Zahlen zu den Risiken zu berichten. Eine rein verbale Beschreibung ist nicht optimal. [LINK WIKI!]" +
+                "Bitte versuchen Sie Zahlen zu berichten.";
         }
 
-        feature_list += "<li>" + feature_num + "</li>";
+        // Only talks about numbers if the text talks about risK:
+        if (!norisk) {
+            feature_list += "<li>" + feature_num + "</li>";
+        }
+
 
         // Combine the list of text features:
         feature_list = "<ul>" + feature_list + "</ul>";
@@ -350,12 +363,12 @@ $(document).ready(function () {
 
 
         // List of notes on number types:
-        for(const [key, value] of Object.entries(unit_note_dict)){
+        for (const [key, value] of Object.entries(unit_note_dict)) {
 
             console.log(`Get number type info for ${key}:`);
             console.log(token_dat.unit.flat());
 
-            if(token_dat.unit.flat().includes(key)) {
+            if (token_dat.unit.flat().includes(key)) {
                 console.log("Unit dict content:");
                 console.log(value);
 
@@ -574,12 +587,12 @@ const unit_note_dict = {
             "REL": "relative Prozentzahl",
             "other": "andere Prozentzahl"
         },
-        "note": function (type_arr){
+        "note": function (type_arr) {
 
             let types = ""
-            if(type_arr.length === 1){
+            if (type_arr.length === 1) {
                 types = type_arr.toString() + "en"
-            } else if(type_arr.length === 2) {
+            } else if (type_arr.length === 2) {
                 types = type_arr.join("en und ") + "en";
             } else {
                 const last = type_arr.pop();
@@ -588,8 +601,8 @@ const unit_note_dict = {
 
             let txt_out = "Der Text verwendet ";
 
-            if(type_arr.includes("relative Prozentzahl")){
-                if(type_arr.length === 1){
+            if (type_arr.includes("relative Prozentzahl")) {
+                if (type_arr.length === 1) {
                     txt_out += "nur " + types + ". <a href=\"risk_wiki.html#wiki-rel\">Relative Angaben</a> ohne Basisrisiko sollten vermieden werden.";
                 } else {
                     txt_out += types + ". ";
@@ -610,7 +623,9 @@ const unit_note_dict = {
         "tooltip": {
             "other": "Natürliche Häufigkeit"
         },
-        "note": function (type_arr){return "Der Text enthält Natürliche Häufigkeiten. Sehr gut! Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."}
+        "note": function (type_arr) {
+            return "Der Text enthält Natürliche Häufigkeiten. Sehr gut! Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
+        }
     },
     "case": {
         "tooltip": {
@@ -620,20 +635,24 @@ const unit_note_dict = {
             "treatment": "Anzahl unter den Behandelten",
             "control": "Anzahl in der Kontrollgruppe"
         },
-        "note": function (type_arr){return "Der Text enthält Anzahlen von Fällen. Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."}
+        "note": function (type_arr) {
+            return "Der Text enthält Anzahlen von Fällen. Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
+        }
     },
     "multi": {
         "tooltip": {"other": "Relative Angabe"},
-        "note": function(type_arr){
+        "note": function (type_arr) {
             return "Der Text enthält relative Vergleiche (10-mal so groß, halb so groß)." +
-            "Bitte achten Sie darauf, auch die absoluten Risiken in jeder Gruppe anzugeben -- am besten als natürliche Häufigkeit " +
-            "(z.B., unter denen ohne Impfung steckten sich 2 aus 1000 an unter den geimpften nur 1 aus 1000)."
+                "Bitte achten Sie darauf, auch die absoluten Risiken in jeder Gruppe anzugeben -- am besten als natürliche Häufigkeit " +
+                "(z.B., unter denen ohne Impfung steckten sich 2 aus 1000 an unter den geimpften nur 1 aus 1000)."
         }
     },
     // Unidentified matches:
     "unknown": {
         "tooltip": {"other": "Konnte nicht identifiziert werden"},
-        "note": function(type_arr){return "Einige Zahlen konnten nicht identifiziert werden."}
+        "note": function (type_arr) {
+            return "Einige Zahlen konnten nicht identifiziert werden."
+        }
     }
 }
 
