@@ -197,7 +197,7 @@ $(document).ready(function () {
                 // Get types for each tooltip:
                 let cur_numtype = token_dat.numtype.slice(i, i + match_len).filter((x) => x !== -1);
                 // console.log(token_dat.numtype.slice(i, i + match_len));
-                const cur_tooltip = unit_note_dict[cur_unit].tooltip[cur_numtype];
+                const cur_tooltip = unit_note_dict[cur_unit].tooltip[cur_numtype[0]];  // NOTE: currently first type.
 
 
                 // console.log("Start: " + token_dat.start[i] + ", end: " + token_dat.end[i + match_len - 1] +
@@ -332,9 +332,20 @@ $(document).ready(function () {
             feature_list += "<li>" + feature_str + "</li>";
         }
 
+        // Flag out the use of numbers:
+        let feature_num = "";
+        const any_risk_num = ["perc", "cases", "nh"];
+        if(token_dat.unit){
+
+        }
+
+        feature_list += "<li>" + feature_num + "</li>";
+
+        // Combine the list of text features:
         feature_list = "<ul>" + feature_list + "</ul>";
 
 
+        // Output topics:
         $("#text-note-general").html("<p id=\"text-note-general\">" + key_topics_str + "</p>");
 
 
@@ -594,6 +605,12 @@ const unit_note_dict = {
             return txt_out;
 
         }
+    },
+    "nh": {
+        "tooltip": {
+            "other": "Natürliche Häufigkeit"
+        },
+        "note": function (type_arr){return "Der Text enthält Natürliche Häufigkeiten. Sehr gut! Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."}
     },
     "case": {
         "tooltip": {
