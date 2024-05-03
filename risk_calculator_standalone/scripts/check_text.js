@@ -24,7 +24,7 @@ heute 5 94,5 Prozent
 100 Leute
 
 Testcase 3:
-Der Impfstoff wird nach Angaben der beiden Unternehmen 2 mal im Abstand von 3Wochen verabreicht. In der Altersgruppe der Über-65-Jährigen wurde 7 Tage nach der 2 Dosis eine Wirksamkeit von 94 Prozent ermittelt. Der Impfstoff sei von den Teilnehmern der weltweiten Studie gut vertragen worden, ernste Nebenwirkungen seien nicht beobachtet worden, berichteten die Unternehmen. Basis sind Angaben von mindestens 8000 zufällig ausgewählten Teilnehmern.
+Der Impfstoff wird nach Angaben der beiden Unternehmen 2 mal im Abstand von 3 Wochen verabreicht. In der Altersgruppe der Über-65-Jährigen wurde 7 Tage nach der 2 Dosis eine Wirksamkeit von 94 Prozent ermittelt. Der Impfstoff sei von den Teilnehmern der weltweiten Studie gut vertragen worden, ernste Nebenwirkungen seien nicht beobachtet worden, berichteten die Unternehmen. Basis sind Angaben von mindestens 8000 zufällig ausgewählten Teilnehmern.
 
 Bei der immer noch in zahlreichen Ländern laufenden Studie erhält eine Hälfte der insgesamt 43.000 Teilnehmer den Impfstoff, die andere Hälfte fungiert als Kontrollgruppe und bekommt ein Placebo-Mittel.
 
@@ -38,6 +38,9 @@ Nur 8 Fälle ereigneten sich unter den tatsächlich geimpften Probanden, in der 
 Wer zum Selbstschutz eine Maske trägt, die dicht am Gesicht anliegt, der sei etwa 100-mal besser vor einer Infektion geschützt als ohne Maske.
 
 41 % der weltweiten Studienteilnehmer und 45 % der amerikanischen Studienteilnehmer sind im Alter von 56 bis 85 Jahren.
+
+Testcase 4:
+In der Studie traten insgesamt 10 schwere COVID-19-Verläufe auf. Davon wurden 9 in der Placebogruppe und einer in der BNT162b2-Gruppe beobachtet. Bislang konnte das Data Monitoring Committee keine schwerwiegenden Nebenwirkungen feststellen. Eine Untersuchung der entblindeten Daten zur Impfstoffreaktion in einer randomisierten Subgruppe der finalen Phase-2/3-Analyse mit mindestens 8.000 der über 18-jährigen Probanden zeigte, dass der Impfstoff gut verträglich ist. Die meisten Nebenwirkungen traten nur vorübergehend auf. Die einzigen schweren Nebenwirkungen (3. Grades), die in mehr als 2 % der Probanden nach der ersten oder zweiten Impfung auftraten, waren Erschöpfung mit 3,8 % sowie Kopfschmerzen mit 2,0 % nach der zweiten Dosis.
 
 Test statements:
 - In der Kontrollgruppe erkranken 5 von 100, in der Behandlungsgruppe einer aus 100. --> gut
@@ -143,6 +146,9 @@ $(document).ready(function () {
 
         // Detect number types (may need topics!)
         token_dat.detect_number_type(inputText);
+
+        // Context detection:
+        token_dat.add_column(investigate_context(token_dat), "numinfo");
 
         console.log("Updated token data:");
         console.log(token_dat);
@@ -1126,6 +1132,25 @@ function detect_number_type(token_data, txt) {
     }
 
 
+
+    console.log("~~~~~~~~~~~~ EOF context window approach ~~~~~~~~~~~~~~");
+
+
+    // OUTPUT: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    console.log("Output numtypes:");
+    console.log(num_types);
+    return num_types;
+
+}
+
+
+/**
+ * Investigates a contex window around numbers
+ */
+function investigate_context(token_data){
+
+    let context_info = Array(token_data.nrow).fill(-1);  // was: "none"
+
     // Back to text level:
     /*
         Context-window approach (number-centric):
@@ -1163,7 +1188,8 @@ function detect_number_type(token_data, txt) {
         // Types of subgroups:
         "control": RegExp(collapse_regex_or(["Kontroll-?\\w*[Gg]ruppe", "Placebo-?\\w*[Gg]ruppe"]), "dg"),
         "treatment": RegExp(collapse_regex_or(["[Gg]eimpfte?n?", "Impf-?\\w*[Gg]ruppe"]), "dg"),
-        "eff": RegExp(collapse_regex_or(["[Ww]irksam", "Impfschutz"]), "dg"),
+        "eff": RegExp(collapse_regex_or(["(?<![Nn]eben)[Ww]irk", "Impfschutz"]), "dg"),
+        "side": RegExp(collapse_regex_or(["Nebenwirk", "Komplikation"]), "dg"),  // more keywords?
         "risk_incr": RegExp(collapse_regex_or([
             "(Risiko|Wahrscheinlichkeit)\\w*(erhöht|steigt)",
             "(erhöht|steigt)\\w*(Risiko|Wahrscheinlichkeit)"]), "dg"),
@@ -1321,7 +1347,11 @@ function detect_number_type(token_data, txt) {
             // Note: Currently a dummy condition!
             // MAYBE: Require at least one update of stop tokens to make it greedy? stop_update_count > 0
             // If one category could be clarified, exclude it?
-            if (["control", "treatment", "total", "eff"].filter((x) => numberfeats.has(x)).length > 0) {
+
+            // TODO: Ensure that not both treatment and control are coded!
+
+            if (["control", "treatment", "total", "eff"].filter((x) => numberfeats.has(x)).length > 0 &&
+                ["ill", "eff"].filter((x) => numberfeats.has(x)).length > 0) {
                 console.log("FINAL TESTSTRING:\n" + test_str);
                 console.log(test_tokens);
                 console.log("DESCRIPTION COMPLETE");
@@ -1351,21 +1381,13 @@ function detect_number_type(token_data, txt) {
         }
 
         // Assign the information to the data:
-        num_types[token_ix] = Array.from(numberfeats).join(",");
+        context_info[token_ix] = Array.from(numberfeats).join(",");
 
 
     }
 
-    console.log("~~~~~~~~~~~~ EOF context window approach ~~~~~~~~~~~~~~");
-
-
-    // OUTPUT: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    console.log("Output numtypes:");
-    console.log(num_types);
-    return num_types;
-
+    return context_info;
 }
-
 
 /**
  * Finds the unit to a number from token data
