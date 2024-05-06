@@ -1556,7 +1556,7 @@ function detect_regex_match(txt, token_dat, check_dict) {
 
         // For a token to be part of a match, the following conditions must be fulfilled:
         // Match start must be greater or equal than token start and smaller than token end
-        const match_start = token_dat.start.findIndex(x => x >= match.start_end[0] && x < match.start_end[1]);
+        let match_start = token_dat.start.findIndex(x => x >= match.start_end[0] && x < match.start_end[1]);
         // Match end must be smaller or equal to token end and larger than token start
         // Search from the back!
         let match_end = token_dat.end.findLastIndex(x => x <= (match.start_end[1] - 1) && x > match.start_end[0]);
@@ -1570,6 +1570,10 @@ function detect_regex_match(txt, token_dat, check_dict) {
 
             if (match_end === -1) {
                 match_end = match_start;
+            }
+
+            if (match_start === -1) {
+                match_start = match_end;
             }
 
             const n_ele = match_end - match_start + 1;
