@@ -148,7 +148,9 @@ $(document).ready(function () {
         token_dat.detect_number_type(inputText);
 
         // Context detection:
-        token_dat.add_column(investigate_context(token_dat), "numinfo");
+        token_dat.add_column(investigate_context(token_dat, window_keys.grouptype), "n_gtype");
+        token_dat.add_column(investigate_context(token_dat, window_keys.treat_contr), "n_treatctrl");
+        token_dat.add_column(investigate_context(token_dat, window_keys.effside), "n_effside");
 
         console.log("Updated token data:");
         console.log(token_dat);
@@ -1132,10 +1134,6 @@ function detect_number_type(token_data, txt) {
     }
 
 
-
-    console.log("~~~~~~~~~~~~ EOF context window approach ~~~~~~~~~~~~~~");
-
-
     // OUTPUT: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     console.log("Output numtypes:");
     console.log(num_types);
@@ -1143,11 +1141,45 @@ function detect_number_type(token_data, txt) {
 
 }
 
+/**
+ * Sets of keys to be used with window approach.
+ */
+const window_keys = {
+    "grouptype": {
+        "total": RegExp(collapse_regex_or(["insgesamt", "alle", "Basis"]), "dg"),
+        "subgroup": RegExp(collapse_regex_or(["[Ii]n ", "[Uu]nter ", "[Dd]avon ",
+            "der\\w*[Tt]eilnehmer", "entfielen\w*auf"]), "dg")
+    },
+    "treat_contr": {
+        // Types of subgroups:
+        "control": RegExp(collapse_regex_or(["Kontroll-?\\w*[Gg]ruppe", "Placebo-?\\w*[Gg]ruppe"]), "dg"),
+        "treatment": RegExp(collapse_regex_or(["[Gg]eimpfte?n?", "Impf-?\\w*[Gg]ruppe"]), "dg")
+    },
+    "effside": {
+        "eff": RegExp(collapse_regex_or(["(?<![Nn]eben)[Ww]irk", "Impfschutz"]), "dg"),
+        "side": RegExp(collapse_regex_or(["Nebenwirk", "Komplikation"]), "dg"),  // more keywords?
+    },
+    "incr_decr": {
+        "risk_incr": RegExp(collapse_regex_or([
+            "(Risiko|Wahrscheinlichkeit)\\w*(erhöht|steigt)",
+            "(erhöht|steigt)\\w*(Risiko|Wahrscheinlichkeit)"]), "dg"),
+        "risk_decr": RegExp(collapse_regex_or([
+            "(Risiko|Wahrscheinlichkeit)\\w*sinkt|verringert",
+            "sinkt|verringert\\w*(Risiko|Wahrscheinlichkeit)",
+            "schütz(en|t)\\w*(Erkrankung|Ansteckung)"]), "dg")
+    },
+    "verbs": {
+        // Verbs:
+        "ill": RegExp(collapse_regex_or(["erkrank(t|en)", "Verl[äa]uf"]), "dg")
+    }
+
+}
+
 
 /**
  * Investigates a contex window around numbers
  */
-function investigate_context(token_data){
+function investigate_context(token_data, keyset) {
 
     let context_info = Array(token_data.nrow).fill(-1);  // was: "none"
 
@@ -1182,24 +1214,6 @@ function investigate_context(token_data){
     // const key_verb = RegExp(collapse_regex_or(["erkrank(t|en)"]))
     // // Maybe also distinguish "waren" vs. "sich ereignen"
 
-    const window_keys = {
-        "total": RegExp(collapse_regex_or(["insgesamt", "alle", "Basis"]), "dg"),
-        "subgroup": RegExp(collapse_regex_or(["[Ii]n ", "[Uu]nter ", "[Dd]avon ", "der\\w*[Tt]eilnehmer"]), "dg"),
-        // Types of subgroups:
-        "control": RegExp(collapse_regex_or(["Kontroll-?\\w*[Gg]ruppe", "Placebo-?\\w*[Gg]ruppe"]), "dg"),
-        "treatment": RegExp(collapse_regex_or(["[Gg]eimpfte?n?", "Impf-?\\w*[Gg]ruppe"]), "dg"),
-        "eff": RegExp(collapse_regex_or(["(?<![Nn]eben)[Ww]irk", "Impfschutz"]), "dg"),
-        "side": RegExp(collapse_regex_or(["Nebenwirk", "Komplikation"]), "dg"),  // more keywords?
-        "risk_incr": RegExp(collapse_regex_or([
-            "(Risiko|Wahrscheinlichkeit)\\w*(erhöht|steigt)",
-            "(erhöht|steigt)\\w*(Risiko|Wahrscheinlichkeit)"]), "dg"),
-        "risk_decr": RegExp(collapse_regex_or([
-            "(Risiko|Wahrscheinlichkeit)\\w*sinkt|verringert",
-            "sinkt|verringert\\w*(Risiko|Wahrscheinlichkeit)",
-            "schütz(en|t)\\w*(Erkrankung|Ansteckung)"]), "dg"),
-        // Verbs:
-        "ill": RegExp(collapse_regex_or(["erkrank(t|en)", "Verl[äa]uf"]), "dg")
-    };
 
     console.log("Number positions across the text");
     // console.log(token_ids.filter((d, ind) => num_info[ind]));
@@ -1286,11 +1300,11 @@ function investigate_context(token_data){
             const test_str = test_tokens.join("_");
             // Issue could be that underscore counts as word character; will exploit this for now!!
             // console.log(test_tokens);
-            console.log("TESTSTRING:\n" + test_str);
+            // console.log("TESTSTRING:\n" + test_str);
 
             // Test the tokens here:
             // Here we should define sets that exclude each other! (e.g., control + treatment)
-            for (const [key, value] of Object.entries(window_keys)) {
+            for (const [key, value] of Object.entries(keyset)) {
                 // console.log("TESTING KEYS");
                 // Also log nearest distance and number of iterations?
 
@@ -1319,7 +1333,7 @@ function investigate_context(token_data){
             // console.log(numberfeats);
 
 
-            console.log(`Stop token at start: ${stop_token_start}, at end: ${stop_token_end}`);
+            // console.log(`Stop token at start: ${stop_token_start}, at end: ${stop_token_end}`);
 
             // Update the stop tokens:
             if ((stop_token_start && stop_token_end) || (stop_token_end && lock_start === min_start) || (stop_token_start && lock_end === max_end)) {
@@ -1350,8 +1364,7 @@ function investigate_context(token_data){
 
             // TODO: Ensure that not both treatment and control are coded!
 
-            if (["control", "treatment", "total", "eff"].filter((x) => numberfeats.has(x)).length > 0 &&
-                ["ill", "eff"].filter((x) => numberfeats.has(x)).length > 0) {
+            if (Object.keys(keyset).filter((x) => numberfeats.has(x)).length > 0) {
                 console.log("FINAL TESTSTRING:\n" + test_str);
                 console.log(test_tokens);
                 console.log("DESCRIPTION COMPLETE");
