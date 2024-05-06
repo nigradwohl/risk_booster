@@ -17,7 +17,7 @@
     ---column-bg-primary: white;
     ---column-bg-secondary: #f1f1f1;
     ---colum-bg-tertiary: white;
-    ---checklist-question-bg: silver;
+    ---checklist-question-bg: #EEE;
     ---button-primary: #E7E8D1;
     ---button-secondary: lightgrey;
     ---wiki-bg: #E7E8D1;
@@ -336,6 +336,7 @@ body {
 .card a {
     padding: 14px 20px;
     text-decoration: none;
+    color: silver;
 }
 
 .content {
