@@ -139,6 +139,7 @@ $(document).ready(function () {
         // Detect features:
         token_dat.detect_topic("eff", ["Nutz", "(?<!Neben)[Ww]irks(am|ung)"]);
         token_dat.detect_topic("side", ["Nebenwirk"]);
+        // NOTE: Do not add specific side effects, because they may be effects (symptoms) in other contexts!
         token_dat.detect_topic("treatgroup", ["(Impf|Behandlungs)-?.*[Gg]ruppe"]);
         token_dat.detect_topic("controlgroup", ["(Kontroll|Placebo)-?.*[Gg]ruppe"]);
 
@@ -154,10 +155,10 @@ $(document).ready(function () {
         const allnum_ix = token_dat.id.filter((d, ix) => token_dat.is_num[ix] && !units_exc.includes(token_dat.unit[ix]));
         const case_ix = token_dat.id.filter((d, ix) => token_dat.unit[ix] === "case");
 
+        // Identify if numbers are total counts or refer to a subgroup:
         token_dat.add_column(investigate_context(token_dat, allnum_ix, window_keys.grouptype), "n_gtype");
-        // Add control and treatment group to subgroup identification?
-
-
+        // Percentages MUST be subgroups:
+        token_dat.n_gtype = token_dat.n_gtype.map((x, ix) => token_dat.unit[ix] === "perc" ? "subgroup" : token_dat.n_gtype[ix]);
 
         // Do not for total numbers
         const n_subgroup_ix = token_dat.id.filter((d, ix) => token_dat.n_gtype[ix] !== "total" && token_dat.n_gtype[ix] !== -1);
@@ -361,12 +362,12 @@ $(document).ready(function () {
             const eff_num = token_dat.n_effside.includes("eff");
             const side_num = token_dat.n_effside.includes("side");
 
-            if(eff_num && side_num){
+            if (eff_num && side_num) {
                 feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> Sowohl zur Effektivität, als auch zu Nebenwirkungen wurden Zahlen angegeben."
             } else if (eff_num || side_num) {
                 feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> Zahlen wurden leider nur zu" +
                     (eff_num ? "r Effektivität" : " Nebenwirkungen") +
-                " angegeben."
+                    " angegeben."
             } else {
                 feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> Die Zahlen beziehen sich leider nicht auf Effektivität oder Nebenwirkungen."
             }
@@ -378,13 +379,13 @@ $(document).ready(function () {
 
             feature_num += "</li><li>";
 
-            if(trt_num && ctrl_num){
+            if (trt_num && ctrl_num) {
                 feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> " +
                     "Sowohl zu den Risiken in der Behandlungsgruppe, als auch der Kontrollgruppe wurden Zahlen angegeben."
             } else if (trt_num || ctrl_num) {
-                feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> Zahlen wurden leider nur zur" +
+                feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> Zahlen wurden leider nur zur " +
                     (trt_num ? "Behandlungs" : "Kontroll") + "gruppe" +
-                " angegeben."
+                    " angegeben."
             } else {
                 feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> Es werden keine Zahlen zu Behandlungs- oder Kontrollgruppe berichtet."
             }
@@ -579,19 +580,20 @@ const key_obj = {
                 RegExp(collapse_regex_or(["höher", "erhöht", "reduziert", "(ge|ver)ringert?"]))]
         ]
     },
-    "N_TOT": {
-        "number_unit": "case",
-        "keyset": [
-            // TODO: Double check these!
-            [RegExp("Proband|[Tt]eilnehme|Versuchspers|Menschen"), RegExp("insgesamt|Studie|umfass(t|en)")]
-        ]
-    },
     // Total nuber of cases/incidents:
+    // NOTE: Order matters!
     "N_CASE_TOT": {
         "number_unit": "case",
         "keyset": [
             // TODO: Double check these!
             [RegExp("Fälle"), RegExp("insgesamt")]
+        ]
+    },
+    "N_TOT": {
+        "number_unit": "case",
+        "keyset": [
+            // TODO: Double check these!
+            [RegExp("Proband|[Tt]eilnehme|Versuchspers|Menschen"), RegExp("insgesamt|Studie|umfass(t|en)")]
         ]
     },
     // Part of cases:
@@ -1221,7 +1223,7 @@ const window_keys = {
  * @param token_data {Object} A token data object with information about numbers.
  * @param index_arr {Array} An array of indices corresponding to the token data, indicating which elements should be considered.
  * @param keyset {Object} An object with named keysets determining the classes assigned.
-*/
+ */
 function investigate_context(token_data, index_arr, keyset) {
 
     let context_info = Array(token_data.nrow).fill(-1);  // was: "none"
