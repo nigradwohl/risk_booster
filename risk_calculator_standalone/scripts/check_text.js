@@ -148,9 +148,15 @@ $(document).ready(function () {
         token_dat.detect_number_type(inputText);
 
         // Context detection:
-        token_dat.add_column(investigate_context(token_dat, window_keys.grouptype), "n_gtype");
-        token_dat.add_column(investigate_context(token_dat, window_keys.treat_contr), "n_treatctrl");
-        token_dat.add_column(investigate_context(token_dat, window_keys.effside), "n_effside");
+        //     const num_array_all = token_data.id.filter((d, ix) => token_data.is_num[ix] && !units_exc.includes(token_data.unit[ix]));
+        // For all numbers with non-.excluded units:
+        const allnum_ix = token_dat.id.filter((d, ix) => token_dat.is_num[ix] && !units_exc.includes(token_dat.unit[ix]));
+        token_dat.add_column(investigate_context(token_dat, allnum_ix, window_keys.grouptype), "n_gtype");
+        token_dat.add_column(investigate_context(token_dat, allnum_ix, window_keys.effside), "n_effside");
+        // Do only for subgroups!
+        const n_subgroup_ix = token_dat.id.filter((d, ix) => token_dat.n_gtype[ix] === "subgroup");
+        token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.treat_contr), "n_treatctrl");
+
 
         console.log("Updated token data:");
         console.log(token_dat);
@@ -1146,8 +1152,8 @@ function detect_number_type(token_data, txt) {
  */
 const window_keys = {
     "grouptype": {
-        "total": RegExp(collapse_regex_or(["insgesamt", "alle", "Basis"]), "dg"),
-        "subgroup": RegExp(collapse_regex_or(["[Ii]n ", "[Uu]nter ", "[Dd]avon ",
+        "total": RegExp(collapse_regex_or(["insgesamt", "alle_", "Basis"]), "dg"),
+        "subgroup": RegExp(collapse_regex_or(["[Ii]n_", "[Uu]nter_", "[Dd]avon_",
             "der\\w*[Tt]eilnehmer", "entfielen\w*auf"]), "dg")
     },
     "treat_contr": {
@@ -1177,9 +1183,13 @@ const window_keys = {
 
 
 /**
- * Investigates a contex window around numbers
- */
-function investigate_context(token_data, keyset) {
+ * Investigates a contex window around numbers or other entities
+ * @return {Array}     An array including information about elements of token based on surrounding words defined in keyset.
+ * @param token_data {Object} A token data object with information about numbers.
+ * @param index_arr {Array} An array of indices corresponding to the token data, indicating which elements should be considered.
+ * @param keyset {Object} An object with named keysets determining the classes assigned.
+*/
+function investigate_context(token_data, index_arr, keyset) {
 
     let context_info = Array(token_data.nrow).fill(-1);  // was: "none"
 
@@ -1215,19 +1225,21 @@ function investigate_context(token_data, keyset) {
     // // Maybe also distinguish "waren" vs. "sich ereignen"
 
 
-    console.log("Number positions across the text");
-    // console.log(token_ids.filter((d, ind) => num_info[ind]));
-    const num_array_all = token_data.id.filter((d, ix) => token_data.is_num[ix] && !units_exc.includes(token_data.unit[ix]));
-    console.log(num_array_all);
+    console.log("Testing keyset:");
+    console.log(keyset);
 
-    const tokens = token_data.token;
+    // console.log(token_ids.filter((d, ind) => num_info[ind]));
+    // const num_array_all = token_data.id.filter((d, ix) => token_data.is_num[ix] && !units_exc.includes(token_data.unit[ix]));
+    console.log(index_arr);
+
+    // const tokens = token_data.token;
 
 
     // For each number query:
-    for (const token_ix of num_array_all) {
+    for (const token_ix of index_arr) {
 
         console.log("-------- NEW TOKEN --------");
-        console.log(`+++ Token number ${token_ix}: ${tokens[token_ix]} +++`);
+        // console.log(`+++ Token number ${token_ix}: ${tokens[token_ix]} +++`);
 
         // PREPARE THE WINDOW: ~~~~~~~~~~~~~~
         let testcounter = 0;  // testcounter to avoid infinite loops!
