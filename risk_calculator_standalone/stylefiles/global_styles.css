@@ -92,14 +92,20 @@ body {
 
 /* Style the navigation bar links */
 .navbar .nav-container {
-    padding: 14px 20px;
+    /*padding: 14px 20px;*/
     text-align: center;
     margin: 0;
+    min-height: 2.5em;
+    display: flex;
 }
 
-.nav-container a {
+.nav-container > a {
     color: var(---navbar-text);
     text-decoration: none;
+    width: 100%;
+    /*display: flex;*/
+    text-align: center;
+    padding: 0.7em 0.7em 0.6em;
 }
 
 /* Change color on hover */
@@ -138,6 +144,8 @@ body {
     position: absolute;
     background-color: var(---dropdown-content-bg);
     min-width: 160px;
+    left: 30%;
+    top: 80%;
     box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
     z-index: 1;
 }
