@@ -355,8 +355,26 @@ $(document).ready(function () {
         let feature_num = "";
         const any_risk_num = ["perc", "cases", "nh"].filter((x) => token_dat.unit.includes(x));
         if (any_risk_num.length > 0) {
-            feature_num = "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> Der Text scheint Zahlen zu den genannten Risiken zu berichten. Sehr gut! ";
-            // Eventually differentiate: Does it report numebrs only about effectivity? Also about side effects?
+            feature_num = "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> Der Text scheint Zahlen zu den genannten Risiken zu berichten.";
+            // Eventually differentiate: Does it report numbers only about effectivity? Also about side effects?
+
+            const eff_num = token_dat.n_effside.includes("eff");
+            const side_num = token_dat.n_effside.includes("side");
+
+            if(eff_num && side_num){
+                feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> Sowohl zu Effektivität und Nebenwirkungen wurden Zahlen angegeben."
+            } else if (eff_num || side_num) {
+                feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> Zahlen wurden leider nur zu" +
+                    (eff_num ? "r Effektivität" : " Nebenwirkungen") +
+                " angegeben."
+            } else {
+                feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> Die Zahlen beziehen sich leider nicht auf Effektivität oder Nebenwirkungen."
+            }
+
+
+            // feature_num +=
+
+
         } else {
             feature_num = "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> Der Text scheint keine Zahlen zu den Risiken zu berichten. " +
                 "Rein verbale Beschreibungen sollten vermieden werden. [LINK WIKI!]" +
