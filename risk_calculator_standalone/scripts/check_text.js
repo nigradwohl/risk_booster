@@ -148,33 +148,33 @@ $(document).ready(function () {
         token_dat.detect_number_type(inputText);
 
         // Context detection:
+        // NOTE: May also be applied to numbers that could not be identified so far!
         //     const num_array_all = token_data.id.filter((d, ix) => token_data.is_num[ix] && !units_exc.includes(token_data.unit[ix]));
         // For all numbers with non-.excluded units:
         const allnum_ix = token_dat.id.filter((d, ix) => token_dat.is_num[ix] && !units_exc.includes(token_dat.unit[ix]));
+        const case_ix = token_dat.id.filter((d, ix) => token_dat.unit[ix] === "case");
+
         token_dat.add_column(investigate_context(token_dat, allnum_ix, window_keys.grouptype), "n_gtype");
-        token_dat.add_column(investigate_context(token_dat, allnum_ix, window_keys.effside), "n_effside");
-        // Do only for subgroups!
-        const n_subgroup_ix = token_dat.id.filter((d, ix) => token_dat.n_gtype[ix] === "subgroup");
-        token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.treat_contr), "n_treatctrl");
+        // Add control and treatment group to subgroup identification?
 
 
+
+        // Do not for total numbers
+        const n_subgroup_ix = token_dat.id.filter((d, ix) => token_dat.n_gtype[ix] !== "total" && token_dat.n_gtype[ix] !== -1);
+        token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.treat_contr), "n_trtctrl");
+        token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.effside), "n_effside");
+        // Note: Nutzen muss bei Verhaltensrisiken ggf. nicht unbedingt benannt werden (wenn es keinen ersichtlichen gibt)
+
+        console.log("Index of numbers with subgroup:");
+        console.log(n_subgroup_ix);
+
+
+        // Display for testing:
         console.log("Updated token data:");
         console.log(token_dat);
         console.log(`${token_dat.nrow} rows and ${token_dat.ncol} columns`);
-        // console.log(token_dat);
-
-        // // Remove the indices that have to be dropped:
-        // let arr_match = regex_matches.arr_match;
-        // arr_match = arr_match.filter((ele, index) => !droplist.includes(index));
-        //
-        // // Sort the array by the starting position of each match:
-        // arr_match = arr_match.sort((a, b) => a.start_end[0] - b.start_end[0]);
-        //
-        // console.log("Sorted and cleaned matches");
-        // console.log(arr_match);
-
         token_dat.print();  // print data from object.
-        // console.log(token_dat.get_row(1));  // print row.
+
 
         // ~~~~~~~~~~~~~~ HIGHLIGHTING ~~~~~~~~~~~~~~~~~~~~
         // Loop over all remaining matches to highlight them:
@@ -352,17 +352,17 @@ $(document).ready(function () {
         }
 
         // Flag out the use of numbers:
-        let feature_num = "";
+        let feature_num = "<li>";
         const any_risk_num = ["perc", "cases", "nh"].filter((x) => token_dat.unit.includes(x));
         if (any_risk_num.length > 0) {
-            feature_num = "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> Der Text scheint Zahlen zu den genannten Risiken zu berichten.";
-            // Eventually differentiate: Does it report numbers only about effectivity? Also about side effects?
+            feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> Der Text scheint Zahlen zu den genannten Risiken zu berichten. </li><li>";
 
+            // Differentiate: Does it report numbers only about effectivity? Also about side effects?
             const eff_num = token_dat.n_effside.includes("eff");
             const side_num = token_dat.n_effside.includes("side");
 
             if(eff_num && side_num){
-                feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> Sowohl zu Effektivität und Nebenwirkungen wurden Zahlen angegeben."
+                feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> Sowohl zur Effektivität, als auch zu Nebenwirkungen wurden Zahlen angegeben."
             } else if (eff_num || side_num) {
                 feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> Zahlen wurden leider nur zu" +
                     (eff_num ? "r Effektivität" : " Nebenwirkungen") +
@@ -372,18 +372,33 @@ $(document).ready(function () {
             }
 
 
-            // feature_num +=
+            // Differentiate numbers for control and treatment group:
+            const trt_num = token_dat.n_trtctrl.includes("treatment");
+            const ctrl_num = token_dat.n_trtctrl.includes("control");
+
+            feature_num += "</li><li>";
+
+            if(trt_num && ctrl_num){
+                feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> " +
+                    "Sowohl zu den Risiken in der Behandlungsgruppe, als auch der Kontrollgruppe wurden Zahlen angegeben."
+            } else if (trt_num || ctrl_num) {
+                feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> Zahlen wurden leider nur zur" +
+                    (trt_num ? "Behandlungs" : "Kontroll") + "gruppe" +
+                " angegeben."
+            } else {
+                feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> Es werden keine Zahlen zu Behandlungs- oder Kontrollgruppe berichtet."
+            }
 
 
         } else {
-            feature_num = "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> Der Text scheint keine Zahlen zu den Risiken zu berichten. " +
+            feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> Der Text scheint keine Zahlen zu den Risiken zu berichten. " +
                 "Rein verbale Beschreibungen sollten vermieden werden. [LINK WIKI!]" +
                 "Bitte versuchen Sie Zahlen zu berichten.";
         }
 
         // Only talks about numbers if the text talks about risK:
         if (!norisk) {
-            feature_list += "<li>" + feature_num + "</li>";
+            feature_list += feature_num + "</li>";
         }
 
 
@@ -1392,8 +1407,6 @@ function investigate_context(token_data, index_arr, keyset) {
             // MAYBE: Require at least one update of stop tokens to make it greedy? stop_update_count > 0
             // If one category could be clarified, exclude it?
 
-            // TODO: Ensure that not both treatment and control are coded!
-
             if (Object.keys(keyset).filter((x) => numberfeats.has(x)).length > 0) {
                 console.log("FINAL TESTSTRING:\n" + test_str);
                 console.log(test_tokens);
@@ -1424,7 +1437,7 @@ function investigate_context(token_data, index_arr, keyset) {
         }
 
         // Assign the information to the data:
-        context_info[token_ix] = Array.from(numberfeats).join(",");
+        context_info[token_ix] = Array.from(numberfeats).toString();
 
 
     }
