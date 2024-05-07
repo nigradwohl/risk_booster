@@ -134,17 +134,19 @@ $(document).ready(function () {
         // Add to object:
         // token_dat.token_match = token_match;
         token_dat.add_column(regex_matches.match_id, "match");
-        token_dat.add_column(regex_matches.match_type, "unit");  // get unit info from regex matches.
+        token_dat.add_column(regex_matches.match_type.map((x) => x !== -1 ? x.toString() : x), "unit");  // get unit info from regex matches.
         token_dat.add_number_info();  // add info about numbers.
         token_dat.detect_unit();  // get unti info from token data.
 
         // Detect topis:
         token_dat.detect_topic("impf", ["(?<!(gl|sch))[Ii]mpf"]);  // must be preceded
+        token_dat.detect_topic("lower_risk", ["mindern", "Risiko"]);
         token_dat.detect_topic("cancer_risk", ["[Rr]isiko", "Krebs"]);  // must be preceded
         token_dat.detect_topic("cancer_drug", ["[Mm]edikament", "Krebs"])
 
         // Detect features:
-        token_dat.detect_topic("eff", ["Nutz", "(?<!Neben)[Ww]irks(am|ung)"]);
+        token_dat.detect_topic("eff", ["Nutz", "(?<!Neben)[Ww]irks(am|ung)", "Schutz",
+            "geschützt"]);
         token_dat.detect_topic("side", ["Nebenwirk"]);
         // NOTE: Do not add specific side effects, because they may be effects (symptoms) in other contexts!
         token_dat.detect_topic("treatgroup", ["(Impf|Behandlungs)-?.*[Gg]ruppe"]);
@@ -256,7 +258,8 @@ $(document).ready(function () {
         // Notes about topics:
         const key_topic_dict = {
             "impf": "Impfung",
-            "cancer_risk": "Krebsrisiko"
+            "cancer_risk": "Krebsrisiko",
+            "lower_risk": "Risikominderung"
         };  // {"impf": "Impfung", "eff": "Wirksamkeit", "side": "Nebenwirkungen"};
         let key_topics = [];
         let key_topics_str = "";
@@ -364,7 +367,9 @@ $(document).ready(function () {
 
         // Flag out the use of numbers: ~~~~~~~~~~~~~~~~~~~~~~~
         let feature_num = "<li>";
-        const any_risk_num = ["perc", "cases", "nh"].filter((x) => token_dat.unit.includes(x));
+        const any_risk_num = ["perc", "cases", "nh", "multi"].filter((x) => token_dat.unit.includes(x));
+        // console.log("Any risk num:");
+        // console.log(token_dat.unit);
         if (any_risk_num.length > 0) {
             feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> Der Text scheint Zahlen zu den genannten Risiken zu berichten. </li><li>";
 
@@ -1246,7 +1251,8 @@ const window_keys = {
         "all": RegExp(collapse_regex_or(["[Tt]eilnehmer", "Probanden"]), "dg")
     },
     "effside": {
-        "eff": RegExp(collapse_regex_or(["(?<![Nn]eben)[Ww]irk", "Impfschutz"]), "dg"),
+        "eff": RegExp(collapse_regex_or(["(?<![Nn]eben)[Ww]irk", "Impfschutz",
+            "Schutz", "geschützt"]), "dg"),
         "side": RegExp(collapse_regex_or(["Nebenwirk", "Komplikation"]), "dg"),  // more keywords?
     },
     "incr_decr": {
