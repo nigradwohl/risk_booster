@@ -6,7 +6,8 @@
 }
 
 .in-text-icon.warning{
-    color: grey;
+    color: #8CA000;
+    rotate: -90deg;
 }
 .in-text-icon.error{
     color: #B85042;
