@@ -42,6 +42,13 @@ Wer zum Selbstschutz eine Maske trägt, die dicht am Gesicht anliegt, der sei et
 Testcase 4:
 In der Studie traten insgesamt 10 schwere COVID-19-Verläufe auf. Davon wurden 9 in der Placebogruppe und einer in der BNT162b2-Gruppe beobachtet. Bislang konnte das Data Monitoring Committee keine schwerwiegenden Nebenwirkungen feststellen. Eine Untersuchung der entblindeten Daten zur Impfstoffreaktion in einer randomisierten Subgruppe der finalen Phase-2/3-Analyse mit mindestens 8.000 der über 18-jährigen Probanden zeigte, dass der Impfstoff gut verträglich ist. Die meisten Nebenwirkungen traten nur vorübergehend auf. Die einzigen schweren Nebenwirkungen (3. Grades), die in mehr als 2 % der Probanden nach der ersten oder zweiten Impfung auftraten, waren Erschöpfung mit 3,8 % sowie Kopfschmerzen mit 2,0 % nach der zweiten Dosis.
 
+Testcase percentages:
+BNT162b2 zeigt in der primären Endpunktanalyse 28 Tage nach der ersten Impfung eine 95%ige Wirksamkeit gegen COVID-19; insgesamt traten 170 bestätigte COVID-19-Fälle auf, mit 162 Fällen in der Placebogruppe und 8 Fällen in der Impfstoffgruppe
+
+41 % der weltweiten Studienteilnehmer und 45 % der amerikanischen Studienteilnehmer sind im Alter von 56 bis 85 Jahren.
+
+Der Impfstoff wurde in allen Teilnehmerpopulationen gut vertragen, insgesamt nahmen 43.000 Probanden an der Studie teil; es wurden keine schwerwiegenden Nebenwirkungen festgestellt; die einzigen Nebenwirkungen dritten Grades die häufiger als 2 % auftraten, waren Erschöpfung mit 3,8 % und Kopfschmerzen mit 2,0 %
+
 Test statements:
 - In der Kontrollgruppe erkranken 5 von 100, in der Behandlungsgruppe einer aus 100. --> gut
 - Das Risiko zu erkranken ist 30-mal so hoch. Das heißt es erkranken 30 von 10000 mit dem bösen Verhalten und nur einer von 10000 ohne.
@@ -181,6 +188,9 @@ $(document).ready(function () {
         // Loop over all remaining matches to highlight them:
         let cur_ix = 0;  // current index in original text.
         let procText = "";
+
+        // Get rid of left carryforward units:
+        token_dat.unit = token_dat.unit.map((x) => x === "ucarryforward" ? -1 : x);
 
         for (let i = 0; i < token_dat.nrow; i++) {
 
@@ -352,7 +362,7 @@ $(document).ready(function () {
             feature_list += "<li>" + feature_str + "</li>";
         }
 
-        // Flag out the use of numbers:
+        // Flag out the use of numbers: ~~~~~~~~~~~~~~~~~~~~~~~
         let feature_num = "<li>";
         const any_risk_num = ["perc", "cases", "nh"].filter((x) => token_dat.unit.includes(x));
         if (any_risk_num.length > 0) {
@@ -363,35 +373,71 @@ $(document).ready(function () {
             const side_num = token_dat.n_effside.includes("side");
 
             if (eff_num && side_num) {
-                feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> Sowohl zur Effektivität, als auch zu Nebenwirkungen wurden Zahlen angegeben."
+                feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> " +
+                    "Sowohl zur Effektivität, als auch zu Nebenwirkungen wurden Zahlen angegeben."
             } else if (eff_num || side_num) {
-                feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> Zahlen wurden leider nur zu" +
+                feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> " +
+                    "Zahlen wurden leider nur zu" +
                     (eff_num ? "r Effektivität" : " Nebenwirkungen") +
                     " angegeben."
             } else {
-                feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> Die Zahlen beziehen sich leider nicht auf Effektivität oder Nebenwirkungen."
+                feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> " +
+                    "Die Zahlen beziehen sich leider nicht auf Effektivität oder Nebenwirkungen."
             }
 
 
             // Differentiate numbers for control and treatment group:
-            const trt_num = token_dat.n_trtctrl.includes("treatment");
-            const ctrl_num = token_dat.n_trtctrl.includes("control");
+            // Do numbers apply to treatment and control group
+            // (or: affected and general population for other risks)
+            // const trt_num = token_dat.n_trtctrl.includes("treatment");
+            // const ctrl_num = token_dat.n_trtctrl.includes("control");
+            let trt_eff_num = false;
+            let trt_side_num = false;
+            let control_eff_num = false;
+            let control_side_num = false;
+
+            // TODO: Limit loop to numbers?
+            trt_eff_num = token_dat.n_trtctrl
+                .filter((x, ix) => x === "treatment" &&
+                    token_dat.n_effside[ix] === "eff")
+
+            control_eff_num = token_dat.n_trtctrl
+                .filter((x, ix) => x === "control" &&
+                    token_dat.n_effside[ix] === "eff")
+
+            trt_side_num = token_dat.n_trtctrl
+                .filter((x, ix) => x === "treatment" &&
+                    token_dat.n_effside[ix] === "side")
+
+            control_side_num = token_dat.n_trtctrl
+                .filter((x, ix) => x === "control" &&
+                    token_dat.n_effside[ix] === "side")
 
             feature_num += "</li><li>";
 
-            if (trt_num && ctrl_num) {
-                feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> " +
-                    "Sowohl zu den Risiken in der Behandlungsgruppe, als auch der Kontrollgruppe wurden Zahlen angegeben."
-            } else if (trt_num || ctrl_num) {
-                feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> Zahlen wurden leider nur zur " +
-                    (trt_num ? "Behandlungs" : "Kontroll") + "gruppe" +
-                    " angegeben."
-            } else {
-                feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> Es werden keine Zahlen zu Behandlungs- oder Kontrollgruppe berichtet."
-            }
+            // Die Wirksamkeit wird (nicht) mit Zahlen aus Behandlungs- und Kontrollgruppe belegt.
+            // Nebenwirkungen werden nicht für Behandlungs- und Kontrollgruppe angegeben
+            let arr_eff_both = trt_eff_num.length > 0 && control_eff_num.length > 0 ? ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>", "nicht "];
+            let arr_side_both = trt_side_num.length > 0 && control_side_num.length > 0 ? ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>", "nicht "];
+
+
+            feature_num += arr_eff_both[0] + " Die Wirksamkeit wird " + arr_eff_both[1] + "mit Zahlen für Behandlungs- und Kontrollgruppe belegt</li><li>";
+            feature_num += arr_side_both[0] + " Nebenwirkungen werden " + arr_side_both[1] + "für Behandlungs- und Kontrollgruppe angegeben";
+
+            // if (trt_num && ctrl_num) {
+            //     feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> " +
+            //         "Sowohl zu den Risiken in der Behandlungsgruppe, als auch der Kontrollgruppe wurden Zahlen angegeben."
+            // } else if (trt_num || ctrl_num) {
+            //     feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> Zahlen wurden leider nur zur " +
+            //         (trt_num ? "Behandlungs" : "Kontroll") + "gruppe" +
+            //         " angegeben."
+            // } else {
+            //     feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> Es werden keine Zahlen zu Behandlungs- oder Kontrollgruppe berichtet."
+            // }
 
 
         } else {
+            // ONLY NUMBERS: ~~~~~~~~~~~~~~~~~~~~~~~~
             feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> Der Text scheint keine Zahlen zu den Risiken zu berichten. " +
                 "Rein verbale Beschreibungen sollten vermieden werden. [LINK WIKI!]" +
                 "Bitte versuchen Sie Zahlen zu berichten.";
@@ -888,6 +934,8 @@ function get_token_data(text) {
     let sentence_ids = [];
     let cur_sentence_id = 0;
 
+    // TODO: Handle line-breaks (e.g. in enumerations).
+
     // Assign each token its beginning index:
     for (let i = 0; i < text_tokens.length; i++) {
 
@@ -1194,7 +1242,8 @@ const window_keys = {
     "treat_contr": {
         // Types of subgroups:
         "control": RegExp(collapse_regex_or(["Kontroll-?\\w*[Gg]ruppe", "Placebo-?\\w*[Gg]ruppe"]), "dg"),
-        "treatment": RegExp(collapse_regex_or(["[Gg]eimpfte?n?", "Impf-?\\w*[Gg]ruppe"]), "dg")
+        "treatment": RegExp(collapse_regex_or(["[Gg]eimpfte?n?", "Impf-?\\w*[Gg]ruppe"]), "dg"),
+        "all": RegExp(collapse_regex_or(["[Tt]eilnehmer", "Probanden"]), "dg")
     },
     "effside": {
         "eff": RegExp(collapse_regex_or(["(?<![Nn]eben)[Ww]irk", "Impfschutz"]), "dg"),
@@ -1248,7 +1297,7 @@ function investigate_context(token_data, index_arr, keyset) {
         2. Try to get a description that is as complete as possible --> only move beyond punctuation if incomplete
     */
     // Get positions of numbers:
-    console.log("~~~~~~~~~~~ Context-window approach: ~~~~~~~~~~~~~ ");
+    // console.log("~~~~~~~~~~~ Context-window approach: ~~~~~~~~~~~~~ ");
 
     // Keyword dict:
     // Search subgroup keywords (in, unter ...) and non-subgroup keywords (insgesamt ...):
@@ -1260,12 +1309,12 @@ function investigate_context(token_data, index_arr, keyset) {
     // // Maybe also distinguish "waren" vs. "sich ereignen"
 
 
-    console.log("Testing keyset:");
-    console.log(keyset);
+    // console.log("Testing keyset:");
+    // console.log(keyset);
 
-    // console.log(token_ids.filter((d, ind) => num_info[ind]));
+    // // console.log(token_ids.filter((d, ind) => num_info[ind]));
     // const num_array_all = token_data.id.filter((d, ix) => token_data.is_num[ix] && !units_exc.includes(token_data.unit[ix]));
-    console.log(index_arr);
+    // console.log(index_arr);
 
     // const tokens = token_data.token;
 
@@ -1273,7 +1322,7 @@ function investigate_context(token_data, index_arr, keyset) {
     // For each number query:
     for (const token_ix of index_arr) {
 
-        console.log("-------- NEW TOKEN --------");
+        // // console.log("-------- NEW TOKEN --------");
         // console.log(`+++ Token number ${token_ix}: ${tokens[token_ix]} +++`);
 
         // PREPARE THE WINDOW: ~~~~~~~~~~~~~~
@@ -1292,7 +1341,7 @@ function investigate_context(token_data, index_arr, keyset) {
         let key_info = {};
 
         // Initialize flag for having encountered stop-tokens:
-        let stop_tokens = [".", "?", "!", ":", "oder", "und", ";", ",", "-"];  // renew for each number!
+        let stop_tokens = ["\\n", ".", "?", "!", ":", "oder", "und", ";", ",", "-"];  // renew for each number!
         let stop_token_start = false;
         let stop_token_end = false;
         let stop_update_count = 0;
@@ -1361,7 +1410,7 @@ function investigate_context(token_data, index_arr, keyset) {
 
                     if (!numberfeats.has(key)) {
                         key_info[key] = [match.indices, testcounter];  // match positions in teststring and iteration.
-                        console.log(key_info);
+                        // console.log(key_info);
                     }
                     numberfeats = numberfeats.add(key);
                 }
@@ -1384,7 +1433,7 @@ function investigate_context(token_data, index_arr, keyset) {
 
             // Update the stop tokens:
             if ((stop_token_start && stop_token_end) || (stop_token_end && lock_start === min_start) || (stop_token_start && lock_end === max_end)) {
-                console.log("UPDATE STOP TOKENS");
+                // console.log("UPDATE STOP TOKENS");
                 stop_tokens.pop();  // remove the last stop token and retry.
                 // When both are at the end, reset them.
                 stop_token_start = false;
@@ -1410,20 +1459,20 @@ function investigate_context(token_data, index_arr, keyset) {
             // If one category could be clarified, exclude it?
 
             if (Object.keys(keyset).filter((x) => numberfeats.has(x)).length > 0) {
-                console.log("FINAL TESTSTRING:\n" + test_str);
-                console.log(test_tokens);
-                console.log("DESCRIPTION COMPLETE");
+                // console.log("FINAL TESTSTRING:\n" + test_str);
+                // console.log(test_tokens);
+                // console.log("DESCRIPTION COMPLETE");
                 description_complete = true;
 
-                console.log(numberfeats);
+                // console.log(numberfeats);
 
             }
 
             // Fix a maximum number of iterations to avoid breakdown!
             if (testcounter > 50) {
-                console.log("BREAK DESCRIPTION");
+                // console.log("BREAK DESCRIPTION");
                 description_complete = true;
-                console.log(numberfeats);
+                // console.log(numberfeats);
             }
 
             testcounter++;  // should maybe remain implemented!
@@ -1541,35 +1590,35 @@ function detect_unit(token_data) {
                 // Number and beginnings of each streak of replacements.
                 const n_reps = countReps(unit_info);
 
-                console.log("Count repetitions:");
-                console.log(n_reps);
+                // console.log("Count repetitions:");
+                // console.log(n_reps);
 
-                console.log("Carrying forward...");
-                console.log("[" + unit_info.toString() + "]");
+                // console.log("Carrying forward...");
+                // console.log("[" + unit_info.toString() + "]");
                 // carry previous unit forward f exists:
 
                 const prev_info = unit_info.slice(0, ix_tok - 1);
-                console.log("Previous info");
-                console.log(prev_info);
+                // console.log("Previous info");
+                // console.log(prev_info);
 
 
                 const prev_units = prev_info.filter((x) => x !== -1 && x !== "ucarryforward");
                 // unit_info[ix_tok] = prev_units[prev_units.length - 1];
-                console.log("Previous units");
-                console.log(prev_units.toString() + ", unit prev: " + prev_units[prev_units.length - 1].toString());
+                // console.log("Previous units");
+                // console.log(prev_units.toString() + ", unit prev: " + prev_units[prev_units.length - 1].toString());
 
 
                 unit_info.splice(n_reps.begins[ix_tok], n_reps.counts[ix_tok], Array(n_reps.counts[ix_tok]).fill(prev_units[prev_units.length - 1]));
                 unit_info = unit_info.flat();
-                // console.log(unit_info);
+                // // console.log(unit_info);
             }
 
         }
     }
 
     // Output:
-    console.log("Unit info");
-    console.log(unit_info);
+    // console.log("Unit info");
+    // console.log(unit_info);
     return unit_info;
 
 
