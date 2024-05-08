@@ -107,9 +107,17 @@ $(document).ready(function () {
     $("#check-text").on("click", function () {
 
         // console.log("Check my text");
-        const inputText = $("#text-query").val();
+        const rawText = $("#text-query").val();
 
-        // let procText = inputText;
+        // Pre-process input:
+        console.log("Raw text:");
+        console.log(rawText.replaceAll(/\u2022/gm, "\\n\\u2022"));
+
+        const inputText = rawText.replaceAll(/(?<!.)\n/gm, ".\\n");
+            // rawText.replaceAll(/\u2022/gm, "\\n\\u2022");
+            // rawText.replaceAll(/(?<!.)\n/gm, ".\\n");
+
+        // Maybe replace missing punctuation here?
 
         // console.log(sentence_tokenizer(inputText));
 
