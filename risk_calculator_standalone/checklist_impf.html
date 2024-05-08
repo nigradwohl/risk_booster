@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="stylefiles/global_styles.css">
+    <link rel="stylesheet" href="stylefiles/functional_styles.css">
 
     <script src="jquery/jquery-3.7.1.min.js"></script>
 
@@ -28,10 +29,11 @@
 
     <!--    Entry 1-->
 
-    <div class="checklist-question">
+    <div class="checklist-question" id="rel-risk-reduction-q">
         <p>Welche Wirksamkeit oder Effektivität wurde angegeben? (Englisch: Effectivity)</p>
 
         <p>
+            <i class="fa fa-exclamation-triangle"></i>
             Manchmal wird diese Zahl auch als "Impfschutz" bezeichnet.
             <strong>Weitere Begriffe?</strong>
         </p>
@@ -41,32 +43,32 @@
 
         <input class="checklist-input" id="rel-risk-reduction" type="text">
 
-        <button class="checklist-button">Weiter</button>
+        <button class="checklist-button continue-btn">Weiter</button>
         <p>Anmerkung: Wenn die Information fehlt, wird nachgefragt.</p>
     </div>
 
 
-    <div class="checklist-question">
+    <div class="checklist-question" id="n-total-q">
         <p>Wie viele Personen haben an der Studie teilgenommen?</p>
         <input class="checklist-input" id="n-total" type="text">
         <br>
-        <button class="checklist-button">Weiter</button>
+        <button class="checklist-button continue-btn">Weiter</button>
     </div>
 
-    <div class="checklist-question">
+    <div class="checklist-question" id="any-control-q">
         <p>Gab es eine Kontrollgruppe?</p>
 
-        <button class="checklist-button">Ja</button>
-        <button class="checklist-button">Nein</button>
-        <button class="checklist-button">Weiß nicht</button>
+        <button class="checklist-button continue-btn">Ja</button>
+        <button class="checklist-button continue-btn">Nein</button>
+        <button class="checklist-button continue-btn">Weiß nicht</button>
 
     </div>
 
-    <div class="checklist-question">
+    <div class="checklist-question" id="n-side-q">
         <p>Für wie viele Personen wurden Nebenwirkungen berichtet?</p>
         <input class="checklist-input" id="n-side" type="text">
         <br>
-        <button class="checklist-button">Weiter</button>
+        <button class="checklist-button continue-btn">Weiter</button>
     </div>
 
 
@@ -80,5 +82,7 @@
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--Space for scripts-->
+<script src="scripts/handle_checklist.js"></script>
+<script src="scripts/calculate_risk.js"></script>
 
 </body>

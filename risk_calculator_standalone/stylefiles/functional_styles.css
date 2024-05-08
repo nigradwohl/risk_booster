@@ -110,6 +110,10 @@
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Styles for risk calculator ~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+.checklist-question{
+    display: none;
+}
+
 .canvas-container {
 
     width: 220px;
