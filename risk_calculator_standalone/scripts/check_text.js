@@ -183,6 +183,12 @@ $(document).ready(function () {
         token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.effside), "n_effside");
         // Note: Nutzen muss bei Verhaltensrisiken ggf. nicht unbedingt benannt werden (wenn es keinen ersichtlichen gibt)
 
+        // Update missing information: ~~~~~~~~~~~
+        // Absolute percentages (for now code as remainder.
+        token_dat.numtype = token_dat.numtype
+            .map((ntype, ix) => token_dat.unit[ix] === "perc" && ntype.toString() === "other" ? "ABS" : ntype);
+
+
         console.log("Index of numbers with subgroup:");
         console.log(n_subgroup_ix);
 
