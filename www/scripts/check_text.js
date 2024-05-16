@@ -357,6 +357,44 @@ $(document).ready(function () {
 
         let feature_list = "";
 
+        // Target features are:
+        // eff -- num x treat; side -- num x treat
+        // Maybe get rows with numbers and ask for occurrence and co-occurrence (and add broad topics in there)?
+        // 1. Eff and side in broad topics and risknums?
+
+        // Get risknums:
+        const risknum_ix = token_dat.id
+            .filter((x) => ["perc", "cases", "nh", "multi"].includes(token_dat.unit[x]));
+        console.log("Risknum indices:");
+        console.log(risknum_ix);
+
+        // How to get each row:
+        console.log(risknum_ix.map((x) => token_dat.get_row(x)));
+
+
+        const test_feats = {
+            "eff": ["eff"],
+            "eff_num": ["eff", true], "eff_treat": ["eff", "treatment"],
+            "eff_treat_num": ["eff", "treatment", true]
+        };
+
+        token_dat.n_trtctrl
+            .filter((x, ix) => x === "treatment" &&
+                token_dat.n_effside[ix] === "eff")
+
+        let curtest = token_dat.get_row(risknum_ix[2]);
+        console.log(curtest);
+
+        console.log(
+            // Object.fromEntries(
+            Object.entries(test_feats)
+                .filter(([key, value]) => value
+                    .filter((x) => curtest.includes(x)).length === value.length)
+        );
+
+        // ++++ HERE NOW +++
+
+
         // Feature sets for testing:
         const feature_set = {
             "eff_side": {
