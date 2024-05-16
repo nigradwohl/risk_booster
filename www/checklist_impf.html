@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="stylefiles/global_styles.css">
+    <link rel="stylesheet" href="stylefiles/functional_styles.css">
+
+    <script src="jquery/jquery-3.7.1.min.js"></script>
+
+    <!-- Add icon library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!--    Check whether to download the icon libarary or the icons-->
+
+    <script src="global_scripts.js"></script>
+    <title>Risiko-Checkliste</title>
+</head>
+<body>
+
+<!--Header filled in via JS-->
+<div id="header-section">
+</div>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ MAIN CONTENT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<div class="row current-theme">
+    <p>
+        Anmerkungen: Aktuelle Reihenfolge anhand von Informationen in Beispiel Pressemitteilung.
+        Anpassung auf Abfrage nach Quelle (PM, Studie, Nachrichtenartikel) hin denkbar.
+    </p>
+
+    <!--    Entry 1-->
+
+    <div class="checklist-question" id="rel-risk-reduction-q">
+        <p>Welche Wirksamkeit oder Effektivität wurde angegeben? (Englisch: Effectivity)</p>
+
+        <p>
+            <i class="fa fa-exclamation-triangle"></i>
+            Manchmal wird diese Zahl auch als "Impfschutz" bezeichnet.
+            <strong>Weitere Begriffe?</strong>
+        </p>
+
+        <p>Unter dem Begriff der Impfstoffwirksamkeit versteht man in der Regel,
+            wie viele Prozent weniger in der Gruppe der Geimpften erkranken.</p>
+
+        <input class="checklist-input" id="rel-risk-reduction" type="text">
+
+        <button class="checklist-button continue-btn">Weiter</button>
+        <p>Anmerkung: Wenn die Information fehlt, wird nachgefragt.</p>
+    </div>
+
+
+    <div class="checklist-question" id="n-total-q">
+        <p>Wie viele Personen haben an der Studie teilgenommen?</p>
+        <input class="checklist-input" id="n-total" type="text">
+        <br>
+        <button class="checklist-button continue-btn">Weiter</button>
+    </div>
+
+    <div class="checklist-question" id="any-control-q">
+        <p>Gab es eine Kontrollgruppe?</p>
+
+        <button class="checklist-button continue-btn">Ja</button>
+        <button class="checklist-button continue-btn">Nein</button>
+        <button class="checklist-button continue-btn">Weiß nicht</button>
+
+    </div>
+
+    <div class="checklist-question" id="n-side-q">
+        <p>Für wie viele Personen wurden Nebenwirkungen berichtet?</p>
+        <input class="checklist-input" id="n-side" type="text">
+        <br>
+        <button class="checklist-button continue-btn">Weiter</button>
+    </div>
+
+
+
+</div>
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ EOF MAIN CONTENT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+<!-- Footer -->
+<div class="footer"></div>
+
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--Space for scripts-->
+<script src="scripts/handle_checklist.js"></script>
+<script src="scripts/calculate_risk.js"></script>
+
+</body>

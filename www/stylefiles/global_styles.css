@@ -1,0 +1,428 @@
+/* Definition of different themes */
+.current-theme {
+    ---body-background: #f0f0f0;
+    ---header-background: #B85042;
+    ---textcol-header: white;
+    ---navbar-bg: #E7E8D1;
+    ---navbar-text: #444;
+    ---navbar-hover-bg: #ddd;
+    ---navbar-hover-text: black;
+    ---footer-bg: #ddd;
+    ---footer-text: black;
+    ---footer-hover-bg: slategray;
+    ---footer-hover-text: lightgrey;
+    ---dropdown-content-bg: #f1f1f1;
+    ---dropdown-content-text: black;
+    ---dropdown-content-hover-text: #ddd;
+    ---column-bg-primary: white;
+    ---column-bg-secondary: #f1f1f1;
+    ---colum-bg-tertiary: white;
+    ---checklist-question-bg: #EEE;
+    ---button-primary: #E7E8D1;
+    ---button-secondary: lightgrey;
+    ---wiki-bg: #E7E8D1;
+    ---wiki-example-bg: lightgrey;
+    ---wiki-overview-bg: #A7BEAE;
+    ---wiki-border: #444;
+    ---card-bg: silver;
+    ---card-hover-bg: #ddd;
+    ---text-color-primary: black;
+    ---text-color-secondary: #333;
+}
+
+/*.theme-1 {*/
+/*    .current-theme {*/
+/*        ---body-background: #f0f0f0;*/
+/*        ---header-background: #1abc9c;*/
+/*        ---textcol-header: white;*/
+/*        ---navbar-bg: slategrey;*/
+/*        ---navbar-text: white;*/
+/*        ---navbar-hover-bg: #ddd;*/
+/*        ---navbar-hover-text: black;*/
+/*        ---footer-bg: #ddd;*/
+/*        ---footer-text: black;*/
+/*        ---footer-hover-bg: slategray;*/
+/*        ---footer-hover-text: lightgrey;*/
+/*        ---dropdown-content-bg: #f1f1f1;*/
+/*        ---dropdown-content-text: black;*/
+/*        ---dropdown-content-hover-text: #ddd;*/
+/*        ---column-bg-primary: #f1f1f1;*/
+/*        ---column-bg-secondary: #f1f1f1;*/
+/*        ---colum-bg-tertiary: white;*/
+/*        ---checklist-question-bg: silver;*/
+/*        ---button-primary: #1abc9c;*/
+/*        ---button-secondary: silver;*/
+/*        ---wiki-bg: lightblue;*/
+/*        ---wiki-border: cornflowerblue;*/
+/*        ---card-bg: silver;*/
+/*        ---card-hover-bg: #ddd;*/
+/*        ---text-color-primary: black;*/
+/*        ---text-color-secondary: #333;*/
+/*    }*/
+/*}*/
+
+/* CSS for body */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0 20px;
+    padding: 0;
+    background-color: var(---body-background);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+
+/* Header/logo Title */
+.header {
+    padding: 30px;
+    text-align: center;
+    background: var(---header-background);
+    color: var(---textcol-header);
+}
+
+/*------------------NAVIGATION------------------------*/
+
+/* Style the top navigation bar */
+.navbar {
+    display: flex;
+    background-color: var(---navbar-bg);
+}
+
+/* Style the navigation bar links */
+.navbar .nav-container {
+    /*padding: 14px 20px;*/
+    text-align: center;
+    margin: 0;
+    min-height: 2.5em;
+    display: flex;
+}
+
+.nav-container > a {
+    color: var(---navbar-text);
+    text-decoration: none;
+    width: 100%;
+    /*display: flex;*/
+    text-align: center;
+    padding: 0.7em 0.7em 0.6em;
+}
+
+/* Change color on hover */
+.navbar .nav-container:hover {
+    background-color: var(---navbar-hover-bg);
+    color: var(---navbar-hover-text);
+}
+
+/* Footer */
+.navbar-foot {
+    display: flex;
+    text-align: center;
+    background: var(---footer-bg);
+}
+
+/* Style the navigation bar links */
+.navbar-foot a {
+    color: var(---footer-text);
+    padding: 10px 20px;
+    text-decoration: none;
+    text-align: center;
+}
+
+/* Change color on hover */
+.navbar-foot a:hover {
+    background-color: var(---footer-hover-bg);
+    color: var(---footer-hover-text);
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: var(---dropdown-content-bg);
+    min-width: 160px;
+    left: 30%;
+    top: 80%;
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: var(---dropdown-content-text);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: var(---dropdown-content-hover-text);
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+}
+
+
+/*------------------CONTAINERS------------------------*/
+
+/* Column container */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.full-column {
+    flex: 100%;
+    background-color: var(---column-bg-primary);
+    padding: 20px;
+}
+
+/* Create two unequal columns that sits next to each other */
+/* Sidebar/left column */
+.input-col {
+    background-color: var(---column-bg-secondary);
+    padding: 20px;
+}
+
+.output-col {
+    background-color: var(---colum-bg-tertiary) te;
+    padding: 20px;
+}
+
+.number-input {
+    flex: 30%;
+
+}
+
+.checklist-question {
+    margin: 1em 20%;
+    flex: 60%;
+    background-color: var(---checklist-question-bg);
+    padding: 20px;
+    border-radius: 10px;
+    flex-direction: column;
+}
+
+.checklist-input {
+    border-radius: 5px;
+    line-height: 1.2em;
+}
+
+.checklist-button {
+    margin: 0.2em;
+    padding: 0.3em;
+    font-size: 1em;
+    text-align: center;
+    min-width: 5em;
+    flex: 20%;
+    background-color: var(---button-primary);
+    border-radius: 5px;
+}
+
+/* Main column */
+.number-output {
+    flex: 70%;
+}
+
+.wiki-overview {
+    flex: 35%;
+    background-color: var(---wiki-overview-bg);
+    border: 0.1em solid var(---wiki-border);
+    border-radius: 5px;
+}
+
+.wiki-text {
+    flex: 65%;
+}
+
+.wiki-entry {
+    margin: 1em 0;
+    border-radius: 5px;
+    border: 1px solid var(---wiki-border);
+    background-color: var(---wiki-bg);
+}
+
+.wiki-examples {
+    /*border: 1px solid var(---wiki-border);*/
+    margin: 1em 0;
+    padding: 1em;
+    background-color: var(---wiki-example-bg);
+}
+
+.text-input {
+    display: flex;
+    flex-direction: column;
+    flex: 55%;
+    height: 20em;
+}
+
+.text-notes {
+    flex: 45%;
+    height: 20em;
+    overflow-y: scroll;
+}
+
+.text-output {
+    /*flex: 55%;*/
+    padding: 2em;
+    max-height: 20em;
+    overflow-y: scroll;
+    line-height: 1.6;
+}
+
+.text-input > textarea {
+    flex: 1;
+}
+
+
+/*Styling input elements */
+.input-button {
+    padding: 7px;
+    margin: 5px 0;
+    font-size: 1em;
+    text-align: center;
+    background-color: var(---button-primary);
+    border-radius: 5px;
+    float: right;
+}
+
+.longtext {
+    border-radius: 10px;
+    padding: 0.5em;
+}
+
+/* Responsive layout - when the screen is less than 700px wide, make the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 700px) {
+    .row, .navbar {
+        flex-direction: column;
+    }
+
+    .tile-row {
+        width: 95%;
+    }
+
+    .content-container {
+        width: 100%;
+    }
+
+    .text-input {
+        flex: 20em;
+    }
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.container > * {
+    flex: 1 1 calc(100px + 1em); /* 1em margin als Spaltenabstand berücksichtigt, calc() nicht notwendig */
+}
+
+.card {
+    display: flex;
+    flex-wrap: wrap;
+    flex-basis: calc(960px * 999 - 100% * 999);
+    background: var(---card-bg);
+    margin: 1em;
+    min-height: 19em;
+}
+
+.card > * {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 100px;
+}
+
+.card a {
+    padding: 14px 20px;
+    text-decoration: none;
+    color: silver;
+}
+
+.content {
+    padding: 1em 2em;
+}
+
+
+/*.content > * {*/
+/*    background: silver;*/
+/*    color: black;*/
+/*}*/
+
+.card:hover {
+    background-color: var(---card-hover-bg);
+    color: black;
+}
+
+.media {
+    background: black;
+    min-height: 120px;
+}
+
+/* Display logic:*/
+.content-icon {
+    color: var(---text-color-primary);
+}
+
+.content-text {
+    display: none;
+}
+
+.card:hover .content-icon {
+    display: none;
+}
+
+.card:hover .content-text {
+    display: inline;
+}
+
+
+/* CSS for paragraph */
+p {
+    color: var(---text-color-secondary);
+    font-size: 1em;
+    line-height: 1.2;
+    margin: 0 0 10px;
+}
+
+ul {
+    font-size: 0.9em;
+    line-height: 1.2;
+}
+
+/* CSS for h1 */
+h1 {
+    color: #444;
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+/* CSS for h2 */
+h2 {
+    color: #666;
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+/* CSS for h3 */
+h3 {
+    color: #888;
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+/*Color blocks for visualizing example palettes:*/
+.color-block {
+    height: 3em;
+    width: 3em;
+
+    margin: 0 0.5em;
+}
