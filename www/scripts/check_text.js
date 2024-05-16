@@ -319,7 +319,6 @@ $(document).ready(function () {
         for (const topic of token_dat.topics) {
             // Topics:
             let curtopic = key_topic_dict[topic];
-
             if (curtopic !== undefined) {
                 key_topics = key_topics.concat(curtopic);
             }
@@ -417,23 +416,6 @@ $(document).ready(function () {
         if (any_risk_num.length > 0) {
             feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> Der Text scheint Zahlen zu den genannten Risiken zu berichten. </li><li>";
 
-            // Differentiate: Does it report numbers only about effectivity? Also about side effects?
-            const eff_num = token_dat.n_effside.includes("eff");
-            const side_num = token_dat.n_effside.includes("side");
-
-            if (eff_num && side_num) {
-                feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> " +
-                    "Sowohl zur Effektivität, als auch zu Nebenwirkungen wurden Zahlen angegeben."
-            } else if (eff_num || side_num) {
-                feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> " +
-                    "Zahlen wurden leider nur zu" +
-                    (eff_num ? "r Effektivität" : " Nebenwirkungen") +
-                    " angegeben."
-            } else {
-                feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> " +
-                    "Die Zahlen beziehen sich leider nicht auf Effektivität oder Nebenwirkungen."
-            }
-
 
             // Differentiate numbers for control and treatment group:
             // Do numbers apply to treatment and control group
@@ -461,6 +443,24 @@ $(document).ready(function () {
                 .filter((x, ix) => x === "control" &&
                     token_dat.n_effside[ix] === "side")
 
+            // Differentiate: Does it report numbers only about effectivity? Also about side effects?
+            const eff_num = trt_eff_num || control_eff_num;
+            const side_num = trt_side_num || control_side_num;
+
+            if (eff_num && side_num) {
+                feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> " +
+                    "Sowohl zum Nutzen, als auch zum Schaden wurden Zahlen angegeben."
+            } else if (eff_num || side_num) {
+                feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> " +
+                    "Zahlen wurden leider nur zu" +
+                    (eff_num ? "r Nutzen" : " Schaden") +
+                    " angegeben."
+            } else {
+                feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> " +
+                    "Die Zahlen scheinen sich leider weder auf Nutzen naoch auf Schaden zu beziehen."
+            }
+
+
             feature_num += "</li><li>";
 
             // Die Wirksamkeit wird (nicht) mit Zahlen aus Behandlungs- und Kontrollgruppe belegt.
@@ -469,24 +469,14 @@ $(document).ready(function () {
             let arr_side_both = trt_side_num.length > 0 && control_side_num.length > 0 ? ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>", "nicht "];
 
 
-            feature_num += arr_eff_both[0] + " Die Wirksamkeit wird " + arr_eff_both[1] + "mit Zahlen für Behandlungs- und Kontrollgruppe belegt</li><li>";
-            feature_num += arr_side_both[0] + " Nebenwirkungen werden " + arr_side_both[1] + "für Behandlungs- und Kontrollgruppe angegeben";
-
-            // if (trt_num && ctrl_num) {
-            //     feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> " +
-            //         "Sowohl zu den Risiken in der Behandlungsgruppe, als auch der Kontrollgruppe wurden Zahlen angegeben."
-            // } else if (trt_num || ctrl_num) {
-            //     feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> Zahlen wurden leider nur zur " +
-            //         (trt_num ? "Behandlungs" : "Kontroll") + "gruppe" +
-            //         " angegeben."
-            // } else {
-            //     feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> Es werden keine Zahlen zu Behandlungs- oder Kontrollgruppe berichtet."
-            // }
-
+            feature_num += arr_eff_both[0] + " Der Nutzen wird " + arr_eff_both[1] + "mit Zahlen für Behandlungs- und Kontrollgruppe belegt</li><li>";
+            feature_num += arr_side_both[0] + " Schadenwirkung wird " + arr_side_both[1] + "für Behandlungs- und Kontrollgruppe angegeben";
+            // Rather "Nur für" oä.
 
         } else {
             // ONLY NUMBERS: ~~~~~~~~~~~~~~~~~~~~~~~~
-            feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> Der Text scheint keine Zahlen zu den Risiken zu berichten. " +
+            feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> " +
+                "Der Text scheint keine Zahlen zu den Risiken zu berichten. " +
                 "Rein verbale Beschreibungen sollten vermieden werden. [LINK WIKI!]" +
                 "Bitte versuchen Sie Zahlen zu berichten.";
         }
@@ -1008,7 +998,7 @@ function get_token_data(text) {
         // console.log(token_rex);
 
         // Set index to search from to previous index:
-        token_rex.lastIndex = tpos_end[tpos_end.length-1];  // tpos_start[ix_prev] + text_tokens[ix_prev].length;
+        token_rex.lastIndex = tpos_end[tpos_end.length - 1];  // tpos_start[ix_prev] + text_tokens[ix_prev].length;
         curpos = token_rex.exec(text).index;
 
         // Save start and end positions of token:
@@ -1273,7 +1263,7 @@ const window_keys = {
         // Types of subgroups:
         "control": RegExp(collapse_regex_or(["Kontroll-?\\w*[Gg]ruppe", "Placebo-?\\w*[Gg]ruppe"]), "dg"),
         "treatment": RegExp(collapse_regex_or(["[Gg]eimpfte?n?", "Impf-?\\w*[Gg]ruppe",
-        "[Tt]eilnehmer|Probanden.*Impfung"]), "dg"),
+            "[Tt]eilnehmer|Probanden.*Impfung"]), "dg"),
         "all": RegExp(collapse_regex_or(["[Tt]eilnehmer", "Probanden"]), "dg")
     },
     "effside": {
