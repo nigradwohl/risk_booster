@@ -1,0 +1,41 @@
+# Readme: Science X Media Risk Booster 
+
+This tool has the aim to aid journalists to transparently communicate risks, including health risks, but also the efficacy of treatments and vaccination. 
+It consists of 3 parts: 
+
+1. A text-checking tool, where users can enter a text (finished article or press release; currently only in German) and can receive feedback about the transparency of their risk communication.
+2. An interactive checklist that allows users to judge whether the numbers in any text (including scientific publications), allow to communicate risks transparently.
+3. A Wiki that summarizes the  [guidelines for transparent, evidence-based health communication](https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.ebm-netzwerk.de/de/medien/pdf/leitlinie-evidenzbasierte-gesundheitsinformation-fin.pdf&ved=2ahUKEwj4qPyDqpKGAxVE_7sIHXAMDNsQFnoECBIQAQ&usg=AOvVaw2JvtJWGC4VuUWCM1IMnl11)
+and is liked from the other parts.
+
+# Future features 
+
+Features are sorted by importance and are further split by features that should be implemented soon and those that may be implemented at a later point in time.
+
+## Text-checking tool 
+
+### Important 
+
+* Improve global feedback by restructuring it and making it perceptually easier
+* Increase the number of test-texts that are successfully handled
+* Handle margins for tooltips 
+
+### Nice to have
+
+* try again to catch unidentified numbers after current iterations
+
+## Checklist
+
+### Important 
+
+* Create one functional checklist, including output of transparent statistics and a simple visualization 
+
+### Nice to have
+
+## Wiki
+
+### Important 
+
+* Decide on the central entries and fill them with information 
+
+### Nice to have
