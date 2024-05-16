@@ -298,14 +298,35 @@ $(document).ready(function () {
 
         let notes_html = "";  // initialize notes.
 
+        // ~~~~~~~~~ TOPICS ~~~~~~~~~~~~~~~
         // Notes about topics:
         const key_topic_dict = {
             "impf": "Impfung",
             "cancer_risk": "Krebsrisiko",
             "lower_risk": "Risikominderung"
         };  // {"impf": "Impfung", "eff": "Wirksamkeit", "side": "Nebenwirkungen"};
-        let key_topics = [];
         let key_topics_str = "";
+
+        // Get the content-topics:
+        const key_topics = Object.keys(key_topic_dict).filter((x) => token_dat.topics.includes(x));
+
+        const n_topics = key_topics.length;
+        let norisk = false;
+
+        if (n_topics === 1) {
+            key_topics_str += "Dieser Text behandelt das Thema " + key_topic_dict[key_topics[0]];
+        } else if (n_topics > 1) {
+
+            key_topics_str += "Dieser Text behandelt die Themen "
+            key_topics_str += combine_str_arr(key_topics.map((x) => key_topic_dict[x]));
+
+        } else {
+            key_topics_str = "Das Thema dieses Textes konnte keinem Thema der Risikokommunikation zugeordnet werden.";
+            norisk = true;
+        }
+
+
+        // ~~~~~~~~~~ FEATURES ~~~~~~~~~~~~~~~~
 
         // Notes about features (presence of effectivity and harm; reporting of comparison group):
         const feature_dict = {
@@ -314,14 +335,9 @@ $(document).ready(function () {
         };
         let feature_arr = [];  // initialize array to be filled.
 
-        // Get the content-topics:
+
         // Maybe differentiate this in a text-object!
         for (const topic of token_dat.topics) {
-            // Topics:
-            let curtopic = key_topic_dict[topic];
-            if (curtopic !== undefined) {
-                key_topics = key_topics.concat(curtopic);
-            }
 
             // Features:
             let curfeature = feature_dict[topic];
@@ -331,31 +347,9 @@ $(document).ready(function () {
 
         }
 
-        // console.log(key_topics);
-
-        const n_topics = key_topics.length;
         const n_features = feature_arr.length;
-        let norisk = false;
 
-        if (n_topics === 1) {
-            key_topics_str += "Dieser Text behandelt das Thema " + key_topics[0]
-        } else if (n_topics > 1) {
-
-            key_topics_str += "Dieser Text behandelt die Themen "
-
-            for (i = 0; i < n_topics; i++) {
-                if (i < n_topics - 1) {
-                    key_topics_str += key_topics[i] + (i === n_topics - 2 ? " und " : ", ");
-                } else {
-                    key_topics_str += key_topics[i] + ".";
-                }
-
-            }
-
-        } else {
-            key_topics_str = "Das Thema dieses Textes konnte keinem Thema der Risikokommunikation zugeordnet werden.";
-            norisk = true;
-        }
+        // console.log(key_topics);
 
         // Notes about features (e.g., effectivity and side-effects):
         console.log("Feature array:");
@@ -1926,6 +1920,27 @@ function collapse_regex_or(key_list) {
     }
 
     return keystr;
+}
+
+/**
+ * Combine an array into a string that is separated by commas or and, based on its length.
+ * @return {String} Returns a string separated as an enumeration.
+ * @param arr {Array} An array of strings.
+ */
+function combine_str_arr(arr) {
+    const arr_len = arr.length;
+    let output = "";
+
+    for (let i = 0; i < arr_len; i++) {
+        if (i < arr_len - 1) {
+            output += arr[i] + (i === arr_len - 2 ? " und " : ", ");
+        } else {
+            output += arr[i] + ".";
+        }
+
+    }
+
+    return output;
 }
 
 // ~~~~~~~~~~~~~~~~~~~~ Unused functionality ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
