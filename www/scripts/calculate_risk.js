@@ -121,9 +121,9 @@ class RiskCollection {
 
         let nchange = 0;
 
-        nchange += this.ptab.complete_margins();
-        nchange += this.n_from_p();
-        nchange += this.ntab.complete_table();
+        nchange += this.ptab.complete_margins();  // calculate margin sums.
+        nchange += this.n_from_p();  // get numbers from probabilities.
+        nchange += this.ntab.complete_table();  // try to complete the table.
 
         console.log("n changes: " + nchange);
 
