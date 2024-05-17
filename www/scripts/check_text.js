@@ -331,40 +331,12 @@ $(document).ready(function () {
         // Notes about features (presence of effectivity and harm; reporting of comparison group):
         const feature_dict = {
             "eff": "Nutzen", "side": "Schaden",
-            "treatgroup": "Behandlungsgruppe", "controlgroup": "Kontrollgruppe"
+            "treat": "Behandlungsgruppe", "contr": "Kontrollgruppe"
         };
-        let feature_arr = [];  // initialize array to be filled.
+        // let feature_arr = [];  // initialize array to be filled.
 
-
-        // Maybe differentiate this in a text-object!
-        for (const topic of token_dat.topics) {
-
-            // Features:
-            let curfeature = feature_dict[topic];
-            if (curfeature !== undefined) {
-                feature_arr = feature_arr.concat(topic);
-            }
-
-        }
-
-        const n_features = feature_arr.length;
-
-        // console.log(key_topics);
-
-        // Notes about features (e.g., effectivity and side-effects):
-        console.log("Feature array:");
-        console.log(feature_arr);
 
         let feature_list = "";
-
-        // Target features are:
-        // eff -- num x treat; side -- num x treat
-        // Maybe get rows with numbers and ask for occurrence and co-occurrence (and add broad topics in there)?
-        // 1. Eff, side, treatment and control in both broad topics and risknums?
-
-        // Main issue is with interactions within a specific number
-        // (i.e., not on text-level, e.g., numbers related to effectivity as eff x num)
-        // Mere co-existence of single features is easier (does any of the arrays include the statements; might even flatten!)
 
         /*
         Tests happen on 3 levels:
@@ -400,28 +372,34 @@ $(document).ready(function () {
             "side_treat_num": check_any_arr(risknum_rows, ["side", "treatment"]),
             "eff_contr_num": check_any_arr(risknum_rows, ["eff", "control"]),
             "side_contr_num": check_any_arr(risknum_rows, ["side", "control"]),
-            "rel_only": ["REL", "mult"].some((x) => token_dat.numtype.includes(x)) &&  // tests if one of the elements exists.
-                !token_dat.numtype.includes("ABS") &&
-                // Is there a row that fulfills two criteria?
-                !check_any_arr(risknum_rows, ["case", "subgroup"]),
             "eff": this.eff_num || token_dat.topics.includes("eff"),
-            "side": this.side_num || token_dat.topics.includes("side")
+            "side": this.side_num || token_dat.topics.includes("side"),
+            "treat": this.treat_num || token_dat.topics.includes("treatgroup"),
+            "contr": this.contr_num || token_dat.topics.includes("controlgroup"),
+            // Specific number info:
+            "rel": ["REL", "mult"].some((x) => token_dat.numtype.includes(x)),  // tests if one of the elements exists.
+            "rel_only": this.rel && !token_dat.numtype.includes("ABS") &&
+                // Is there a row that fulfills both criteria?
+                !check_any_arr(risknum_rows, ["case", "subgroup"]),
         };
 
 
-        console.log("~~~~~~~~~~~~ Text features: ~~~~~~~~~~~~~~~~")
+        console.log("~~~~~~~~~~~~ Text features: ~~~~~~~~~~~~~~~~");
         console.log(txtfeat_dict);
 
         // Turn keys into array:
-        const txt_feats = Object.entries(txtfeat_dict)
+        const feature_arr = Object.entries(txtfeat_dict)
             .map(([key, value]) => value ? key : false)
             .filter(x => x);
 
-        console.log(txt_feats);
+        console.log(feature_arr);
 
-        // TODO: Next improve the feedback for each of the features
 
-        // Distinguish feedback by effectivity and side effects?
+        console.log("~~~~~~~~~~~~ Feedback on features: ~~~~~~~~~~~~~~~~");
+
+        // Example feedback set:
+        // Feedback as table etc?
+
 
         // ++++ HERE NOW +++
         console.log("+++ HERE NOW +++");
@@ -434,7 +412,7 @@ $(document).ready(function () {
                 "zumzur": "zum "
             },
             "treat_control": {
-                "fset": ["treatgroup", "controlgroup"],
+                "fset": ["treat", "contr"],
                 "zumzur": "zur "
             }
         }
@@ -465,8 +443,6 @@ $(document).ready(function () {
                 feature_str += " werden weder Informationen zu " + value.fset.map((key) => feature_dict[key]).join(" noch " + value.zumzur) + " berichtet.";
             }
 
-            // feature_str += (feats_missing.length === 0 ? ("Sehr gut! <i class=\"fa fa-thumbs-up in-text-icon\"></i>") : "");
-
 
             // Add to string:
             feature_list += "<li>" + feature_str + "</li>";
@@ -484,39 +460,17 @@ $(document).ready(function () {
             // Differentiate numbers for control and treatment group:
             // Do numbers apply to treatment and control group
             // (or: affected and general population for other risks)
-            // const trt_num = token_dat.n_trtctrl.includes("treatment");
-            // const ctrl_num = token_dat.n_trtctrl.includes("control");
-            let trt_eff_num = false;
-            let trt_side_num = false;
-            let control_eff_num = false;
-            let control_side_num = false;
-
-            trt_eff_num = token_dat.n_trtctrl
-                .filter((x, ix) => x === "treatment" &&
-                    token_dat.n_effside[ix] === "eff")
-
-            control_eff_num = token_dat.n_trtctrl
-                .filter((x, ix) => x === "control" &&
-                    token_dat.n_effside[ix] === "eff")
-
-            trt_side_num = token_dat.n_trtctrl
-                .filter((x, ix) => x === "treatment" &&
-                    token_dat.n_effside[ix] === "side")
-
-            control_side_num = token_dat.n_trtctrl
-                .filter((x, ix) => x === "control" &&
-                    token_dat.n_effside[ix] === "side")
 
             // Differentiate: Does it report numbers only about effectivity? Also about side effects?
-            const eff_num = trt_eff_num || control_eff_num;
-            const side_num = trt_side_num || control_side_num;
+            const eff_num = feature_arr.includes("eff_num");
+            const side_num = feature_arr.includes("side_num");
 
             if (eff_num && side_num) {
                 feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> " +
                     "Sowohl zum Nutzen, als auch zum Schaden wurden Zahlen angegeben."
             } else if (eff_num || side_num) {
                 feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> " +
-                    "Zahlen wurden leider nur zu" +
+                    "Zahlen nur zu" +
                     (eff_num ? "r Nutzen" : " Schaden") +
                     " angegeben."
             } else {
@@ -529,12 +483,12 @@ $(document).ready(function () {
 
             // Die Wirksamkeit wird (nicht) mit Zahlen aus Behandlungs- und Kontrollgruppe belegt.
             // Nebenwirkungen werden nicht für Behandlungs- und Kontrollgruppe angegeben
-            let arr_eff_both = trt_eff_num.length > 0 && control_eff_num.length > 0 ? ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>", "nicht "];
-            let arr_side_both = trt_side_num.length > 0 && control_side_num.length > 0 ? ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>", "nicht "];
+            let arr_eff_both = feature_arr.includes("eff_treat_num") && feature_arr.includes("eff_contr_num") > 0 ? ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>", "nicht erkennbar "];
+            let arr_side_both = feature_arr.includes("side_treat_num") && feature_arr.includes("side_contr_num") ? ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>", "nicht erkennbar "];
 
 
             feature_num += arr_eff_both[0] + " Der Nutzen wird " + arr_eff_both[1] + "mit Zahlen für Behandlungs- und Kontrollgruppe belegt</li><li>";
-            feature_num += arr_side_both[0] + " Schadenwirkung wird " + arr_side_both[1] + "für Behandlungs- und Kontrollgruppe angegeben";
+            feature_num += arr_side_both[0] + " Die Schadenwirkung wird " + arr_side_both[1] + "für Behandlungs- und Kontrollgruppe angegeben";
             // Rather "Nur für" oä.
 
         } else {
