@@ -110,10 +110,12 @@ $(document).ready(function () {
         if (entry_ix === q_order.length) {
             const ntab = new Basetable(
                 [[risk_numbers.n00, risk_numbers.n10], [risk_numbers.n01, risk_numbers.n11]],
-                [NaN, NaN], [NaN, NaN], risk_numbers.N_tot);
+                [risk_numbers.msum0x, risk_numbers.msum1x],
+                [risk_numbers.msumx0, risk_numbers.msumx1],
+                risk_numbers.N_tot);
             const ptab = new Basetable(na_tab, [NaN, NaN], [NaN, NaN], 1);
             // NOTE: Make sure to appropriately distinguish relative risk increase and reduction!
-            const mtab1 = new Margintable(na_tab, [NaN, 1-risk_numbers.rrr], [NaN, NaN]);
+            const mtab1 = new Margintable(na_tab, [NaN, 1 - risk_numbers.rrr], [NaN, NaN]);
             const mtab2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
 
 
@@ -134,6 +136,7 @@ $(document).ready(function () {
 const q_order = [
     "rel-risk-reduction", "n-total",
     "any-control",
+    "n-treat-control",
     "n-case",
     "or-case",
     "n-side"];
@@ -141,6 +144,7 @@ const q_order = [
 
 const q_inputs = Object.fromEntries(q_order.map((x) => [x, [x]]));
 q_inputs["n-case"] = ["n-case-impf", "n-case-control"];
+q_inputs["n-treat-control"] = ["n-impf", "n-control"];
 console.log(q_inputs);
 
 /**
@@ -150,7 +154,11 @@ const id_to_num_dict = {
     "rel-risk-reduction": "rrr",
     "n-total": "N_tot",
     "any-control": "any_control",
-    "n-case-impf": "n10",  // careful! Vaccinated are now column 1!
+    "n-impf": "msumx0",
+    "n-control": "msumx1",
+    "n-case-impf": "n10",
+    // careful! Vaccinated are now column 1 (index 0)!
+    // cases are second row (index 1)
     "n-case-control": "n11"
 }
 
@@ -158,6 +166,7 @@ const id_to_num_dict = {
 const entry_keys = [
     "rrr", "N_tot",
     "n00", "n01", "n10", "n11",
+    "msum0x", "msum1x", "msum0x", "msum1x",
     "p00", "p01", "p10", "p11",
     // Non-numeric info:
     "any_control"
@@ -165,5 +174,8 @@ const entry_keys = [
 const risk_numbers = Object.fromEntries(entry_keys.map((x) => [x, NaN]));
 
 // Lsits of formats:
-const int_keys = ["N_tot", "n00", "n01", "n10", "n11"];
+const int_keys = ["N_tot",
+    "n00", "n01", "n10", "n11",
+    "msum00", "msum01",
+    "msum10", "msum11"];
 const float_keys = ["rrr", "p00", "p01", "p10", "p11"]

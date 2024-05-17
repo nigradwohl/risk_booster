@@ -64,22 +64,53 @@
 
     </div>
 
-        <div class="checklist-question" id="n-case-q">
-        <p>
-            Wie viele personen sind jeweils in der Impfgruppe und der Kontrollgruppe erkrankt?
-        </p>
-            <label>
-                <input class="checklist-input" id="n-case-impf" type="text">
-            </label>
-            <label>
-                <input class="checklist-input" id="n-case-control" type="text">
-            </label>
+    <div class="checklist-question" id="n-treat-control-q">
+        <p>Wie viele Personen wurden Geimpft? Wie viele bekamen ein Placebo?</p>
+
+        <label>
+            Anzahl Geimpfte
+            <input class="checklist-input" id="n-impf" type="text">
+        </label>
+        <br>
+        <label>
+            Anzahl ungeimpfte (z.B. Placebo)
+            <input class="checklist-input" id="n-control" type="text">
+        </label>
+        <br>
+        <button class="checklist-button continue-btn">Weiter</button>
+
+    </div>
+
+    <div class="checklist-question" id="p-treat-q">
+        <p>Wie viel Prozent der Personen wurden geimpft?</p>
+
+        ACHTUNG: Plausible Ganzzahlen ggf. umformulieren!
+        <input class="checklist-input" id="p-treat" type="text">
 
         <br>
         <button class="checklist-button continue-btn">Weiter</button>
     </div>
 
-            <div class="checklist-question" id="or-case-q">
+    <div class="checklist-question" id="n-case-q">
+<!--        TODO: Cases are currently not displayed...-->
+        <p>
+            Wie viele personen sind jeweils in der Impfgruppe und der Kontrollgruppe erkrankt?
+        </p>
+        <label>
+            Erkrankungen unter den Geimpften
+            <input class="checklist-input" id="n-case-impf" type="text">
+        </label>
+        <br>
+        <label>
+            Erkrankungen in der Kontrollgruppe (Placebogruppe/Ungeimpfte)
+            <input class="checklist-input" id="n-case-control" type="text">
+        </label>
+
+        <br>
+        <button class="checklist-button continue-btn">Weiter</button>
+    </div>
+
+    <div class="checklist-question" id="or-case-q">
         <p>QUESTION ABOUT ODDS RATIOS FOR ARTICLES?</p>
         <input class="checklist-input" id="or-case" type="text">
         <br>
@@ -95,7 +126,6 @@
         <br>
         <button class="checklist-button continue-btn">Weiter</button>
     </div>
-
 
 
 </div>
