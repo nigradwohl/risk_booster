@@ -18,7 +18,8 @@ Features are sorted by importance and are further split by features that should 
 
 * Improve global feedback by restructuring it and making it perceptually easier
     + also add links to wiki 
-* Increase the number of test-texts that are successfully handled 
+* Increase the number of test-texts that are successfully handled
+    + also handle number words
 * Adapt the highlighting to potentially critical numbers (e.g., relative risk reductions) 
 * Handle margins for tooltips 
 
