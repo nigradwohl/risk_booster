@@ -412,6 +412,7 @@ $(document).ready(function () {
         console.log("~~~~~~~~~~~~ Text features: ~~~~~~~~~~~~~~~~")
         console.log(txtfeat_dict);
 
+        // Turn keys into array:
         const txt_feats = Object.entries(txtfeat_dict)
             .map(([key, value]) => value ? key : false)
             .filter(x => x);
@@ -419,53 +420,6 @@ $(document).ready(function () {
         console.log(txt_feats);
 
         // TODO: Next improve the feedback for each of the features
-
-
-        const test_feats = {
-            "eff": ["eff"],
-            "eff_num": ["eff", true], "eff_treat": ["eff", "treatment"],
-            "eff_treat_num": ["eff", "treatment", true]
-        };
-
-        token_dat.n_trtctrl
-            .filter((x, ix) => x === "treatment" &&
-                token_dat.n_effside[ix] === "eff")
-
-        for (const ix of risknum_ix) {
-            let curtest = token_dat.get_row(ix);
-            console.log(curtest);
-
-            console.log(
-                // Object.fromEntries(
-                Object.entries(test_feats)
-                    .filter(([key, value]) => value
-                        .filter((x) => curtest.includes(x)).length === value.length)
-            );
-        }
-
-        // Simple test as an example: ~~~~~~~
-        console.log("Simple tests on flat array (do single features co-exist?)");
-        console.log(risknum_rows.flat());
-        console.log("Eff AND side: " + ["eff", "side"].every((x) => risknum_rows.flat().includes(x)));
-
-        // Example of an interaction: ~~~~~~~
-        const eff_num_treat = risknum_rows
-            .some((rw) => ["eff", "treatment"].every((x) => rw.includes(x)));
-        console.log("Eff x num x treat: " + eff_num_treat);
-
-
-        // Example using single features and interactions: ~~~~~
-        // Check if risknums are only REL and feedback!
-        // EVENTUALLY: Differentiate by effectivity and harm?
-        // Currently implementable criteria are:
-        // (REL || mult) && (no ABS && no case + subgroup)
-        // NOTE: simple features could alternatively work on flattened riskrows!
-        const rel_only =
-            ["REL", "mult"].some((x) => token_dat.numtype.includes(x)) &&  // tests if one of the elements exists.
-            !token_dat.numtype.includes("ABS") &&
-            // Is there a row that fulfills two criteria?
-            !risknum_rows.some((rw) => ["case", "subgroup"].every((x) => rw.includes(x)));  // check if "some" row fulfills the criterion.
-        console.log("Rel only: " + rel_only);
 
         // Distinguish feedback by effectivity and side effects?
 
