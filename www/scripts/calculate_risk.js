@@ -1,6 +1,6 @@
 $(document).ready(function(){
 
-    const na_tab = [[NaN, NaN], [NaN, NaN]]  // define NA-table.
+
 
     console.log("App started");
 
@@ -80,6 +80,8 @@ ptab_m2 (rows, transposed sublist-level, proportion vaccinated and unvaccinated 
 N (total cases),
 ntab_m1 (margin table "columns", number in each group), ntab_m2 (margin table "rows", numer of healthy and infected)
 */
+
+const na_tab = [[NaN, NaN], [NaN, NaN]]  // define NA-table.
 
 function arrayEquals(a, b) {
     return Array.isArray(a) &&

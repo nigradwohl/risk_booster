@@ -105,6 +105,24 @@ $(document).ready(function () {
             }
         }
 
+        // Final button:
+        // Calculate the table if possible!
+        if (entry_ix === q_order.length) {
+            const ntab = new Basetable(
+                [[risk_numbers.n00, risk_numbers.n10], [risk_numbers.n01, risk_numbers.n11]],
+                [NaN, NaN], [NaN, NaN], risk_numbers.N_tot);
+            const ptab = new Basetable(na_tab, [NaN, NaN], [NaN, NaN], 1);
+            // NOTE: Make sure to appropriately distinguish relative risk increase and reduction!
+            const mtab1 = new Margintable(na_tab, [NaN, 1-risk_numbers.rrr], [NaN, NaN]);
+            const mtab2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
+
+
+            const simple_risk = new RiskCollection(ntab, ptab, mtab1, mtab2);
+            simple_risk.ptab.complete_margins();
+            simple_risk.n_from_p();
+            console.log(simple_risk);
+        }
+
 
     })
 
