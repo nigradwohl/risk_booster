@@ -360,16 +360,16 @@ $(document).ready(function () {
         // Target features are:
         // eff -- num x treat; side -- num x treat
         // Maybe get rows with numbers and ask for occurrence and co-occurrence (and add broad topics in there)?
-        // 1. Eff and side in broad topics and risknums?
+        // 1. Eff, side, treatment and control in both broad topics and risknums?
 
-        // Get risknums:
+        // Get risknums for second part:
         const risknum_ix = token_dat.id
-            .filter((x) => ["perc", "cases", "nh", "multi"].includes(token_dat.unit[x]));
+            .filter((x) => ["perc", "case", "nh", "multi"].includes(token_dat.unit[x]) && token_dat.is_num[x]);
         console.log("Risknum indices:");
         console.log(risknum_ix);
 
         // How to get each row:
-        console.log(risknum_ix.map((x) => token_dat.get_row(x)));
+        // console.log(risknum_ix.map((x) => token_dat.get_row(x)));
 
 
         const test_feats = {
@@ -382,19 +382,34 @@ $(document).ready(function () {
             .filter((x, ix) => x === "treatment" &&
                 token_dat.n_effside[ix] === "eff")
 
-        let curtest = token_dat.get_row(risknum_ix[2]);
-        console.log(curtest);
+        for (const ix of risknum_ix) {
+            let curtest = token_dat.get_row(ix);
+            console.log(curtest);
 
-        console.log(
-            // Object.fromEntries(
-            Object.entries(test_feats)
-                .filter(([key, value]) => value
-                    .filter((x) => curtest.includes(x)).length === value.length)
-        );
+            console.log(
+                // Object.fromEntries(
+                Object.entries(test_feats)
+                    .filter(([key, value]) => value
+                        .filter((x) => curtest.includes(x)).length === value.length)
+            );
+        }
+
+
+        // Check if risknums are only REL and feedback!
+        // EVENTUALLY: Differentiate by effectivity and harm?
+        // Currently implementable criteria are:
+        // (REL || mult) && (no ABS && no case + subgroup)
+        const rel_only = ["REL", "mult"].some((x) => token_dat.numtype.includes(x)) &&
+            !token_dat.numtype.includes("ABS") &&
+            !risknum_ix.map((x) => token_dat.get_row(x))
+                .some((rw) => ["case", "subgroup"].every((x) => rw.includes(x)));  // check if "some" row fulfills the criterion.
+        console.log("Rel only: ", rel_only);
+
+        // ["REL", "mult"].some((x) => token_dat.unit.includes(x)) tests if one of the elementts exists.
+
+        // Distinguish feedback by effectivity and side effects?
 
         // ++++ HERE NOW +++
-
-        // TODO: Also check if risknums are only REL and feedback!
 
 
         // Feature sets for testing:
