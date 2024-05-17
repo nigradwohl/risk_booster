@@ -362,14 +362,63 @@ $(document).ready(function () {
         // Maybe get rows with numbers and ask for occurrence and co-occurrence (and add broad topics in there)?
         // 1. Eff, side, treatment and control in both broad topics and risknums?
 
-        // Get risknums for second part:
+        // Main issue is with interactions within a specific number
+        // (i.e., not on text-level, e.g., numbers related to effectivity as eff x num)
+        // Mere co-existence of single features is easier (does any of the arrays include the statements; might even flatten!)
+
+        /*
+        Tests happen on 3 levels:
+        1. Global text level: do certain keywords exist? (currently in OBJECT.topics)
+        2. Global number level: do we have any numeric information on simple topics? (eff, side...)
+        3. Local number level (interactions): are there numbers meeting multiple criteria (e.g., eff, eff x treatment)
+         */
+
+        let text_features = [];  // empty array for text features.
+
+        // Get numbers related to risk communication for 2. and 3.:
         const risknum_ix = token_dat.id
             .filter((x) => ["perc", "case", "nh", "multi"].includes(token_dat.unit[x]) && token_dat.is_num[x]);
         console.log("Risknum indices:");
         console.log(risknum_ix);
 
-        // How to get each row:
-        // console.log(risknum_ix.map((x) => token_dat.get_row(x)));
+        // Get each of these rows:
+        const risknum_rows = risknum_ix.map((x) => token_dat.get_row(x));
+        const risknums_flat = risknum_rows.flat();
+
+        function check_any_arr(arrs, check_arr){return arrs.some((arr) => check_arr.every((x) => arr.includes(x)))};
+
+        // 1. and 2. Global tests: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // List of keys; decide for each true/false and keep those that are true!
+        const txtfeat_dict = {
+            "any_risknum": risknum_ix.length > 0,
+            "eff_num": risknums_flat.includes("eff"),
+            "side_num": risknums_flat.includes("side"),
+            "treat_num": risknums_flat.includes("treatment"),
+            "contr_num": risknums_flat.includes("control"),
+            // Interactions:
+            "eff_treat_num": check_any_arr(risknum_rows, ["eff", "treatment"]),
+            "side_treat_num": check_any_arr(risknum_rows, ["side", "treatment"]),
+            "eff_contr_num": check_any_arr(risknum_rows, ["eff", "control"]),
+            "side_contr_num": check_any_arr(risknum_rows, ["side", "control"]),
+            "rel_only": ["REL", "mult"].some((x) => token_dat.numtype.includes(x)) &&  // tests if one of the elements exists.
+                !token_dat.numtype.includes("ABS") &&
+                // Is there a row that fulfills two criteria?
+                !check_any_arr(risknum_rows, ["case", "subgroup"]),
+            "eff": this.eff_num || token_dat.topics.includes("eff"),
+            "side": this.side_num || token_dat.topics.includes("side")
+        };
+
+
+        console.log("~~~~~~~~~~~~ Text features: ~~~~~~~~~~~~~~~~")
+        console.log(txtfeat_dict);
+
+        const txt_feats = Object.entries(txtfeat_dict)
+            .map(([key, value]) => value ? key : false)
+            .filter(x => x);
+
+        console.log(txt_feats);
+
+        // TODO: Next improve the feedback for each of the features
 
 
         const test_feats = {
@@ -394,22 +443,34 @@ $(document).ready(function () {
             );
         }
 
+        // Simple test as an example: ~~~~~~~
+        console.log("Simple tests on flat array (do single features co-exist?)");
+        console.log(risknum_rows.flat());
+        console.log("Eff AND side: " + ["eff", "side"].every((x) => risknum_rows.flat().includes(x)));
 
+        // Example of an interaction: ~~~~~~~
+        const eff_num_treat = risknum_rows
+            .some((rw) => ["eff", "treatment"].every((x) => rw.includes(x)));
+        console.log("Eff x num x treat: " + eff_num_treat);
+
+
+        // Example using single features and interactions: ~~~~~
         // Check if risknums are only REL and feedback!
         // EVENTUALLY: Differentiate by effectivity and harm?
         // Currently implementable criteria are:
         // (REL || mult) && (no ABS && no case + subgroup)
-        const rel_only = ["REL", "mult"].some((x) => token_dat.numtype.includes(x)) &&
+        // NOTE: simple features could alternatively work on flattened riskrows!
+        const rel_only =
+            ["REL", "mult"].some((x) => token_dat.numtype.includes(x)) &&  // tests if one of the elements exists.
             !token_dat.numtype.includes("ABS") &&
-            !risknum_ix.map((x) => token_dat.get_row(x))
-                .some((rw) => ["case", "subgroup"].every((x) => rw.includes(x)));  // check if "some" row fulfills the criterion.
-        console.log("Rel only: ", rel_only);
-
-        // ["REL", "mult"].some((x) => token_dat.unit.includes(x)) tests if one of the elementts exists.
+            // Is there a row that fulfills two criteria?
+            !risknum_rows.some((rw) => ["case", "subgroup"].every((x) => rw.includes(x)));  // check if "some" row fulfills the criterion.
+        console.log("Rel only: " + rel_only);
 
         // Distinguish feedback by effectivity and side effects?
 
         // ++++ HERE NOW +++
+        console.log("+++ HERE NOW +++");
 
 
         // Feature sets for testing:
