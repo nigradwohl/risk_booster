@@ -14,9 +14,6 @@ $(document).ready(function () {
     - Order of questions
      */
 
-    const q_order = ["rel-risk-reduction", "n-total", "any-control", "n-side"];
-    // ORDER WILL BE FLEXIBLE!
-
     // Define order by type (press release, article etc.):
 
     let entry_ix = 0;  // index fpr the current entry.
@@ -30,73 +27,82 @@ $(document).ready(function () {
 
         // Check entry:
         const curid = q_order[entry_ix];  // id of current page.
-        const cur_q_key = id_to_num_dict[curid];  // curent input field.
-        let curval;
 
-        console.log("Is this a button with meaning? " + $(this).hasClass("input-btn"))
+        console.log(`Current inputs for ID ${curid}:`);
+        console.log(q_inputs);
+        console.log(q_inputs[curid]);
 
-        if ($(this).hasClass("input-btn")) {
-            console.log("Button with meaning!");
-            // console.log($(this).val());
-            curval = $(this).val();
-        } else {
-            curval = $("#" + curid).val();  // current input value.
-        }
-        console.log("Current value is: " + curval);
+        // Loop over defined input fields:
+        for (const cur_input of q_inputs[curid]) {
 
-        if ([undefined, "", " "].includes(curval)) {
-            alert("Sie haben nichts eingegeben! Absicht?");
-            // Show popup!
-        } else {
+            const cur_q_key = id_to_num_dict[cur_input];  // curent input field.
+            let curval;
 
-            // Evaluate entry:
-            // TODO: Check format!
-            let checked_val;
-            let error = false;
+            // console.log("Is this a button with meaning? " + $(this).hasClass("input-btn"))
 
-            // Replace comma with period:
-            checked_val = curval.replace(/,/, ".");
-
-            // Test, if it is a number and convert if true:
-            const is_num = !isNaN(parseFloat(checked_val));
-            if (is_num) {
-                // Note: Ignores additional text!
-                checked_val = parseFloat(checked_val);
-            }
-
-            if (int_keys.includes(cur_q_key)) {
-                // Check integer entries:
-                if (!is_num) {
-                    alert("KEINE ZAHL!");
-                    error = true;
-                } else if (!Number.isInteger(checked_val)) {
-                    alert("KEINE GANZE ZAHL!");
-                    error = true;
-                }
-            } else if (float_keys.includes(cur_q_key)) {
-
-                // Check float entries:
-                if (!is_num) {
-                    alert("KEINE ZAHL!");
-                    error = true;
-                }
-
+            if ($(this).hasClass("input-btn")) {
+                console.log("Button with meaning!");
+                // console.log($(this).val());
+                curval = $(this).val();
             } else {
-                // All other keys (string, boolean etc.)
+                curval = $("#" + cur_input).val();  // current input value.
             }
+            console.log("Current value is: " + curval);
 
-            // Save value to dictionary:
-            risk_numbers[cur_q_key] = checked_val;
+            if ([undefined, "", " "].includes(curval)) {
+                alert("Sie haben nichts eingegeben! Absicht?");
+                // Show popup that can be skipped!
+            } else {
 
-            // Advance page:
-            if (!error) {
-                if (entry_ix < q_order.length) {
-                    entry_ix++;
-                    $("#" + q_order[entry_ix] + "-q").show();
-                    $("#" + q_order[entry_ix - 1] + "-q").hide();
+                // Evaluate entry:
+                // TODO: Check format!
+                let checked_val;
+                let error = false;
+
+                // Replace comma with period:
+                checked_val = curval.replace(/,/, ".");
+
+                // Test, if it is a number and convert if true:
+                const is_num = !isNaN(parseFloat(checked_val));
+                if (is_num) {
+                    // Note: Ignores additional text!
+                    checked_val = parseFloat(checked_val);
                 }
-            }
 
+                if (int_keys.includes(cur_q_key)) {
+                    // Check integer entries:
+                    if (!is_num) {
+                        alert("KEINE ZAHL!");
+                        error = true;
+                    } else if (!Number.isInteger(checked_val)) {
+                        alert("KEINE GANZE ZAHL!");
+                        error = true;
+                    }
+                } else if (float_keys.includes(cur_q_key)) {
+
+                    // Check float entries:
+                    if (!is_num) {
+                        alert("KEINE ZAHL!");
+                        error = true;
+                    }
+
+                } else {
+                    // All other keys (string, boolean etc.)
+                }
+
+                // Save value to dictionary:
+                risk_numbers[cur_q_key] = checked_val;
+
+                // Advance page:
+                if (!error) {
+                    if (entry_ix < q_order.length) {
+                        entry_ix++;
+                        $("#" + q_order[entry_ix] + "-q").show();
+                        $("#" + q_order[entry_ix - 1] + "-q").hide();
+                    }
+                }
+
+            }
         }
 
 
@@ -106,12 +112,28 @@ $(document).ready(function () {
 
 // ~~~~~~~~~~~~~~~~ DICTIONARIES ~~~~~~~~~~~~~~~~~~~~~~~~~
 
+
+const q_order = [
+    "rel-risk-reduction", "n-total",
+    "any-control",
+    "n-case",
+    "or-case",
+    "n-side"];
+// ORDER WILL BE FLEXIBLE!
+
+const q_inputs = Object.fromEntries(q_order.map((x) => [x, [x]]));
+q_inputs["n-case"] = ["n-case-impf", "n-case-control"];
+console.log(q_inputs);
+
 /**
  * Dictionary to convert inputs to the numbers in the object.
  */
 const id_to_num_dict = {
     "rel-risk-reduction": "rrr",
-    "n-total": "N_tot"
+    "n-total": "N_tot",
+    "any-control": "any_control",
+    "n-case-impf": "n10",  // careful! Vaccinated are now column 1!
+    "n-case-control": "n11"
 }
 
 // Create empty object with keys:

@@ -58,14 +58,39 @@
     <div class="checklist-question" id="any-control-q">
         <p>Gab es eine Kontrollgruppe?</p>
 
-        <button class="checklist-button continue-btn">Ja</button>
-        <button class="checklist-button continue-btn">Nein</button>
-        <button class="checklist-button continue-btn">Weiß nicht</button>
+        <button class="checklist-button continue-btn input-btn" value="1">Ja</button>
+        <button class="checklist-button continue-btn input-btn" value="0">Nein</button>
+        <button class="checklist-button continue-btn input-btn" value="-1">Weiß nicht</button>
 
+    </div>
+
+        <div class="checklist-question" id="n-case-q">
+        <p>
+            Wie viele personen sind jeweils in der Impfgruppe und der Kontrollgruppe erkrankt?
+        </p>
+            <label>
+                <input class="checklist-input" id="n-case-impf" type="text">
+            </label>
+            <label>
+                <input class="checklist-input" id="n-case-control" type="text">
+            </label>
+
+        <br>
+        <button class="checklist-button continue-btn">Weiter</button>
+    </div>
+
+            <div class="checklist-question" id="or-case-q">
+        <p>QUESTION ABOUT ODDS RATIOS FOR ARTICLES?</p>
+        <input class="checklist-input" id="or-case" type="text">
+        <br>
+        <button class="checklist-button continue-btn">Weiter</button>
     </div>
 
     <div class="checklist-question" id="n-side-q">
         <p>Für wie viele Personen wurden Nebenwirkungen berichtet?</p>
+        <p>
+            Ask for both groups if there was a control group?
+        </p>
         <input class="checklist-input" id="n-side" type="text">
         <br>
         <button class="checklist-button continue-btn">Weiter</button>
