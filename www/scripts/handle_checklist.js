@@ -109,12 +109,21 @@ $(document).ready(function () {
             // Final button:
             // Calculate the table if possible!
             if (entry_ix === q_order.length) {
+                console.log("~~~~~~~~~~~~~~~~ Calculate table ~~~~~~~~~~~~~~~~");
+                console.log(risk_numbers);
+
                 const ntab = new Basetable(
-                    [[risk_numbers.n00, risk_numbers.n10], [risk_numbers.n01, risk_numbers.n11]],
+                    [
+                        [risk_numbers.n00, risk_numbers.n01],
+                        [risk_numbers.n10, risk_numbers.n11]],
                     [risk_numbers.msum0x, risk_numbers.msum1x],
                     [risk_numbers.msumx0, risk_numbers.msumx1],
                     risk_numbers.N_tot);
-                const ptab = new Basetable(na_tab, [NaN, NaN], [risk_numbers.mpx0, NaN], 1);
+                const ptab = new Basetable(
+                    [
+                        [risk_numbers.p00, risk_numbers.p01],
+                        [risk_numbers.p10, risk_numbers.p11]],
+                    [NaN, NaN], [risk_numbers.mpx0, risk_numbers.mpx1], 1);
                 // NOTE: Make sure to appropriately distinguish relative risk increase and reduction!
                 const mtab1 = new Margintable(na_tab, [NaN, 1 - risk_numbers.rrr], [NaN, NaN]);
                 const mtab2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
@@ -123,6 +132,8 @@ $(document).ready(function () {
                 const check_risk = new RiskCollection(ntab, ptab, mtab1, mtab2);
                 check_risk.ptab.complete_margins();
                 check_risk.n_from_p();
+
+                check_risk.try_completion();
                 console.log(check_risk);
             }
         }
@@ -164,13 +175,13 @@ const id_to_num_dict = {
     "rel-risk-reduction": "rrr",
     "n-total": "N_tot",
     "any-control": "any_control",
-    "n-impf": "msumx0",
-    "n-control": "msumx1",
+    "n-impf": "msumx1",
+    "n-control": "msumx0",
     "p-treat": "mpx1",
-    "n-case-impf": "n10",
-    // careful! Vaccinated are now column 1 (index 0)!
+    "n-case-impf": "n11",
+    // careful! Vaccinated are now column 2 (index 1)!
     // cases are second row (index 1)
-    "n-case-control": "n11"
+    "n-case-control": "n10"  // cases among untreated (cases: 1, treatment: 0)
 }
 
 // Create empty object with keys:
@@ -200,4 +211,4 @@ const int_keys = ["N_tot",
     "msum10", "msum11"];
 const float_keys = ["rrr",
     "p00", "p01", "p10", "p11",
-"mpx0"]
+    "mpx0"]
