@@ -27,6 +27,10 @@
         Anpassung auf Abfrage nach Quelle (PM, Studie, Nachrichtenartikel) hin denkbar.
     </p>
 
+    <div class="canvas-container">
+        <canvas id="dotdisplay2"></canvas>
+    </div>
+
     <!--    Entry 1-->
 
     <div class="checklist-question" id="rel-risk-reduction-q">
@@ -92,7 +96,7 @@
     </div>
 
     <div class="checklist-question" id="n-case-q">
-<!--        TODO: Cases are currently not displayed...-->
+        <!--        TODO: Cases are currently not displayed...-->
         <p>
             Wie viele personen sind jeweils in der Impfgruppe und der Kontrollgruppe erkrankt?
         </p>
@@ -127,6 +131,26 @@
         <button class="checklist-button continue-btn">Weiter</button>
     </div>
 
+    <div class="checklist-question" id="results-q">
+
+        [FAKTENBOX?]
+
+        <p>Risiko in der Behandlungsgruppe: <span id="risk-treat"></span></p>
+        <p>Risiko in der Kontrollgruppe: <span id="risk-control"></span></p>
+        <p>ARR: <span id="arr"></span></p>
+        <p>RRR: <span id="rrr"></span></p>
+
+        <!--    The results from providing numbers:-->
+        <div class="output-col number-output">
+
+            <div class="canvas-container">
+                <canvas id="dotdisplay"></canvas>
+            </div>
+
+        </div>
+
+        [ALLOW TO SAVE!]
+    </div>
 
 </div>
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ EOF MAIN CONTENT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->

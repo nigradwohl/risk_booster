@@ -4,7 +4,15 @@
 
 $(document).ready(function () {
 
+    console.log("Test icon array");
+    const tst2x2 = [[9700, 9850], [300, 150]];
+    create_icon_array(
+        tst2x2[0][1], tst2x2[1][0],
+        tst2x2[1][0], tst2x2[1][1]);
+    $("#dotdisplay2").show();
+
     console.log("Handle questions");
+
 
     // Get the JSON file for the topic:
     // const page_obj = JSON.parse("scripts/");
@@ -108,7 +116,7 @@ $(document).ready(function () {
 
             // Final button:
             // Calculate the table if possible!
-            if (entry_ix === q_order.length) {
+            if (entry_ix === q_order.length - 1) {
                 console.log("~~~~~~~~~~~~~~~~ Calculate table ~~~~~~~~~~~~~~~~");
                 console.log(risk_numbers);
 
@@ -134,7 +142,26 @@ $(document).ready(function () {
                 check_risk.n_from_p();
 
                 check_risk.try_completion();
+                check_risk.ntab.complete_margins();
                 console.log(check_risk);
+
+                // USe the 2x2 table to calculate outputs:
+                console.log(check_risk.ntab.tab.margin1_mean());
+
+                // Following the current definition this is the risk:
+                const group_risks = check_risk.ntab.tab.margin2_mean();
+                console.log(group_risks);
+                $("#risk-treat").text(group_risks[1][1]);
+                $("#risk-control").text(group_risks[0][1]);
+                $("#arr").text(group_risks[0][1] - group_risks[1][1]);
+                $("#rrr").text(1 - group_risks[1][1] / group_risks[0][1]);
+
+                // Icon array:
+                const cur2x2 = check_risk.ntab.tab.tab2x2;
+                create_icon_array(
+                    cur2x2[0][1], cur2x2[1][0],
+                    cur2x2[1][0], cur2x2[1][1]);
+                $("#dotdisplay").show();
             }
         }
 
@@ -156,7 +183,8 @@ const q_order = [
     "n-total", "p-treat",
     "n-case",
     "or-case",
-    "n-side"];
+    "n-side",
+    "results"];
 // ORDER WILL BE FLEXIBLE!
 
 /**
@@ -212,3 +240,115 @@ const int_keys = ["N_tot",
 const float_keys = ["rrr",
     "p00", "p01", "p10", "p11",
     "mpx0"]
+
+
+// FUNCTIONS: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function create_icon_array(n1, n2, n3, n4) {
+
+    // Check for non-integer inputs:
+    // https://stackoverflow.com/questions/469357/html-text-input-allow-only-numeric-input/469362#469362
+
+    // Create an ordered array:
+    try {
+        // Check for integers (numbers( using "try" for now.
+        // Update in time!
+        // TODO: Proper input checking!
+        // const n1 = risk_numbers.n00;  // parseInt($("#n1").val());
+        // const n2 = risk_numbers.n01;
+        // const n3 = risk_numbers.n10;
+        // const n4 = risk_numbers.n11;
+        const n_dots = n1 + n2 + n3 + n4;
+
+        // Create an array of types:
+        // Determine number of rows:
+        // TODO: This could be optimally determined and the classes may be blocked like in riskyr.
+        const ncols = 100;  // Math.floor(n_dots / 10);  // n_dots % 10;  // remainder.
+        const remainder = n_dots % ncols;
+        const nrows = Math.floor(n_dots / ncols) + ((remainder > 0) ? Math.floor(remainder / 10) : 0);
+
+        console.log(n_dots + " dots, " + nrows + " rows and " + ncols + " columns");
+
+        // Create a vector of dot types:
+        const type_vec = Array(n1).fill(1).concat(Array(n2).fill(2), Array(n3).fill(3), Array(n4).fill(4));
+        console.log(type_vec);
+
+        // Pad any missing elements with empty elements?
+
+        // Create simple icon array:
+        // May also benefit from fontawesome!
+        (function () {
+
+            'use strict';
+            var c = document.getElementById('dotdisplay');
+            // var t = document.getElementById('t');
+            var ctx = c.getContext('2d');
+            var w = c.width = 400;  // window.innerWidth;
+            var h = c.height = 400;  // window.innerHeight;
+            // Fixed values ensure equal height and width of points.
+// current dots
+            var balls = [];
+            var total = n_dots;  // number of balls.
+            // console.log("current noise: " + noise);
+            var bounce = -1;
+
+
+            // Add balls to the list and give them their direction:
+            let icol = 0;
+            let irow = 0;
+            for (let i = 0; i < total; i++) {
+
+                if (i % ncols === 0) {
+                    irow++;
+                    icol = 0;
+                }
+
+                balls.push({
+                    // Initiate random positions:
+                    // x: Math.random() * w,
+                    // y: Math.random() * h
+                    x: (icol + 0.5) * w / 10,
+                    y: (irow + 0.5) * w / 10,
+                    type: type_vec[i]
+                })
+
+                icol++;
+
+
+            }
+
+// draw all balls each frame
+            function draw() {
+                ctx.clearRect(0, 0, w, h);
+                var j, dot;
+                for (j = 0; j < total; j++) {
+                    dot = balls[j];  // get the ball.
+                    ctx.beginPath();
+                    ctx.arc(dot.x, dot.y, 6, 0, Math.PI * 2, false);  // second parameter controls size.
+                    // console.log(dot);
+
+                    // Define dot colors:
+                    const col_arr = ["#90f6d7", "#41506b", "#35bcbf", "#263849"];
+                    ctx.fillStyle = col_arr[dot.type - 1];
+
+                    // noise dots unfilled.
+                    // ctx.fillStyle = "rgb(0,0,0)";
+                    ctx.fill();
+                    ctx.strokeStyle = 'black';  // stroke for those with noise.
+                    (dot.type % 2 === 0) ? ctx.stroke() : '';
+                }
+
+            }
+
+            // loop the animation
+            // requestAnimationFrame(function loop() {
+            //     requestAnimationFrame(loop);
+            draw();
+            // });
+
+
+        })();
+    } catch (err) {
+        alert("Bitte geben Sie eine ganze Zahl ein!");
+        console.log(err);
+    }
+}

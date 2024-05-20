@@ -142,7 +142,7 @@ canvas {
     background: white;
     width: 220px;
     height: 220px;
-    border-radius: 50%;
+    /*border-radius: 50%;*/
     margin: 0 auto;
     border: 1px solid black;
 }
