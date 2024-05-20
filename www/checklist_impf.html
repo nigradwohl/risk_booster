@@ -135,18 +135,33 @@
 
         [FAKTENBOX?]
 
-        <p>Risiko in der Behandlungsgruppe: <span id="risk-treat"></span></p>
-        <p>Risiko in der Kontrollgruppe: <span id="risk-control"></span></p>
-        <p>ARR: <span id="arr"></span></p>
-        <p>RRR: <span id="rrr"></span></p>
+        <div class="split-content">
 
-        <!--    The results from providing numbers:-->
-        <div class="output-col number-output">
-
-            <div class="canvas-container">
-                <canvas id="dotdisplay"></canvas>
+            <div>
+                <p><strong>Nutzen:</strong></p>
+                <p>Risiko in der Behandlungsgruppe: <span id="risk-treat"></span></p>
+                <p>Risiko in der Kontrollgruppe: <span id="risk-control"></span></p>
+                <p>ARR: <span id="arr"></span></p>
+                <p>RRR: <span id="rrr"></span></p>
             </div>
 
+            <!--    The results from providing numbers:-->
+            <div class="output-col number-output">
+
+                <div class="canvas-container">
+                    <canvas id="dotdisplay"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="split-content">
+            <div>
+                <p><strong>Schaden:</strong></p>
+            </div>
+            <div>
+
+            </div>
         </div>
 
         [ALLOW TO SAVE!]

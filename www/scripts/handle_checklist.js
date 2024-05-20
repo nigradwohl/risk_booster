@@ -5,11 +5,17 @@
 $(document).ready(function () {
 
     console.log("Test icon array");
-    const tst2x2 = [[9700, 9850], [300, 150]];
+    let tst2x2 = [[9700, 9850], [300, 150]];
+
+    // Rescale:
+    tst2x2 = tst2x2.map((x) => x.map((y) => y / 10))
+    console.log(tst2x2);
+
     create_icon_array(
         tst2x2[0][1], tst2x2[1][0],
-        tst2x2[1][0], tst2x2[1][1]);
-    $("#dotdisplay2").show();
+        tst2x2[1][0], tst2x2[1][1],
+        'dotdisplay2');
+    // $("#dotdisplay2").show();
 
     console.log("Handle questions");
 
@@ -24,7 +30,7 @@ $(document).ready(function () {
 
     // Define order by type (press release, article etc.):
 
-    let entry_ix = 0;  // index fpr the current entry.
+    let entry_ix = 0;  // index for the current entry.
 
     // Show the first element:
     console.log("#" + q_order[entry_ix] + "-q");
@@ -157,10 +163,12 @@ $(document).ready(function () {
                 $("#rrr").text(1 - group_risks[1][1] / group_risks[0][1]);
 
                 // Icon array:
-                const cur2x2 = check_risk.ntab.tab.tab2x2;
+                const cur2x2 = check_risk.ntab.tab.tab2x2.map((x) => x.map((y) => y / 10));
+
                 create_icon_array(
                     cur2x2[0][1], cur2x2[1][0],
-                    cur2x2[1][0], cur2x2[1][1]);
+                    cur2x2[1][0], cur2x2[1][1],
+                    'dotdisplay');
                 $("#dotdisplay").show();
             }
         }
@@ -243,7 +251,7 @@ const float_keys = ["rrr",
 
 
 // FUNCTIONS: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function create_icon_array(n1, n2, n3, n4) {
+function create_icon_array(n1, n2, n3, n4, id) {
 
     // Check for non-integer inputs:
     // https://stackoverflow.com/questions/469357/html-text-input-allow-only-numeric-input/469362#469362
@@ -262,7 +270,7 @@ function create_icon_array(n1, n2, n3, n4) {
         // Create an array of types:
         // Determine number of rows:
         // TODO: This could be optimally determined and the classes may be blocked like in riskyr.
-        const ncols = 100;  // Math.floor(n_dots / 10);  // n_dots % 10;  // remainder.
+        const ncols = 35;  // Math.floor(n_dots / 10);  // n_dots % 10;  // remainder.
         const remainder = n_dots % ncols;
         const nrows = Math.floor(n_dots / ncols) + ((remainder > 0) ? Math.floor(remainder / 10) : 0);
 
@@ -279,11 +287,12 @@ function create_icon_array(n1, n2, n3, n4) {
         (function () {
 
             'use strict';
-            var c = document.getElementById('dotdisplay');
+            var c = document.getElementById(id);
             // var t = document.getElementById('t');
             var ctx = c.getContext('2d');
-            var w = c.width = 400;  // window.innerWidth;
-            var h = c.height = 400;  // window.innerHeight;
+            // NOTE: THESE CONTROL THE SIZE OF THE DOTS!
+            var w = c.width = 1000;  // window.innerWidth;
+            var h = c.height = 1000;  // window.innerHeight;
             // Fixed values ensure equal height and width of points.
 // current dots
             var balls = [];
@@ -306,8 +315,8 @@ function create_icon_array(n1, n2, n3, n4) {
                     // Initiate random positions:
                     // x: Math.random() * w,
                     // y: Math.random() * h
-                    x: (icol + 0.5) * w / 10,
-                    y: (irow + 0.5) * w / 10,
+                    x: (icol + 0.5) * w / 40,
+                    y: (irow + 0.5) * w / 40,
                     type: type_vec[i]
                 })
 
