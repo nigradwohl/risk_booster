@@ -134,7 +134,10 @@ $(document).ready(function () {
 
 // ~~~~~~~~~~~~~~~~ DICTIONARIES ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
+/**
+ * Ordered array of question (subpage) IDs which can be reordered fo reach type.
+ * @type {string[]}
+ */
 const q_order = [
     "rel-risk-reduction", "n-total",
     "any-control",
@@ -144,6 +147,10 @@ const q_order = [
     "n-side"];
 // ORDER WILL BE FLEXIBLE!
 
+/**
+ * Inputs on each subpage to be looped over.
+ * @type {{[p: string]: [string]}}
+ */
 const q_inputs = Object.fromEntries(q_order.map((x) => [x, [x]]));
 q_inputs["n-case"] = ["n-case-impf", "n-case-control"];
 q_inputs["n-treat-control"] = ["n-impf", "n-control"];
@@ -165,6 +172,10 @@ const id_to_num_dict = {
 }
 
 // Create empty object with keys:
+/**
+ * Keys for each input, to be mapped onto 2x2 table.
+ * @type {string[]}
+ */
 const entry_keys = [
     "rrr", "N_tot",
     "n00", "n01", "n10", "n11",
@@ -175,7 +186,11 @@ const entry_keys = [
 ]
 const risk_numbers = Object.fromEntries(entry_keys.map((x) => [x, NaN]));
 
-// Lsits of formats:
+// Lists of formats:
+/**
+ * Lists defining the number formats for each input field.
+ * @type {string[]}
+ */
 const int_keys = ["N_tot",
     "n00", "n01", "n10", "n11",
     "msum00", "msum01",
