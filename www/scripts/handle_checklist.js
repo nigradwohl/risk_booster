@@ -4,18 +4,18 @@
 
 $(document).ready(function () {
 
-    console.log("Test icon array");
-    let tst2x2 = [[9700, 9850], [300, 150]];
-
-    // Rescale:
-    tst2x2 = tst2x2.map((x) => x.map((y) => y / 10))
-    console.log(tst2x2);
-
-    create_icon_array(
-        tst2x2[0][1], tst2x2[1][0],
-        tst2x2[1][0], tst2x2[1][1],
-        'dotdisplay2');
-    // $("#dotdisplay2").show();
+    // console.log("Test icon array");
+    // let tst2x2 = [[9700, 9850], [300, 150]];
+    //
+    // // Rescale:
+    // tst2x2 = tst2x2.map((x) => x.map((y) => y / 10))
+    // console.log(tst2x2);
+    //
+    // create_icon_array(
+    //     tst2x2[0][1], tst2x2[1][0],
+    //     tst2x2[1][0], tst2x2[1][1],
+    //     'dotdisplay2');
+    // // $("#dotdisplay2").show();
 
     console.log("Handle questions");
 
