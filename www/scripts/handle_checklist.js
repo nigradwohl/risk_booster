@@ -27,6 +27,7 @@ $(document).ready(function () {
 
         // Check entry:
         const curid = q_order[entry_ix];  // id of current page.
+        let error = false;
 
         console.log(`Current inputs for ID ${curid}:`);
         console.log(q_inputs);
@@ -57,7 +58,6 @@ $(document).ready(function () {
                 // Evaluate entry:
                 // TODO: Check format!
                 let checked_val;
-                let error = false;
 
                 // Replace comma with period:
                 checked_val = curval.replace(/,/, ".");
@@ -93,36 +93,38 @@ $(document).ready(function () {
                 // Save value to dictionary:
                 risk_numbers[cur_q_key] = checked_val;
 
-                // Advance page:
-                if (!error) {
-                    if (entry_ix < q_order.length) {
-                        entry_ix++;
-                        $("#" + q_order[entry_ix] + "-q").show();
-                        $("#" + q_order[entry_ix - 1] + "-q").hide();
-                    }
-                }
 
             }
+
         }
 
-        // Final button:
-        // Calculate the table if possible!
-        if (entry_ix === q_order.length) {
-            const ntab = new Basetable(
-                [[risk_numbers.n00, risk_numbers.n10], [risk_numbers.n01, risk_numbers.n11]],
-                [risk_numbers.msum0x, risk_numbers.msum1x],
-                [risk_numbers.msumx0, risk_numbers.msumx1],
-                risk_numbers.N_tot);
-            const ptab = new Basetable(na_tab, [NaN, NaN], [NaN, NaN], 1);
-            // NOTE: Make sure to appropriately distinguish relative risk increase and reduction!
-            const mtab1 = new Margintable(na_tab, [NaN, 1 - risk_numbers.rrr], [NaN, NaN]);
-            const mtab2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
+        // Advance page:
+        if (!error) {
+            if (entry_ix < q_order.length) {
+                entry_ix++;
+                $("#" + q_order[entry_ix] + "-q").show();
+                $("#" + q_order[entry_ix - 1] + "-q").hide();
+            }
+
+            // Final button:
+            // Calculate the table if possible!
+            if (entry_ix === q_order.length) {
+                const ntab = new Basetable(
+                    [[risk_numbers.n00, risk_numbers.n10], [risk_numbers.n01, risk_numbers.n11]],
+                    [risk_numbers.msum0x, risk_numbers.msum1x],
+                    [risk_numbers.msumx0, risk_numbers.msumx1],
+                    risk_numbers.N_tot);
+                const ptab = new Basetable(na_tab, [NaN, NaN], [NaN, NaN], 1);
+                // NOTE: Make sure to appropriately distinguish relative risk increase and reduction!
+                const mtab1 = new Margintable(na_tab, [NaN, 1 - risk_numbers.rrr], [NaN, NaN]);
+                const mtab2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
 
 
-            const simple_risk = new RiskCollection(ntab, ptab, mtab1, mtab2);
-            simple_risk.ptab.complete_margins();
-            simple_risk.n_from_p();
-            console.log(simple_risk);
+                const simple_risk = new RiskCollection(ntab, ptab, mtab1, mtab2);
+                simple_risk.ptab.complete_margins();
+                simple_risk.n_from_p();
+                console.log(simple_risk);
+            }
         }
 
 
