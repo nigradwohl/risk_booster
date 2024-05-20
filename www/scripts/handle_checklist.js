@@ -114,16 +114,16 @@ $(document).ready(function () {
                     [risk_numbers.msum0x, risk_numbers.msum1x],
                     [risk_numbers.msumx0, risk_numbers.msumx1],
                     risk_numbers.N_tot);
-                const ptab = new Basetable(na_tab, [NaN, NaN], [NaN, NaN], 1);
+                const ptab = new Basetable(na_tab, [NaN, NaN], [risk_numbers.mpx0, NaN], 1);
                 // NOTE: Make sure to appropriately distinguish relative risk increase and reduction!
                 const mtab1 = new Margintable(na_tab, [NaN, 1 - risk_numbers.rrr], [NaN, NaN]);
                 const mtab2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
 
 
-                const simple_risk = new RiskCollection(ntab, ptab, mtab1, mtab2);
-                simple_risk.ptab.complete_margins();
-                simple_risk.n_from_p();
-                console.log(simple_risk);
+                const check_risk = new RiskCollection(ntab, ptab, mtab1, mtab2);
+                check_risk.ptab.complete_margins();
+                check_risk.n_from_p();
+                console.log(check_risk);
             }
         }
 
@@ -139,9 +139,10 @@ $(document).ready(function () {
  * @type {string[]}
  */
 const q_order = [
-    "rel-risk-reduction", "n-total",
-    "any-control",
+    "rel-risk-reduction",
+    // "any-control",
     "n-treat-control",
+    "n-total", "p-treat",
     "n-case",
     "or-case",
     "n-side"];
@@ -165,6 +166,7 @@ const id_to_num_dict = {
     "any-control": "any_control",
     "n-impf": "msumx0",
     "n-control": "msumx1",
+    "p-treat": "mpx1",
     "n-case-impf": "n10",
     // careful! Vaccinated are now column 1 (index 0)!
     // cases are second row (index 1)
@@ -181,6 +183,7 @@ const entry_keys = [
     "n00", "n01", "n10", "n11",
     "msum0x", "msum1x", "msum0x", "msum1x",
     "p00", "p01", "p10", "p11",
+    "mpx0",
     // Non-numeric info:
     "any_control"
 ]
@@ -195,4 +198,6 @@ const int_keys = ["N_tot",
     "n00", "n01", "n10", "n11",
     "msum00", "msum01",
     "msum10", "msum11"];
-const float_keys = ["rrr", "p00", "p01", "p10", "p11"]
+const float_keys = ["rrr",
+    "p00", "p01", "p10", "p11",
+"mpx0"]
