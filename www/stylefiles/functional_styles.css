@@ -151,3 +151,55 @@ canvas {
     display: flex;
     flex-direction: row;
 }
+
+.checklist-nav {
+    font-size: 1.5em;
+    color: darkgrey;
+    text-align: center;
+}
+
+.checklist-nav:hover{
+    font-weight: bold;
+    cursor: pointer;
+    text-shadow: 2px 2px 5px var(---checklist-shadow);
+}
+
+.checklist-question {
+    margin: 1em 2%;
+    flex: 60%;
+    /*background-color: var(---checklist-question-bg);*/
+    color: 2px var(---checklist-question-bg) solid;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px var(---checklist-shadow);
+    flex-direction: column;
+    min-width: 80%;
+}
+
+.checklist-input {
+    border-radius: 5px;
+    line-height: 1.2em;
+}
+
+.checklist-button {
+    margin: 0.2em;
+    padding: 0.3em;
+    font-size: 1em;
+    text-align: center;
+    min-width: 5em;
+    flex: 20%;
+    background-color: var(---button-primary);
+    border-radius: 5px;
+}
+
+.checklist-content {
+    margin: 0 auto;
+}
+
+.nav-cell{
+    width: 10%;
+}
+
+.content-cell{
+    width: 80%;
+}
