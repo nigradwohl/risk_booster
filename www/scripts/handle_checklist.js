@@ -21,7 +21,7 @@ $(document).ready(function () {
 
     // Show the first element:
     console.log("#" + q_order[entry_ix] + "-q");
-    $("#" + q_order[entry_ix] + "-q").show();
+    $("#" + q_order[entry_ix] + "-q").css('display', 'flex');
 
     // Handle button clicks:
     $(".continue-btn").on("click", function () {
@@ -103,13 +103,22 @@ $(document).ready(function () {
         if (!error) {
             if (entry_ix < q_order.length) {
                 entry_ix++;
-                $("#" + q_order[entry_ix] + "-q").show();
+                $("#" + q_order[entry_ix] + "-q").css('display', 'flex');
                 $("#" + q_order[entry_ix - 1] + "-q").hide();
+
+                // Show back button:
+                if (entry_ix > 0) {
+                    $(".back-btn").css('display', 'inline-block');
+                }
             }
 
             // Final button:
             // Calculate the table if possible!
             if (entry_ix === q_order.length - 1) {
+
+                // Hide the continue button:
+                $(".continue-btn").hide();
+
                 console.log("~~~~~~~~~~~~~~~~ Calculate table ~~~~~~~~~~~~~~~~");
                 // First index is condition, second index is treatment!
                 console.log(risk_numbers);
@@ -193,6 +202,20 @@ $(document).ready(function () {
 
     })
 
+
+    $(".back-btn").on("click", function () {
+        if (entry_ix > 0) {
+            entry_ix--;
+            $("#" + q_order[entry_ix] + "-q").css('display', 'flex');
+            $("#" + q_order[entry_ix + 1] + "-q").hide();
+            $(".continue-btn").css('display', 'inline-block');
+
+            if (entry_ix === 0) {
+                $(".back-btn").hide();
+            }
+        }
+
+    })
 
     // console.log("~~~~~~~~~ Test icon array ~~~~~~~~~~~");
     // let tst2x2 = [[9700, 9850], [300, 150]];
@@ -418,9 +441,9 @@ function create_icon_array(n1, n2, n3, n4, id) {
 // Printing and saving:
 // https://techstacker.com/print-or-save-page-button-javascript/
 const buttonPrintOrSaveDocument = document.querySelector(
-  ".button-print-or-save-document"
+    ".button-print-or-save-document"
 )
 
 function printOrSave() {
-  window.print();
+    window.print();
 }

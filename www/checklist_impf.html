@@ -63,7 +63,7 @@
         <!--    Entry 1-->
         <table>
             <tr>
-                <td class="nav-cell no-print" >
+                <td class="nav-cell no-print">
                     <div class="checklist-nav">
                         <i class="fa fa-solid fa-chevron-up back-btn" style="rotate: -90deg"></i>
                     </div>
@@ -72,37 +72,58 @@
 
 
                     <div class="checklist-question" id="rel-risk-reduction-q">
-                        <p class="checklist-qtext">Welche Wirksamkeit oder Effektivität wurde angegeben? (Englisch:
-                            Effectivity)</p>
-                        <p>
-                            Bitte geben Sie die Wirksamkeit in Prozent an. [Sinnvoll?]
-                        </p>
 
-                        <p>
-                            <input class="checklist-input" id="rel-risk-reduction" type="text">%
-                            <br>
-                            <button class="checklist-button continue-btn">Weiter</button>
-                        </p>
+                        <div class="question-content">
+                            <p class="checklist-qtext">Welche Wirksamkeit oder Effektivität wurde angegeben? (Englisch:
+                                Effectivity)</p>
+                            <p>
+                                Bitte geben Sie die
+                                <span class="highlight-num tooltip">
+                                    Wirksamkeit
+                                    <span class="tooltiptext tooltip-checklist">
+                                        <i class="fa fa-exclamation-triangle"></i>
+                                Manchmal wird diese Zahl auch als "Impfschutz" bezeichnet.
+                                        <!--                                <strong>Weitere Begriffe?</strong>-->
+                                        <br>
+                                        Unter dem Begriff der Impfstoffwirksamkeit versteht man in der Regel,
+                                wie viele Prozent weniger in der Gruppe der Geimpften erkranken.
+                        </span>
+                                </span>
+                                in Prozent an. [Sinnvoll?]
+                            </p>
+
+                            <p>
+                                <input class="checklist-input" id="rel-risk-reduction" type="text">%
+                                <button class="checklist-button continue-btn">Weiter</button>
+                            </p>
 
 
-                        <p>
-                            <i class="fa fa-exclamation-triangle"></i>
-                            Manchmal wird diese Zahl auch als "Impfschutz" bezeichnet.
-                            <strong>Weitere Begriffe?</strong>
-                        </p>
+                            <!--                            <p>-->
+                            <!--                                [Als tooltip!]-->
+                            <!--                                <i class="fa fa-exclamation-triangle"></i>-->
+                            <!--                                Manchmal wird diese Zahl auch als "Impfschutz" bezeichnet.-->
+                            <!--                                <strong>Weitere Begriffe?</strong>-->
+                            <!--                            </p>-->
 
-                        <p>Unter dem Begriff der Impfstoffwirksamkeit versteht man in der Regel,
-                            wie viele Prozent weniger in der Gruppe der Geimpften erkranken.</p>
+                            <!--                            <p>Unter dem Begriff der Impfstoffwirksamkeit versteht man in der Regel,-->
+                            <!--                                wie viele Prozent weniger in der Gruppe der Geimpften erkranken.</p>-->
 
-                        <p>Anmerkung: Wenn die Information fehlt, wird nachgefragt.</p>
+                            <!--                            <p>Anmerkung: Wenn die Information fehlt, wird nachgefragt.</p>-->
+                        </div>
+
+
                     </div>
 
 
                     <div class="checklist-question" id="n-total-q">
-                        <p>Wie viele Personen haben an der Studie teilgenommen?</p>
-                        <input class="checklist-input" id="n-total" type="text">
-                        <br>
-                        <button class="checklist-button continue-btn">Weiter</button>
+                        <div class="question-content">
+                            <p class="checklist-qtext">
+                                Wie viele Personen haben insgesamt an der Studie teilgenommen?
+                            </p>
+                            <input class="checklist-input" id="n-total" type="text">
+                            <br>
+                            <button class="checklist-button continue-btn">Weiter</button>
+                        </div>
                     </div>
 
                     <div class="checklist-question" id="any-control-q">
@@ -115,78 +136,86 @@
                     </div>
 
                     <div class="checklist-question" id="n-treat-control-q">
-                        <p>Wie viele Personen wurden Geimpft? Wie viele bekamen ein Placebo?</p>
+                        <div class="question-content">
+                            <p class="checklist-qtext">Wie viele Personen wurden Geimpft? Wie viele bekamen ein
+                                Placebo?</p>
 
-                        <label>
-                            Anzahl Geimpfte
-                            <input class="checklist-input" id="n-impf" type="text">
-                        </label>
-                        <br>
-                        <label>
-                            Anzahl ungeimpfte (z.B. Placebo)
-                            <input class="checklist-input" id="n-control" type="text">
-                        </label>
-                        <br>
-                        <button class="checklist-button continue-btn">Weiter</button>
+                            <label>
+                                Anzahl Geimpfte
+                                <input class="checklist-input" id="n-impf" type="text">
+                            </label>
+                            <br>
+                            <label>
+                                Anzahl ungeimpfte (z.B. Placebo)
+                                <input class="checklist-input" id="n-control" type="text">
+                            </label>
+                            <br>
+                        </div>
 
                     </div>
 
                     <div class="checklist-question" id="p-treat-q">
-                        <p>Wie viel Prozent der Personen wurden geimpft?</p>
+                        <div class="question-content">
+                            <p class="checklist-qtext">Welcher Anteil der Personen wurde geimpft?</p>
 
-                        ACHTUNG: Plausible Ganzzahlen ggf. umformulieren!
-                        <input class="checklist-input" id="p-treat" type="text">
+                            ACHTUNG: Plausible Ganzzahlen ggf. umformulieren!
+                            <input class="checklist-input" id="p-treat" type="text">
 
-                        <br>
-                        <button class="checklist-button continue-btn">Weiter</button>
+                            <br>
+                            <button class="checklist-button continue-btn">Weiter</button>
+                        </div>
                     </div>
 
                     <div class="checklist-question" id="n-case-q">
-                        <p>
-                            Wie viele personen sind jeweils in der Impfgruppe und der Kontrollgruppe erkrankt?
-                        </p>
-                        <!--                        TODO: Eventually translate to grid layout?-->
-                        <table>
-                            <tr>
-                                <td>
-                                    <label for="n-case-impf">
-                                        Erkrankungen unter den Geimpften</label>
-                                </td>
-                                <td>
-                                    <input class="checklist-input" id="n-case-impf" name="n-case-impf" type="text">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><label for="n-case-control">
-                                    Erkrankungen in der Kontrollgruppe (Placebogruppe/Ungeimpfte)
-                                </label></td>
-                                <td>
-                                    <input class="checklist-input" id="n-case-control" name="n-case-control"
-                                           type="text">
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="question-content">
+                            <p class="checklist-qtext">
+                                Wie viele Personen sind jeweils in der Impfgruppe und der Kontrollgruppe erkrankt?
+                            </p>
+                            <!--                        TODO: Eventually translate to grid layout?-->
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label for="n-case-impf">
+                                            Erkrankungen unter den Geimpften</label>
+                                    </td>
+                                    <td>
+                                        <input class="checklist-input" id="n-case-impf" name="n-case-impf" type="text">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="n-case-control">
+                                        Erkrankungen in der Kontrollgruppe (Placebogruppe/Ungeimpfte)
+                                    </label></td>
+                                    <td>
+                                        <input class="checklist-input" id="n-case-control" name="n-case-control"
+                                               type="text">
+                                    </td>
+                                </tr>
+                            </table>
 
-
-                        <br>
-                        <button class="checklist-button continue-btn">Weiter</button>
+                        </div>
                     </div>
 
                     <div class="checklist-question" id="or-case-q">
-                        <p>QUESTION ABOUT ODDS RATIOS FOR ARTICLES?</p>
-                        <input class="checklist-input" id="or-case" type="text">
-                        <br>
-                        <button class="checklist-button continue-btn">Weiter</button>
+                        <div class="question-content">
+                            <p class="checklist-qtext">QUESTION ABOUT ODDS RATIOS FOR ARTICLES?</p>
+                            <input class="checklist-input" id="or-case" type="text">
+                            <!--                        <br>-->
+                            <!--                        <button class="checklist-button continue-btn">Weiter</button>-->
+                        </div>
                     </div>
 
                     <div class="checklist-question" id="n-side-q">
-                        <p>Für wie viele Personen wurden Nebenwirkungen berichtet?</p>
-                        <p>
-                            Ask for both groups if there was a control group?
-                        </p>
-                        <input class="checklist-input" id="n-side" type="text">
-                        <br>
-                        <button class="checklist-button continue-btn">Weiter</button>
+                        <div class="question-content">
+                            <p class="checklist-qtext">Für wie viele Personen wurden Nebenwirkungen berichtet?</p>
+                            <p>
+                                Ask for both groups if there was a control group?
+                                Ask, which side effects were reported?!
+                            </p>
+                            <input class="checklist-input" id="n-side" type="text">
+                            <br>
+                            <button class="checklist-button continue-btn">Weiter</button>
+                        </div>
                     </div>
 
                     <div class="checklist-question" id="results-q">
@@ -224,7 +253,8 @@
                             </div>
                         </div>
 
-                        <button class="button-print-or-save-document checklist-button no-print">Ergebnis drucken</button>
+                        <button class="button-print-or-save-document checklist-button no-print">Ergebnis drucken
+                        </button>
                         <br>
                         [SPLIT THE ARRAY?]
                     </div>

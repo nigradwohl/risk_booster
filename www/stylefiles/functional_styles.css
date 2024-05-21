@@ -34,6 +34,12 @@
     border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
 }
 
+.tooltip .tooltiptext.tooltip-checklist{
+    width: 15em;
+    text-align: left;
+    padding: 0.5em;
+}
+
 /* Tooltip text */
 .tooltip .tooltiptext {
     visibility: hidden;
@@ -74,6 +80,7 @@
     visibility: visible;
     opacity: 1;
 }
+
 
 /*.has-tooltip {*/
 /*  !*position: relative;*!*/
@@ -128,14 +135,11 @@
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Styles for risk calculator ~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-.checklist-question {
-    display: none;
-}
 
 .checklist-qtext {
     color: #666;
     font-weight: bold;
-    font-size: 1.2em;
+    font-size: 1.1em;
 }
 
 .canvas-container {
@@ -165,12 +169,15 @@ canvas {
     font-size: 1.5em;
     color: darkgrey;
     text-align: center;
+    height: 100%;
 }
+
 
 .checklist-nav:hover {
     font-weight: bold;
     cursor: pointer;
     text-shadow: 2px 2px 5px var(---checklist-shadow);
+    /*background-color: #444444;*/
 }
 
 .checklist-question {
@@ -182,7 +189,11 @@ canvas {
     border-radius: 5px;
     box-shadow: 2px 2px 5px var(---checklist-shadow);
     flex-direction: column;
-    /*max-width: 800px;*/
+    width: 800px;
+    display: none;
+    height: 400px;
+  justify-content: center;
+  /*align-items: center;*/
 }
 
 .checklist-input {
@@ -206,7 +217,23 @@ canvas {
 
 .checklist-content {
     margin: 1em auto;
+    width: 800px;
 }
+
+@media screen and (max-width: 700px) {
+    .checklist-content {
+        width: 80%;
+        margin: 1em auto;
+    }
+
+    .checklist-question {
+        width: 100%;
+    }
+}
+
+.question-content{
+}
+
 
 .nav-cell {
     width: 10%;
@@ -216,8 +243,12 @@ canvas {
     width: 80%;
 }
 
-.risk-info{
+.risk-info {
     font-weight: bold;
     color: #666;
     display: block;
+}
+
+.fa.back-btn {
+    display: none;
 }
