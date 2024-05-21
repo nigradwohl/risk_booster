@@ -151,6 +151,8 @@ $(document).ready(function () {
         const regex_matches = detect_regex_match(inputText, token_dat, check_numbers_dict);
 
 
+
+
         // Text-level: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Add information to object:
         token_dat.add_column(regex_matches.match_id, "match");
@@ -178,7 +180,40 @@ $(document).ready(function () {
         // Detect number types (may eventually need the topics to inform context names!):
         token_dat.detect_number_type(inputText);
 
-        // Context detection:
+        // Context detection: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        // Get rid of non-numbers (tokens that still contain incorrect patterns):
+        const nonumpat = RegExp("\w*-?" + pat_num, "dg");
+        token_dat.is_num = token_dat.is_num.map((x, ix) => x && !token_dat.token[ix].search(nonumpat));
+
+        // Detect missing units:
+        console.log(" +++ detecting missing units +++");
+        const no_unit_ix = token_dat.id.filter((d, ix) => token_dat.is_num[ix] && token_dat.unit[ix] === "unknown");
+        console.log(no_unit_ix);
+        const new_units = investigate_context(token_dat, no_unit_ix, window_keys.units);
+        console.log(new_units);
+        // Replace the missing units:
+        let ix = -1;
+        for(let i = 0; i < no_unit_ix.length; i++){
+            ix = no_unit_ix[i];
+            token_dat.unit[ix] = new_units[ix];
+        }
+
+        // Detect number words:
+        // ++++ HERE NOW +++
+        // python: https://github.com/IBM/wort-to-number
+        const pat_numwords = RegExp(collapse_regex_or(
+            ["[Ee]in", "[Zz]wei", "[Dd]rei"]), "dg");
+        const numwords_ix = token_dat.id.filter((x) => token_dat.token[x].search(pat_numwords));
+        // Investigate these tokens further!
+        const numword_arr = investigate_context(token_dat, numwords_ix,
+            {"numword_keys": RegExp(collapse_regex_or(["Verl[aä]uf"]))});
+        console.log("+++ Get numwords +++");
+        console.log(pat_numwords);
+        console.log(numwords_ix);
+        console.log(numword_arr);
+        // Rather do reverse search? Search for "Verläufe", "Erkrankungen" etc.
+
 
         // NOTE: May also be applied to numbers that could not be identified so far!
 
@@ -599,7 +634,7 @@ const regex_multi = new RegExp("(?<multi>" + pat_num + "[ \\-]?([Mm]al|[Ff]ach) 
 // nh must also be identified from tokens (e.g., In der Gruppe von 1000[case] Leuten sterben 4[num/case].
 
 // Define units to not consider further:
-const units_exc = ["age", "currency", "time", "date", "year", "duration", "legal"];
+const units_exc = ["age", "currency", "time", "date", "year", "duration", "legal", "misc"];
 
 /*
 Tests for simple units:
@@ -663,6 +698,13 @@ const check_numbers_dict = {
     "carry_forward_post": {
         "regex": RegExp("(?<ucarryforward>" + pat_num + " (waren|sind) es)", "dg")
     },
+    "misc": {
+        // MIscellaneous numbers to be excluded!
+        "regex": RegExp("(?<misc>" + pat_num + "\\.? Grad)", "dg")
+    },
+    // "within_nums": {
+    //   "regex": RegExp("(?<misc>" +"\w*-?" + pat_num + ")", "dg")
+    // },
     // Default number match:
     "other_num": {
         "regex": regex_num,
@@ -1303,6 +1345,9 @@ const window_keys = {
     "verbs": {
         // Verbs:
         "ill": RegExp(collapse_regex_or(["erkrank(t|en)", "Verl[äa]uf"]), "dg")
+    },
+    "units": {
+        "case": RegExp(collapse_regex_or(["Proband", "Teilnehm"]), "dg")
     }
 
 }
