@@ -186,6 +186,7 @@ $(document).ready(function () {
                     cur2x2[0][0], cur2x2[1][0],  // control group.
                     'dotdisplay');
                 $("#dotdisplay").show();
+                buttonPrintOrSaveDocument.addEventListener("click", printOrSave);  // allow saving.
             }
         }
 
@@ -411,4 +412,15 @@ function create_icon_array(n1, n2, n3, n4, id) {
         alert("Bitte geben Sie eine ganze Zahl ein!");
         console.log(err);
     }
+}
+
+
+// Printing and saving:
+// https://techstacker.com/print-or-save-page-button-javascript/
+const buttonPrintOrSaveDocument = document.querySelector(
+  ".button-print-or-save-document"
+)
+
+function printOrSave() {
+  window.print();
 }

@@ -13,30 +13,57 @@
 
     <script src="global_scripts.js"></script>
     <title>Risiko-Checkliste</title>
+
+    <!--    &lt;!&ndash;    Add for printing (from https://stackoverflow.com/questions/71998862/save-download-html-div-as-image-pdf)&ndash;&gt;-->
+    <!--    <meta http-equiv="Content-Style-Type" content="text/css">-->
+    <!--    <style>-->
+    <!--        @media print {-->
+    <!--            @page {-->
+    <!--                /* For different margins – use the standard CSS margin property: north, east, south, west, here it is one value */-->
+    <!--                margin: 0;-->
+
+    <!--                /* Browser default, customisable by the user if using the print dialogue. */-->
+    <!--                size: auto;-->
+
+    <!--                /* Different width and height. here using stated width="1000" height="500" can be px or pt or cm. For square, just use one value or use name like A6 landscape; note this is over-riding any above size: but we need to bump up for browser rounding*/-->
+    <!--                size: 1020px 520px;-->
+    <!--            }-->
+
+    <!--            body {-->
+    <!--                margin: 0;-->
+    <!--            }-->
+    <!--        }-->
+    <!--    </style>-->
+    <style media="print">
+        .no-print {
+            display: none;
+        }
+    </style>
+
 </head>
 <body>
 
 <!--Header filled in via JS-->
-<div id="header-section">
+<div id="header-section" class="no-print">
 </div>
 
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ MAIN CONTENT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 <div class="row current-theme">
-    <p>
+    <p class="no-print">
         Anmerkungen: Aktuelle Reihenfolge anhand von Informationen in Beispiel Pressemitteilung.
         Anpassung auf Abfrage nach Quelle (PM, Studie, Nachrichtenartikel) hin denkbar.
     </p>
 
-<!--        <div class="canvas-container">-->
-<!--            <canvas id="dotdisplay2"></canvas>-->
-<!--        </div>-->
-<!--    <i class="fa fa-solid fa-user"></i>-->
+    <!--        <div class="canvas-container">-->
+    <!--            <canvas id="dotdisplay2"></canvas>-->
+    <!--        </div>-->
+    <!--    <i class="fa fa-solid fa-user"></i>-->
 
     <div class="checklist-content">
         <!--    Entry 1-->
         <table>
             <tr>
-                <td class="nav-cell">
+                <td class="nav-cell no-print" >
                     <div class="checklist-nav">
                         <i class="fa fa-solid fa-chevron-up back-btn" style="rotate: -90deg"></i>
                     </div>
@@ -164,14 +191,15 @@
 
                     <div class="checklist-question" id="results-q">
 
-<!--                        [FAKTENBOX?]-->
+                        <!--                        [FAKTENBOX?]-->
 
                         <div class="split-content">
 
                             <div class="output-col number-output">
                                 <p><strong>Nutzen:</strong></p>
                                 <hr>
-                                <p>In der Behandlungsgruppe erkranken <span class="risk-info" id="risk-treat"></span></p>
+                                <p>In der Behandlungsgruppe erkranken <span class="risk-info" id="risk-treat"></span>
+                                </p>
                                 <p>In der Kontrollgruppe erkranken <span class="risk-info" id="risk-control"></span></p>
                                 <p>Absolute Risikoreduktion: <span class="risk-info" id="arr"></span></p>
                                 <p>Relative Risikoreduktion (Wirksamkeit): <span class="risk-info" id="rrr"></span></p>
@@ -196,13 +224,13 @@
                             </div>
                         </div>
 
-                        [ALLOW TO SAVE!]
+                        <button class="button-print-or-save-document checklist-button no-print">Ergebnis drucken</button>
                         <br>
                         [SPLIT THE ARRAY?]
                     </div>
 
                 </td>
-                <td class="nav-cell">
+                <td class="nav-cell no-print">
                     <div class="checklist-nav">
                         <i class="fa fa-solid fa-chevron-up continue-btn" style="rotate: 90deg"></i>
                     </div>
@@ -215,7 +243,7 @@
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ EOF MAIN CONTENT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 
 <!-- Footer -->
-<div class="footer"></div>
+<div class="footer no-print"></div>
 
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
