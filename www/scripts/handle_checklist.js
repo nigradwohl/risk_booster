@@ -4,19 +4,6 @@
 
 $(document).ready(function () {
 
-    // console.log("Test icon array");
-    // let tst2x2 = [[9700, 9850], [300, 150]];
-    //
-    // // Rescale:
-    // tst2x2 = tst2x2.map((x) => x.map((y) => y / 10))
-    // console.log(tst2x2);
-    //
-    // create_icon_array(
-    //     tst2x2[0][1], tst2x2[1][0],
-    //     tst2x2[1][0], tst2x2[1][1],
-    //     'dotdisplay2');
-    // // $("#dotdisplay2").show();
-
     console.log("Handle questions");
 
 
@@ -124,12 +111,13 @@ $(document).ready(function () {
             // Calculate the table if possible!
             if (entry_ix === q_order.length - 1) {
                 console.log("~~~~~~~~~~~~~~~~ Calculate table ~~~~~~~~~~~~~~~~");
+                // First index is condition, second index is treatment!
                 console.log(risk_numbers);
 
                 const ntab = new Basetable(
                     [
-                        [risk_numbers.n00, risk_numbers.n01],
-                        [risk_numbers.n10, risk_numbers.n11]],
+                        [risk_numbers.n00, risk_numbers.n01],  // no condition.
+                        [risk_numbers.n10, risk_numbers.n11]],  // condition.
                     [risk_numbers.msum0x, risk_numbers.msum1x],
                     [risk_numbers.msumx0, risk_numbers.msumx1],
                     risk_numbers.N_tot);
@@ -159,15 +147,26 @@ $(document).ready(function () {
                 console.log(group_risks);
                 $("#risk-treat").text(group_risks[1][1]);
                 $("#risk-control").text(group_risks[0][1]);
-                $("#arr").text(group_risks[0][1] - group_risks[1][1]);
-                $("#rrr").text(1 - group_risks[1][1] / group_risks[0][1]);
+                $("#arr").text(Math.round((group_risks[0][1] - group_risks[1][1]) * 1000) / 1000);
+                $("#rrr").text(Math.round((1 - group_risks[1][1] / group_risks[0][1]) * 1000) / 1000);
+                // Rounding can eventually be improved!
+
+                check_risk.ntab.get_N();  // calculate N if not provided.
+                console.log(`N is ${check_risk.ntab.N}`);
+
+                // Flexible scaling for large numbers:
+                let N_scale = 1;
+                if (check_risk.ntab.N > 100) {  // Determine useful maximum.
+                    N_scale = check_risk.ntab.N / 100
+                }
 
                 // Icon array:
-                const cur2x2 = check_risk.ntab.tab.tab2x2.map((x) => x.map((y) => y / 10));
+                const cur2x2 = check_risk.ntab.tab.tab2x2.map((x) => x.map((y) => Math.round(y / N_scale)));
+                console.log(cur2x2);
 
                 create_icon_array(
-                    cur2x2[0][1], cur2x2[1][0],
-                    cur2x2[1][0], cur2x2[1][1],
+                    cur2x2[0][1], cur2x2[1][1],  // treatment group.
+                    cur2x2[0][0], cur2x2[1][0],  // control group.
                     'dotdisplay');
                 $("#dotdisplay").show();
             }
@@ -176,6 +175,21 @@ $(document).ready(function () {
 
     })
 
+
+    // console.log("~~~~~~~~~ Test icon array ~~~~~~~~~~~");
+    // let tst2x2 = [[9700, 9850], [300, 150]];
+    //
+    // // Rescale:
+    // tst2x2 = tst2x2.map((x) => x.map((y) => Math.round(y / 20)));
+    // console.log(tst2x2);
+    //
+    // create_icon_array(
+    //     tst2x2[0][1], tst2x2[1][0],
+    //     tst2x2[1][0], tst2x2[1][1],
+    //     'dotdisplay2');
+    // $("#dotdisplay2").show();
+    //
+    // console.log("~~~~~~~~~ eof. test icon array ~~~~~~~~~~~");
 });
 
 // ~~~~~~~~~~~~~~~~ DICTIONARIES ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -205,7 +219,7 @@ q_inputs["n-treat-control"] = ["n-impf", "n-control"];
 console.log(q_inputs);
 
 /**
- * Dictionary to convert inputs to the numbers in the object.
+ * Dictionary to convert inputs to the numbers in the object. First index is condition, second index is treatment.
  */
 const id_to_num_dict = {
     "rel-risk-reduction": "rrr",
@@ -269,16 +283,22 @@ function create_icon_array(n1, n2, n3, n4, id) {
 
         // Create an array of types:
         // Determine number of rows:
-        // TODO: This could be optimally determined and the classes may be blocked like in riskyr.
-        const ncols = 35;  // Math.floor(n_dots / 10);  // n_dots % 10;  // remainder.
+        const ncols = Math.floor(Math.sqrt(n_dots));   // Math.floor(n_dots / 10);  // n_dots % 10;  // remainder.
         const remainder = n_dots % ncols;
-        const nrows = Math.floor(n_dots / ncols) + ((remainder > 0) ? Math.floor(remainder / 10) : 0);
+        const nrows = Math.ceil(n_dots / ncols);
 
         console.log(n_dots + " dots, " + nrows + " rows and " + ncols + " columns");
 
         // Create a vector of dot types:
         const type_vec = Array(n1).fill(1).concat(Array(n2).fill(2), Array(n3).fill(3), Array(n4).fill(4));
+        console.log("Type vec:");
         console.log(type_vec);
+
+        // Determine fontsize:
+        const fsize = "40px";
+        const maxdim = Math.max(ncols, nrows);
+        const wh = maxdim * 50;  // controls the area, the larger the smaller the icons appear.
+        // Increasing wh above the icons size creates a (relative) margin for each.
 
         // Pad any missing elements with empty elements?
 
@@ -287,18 +307,19 @@ function create_icon_array(n1, n2, n3, n4, id) {
         (function () {
 
             'use strict';
+
             var c = document.getElementById(id);
             // var t = document.getElementById('t');
             var ctx = c.getContext('2d');
             // NOTE: THESE CONTROL THE SIZE OF THE DOTS!
-            var w = c.width = 1000;  // window.innerWidth;
-            var h = c.height = 1000;  // window.innerHeight;
+            var w = c.width = wh;  // window.innerWidth;
+            var h = c.height = wh;  // window.innerHeight;
             // Fixed values ensure equal height and width of points.
-// current dots
+            // current dots
             var balls = [];
-            var total = n_dots;  // number of balls.
+            const total = n_dots;  // number of balls.
             // console.log("current noise: " + noise);
-            var bounce = -1;
+            const bounce = -1;
 
 
             // Add balls to the list and give them their direction:
@@ -313,14 +334,14 @@ function create_icon_array(n1, n2, n3, n4, id) {
 
                 balls.push({
                     // Initiate random positions:
-                    // x: Math.random() * w,
-                    // y: Math.random() * h
-                    x: (icol + 0.5) * w / 40,
-                    y: (irow + 0.5) * w / 40,
+                    // x: (icol + 0.5) * w / 40,  // the larger, the less spaced out.
+                    // y: (irow + 0.5) * h / 40,
+                    x: (icol + 0.5) * w / (maxdim + 2),  // the larger, the less spaced out.
+                    y: (irow + 0.5) * h / (maxdim + 2),
                     type: type_vec[i]
                 })
 
-                icol++;
+                icol++;  // Increment column.
 
 
             }
@@ -328,22 +349,35 @@ function create_icon_array(n1, n2, n3, n4, id) {
 // draw all balls each frame
             function draw() {
                 ctx.clearRect(0, 0, w, h);
-                var j, dot;
+                let j, dot;
+                console.log("The ball object:");
+                console.log(balls);
                 for (j = 0; j < total; j++) {
                     dot = balls[j];  // get the ball.
-                    ctx.beginPath();
-                    ctx.arc(dot.x, dot.y, 6, 0, Math.PI * 2, false);  // second parameter controls size.
+                    // ctx.beginPath();
+                    // ctx.arc(dot.x, dot.y, 6, 0, Math.PI * 2, false);  // second parameter controls size.
+                    // console.log(j);
                     // console.log(dot);
 
+                    // ctx.clearRect(0, 0, c.width, c.height);
+                    ctx.font = '900 ' + fsize + ' FontAwesome';  // For font awesome 5+: '900 48px "Font Awesome 5 Free"';
+                    // ctx.fillText('\uF007', dot.x, dot.y);  // use user icon.
+                    // https://stackoverflow.com/questions/63601531/draw-font-awesome-icons-to-canvas-based-on-class-names
+
                     // Define dot colors:
-                    const col_arr = ["#90f6d7", "#41506b", "#35bcbf", "#263849"];
+                    // const col_arr = ["#90f6d7", "#41506b", "#35bcbf", "#263849"];
+                    const col_arr = ["blue", "red", "green", "purple"];
                     ctx.fillStyle = col_arr[dot.type - 1];
+
+                    ctx.fillText(((dot.type % 2 === 0) ? "\uf119" : '\uf118'), dot.x, dot.y);  // smile or frown.
+                    // (dot.type % 2 === 0) ? ctx.stroke() : '';
+
 
                     // noise dots unfilled.
                     // ctx.fillStyle = "rgb(0,0,0)";
-                    ctx.fill();
-                    ctx.strokeStyle = 'black';  // stroke for those with noise.
-                    (dot.type % 2 === 0) ? ctx.stroke() : '';
+                    // ctx.fill();
+                    // ctx.strokeStyle = 'black';  // stroke for those with noise.
+                    // (dot.type % 2 === 0) ? ctx.stroke() : '';
                 }
 
             }

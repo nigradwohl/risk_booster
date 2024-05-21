@@ -158,7 +158,9 @@ class Basetable {
     // Function to get total number N:
     get_N(N){
         let N_tab = this.tab.sum_table();
-        return compare_vals(N, N_tab);
+        // console.log("Getting N");
+        // console.log(N_tab);
+        this.N = compare_vals(N, N_tab);
     }
 
     // Function to complete margins:
