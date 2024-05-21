@@ -153,22 +153,46 @@ $(document).ready(function () {
 
                 // Following the current definition this is the risk:
                 const group_risks = check_risk.ntab.tab.margin2_mean();
+                console.log("Risks in each group:");
                 console.log(group_risks);
 
-                // Translate to natural frequencies:
-                const curscale = 1000;  // fixed reference! Should eventually be so that the smallest number is detectable!
+                const group_risks_flat = group_risks.flat();
 
-                const risk_treat = group_risks[1][1];
-                const risk_control = group_risks[0][1];
-                const risk_treat_nh = risk_treat * curscale + " aus " + curscale;
-                const risk_control_nh = risk_control * curscale + " aus " + curscale;
+                // Translate to natural frequencies:
+                // const curscale = 1000;  // fixed reference! Should eventually be so that the smallest number is detectable!
+                const curscale = [100, 1000, 2000, 5000, 10000, 50000, 100000]
+                    .filter((x) => group_risks_flat.every((r) => (r * x) >= 5))[0];
+                    // Get the first reference for which the product is greater 1!
+                    // Altering this threshhold will lead to larger references (which may differentiate better!)
+                console.log("Curscale is " + curscale);
+
+                // Round the group risks
+
+                const risk_treat = Math.round(group_risks[1][1] * curscale) / curscale;
+                const risk_control = Math.round(group_risks[0][1] * curscale) / curscale;
+                const risk_treat_nh = Math.round(risk_treat * curscale) + " aus " + curscale;
+                const risk_control_nh = Math.round(risk_control * curscale) + " aus " + curscale;
 
                 // Risk reduction:
-                const arr = Math.round((group_risks[0][1] - group_risks[1][1]) * 1000) / 1000;
-                const arr_p = arr > 0.01 ? arr * 100 + "%" : (arr * curscale + " aus " + curscale);
+                // Absolute change in risk:
+                const arc = group_risks[0][1] - group_risks[1][1];  // risk change in favor of treatment group.
+                const meaning_arc = arc > 0 ? " weniger" : " mehr";
 
-                const rrr = Math.round((1 - group_risks[1][1] / group_risks[0][1]) * 1000) / 1000;
-                const rrr_p = rrr > 0.01 ? rrr * 100 + "%" : (rrr * curscale + " aus " + curscale);
+                const arr = Math.sign(arc) * Math.round(arc * curscale) / curscale;
+                const arr_p = // arr > 0.01 ? Math.round(arr * 100) + "%" :
+                    (Math.sign(arc) *  Math.round(arc * curscale) + " aus " + curscale + meaning_arc);
+
+                // Note: If the risk is negative, it corresponds to an increase!
+                const rrc = group_risks[1][1] / group_risks[0][1]; // relative risk change.
+                // How many times higher is the risk in the treatment group?
+
+                const rrr = Math.round((1 - rrc) * 1000) / 1000;
+                console.log("RRR is " + rrr);
+                const rr_factor = Math.abs(rrr) >= 2 ? 1 : 100;
+                const rrr_p = Math.round(Math.sign(arc) * rrr * rr_factor) +
+                    (rr_factor === 100 ? "% " : " mal ") +
+                    meaning_arc;
+                // For numbers greater than 2 "x mal mehr" may be more appropriate.
 
 
                 $("#risk-treat").text(risk_treat_nh);
@@ -181,18 +205,19 @@ $(document).ready(function () {
                 console.log(`N is ${check_risk.ntab.N}`);
 
                 // Flexible scaling for large numbers:
-                let N_scale = 1;
-                if (check_risk.ntab.N > 100) {  // Determine useful maximum.
-                    N_scale = check_risk.ntab.N / 100
+                let N_scale = curscale;
+                if (curscale > 1000) {  // Determine useful maximum.
+                    N_scale = 1000;
                 }
 
                 // Icon array:
-                const cur2x2 = check_risk.ntab.tab.tab2x2.map((x) => x.map((y) => Math.round(y / N_scale)));
+                // const cur2x2 = check_risk.ntab.tab.tab2x2.map((x) => x.map((y) => Math.round(y / N_scale)));
+                const cur2x2 = group_risks.map((x) => x.map((y) => Math.round(y * N_scale)));
                 console.log(cur2x2);
 
                 create_icon_array(
-                    cur2x2[0][1], cur2x2[1][1],  // treatment group.
-                    cur2x2[0][0], cur2x2[1][0],  // control group.
+                    cur2x2[1][0], cur2x2[1][1],  // treatment group.
+                    cur2x2[0][0], cur2x2[0][1],  // control group.
                     'dotdisplay');
                 $("#dotdisplay").show();
                 buttonPrintOrSaveDocument.addEventListener("click", printOrSave);  // allow saving.
