@@ -295,9 +295,10 @@ const q_order = [
     "n-treat-control",
     "n-total", "p-treat",
     "n-case",
-    "or-case",
-    "n-side",
-    "results"];
+    // "or-case",
+    // "n-side",
+    "results"
+];
 // ORDER WILL BE FLEXIBLE!
 
 /**
