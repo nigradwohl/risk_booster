@@ -1,18 +1,20 @@
 /*Stylefile with functional styles for the specific tasks*/
 /*NOTE: May eventually need to be split again*/
 
-.in-text-icon{
+.in-text-icon {
     font-size: 1.5em;
 }
 
-.in-text-icon.warning{
+.in-text-icon.warning {
     color: #8CA000;
     rotate: -90deg;
 }
-.in-text-icon.error{
+
+.in-text-icon.error {
     color: #B85042;
 }
-.in-text-icon.good{
+
+.in-text-icon.good {
     color: #1abc9c;
 }
 
@@ -126,8 +128,14 @@
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Styles for risk calculator ~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-.checklist-question{
+.checklist-question {
     display: none;
+}
+
+.checklist-qtext {
+    color: #666;
+    font-weight: bold;
+    font-size: 1.2em;
 }
 
 .canvas-container {
@@ -158,27 +166,30 @@ canvas {
     text-align: center;
 }
 
-.checklist-nav:hover{
+.checklist-nav:hover {
     font-weight: bold;
     cursor: pointer;
     text-shadow: 2px 2px 5px var(---checklist-shadow);
 }
 
 .checklist-question {
-    margin: 1em 2%;
-    flex: 60%;
+    margin: 0 auto;
+    /*flex: 100%;*/
     /*background-color: var(---checklist-question-bg);*/
     color: 2px var(---checklist-question-bg) solid;
     padding: 20px;
     border-radius: 5px;
     box-shadow: 2px 2px 5px var(---checklist-shadow);
     flex-direction: column;
-    min-width: 80%;
+    width: 500px;
 }
 
 .checklist-input {
     border-radius: 5px;
     line-height: 1.2em;
+    font-size: 1.2em;
+    padding: 5px;
+    max-width: 6em;
 }
 
 .checklist-button {
@@ -193,13 +204,13 @@ canvas {
 }
 
 .checklist-content {
-    margin: 0 auto;
+    margin: 1em auto;
 }
 
-.nav-cell{
+.nav-cell {
     width: 10%;
 }
 
-.content-cell{
+.content-cell {
     width: 80%;
 }
