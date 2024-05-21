@@ -162,8 +162,8 @@ $(document).ready(function () {
                 // const curscale = 1000;  // fixed reference! Should eventually be so that the smallest number is detectable!
                 const curscale = [100, 1000, 2000, 5000, 10000, 50000, 100000]
                     .filter((x) => group_risks_flat.every((r) => (r * x) >= 5))[0];
-                    // Get the first reference for which the product is greater 1!
-                    // Altering this threshhold will lead to larger references (which may differentiate better!)
+                // Get the first reference for which the product is greater 1!
+                // Altering this threshhold will lead to larger references (which may differentiate better!)
                 console.log("Curscale is " + curscale);
 
                 // Round the group risks
@@ -180,7 +180,7 @@ $(document).ready(function () {
 
                 const arr = Math.sign(arc) * Math.round(arc * curscale) / curscale;
                 const arr_p = // arr > 0.01 ? Math.round(arr * 100) + "%" :
-                    (Math.sign(arc) *  Math.round(arc * curscale) + " aus " + curscale + meaning_arc);
+                    (Math.sign(arc) * Math.round(arc * curscale) + " aus " + curscale + meaning_arc);
 
                 // Note: If the risk is negative, it corresponds to an increase!
                 const rrc = group_risks[1][1] / group_risks[0][1]; // relative risk change.
@@ -221,10 +221,36 @@ $(document).ready(function () {
                     'dotdisplay');
                 $("#dotdisplay").show();
                 buttonPrintOrSaveDocument.addEventListener("click", printOrSave);  // allow saving.
+
+                // Allow zooming into the canvas:
+                $("canvas").on("click", function () {
+                    // $(this).clone().appendTo(".canvas-zoom");
+                    create_icon_array(
+                        cur2x2[1][0], cur2x2[1][1],  // treatment group.
+                        cur2x2[0][0], cur2x2[0][1],  // control group.
+                        'dotdisplay-zoom');
+
+                    const mindim = Math.min(window.innerWidth, window.innerHeight);
+
+                    $(".canvas-zoom")
+                        .width(mindim)
+                        .height(mindim)
+                        .css("display", "flex");
+                    $("#dotdisplay-zoom").show();
+
+                    // $(window).on("click", function () {
+                    //     $(".canvas-zoom").hide();
+                    // })
+                })
             }
         }
 
 
+    })
+
+    // Close zoom:
+    $(".canvas-zoom").on("click", function () {
+        $(".canvas-zoom").hide();
     })
 
 
@@ -241,6 +267,7 @@ $(document).ready(function () {
         }
 
     })
+
 
     // console.log("~~~~~~~~~ Test icon array ~~~~~~~~~~~");
     // let tst2x2 = [[9700, 9850], [300, 150]];
