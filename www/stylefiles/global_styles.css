@@ -206,7 +206,11 @@ body {
 
 /* Main column */
 .number-output {
-    flex: 70%;
+    flex: 60%;
+}
+
+.figure-output {
+    flex: 40%;
 }
 
 .wiki-overview {

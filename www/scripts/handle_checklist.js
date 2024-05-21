@@ -145,10 +145,27 @@ $(document).ready(function () {
                 // Following the current definition this is the risk:
                 const group_risks = check_risk.ntab.tab.margin2_mean();
                 console.log(group_risks);
-                $("#risk-treat").text(group_risks[1][1]);
-                $("#risk-control").text(group_risks[0][1]);
-                $("#arr").text(Math.round((group_risks[0][1] - group_risks[1][1]) * 1000) / 1000);
-                $("#rrr").text(Math.round((1 - group_risks[1][1] / group_risks[0][1]) * 1000) / 1000);
+
+                // Translate to natural frequencies:
+                const curscale = 1000;  // fixed reference! Should eventually be so that the smallest number is detectable!
+
+                const risk_treat = group_risks[1][1];
+                const risk_control = group_risks[0][1];
+                const risk_treat_nh = risk_treat * curscale + " aus " + curscale;
+                const risk_control_nh = risk_control * curscale + " aus " + curscale;
+
+                // Risk reduction:
+                const arr = Math.round((group_risks[0][1] - group_risks[1][1]) * 1000) / 1000;
+                const arr_p = arr > 0.01 ? arr * 100 + "%" : (arr * curscale + " aus " + curscale);
+
+                const rrr = Math.round((1 - group_risks[1][1] / group_risks[0][1]) * 1000) / 1000;
+                const rrr_p = rrr > 0.01 ? rrr * 100 + "%" : (rrr * curscale + " aus " + curscale);
+
+
+                $("#risk-treat").text(risk_treat_nh);
+                $("#risk-control").text(risk_control_nh);
+                $("#arr").text(arr_p);
+                $("#rrr").text(rrr_p);
                 // Rounding can eventually be improved!
 
                 check_risk.ntab.get_N();  // calculate N if not provided.
@@ -336,8 +353,8 @@ function create_icon_array(n1, n2, n3, n4, id) {
                     // Initiate random positions:
                     // x: (icol + 0.5) * w / 40,  // the larger, the less spaced out.
                     // y: (irow + 0.5) * h / 40,
-                    x: (icol + 0.5) * w / (maxdim + 2),  // the larger, the less spaced out.
-                    y: (irow + 0.5) * h / (maxdim + 2),
+                    x: (icol + 0.25) * w / (ncols + 0.5),  // the larger, the less spaced out.
+                    y: (irow + 0.25) * h / (nrows + 0.5),
                     type: type_vec[i]
                 })
 

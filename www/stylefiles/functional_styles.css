@@ -139,8 +139,8 @@
 }
 
 .canvas-container {
-    width: 300px;
-    height: 300px;
+    /*width: 300px;*/
+    /*height: 300px;*/
     margin: 0 auto;
 }
 
@@ -157,6 +157,8 @@ canvas {
 .split-content {
     display: flex;
     flex-direction: row;
+    /*width: clamp(100%, 800px, 100%);*/
+    /*320px (can be 0 to X ) is the min-width you agree width, 600px the max-width you allow and 100% the limit not to pass.*/
 }
 
 .checklist-nav {
@@ -180,7 +182,7 @@ canvas {
     border-radius: 5px;
     box-shadow: 2px 2px 5px var(---checklist-shadow);
     flex-direction: column;
-    width: 500px;
+    /*max-width: 800px;*/
 }
 
 .checklist-input {
@@ -212,4 +214,10 @@ canvas {
 
 .content-cell {
     width: 80%;
+}
+
+.risk-info{
+    font-weight: bold;
+    color: #666;
+    display: block;
 }

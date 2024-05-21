@@ -168,16 +168,17 @@
 
                         <div class="split-content">
 
-                            <div>
+                            <div class="output-col number-output">
                                 <p><strong>Nutzen:</strong></p>
-                                <p>Risiko in der Behandlungsgruppe: <span id="risk-treat"></span></p>
-                                <p>Risiko in der Kontrollgruppe: <span id="risk-control"></span></p>
-                                <p>ARR: <span id="arr"></span></p>
-                                <p>RRR: <span id="rrr"></span></p>
+                                <hr>
+                                <p>In der Behandlungsgruppe erkranken <span class="risk-info" id="risk-treat"></span></p>
+                                <p>In der Kontrollgruppe erkranken <span class="risk-info" id="risk-control"></span></p>
+                                <p>Absolute Risikoreduktion: <span class="risk-info" id="arr"></span></p>
+                                <p>Relative Risikoreduktion (Wirksamkeit): <span class="risk-info" id="rrr"></span></p>
                             </div>
 
                             <!--    The results from providing numbers:-->
-                            <div class="output-col number-output">
+                            <div class="output-col figure-output">
 
                                 <div class="canvas-container">
                                     <canvas id="dotdisplay"></canvas>
@@ -196,6 +197,8 @@
                         </div>
 
                         [ALLOW TO SAVE!]
+                        <br>
+                        [SPLIT THE ARRAY?]
                     </div>
 
                 </td>
