@@ -223,7 +223,7 @@ $(document).ready(function () {
                 buttonPrintOrSaveDocument.addEventListener("click", printOrSave);  // allow saving.
 
                 // Allow zooming into the canvas:
-                $("canvas").on("click", function () {
+                $("canvas").on("click", function (e) {
                     // $(this).clone().appendTo(".canvas-zoom");
                     create_icon_array(
                         cur2x2[1][0], cur2x2[1][1],  // treatment group.
@@ -238,19 +238,17 @@ $(document).ready(function () {
                         .css("display", "flex");
                     $("#dotdisplay-zoom").show();
 
-                    // $(window).on("click", function () {
-                    //     $(".canvas-zoom").hide();
-                    // })
+                    // Allow clicking anywhere to close:
+                    e.stopPropagation();  // stop event propagation to avoid immediate hiding on click.
+                    $(window).on("click", function () {
+                        $(".canvas-zoom").hide();
+                        // $(this).unbind("click");
+                    });
                 })
             }
         }
 
 
-    })
-
-    // Close zoom:
-    $(".canvas-zoom").on("click", function () {
-        $(".canvas-zoom").hide();
     })
 
 
