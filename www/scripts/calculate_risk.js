@@ -149,7 +149,7 @@ class Basetable {
     // A basic table with margin sums:
     constructor(nested_list, msums1, msums2, N) {
         this.tab = new Table2x2(nested_list);
-        this.N = this.get_N(N);
+        this.get_N(N);
         this.msums1 = msums1;  // this.tab.margin1_sum();
         this.msums2 = msums2;  // this.tab.margin2_sum();
         // TODO: Eventually compare them with provided info?
