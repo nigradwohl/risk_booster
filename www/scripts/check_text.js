@@ -728,7 +728,7 @@ const key_obj = {
 // },
 
 // Additional set for vaccination topic:
-const keyset_impf = [[RegExp(collapse_regex_or(["([Ww]irk(sam|t))", "[Ee]ffektiv"]))]];
+const keyset_impf = [[RegExp(collapse_regex_or(["([Ww]irk(sam|t))", "[Ee]ffektiv", "[Ss]ch[uü]tz"]))]];
 
 
 // Detect the matches in token set:
