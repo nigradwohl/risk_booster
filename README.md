@@ -12,30 +12,40 @@ and is liked from the other parts.
 
 Features are sorted by importance and are further split by features that should be implemented soon and those that may be implemented at a later point in time.
 
+## General 
+
+* Handle treatment case  
+
+### Nice to have 
+
+* Life-risks 
+
 ## Text-checking tool 
 
-### Important 
-
 * Improve global feedback by restructuring it and making it perceptually easier
+    + also add links to wiki 
 * Increase the number of test-texts that are successfully handled
+    + also handle number words
+    + detect absolute risk reductions (e.g., smaller percentages, percentage points)
+* Adapt the highlighting to potentially critical numbers (e.g., relative risk reductions) 
 * Handle margins for tooltips 
 
 ### Nice to have
 
-* try again to catch unidentified numbers after current iterations
+* handle other topics (especially feedback) 
+* try again to catch unidentified numbers after current iterations 
+
 
 ## Checklist
 
-### Important 
-
-* Create one functional checklist, including output of transparent statistics and a simple visualization 
+* Create one functional checklist
+    + improve calculations (from relative) 
+    + hide redundant questions 
 
 ### Nice to have
 
 ## Wiki
-
-### Important 
-
+* 
 * Decide on the central entries and fill them with information 
 
 ### Nice to have

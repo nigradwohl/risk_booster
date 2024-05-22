@@ -151,6 +151,8 @@ $(document).ready(function () {
         const regex_matches = detect_regex_match(inputText, token_dat, check_numbers_dict);
 
 
+
+
         // Text-level: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Add information to object:
         token_dat.add_column(regex_matches.match_id, "match");
@@ -178,7 +180,40 @@ $(document).ready(function () {
         // Detect number types (may eventually need the topics to inform context names!):
         token_dat.detect_number_type(inputText);
 
-        // Context detection:
+        // Context detection: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        // Get rid of non-numbers (tokens that still contain incorrect patterns):
+        const nonumpat = RegExp("\w*-?" + pat_num, "dg");
+        token_dat.is_num = token_dat.is_num.map((x, ix) => x && !token_dat.token[ix].search(nonumpat));
+
+        // Detect missing units:
+        console.log(" +++ detecting missing units +++");
+        const no_unit_ix = token_dat.id.filter((d, ix) => token_dat.is_num[ix] && token_dat.unit[ix] === "unknown");
+        console.log(no_unit_ix);
+        const new_units = investigate_context(token_dat, no_unit_ix, window_keys.units);
+        console.log(new_units);
+        // Replace the missing units:
+        let ix = -1;
+        for(let i = 0; i < no_unit_ix.length; i++){
+            ix = no_unit_ix[i];
+            token_dat.unit[ix] = new_units[ix];
+        }
+
+        // Detect number words:
+        // ++++ HERE NOW +++
+        // python: https://github.com/IBM/wort-to-number
+        const pat_numwords = RegExp(collapse_regex_or(
+            ["[Ee]in", "[Zz]wei", "[Dd]rei"]), "dg");
+        const numwords_ix = token_dat.id.filter((x) => pat_numwords.test(token_dat.token[x]));
+        // Investigate these tokens further!
+        const numword_arr = investigate_context(token_dat, numwords_ix,
+            {"numword_keys": RegExp(collapse_regex_or(["Verl[aä]uf"]))});
+        console.log("+++ Get numwords +++");
+        console.log(pat_numwords);
+        console.log(numwords_ix);
+        console.log(numword_arr);
+        // Rather do reverse search? Search for "Verläufe", "Erkrankungen" etc.
+
 
         // NOTE: May also be applied to numbers that could not be identified so far!
 
@@ -203,8 +238,8 @@ $(document).ready(function () {
             .map((ntype, ix) => token_dat.unit[ix] === "perc" && ntype.toString() === "other" ? "ABS" : ntype);
 
 
-        console.log("Index of numbers with subgroup:");
-        console.log(n_subgroup_ix);
+        // console.log("Index of numbers with subgroup:");
+        // console.log(n_subgroup_ix);
 
         // Replace subgroup info:
         // TODO: Here we should eventually create informative labels for the tooltips!
@@ -298,71 +333,112 @@ $(document).ready(function () {
 
         let notes_html = "";  // initialize notes.
 
+        // ~~~~~~~~~ TOPICS ~~~~~~~~~~~~~~~
         // Notes about topics:
         const key_topic_dict = {
             "impf": "Impfung",
             "cancer_risk": "Krebsrisiko",
             "lower_risk": "Risikominderung"
         };  // {"impf": "Impfung", "eff": "Wirksamkeit", "side": "Nebenwirkungen"};
-        let key_topics = [];
         let key_topics_str = "";
 
-        // Notes about features (presence of effectivity and harm; reporting of comparison group):
-        const feature_dict = {
-            "eff": "Nutzen", "side": "Schaden",
-            "treatgroup": "Behandlungsgruppe", "controlgroup": "Kontrollgruppe"
-        };
-        let feature_arr = [];  // initialize array to be filled.
-
         // Get the content-topics:
-        // Maybe differentiate this in a text-object!
-        for (const topic of token_dat.topics) {
-            // Topics:
-            let curtopic = key_topic_dict[topic];
-
-            if (curtopic !== undefined) {
-                key_topics = key_topics.concat(curtopic);
-            }
-
-            // Features:
-            let curfeature = feature_dict[topic];
-            if (curfeature !== undefined) {
-                feature_arr = feature_arr.concat(topic);
-            }
-
-        }
-
-        // console.log(key_topics);
+        const key_topics = Object.keys(key_topic_dict).filter((x) => token_dat.topics.includes(x));
 
         const n_topics = key_topics.length;
-        const n_features = feature_arr.length;
         let norisk = false;
 
         if (n_topics === 1) {
-            key_topics_str += "Dieser Text behandelt das Thema " + key_topics[0]
+            key_topics_str += "Dieser Text behandelt das Thema " + key_topic_dict[key_topics[0]];
         } else if (n_topics > 1) {
 
             key_topics_str += "Dieser Text behandelt die Themen "
-
-            for (i = 0; i < n_topics; i++) {
-                if (i < n_topics - 1) {
-                    key_topics_str += key_topics[i] + (i === n_topics - 2 ? " und " : ", ");
-                } else {
-                    key_topics_str += key_topics[i] + ".";
-                }
-
-            }
+            key_topics_str += combine_str_arr(key_topics.map((x) => key_topic_dict[x]));
 
         } else {
             key_topics_str = "Das Thema dieses Textes konnte keinem Thema der Risikokommunikation zugeordnet werden.";
             norisk = true;
         }
 
-        // Notes about features (e.g., effectivity and side-effects):
-        console.log("Feature array:");
-        console.log(feature_arr);
+
+        // ~~~~~~~~~~ FEATURES ~~~~~~~~~~~~~~~~
+
+        // Notes about features (presence of effectivity and harm; reporting of comparison group):
+        const feature_dict = {
+            "eff": "Nutzen", "side": "Schaden",
+            "treat": "Behandlungsgruppe", "contr": "Kontrollgruppe"
+        };
+        // let feature_arr = [];  // initialize array to be filled.
+
 
         let feature_list = "";
+
+        /*
+        Tests happen on 3 levels:
+        1. Global text level: do certain keywords exist? (currently in OBJECT.topics)
+        2. Global number level: do we have any numeric information on simple topics? (eff, side...)
+        3. Local number level (interactions): are there numbers meeting multiple criteria (e.g., eff, eff x treatment)
+         */
+
+        let text_features = [];  // empty array for text features.
+
+        // Get numbers related to risk communication for 2. and 3.:
+        const risknum_ix = token_dat.id
+            .filter((x) => ["perc", "case", "nh", "multi"].includes(token_dat.unit[x]) && token_dat.is_num[x]);
+        console.log("Risknum indices:");
+        console.log(risknum_ix);
+
+        // Get each of these rows:
+        const risknum_rows = risknum_ix.map((x) => token_dat.get_row(x));
+        const risknums_flat = risknum_rows.flat();
+
+        function check_any_arr(arrs, check_arr){return arrs.some((arr) => check_arr.every((x) => arr.includes(x)))};
+
+        // 1. and 2. Global tests: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // List of keys; decide for each true/false and keep those that are true!
+        const txtfeat_dict = {
+            "any_risknum": risknum_ix.length > 0,
+            "eff_num": risknums_flat.includes("eff"),
+            "side_num": risknums_flat.includes("side"),
+            "treat_num": risknums_flat.includes("treatment"),
+            "contr_num": risknums_flat.includes("control"),
+            // Interactions:
+            "eff_treat_num": check_any_arr(risknum_rows, ["eff", "treatment"]),
+            "side_treat_num": check_any_arr(risknum_rows, ["side", "treatment"]),
+            "eff_contr_num": check_any_arr(risknum_rows, ["eff", "control"]),
+            "side_contr_num": check_any_arr(risknum_rows, ["side", "control"]),
+            "eff": this.eff_num || token_dat.topics.includes("eff"),
+            "side": this.side_num || token_dat.topics.includes("side"),
+            "treat": this.treat_num || token_dat.topics.includes("treatgroup"),
+            "contr": this.contr_num || token_dat.topics.includes("controlgroup"),
+            // Specific number info:
+            "rel": ["REL", "mult"].some((x) => token_dat.numtype.includes(x)),  // tests if one of the elements exists.
+            "rel_only": this.rel && !token_dat.numtype.includes("ABS") &&
+                // Is there a row that fulfills both criteria?
+                !check_any_arr(risknum_rows, ["case", "subgroup"]),
+        };
+
+
+        console.log("~~~~~~~~~~~~ Text features: ~~~~~~~~~~~~~~~~");
+        console.log(txtfeat_dict);
+
+        // Turn keys into array:
+        const feature_arr = Object.entries(txtfeat_dict)
+            .map(([key, value]) => value ? key : false)
+            .filter(x => x);
+
+        console.log(feature_arr);
+
+
+        console.log("~~~~~~~~~~~~ Feedback on features: ~~~~~~~~~~~~~~~~");
+
+        // Example feedback set:
+        // Feedback as table etc?
+
+
+        // ++++ HERE NOW +++
+        console.log("+++ HERE NOW +++");
+
 
         // Feature sets for testing:
         const feature_set = {
@@ -371,7 +447,7 @@ $(document).ready(function () {
                 "zumzur": "zum "
             },
             "treat_control": {
-                "fset": ["treatgroup", "controlgroup"],
+                "fset": ["treat", "contr"],
                 "zumzur": "zur "
             }
         }
@@ -402,8 +478,6 @@ $(document).ready(function () {
                 feature_str += " werden weder Informationen zu " + value.fset.map((key) => feature_dict[key]).join(" noch " + value.zumzur) + " berichtet.";
             }
 
-            // feature_str += (feats_missing.length === 0 ? ("Sehr gut! <i class=\"fa fa-thumbs-up in-text-icon\"></i>") : "");
-
 
             // Add to string:
             feature_list += "<li>" + feature_str + "</li>";
@@ -417,76 +491,45 @@ $(document).ready(function () {
         if (any_risk_num.length > 0) {
             feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> Der Text scheint Zahlen zu den genannten Risiken zu berichten. </li><li>";
 
-            // Differentiate: Does it report numbers only about effectivity? Also about side effects?
-            const eff_num = token_dat.n_effside.includes("eff");
-            const side_num = token_dat.n_effside.includes("side");
-
-            if (eff_num && side_num) {
-                feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> " +
-                    "Sowohl zur Effektivität, als auch zu Nebenwirkungen wurden Zahlen angegeben."
-            } else if (eff_num || side_num) {
-                feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> " +
-                    "Zahlen wurden leider nur zu" +
-                    (eff_num ? "r Effektivität" : " Nebenwirkungen") +
-                    " angegeben."
-            } else {
-                feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> " +
-                    "Die Zahlen beziehen sich leider nicht auf Effektivität oder Nebenwirkungen."
-            }
-
 
             // Differentiate numbers for control and treatment group:
             // Do numbers apply to treatment and control group
             // (or: affected and general population for other risks)
-            // const trt_num = token_dat.n_trtctrl.includes("treatment");
-            // const ctrl_num = token_dat.n_trtctrl.includes("control");
-            let trt_eff_num = false;
-            let trt_side_num = false;
-            let control_eff_num = false;
-            let control_side_num = false;
 
-            trt_eff_num = token_dat.n_trtctrl
-                .filter((x, ix) => x === "treatment" &&
-                    token_dat.n_effside[ix] === "eff")
+            // Differentiate: Does it report numbers only about effectivity? Also about side effects?
+            const eff_num = feature_arr.includes("eff_num");
+            const side_num = feature_arr.includes("side_num");
 
-            control_eff_num = token_dat.n_trtctrl
-                .filter((x, ix) => x === "control" &&
-                    token_dat.n_effside[ix] === "eff")
+            if (eff_num && side_num) {
+                feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> " +
+                    "Sowohl zum Nutzen, als auch zum Schaden wurden Zahlen angegeben."
+            } else if (eff_num || side_num) {
+                feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> " +
+                    "Zahlen nur zu" +
+                    (eff_num ? "r Nutzen" : " Schaden") +
+                    " angegeben."
+            } else {
+                feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> " +
+                    "Die Zahlen scheinen sich leider weder auf Nutzen naoch auf Schaden zu beziehen."
+            }
 
-            trt_side_num = token_dat.n_trtctrl
-                .filter((x, ix) => x === "treatment" &&
-                    token_dat.n_effside[ix] === "side")
-
-            control_side_num = token_dat.n_trtctrl
-                .filter((x, ix) => x === "control" &&
-                    token_dat.n_effside[ix] === "side")
 
             feature_num += "</li><li>";
 
             // Die Wirksamkeit wird (nicht) mit Zahlen aus Behandlungs- und Kontrollgruppe belegt.
             // Nebenwirkungen werden nicht für Behandlungs- und Kontrollgruppe angegeben
-            let arr_eff_both = trt_eff_num.length > 0 && control_eff_num.length > 0 ? ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>", "nicht "];
-            let arr_side_both = trt_side_num.length > 0 && control_side_num.length > 0 ? ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>", "nicht "];
+            let arr_eff_both = feature_arr.includes("eff_treat_num") && feature_arr.includes("eff_contr_num") > 0 ? ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>", "nicht erkennbar "];
+            let arr_side_both = feature_arr.includes("side_treat_num") && feature_arr.includes("side_contr_num") ? ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>", "nicht erkennbar "];
 
 
-            feature_num += arr_eff_both[0] + " Die Wirksamkeit wird " + arr_eff_both[1] + "mit Zahlen für Behandlungs- und Kontrollgruppe belegt</li><li>";
-            feature_num += arr_side_both[0] + " Nebenwirkungen werden " + arr_side_both[1] + "für Behandlungs- und Kontrollgruppe angegeben";
-
-            // if (trt_num && ctrl_num) {
-            //     feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> " +
-            //         "Sowohl zu den Risiken in der Behandlungsgruppe, als auch der Kontrollgruppe wurden Zahlen angegeben."
-            // } else if (trt_num || ctrl_num) {
-            //     feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> Zahlen wurden leider nur zur " +
-            //         (trt_num ? "Behandlungs" : "Kontroll") + "gruppe" +
-            //         " angegeben."
-            // } else {
-            //     feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> Es werden keine Zahlen zu Behandlungs- oder Kontrollgruppe berichtet."
-            // }
-
+            feature_num += arr_eff_both[0] + " Der Nutzen wird " + arr_eff_both[1] + "mit Zahlen für Behandlungs- und Kontrollgruppe belegt</li><li>";
+            feature_num += arr_side_both[0] + " Die Schadenwirkung wird " + arr_side_both[1] + "für Behandlungs- und Kontrollgruppe angegeben";
+            // Rather "Nur für" oä.
 
         } else {
             // ONLY NUMBERS: ~~~~~~~~~~~~~~~~~~~~~~~~
-            feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> Der Text scheint keine Zahlen zu den Risiken zu berichten. " +
+            feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> " +
+                "Der Text scheint keine Zahlen zu den Risiken zu berichten. " +
                 "Rein verbale Beschreibungen sollten vermieden werden. [LINK WIKI!]" +
                 "Bitte versuchen Sie Zahlen zu berichten.";
         }
@@ -584,14 +627,14 @@ Other formats to detect: Odds ratio, ARR/RRR, NNT...
 const pat_num = "(?:(?<![\\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,:][0-9]+)?))(?!\\\.[0-9A-Za-zÄÖÜäöüß]|[a-zA-Z0-9ÄÖÜäöüß])"
 
 const regex_num = new RegExp("(?<unknown>" + pat_num + ")", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
-const regex_perc = new RegExp("(?<perc>" + pat_num + " ?(%|\\\-?[Pp]rozent\\\w*(?=[\\s.?!]))" + ")", "dg");
+const regex_perc = new RegExp("(?<perc>" + pat_num + " ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.?!])" + ")", "dg");
 const regex_nh = new RegExp("(?<nh>" + pat_num + " (von|aus) " + pat_num + ")", "dg");
 const regex_multi = new RegExp("(?<multi>" + pat_num + "[ \\-]?([Mm]al|[Ff]ach) (so )?( ?viele|groß|hoch|niedrig|besser)(?=[\\s.?!])" + ")", "dg");
 // Note: in regex_nh we may also try to get the denominator as a group or as its own entity.
 // nh must also be identified from tokens (e.g., In der Gruppe von 1000[case] Leuten sterben 4[num/case].
 
 // Define units to not consider further:
-const units_exc = ["age", "currency", "time", "date", "year", "duration", "legal"];
+const units_exc = ["age", "currency", "time", "date", "year", "duration", "legal", "misc"];
 
 /*
 Tests for simple units:
@@ -618,6 +661,9 @@ const check_numbers_dict = {
     },
     "multi2": {
         "regex": /(?<multi>([Hh]alb|[Dd]oppelt|[Dd]reifach|[Dd]reimal) so( ?viele|groß|hoch|niedrig|besser))/dg
+    },
+    "pval": {
+        "regex": RegExp("(?<pval>p ?[\\<\\=] ?" + pat_num + ")", "dg")
     },
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Simple matches:
@@ -655,6 +701,13 @@ const check_numbers_dict = {
     "carry_forward_post": {
         "regex": RegExp("(?<ucarryforward>" + pat_num + " (waren|sind) es)", "dg")
     },
+    "misc": {
+        // MIscellaneous numbers to be excluded!
+        "regex": RegExp("(?<misc>" + pat_num + "\\.? Grad)", "dg")
+    },
+    // "within_nums": {
+    //   "regex": RegExp("(?<misc>" +"\w*-?" + pat_num + ")", "dg")
+    // },
     // Default number match:
     "other_num": {
         "regex": regex_num,
@@ -720,7 +773,7 @@ const key_obj = {
 // },
 
 // Additional set for vaccination topic:
-const keyset_impf = [[RegExp(collapse_regex_or(["([Ww]irk(sam|t))", "[Ee]ffektiv"]))]];
+const keyset_impf = [[RegExp(collapse_regex_or(["([Ww]irk(sam|t))", "[Ee]ffektiv", "[Ss]ch[uü]tz"]))]];
 
 
 // Detect the matches in token set:
@@ -790,6 +843,12 @@ const unit_note_dict = {
             return "Der Text enthält relative Vergleiche (10-mal so groß, halb so groß)." +
                 "Bitte achten Sie darauf, auch die absoluten Risiken in jeder Gruppe anzugeben -- am besten als natürliche Häufigkeit " +
                 "(z.B., unter denen ohne Impfung steckten sich 2 aus 1000 an unter den geimpften nur 1 aus 1000)."
+        }
+    },
+    "pval": {
+        "tooltip": {"other": "P-Wert"},
+        "note": function (type_arr) {
+            return "Der Text enthält p-Werte. Diese sind leicht missverständlich und sollten vermieden werden."
         }
     },
     // Unidentified matches:
@@ -1008,7 +1067,7 @@ function get_token_data(text) {
         // console.log(token_rex);
 
         // Set index to search from to previous index:
-        token_rex.lastIndex = tpos_end[tpos_end.length-1];  // tpos_start[ix_prev] + text_tokens[ix_prev].length;
+        token_rex.lastIndex = tpos_end[tpos_end.length - 1];  // tpos_start[ix_prev] + text_tokens[ix_prev].length;
         curpos = token_rex.exec(text).index;
 
         // Save start and end positions of token:
@@ -1167,8 +1226,8 @@ function detect_number_type(token_data, txt) {
 
                 for (const [key, value] of Object.entries(key_obj)) {
 
-                    console.log(`Data judged for key ${key}:`);
-                    console.log(`Token: ${token_data.token[curnum_id]}, Unit: ${token_data.unit[curnum_id]}`);
+                    // console.log(`Data judged for key ${key}:`);
+                    // console.log(`Token: ${token_data.token[curnum_id]}, Unit: ${token_data.unit[curnum_id]}`);
                     // console.log(value);
 
                     // Check for the number type to select whether the number type (cases, percentage...) applies:
@@ -1273,7 +1332,7 @@ const window_keys = {
         // Types of subgroups:
         "control": RegExp(collapse_regex_or(["Kontroll-?\\w*[Gg]ruppe", "Placebo-?\\w*[Gg]ruppe"]), "dg"),
         "treatment": RegExp(collapse_regex_or(["[Gg]eimpfte?n?", "Impf-?\\w*[Gg]ruppe",
-        "[Tt]eilnehmer|Probanden.*Impfung"]), "dg"),
+            "[Tt]eilnehmer|Probanden.*Impfung"]), "dg"),
         "all": RegExp(collapse_regex_or(["[Tt]eilnehmer", "Probanden"]), "dg")
     },
     "effside": {
@@ -1295,6 +1354,9 @@ const window_keys = {
     "verbs": {
         // Verbs:
         "ill": RegExp(collapse_regex_or(["erkrank(t|en)", "Verl[äa]uf"]), "dg")
+    },
+    "units": {
+        "case": RegExp(collapse_regex_or(["Proband", "Teilnehm"]), "dg")
     }
 
 }
@@ -1701,9 +1763,9 @@ function detect_regex_match(txt, token_dat, check_dict) {
         // Match end must be smaller or equal to token end and larger than token start
         // Search from the back!
         let match_end = token_dat.end.findLastIndex(x => x <= (match.start_end[1] - 1) && x > match.start_end[0]);
-
-        console.log("Match start and end: " + match_start + ", " + match_end);
-        console.log(match);
+        //
+        // console.log("Match start and end: " + match_start + ", " + match_end);
+        // console.log(match);
 
         // If one of the idices can be found:
         if (match_start !== -1 || match_end !== -1) {
@@ -1936,6 +1998,27 @@ function collapse_regex_or(key_list) {
     }
 
     return keystr;
+}
+
+/**
+ * Combine an array into a string that is separated by commas or and, based on its length.
+ * @return {String} Returns a string separated as an enumeration.
+ * @param arr {Array} An array of strings.
+ */
+function combine_str_arr(arr) {
+    const arr_len = arr.length;
+    let output = "";
+
+    for (let i = 0; i < arr_len; i++) {
+        if (i < arr_len - 1) {
+            output += arr[i] + (i === arr_len - 2 ? " und " : ", ");
+        } else {
+            output += arr[i] + ".";
+        }
+
+    }
+
+    return output;
 }
 
 // ~~~~~~~~~~~~~~~~~~~~ Unused functionality ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
