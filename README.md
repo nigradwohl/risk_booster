@@ -12,9 +12,15 @@ and is liked from the other parts.
 
 Features are sorted by importance and are further split by features that should be implemented soon and those that may be implemented at a later point in time.
 
-## Text-checking tool 
+## General 
 
-### Important 
+* Handle treatment case  
+
+### Nice to have 
+
+* Life-risks 
+
+## Text-checking tool 
 
 * Improve global feedback by restructuring it and making it perceptually easier
     + also add links to wiki 
@@ -26,20 +32,20 @@ Features are sorted by importance and are further split by features that should 
 
 ### Nice to have
 
-* try again to catch unidentified numbers after current iterations
+* handle other topics (especially feedback) 
+* try again to catch unidentified numbers after current iterations 
+
 
 ## Checklist
 
-### Important 
-
-* Create one functional checklist, including output of transparent statistics and a simple visualization 
+* Create one functional checklist
+    + improve calculations (from relative) 
+    + hide redundant questions 
 
 ### Nice to have
 
 ## Wiki
-
-### Important 
-
+* 
 * Decide on the central entries and fill them with information 
 
 ### Nice to have
