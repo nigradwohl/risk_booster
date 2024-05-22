@@ -1,5 +1,4 @@
-$(document).ready(function(){
-
+$(document).ready(function () {
 
 
     console.log("App started");
@@ -28,7 +27,7 @@ $(document).ready(function(){
     // Basic tables:
     const ntab = new Basetable([[NaN, NaN], [NaN, 141]], [NaN, NaN], [NaN, NaN], 32449);
     const ptab = new Basetable(na_tab, [NaN, 0.67], [NaN, NaN], 1);
-    const mtab1 = new Margintable(na_tab, [NaN, 1-0.79], [NaN, NaN]);
+    const mtab1 = new Margintable(na_tab, [NaN, 1 - 0.79], [NaN, NaN]);
     const mtab2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
 
     const testcase = new RiskCollection(ntab, ptab, mtab1, mtab2);
@@ -101,7 +100,7 @@ class RiskCollection {
     }
 
     // Method to combine information in ntab and ptab:
-    n_from_p(){
+    n_from_p() {
         console.log("n from p");
         let refsums = Object.assign([], this.ntab.msums1);
         this.ntab.msums1 = this.ptab.msums1.map(val => Math.round(val * this.ntab.N));
@@ -115,7 +114,7 @@ class RiskCollection {
 
 
     // Method to try and complete the set:
-    try_completion(){
+    try_completion() {
         // Clone reference tables to compare:
         // https://www.freecodecamp.org/news/clone-an-object-in-javascript/  on cloning...
         let reftab_n = Object.assign([], this.ntab.tab.tab2x2);
@@ -123,6 +122,7 @@ class RiskCollection {
 
         let nchange = 0;
 
+        nchange += this.ntab.get_N();
         nchange += this.ptab.complete_margins();  // calculate margin sums.
         nchange += this.n_from_p();  // get numbers from probabilities.
         nchange += this.ntab.complete_table();  // try to complete the table.
@@ -143,19 +143,9 @@ class RiskCollection {
     }
 
     // Update by array index:
-    update_by_arr(arr, val){
-        let expr = "this";
-        // Create a string expression:
-        for(const curkey of arr){
-            // Ensure that ALL keys are quoted (seems to work for arrays, too!)
-            let strkey = String(curkey);
-            strkey = (!["\"", "\'"].includes(strkey[0]) ? "\"" : "") +
-                strkey +
-                (!["\"", "\'"].includes(strkey[strkey.length]) ? "\"" : "");
-            expr += `[${strkey}]`
-        }
+    update_by_arr(arr, val) {
 
-        expr += ` = ${val}`;  // add target value.
+        const expr = "this" + get_expression(arr) + ` = ${val}`;  // add target value.
         console.log(expr);
 
         try {
@@ -165,6 +155,28 @@ class RiskCollection {
         }
 
     }
+
+    get_by_arr(arr) {
+        const expr = "this" + get_expression(arr);
+        console.log("Get expression " + expr);
+        return eval(expr);
+    }
+}
+
+function get_expression(arr) {
+    // Create a string expression:
+    let expr = "";
+
+    for (const curkey of arr) {
+        // Ensure that ALL keys are quoted (seems to work for arrays, too!)
+        let strkey = String(curkey);
+        strkey = (!["\"", "\'"].includes(strkey[0]) ? "\"" : "") +
+            strkey +
+            (!["\"", "\'"].includes(strkey[strkey.length]) ? "\"" : "");
+        expr += `[${strkey}]`
+    }
+
+    return expr;
 }
 
 
@@ -173,36 +185,46 @@ class Basetable {
     // A basic table with margin sums:
     constructor(nested_list, msums1, msums2, N) {
         this.tab = new Table2x2(nested_list);
-        this.get_N(N);
         this.msums1 = msums1;  // this.tab.margin1_sum();
         this.msums2 = msums2;  // this.tab.margin2_sum();
         // TODO: Eventually compare them with provided info?
+        this.N = N;
+
+        this.get_N();
     }
 
     // Function to get total number N:
-    get_N(N){
+    get_N() {
         let N_tab = this.tab.sum_table();
         // console.log("Getting N");
         // console.log(N_tab);
-        this.N = compare_vals(N, N_tab);
+
+        // If not caclulable get from margins:
+        if(isNaN(N_tab)){
+
+            N_tab = compare_vals(this.msums1.flat().reduce((d, i) => d + i),
+                this.msums2.flat().reduce((d, i) => d + i));
+        }
+
+        this.N = compare_vals(this.N, N_tab);
     }
 
     // Function to complete margins:
-    complete_margins(){
+    complete_margins() {
         // TODO: Don't do this if all values are NA!
 
         const nonmissings_m1 = this.msums1.reduce((d, i) => d + !isNaN(i), 0);
         const nonmissings_m2 = this.msums2.reduce((d, i) => d + !isNaN(i), 0);
         let repval = -99;
 
-        if(nonmissings_m1 > 0){
+        if (nonmissings_m1 > 0) {
             repval = this.N - this.msums1.reduce((d, i) => d + (isNaN(i) ? 0 : i), 0);
             this.msums1 = this.msums1.map(val => isNaN(val) ? repval : val);
         }
 
 
         // Transposed variant:
-        if(nonmissings_m2 > 0){
+        if (nonmissings_m2 > 0) {
             repval = this.N - this.msums2.reduce((d, i) => d + (isNaN(i) ? 0 : i), 0);
             this.msums2 = this.msums2.map(val => isNaN(val) ? repval : val);
         }
@@ -214,7 +236,7 @@ class Basetable {
 
 
     // Function to complete the table based on the available information *within* the table:
-    complete_table(){
+    complete_table() {
         const nmiss = this.tab.count_missings();
         let curtab = this.tab.tab2x2;
         let repval = NaN;
@@ -224,20 +246,20 @@ class Basetable {
         // console.log(transpose(transpose(curtab)));  // tweak the printout!
 
         // Check if can be completed with N:
-        if(nmiss === 1){
+        if (nmiss === 1) {
             // Define the replacement value:
             repval = this.N - this.tab.sum_table(true);
 
             // Replace the NaN value:
-            for(let i = 0; i < 2; i++){
+            for (let i = 0; i < 2; i++) {
                 curtab[i] = curtab[i].map(val => isNaN(val) ? repval : val);
             }
         } else {
             // Check if can be completed based on margin sums:
-            for(let i = 0; i < 2; i++){
+            for (let i = 0; i < 2; i++) {
                 // If only one is missing:
                 let nmiss_col = curtab[i].reduce((d, i) => d + isNaN(i), 0);
-                if(nmiss_col === 1){
+                if (nmiss_col === 1) {
                     let repval = this.msums1[i] - curtab[i].reduce((d, i) => d + (isNaN(i) ? 0 : i), 0);
                     // console.log(this.msums1[i] - curtab[i].reduce((d, i) => d + (isNaN(i) ? 0 : i), 0));
                     curtab[i] = curtab[i].map(val => isNaN(val) ? repval : val);
@@ -247,9 +269,9 @@ class Basetable {
 
             // For margin 2 transpose and re-transpose:
             curtab = transpose(this.tab.tab2x2);
-            for(let i = 0; i < 2; i++){
+            for (let i = 0; i < 2; i++) {
                 let nmiss_col = curtab[i].reduce((d, i) => d + isNaN(i), 0);
-                if(nmiss_col === 1){
+                if (nmiss_col === 1) {
                     let repval = this.msums2[i] - curtab[i].reduce((d, i) => d + (isNaN(i) ? 0 : i), 0);
                     // console.log(this.msums2[i] - curtab[i].reduce((d, i) => d + (isNaN(i) ? 0 : i), 0));
                     curtab[i] = curtab[i].map(val => isNaN(val) ? repval : val);
@@ -285,12 +307,12 @@ class Table2x2 {
 
     // Function to update the table:
     // Eventually this should go automatically!
-    update(nested_list){
+    update(nested_list) {
         this.tab2x2 = nested_list;
     }
 
     // Function to count missings:
-    count_missings(){
+    count_missings() {
         return this.tab2x2.flat().reduce((d, i) => d + isNaN(i), 0);
     }
 
@@ -299,8 +321,8 @@ class Table2x2 {
     // could be a class RiskArray, containing 2 tables, an N (supplied or calculated), and relations (e.g., RRR).
 
     // Calculate sums:
-    sum_table(ignore_na= false){
-        if(ignore_na){
+    sum_table(ignore_na = false) {
+        if (ignore_na) {
             return this.tab2x2.flat().reduce((d, i) => d + (isNaN(i) ? 0 : i), 0)
         } else {
             return this.tab2x2.flat().reduce((d, i) => d + i);
@@ -309,18 +331,20 @@ class Table2x2 {
     }
 
     // Calculate margin sums and means:
-    margin1_sum(){
+    margin1_sum() {
         return sumNestedLists(this.tab2x2);
     }
-    margin1_mean(){
+
+    margin1_mean() {
         return meanNestedLists(this.tab2x2);
     }
 
-    margin2_sum(){
+    margin2_sum() {
         let t_tab = transpose(this.tab2x2);
         return sumNestedLists(t_tab);
     }
-    margin2_mean(){
+
+    margin2_mean() {
         let t_tab = transpose(this.tab2x2);
         return meanNestedLists(t_tab);
     }
@@ -355,21 +379,21 @@ function transpose(matrix) {
 
 
 // Function to compare two values and take the one that is not missing (if any):
-function compare_vals(val1, val2){
-    if(!isNaN(val1) && !isNaN(val2)){
-        if(val1 !== val2){
+function compare_vals(val1, val2) {
+    if (!isNaN(val1) && !isNaN(val2)) {
+        if (val1 !== val2) {
             console.error("Provided values do not match. Please check!");
             // no_N = true;
             // TODO: Proper error handling!
             val1 = NaN;  // set val1 NaN to return NaN.
         }
-    } else if(isNaN(val1)) {
+    } else if (isNaN(val1)) {
         // If N is NAN use calculated N (results in NaN if it cannot be provided!):
         val1 = val2;
     }
 
     // If they are equal or only one was provided:
-    return(val1);
+    return (val1);
 }
 
 

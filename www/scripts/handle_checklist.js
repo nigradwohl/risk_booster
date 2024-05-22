@@ -31,7 +31,7 @@ $(document).ready(function () {
     const mtab2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
 
 
-    const check_risk = new RiskCollection(ntabb, ptabb, mtab1b, mtab2b);
+    const check_risk = new RiskCollection(ntab, ptab, mtab1, mtab2);
     console.log(check_risk);
 
     // Show the first element:
@@ -48,8 +48,6 @@ $(document).ready(function () {
         console.log(`Current inputs for ID ${curid}:`);
         console.log(q_inputs);
         console.log(q_inputs[curid]);
-
-        // Check whether input can be skipped:
 
         // Loop over defined input fields:
         for (const cur_input of q_inputs[curid]) {
@@ -120,12 +118,40 @@ $(document).ready(function () {
 
         }
 
+        // Try completing the table before advancing:
+        check_risk.try_completion();
+
         // Advance page:
         if (!error) {
             if (entry_ix < q_order.length) {
-                entry_ix++;
+
+                // Check whether input can be skipped: ~~~~~~~~~~~~
+                const cur_entry = q_order[entry_ix];
+                entry_ix++;  // Increment entry index.
+                let next_entry = q_order[entry_ix];
+
+                console.log("+++ CHECK IF SKIPPABLE +++");
+                const skiplist = ["n-total"];
+                if (skiplist.includes(next_entry)) {
+
+                    console.log("Index array");
+                    console.log(number_dict[id_to_num_dict[next_entry]]);
+
+                    const prevval = check_risk.get_by_arr(number_dict[id_to_num_dict[next_entry]]);
+
+                    console.log(`Previous value was ${prevval}`);
+                    console.log(prevval);
+
+                    // MAY ALSO TEST MULTIPLE INPUTS in loop/map!
+
+                    if(!isNaN(prevval)){
+                        entry_ix++;  // May be done more sophisticated in the future!
+                    }
+
+                }
+
                 $("#" + q_order[entry_ix] + "-q").css('display', 'flex');
-                $("#" + q_order[entry_ix - 1] + "-q").hide();
+                $("#" + cur_entry + "-q").hide();
 
                 // Show back button:
                 if (entry_ix > 0) {
