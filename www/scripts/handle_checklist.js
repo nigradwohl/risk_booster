@@ -126,29 +126,41 @@ $(document).ready(function () {
             if (entry_ix < q_order.length) {
 
                 // Check whether input can be skipped: ~~~~~~~~~~~~
-                const cur_entry = q_order[entry_ix];
-                entry_ix++;  // Increment entry index.
-                let next_entry = q_order[entry_ix];
-
                 console.log("+++ CHECK IF SKIPPABLE +++");
-                const skiplist = ["n-total"];
-                if (skiplist.includes(next_entry)) {
+                const skiplist = ["n-total", "p-treat"];
+                const cur_entry = q_order[entry_ix];
+                let next_entry;
 
-                    console.log("Index array");
-                    console.log(number_dict[id_to_num_dict[next_entry]]);
+                let skip = true;
 
-                    const prevval = check_risk.get_by_arr(number_dict[id_to_num_dict[next_entry]]);
+                do {
+                    entry_ix++;  // Increment entry index.
+                    next_entry = q_order[entry_ix];  // get the next entry.
+                    skip = false;  // set to false.
 
-                    console.log(`Previous value was ${prevval}`);
-                    console.log(prevval);
+                    console.log(`Next entry is ${next_entry}`);
 
-                    // MAY ALSO TEST MULTIPLE INPUTS in loop/map!
+                    if (skiplist.includes(next_entry)) {
 
-                    if(!isNaN(prevval)){
-                        entry_ix++;  // May be done more sophisticated in the future!
+                        console.log("Index array");
+                        console.log(number_dict[id_to_num_dict[next_entry]]);
+
+                        // Get the previous value for the field(s):
+                        const prevval = check_risk.get_by_arr(number_dict[id_to_num_dict[next_entry]]);
+
+                        console.log(`Previous value was ${prevval}`);
+                        console.log(prevval);
+
+                        // MAY ALSO TEST MULTIPLE INPUTS in loop/map!
+
+                        if (!isNaN(prevval)) {
+                            skip = true;  // May be done more sophisticated in the future!
+                        }
+
                     }
 
-                }
+                } while (skip)
+
 
                 $("#" + q_order[entry_ix] + "-q").css('display', 'flex');
                 $("#" + cur_entry + "-q").hide();
@@ -404,6 +416,7 @@ const number_dict = {
     "p10": ["ptab", "tab", "tab2x2", 1, 0],
     "p11": ["ptab", "tab", "tab2x2", 1, 1],
     "mpx0": [],
+    "mpx1": ["ptab", "msums2", 1],
     // Non-numeric info:
     "any_control": []
 }

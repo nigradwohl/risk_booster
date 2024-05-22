@@ -112,6 +112,17 @@ class RiskCollection {
         return !arrayEquals(refsums, this.ntab.msums1);
     }
 
+    p_from_n() {
+        console.log("p from n");
+
+        // Margin sums:
+        this.ptab.msums1 = this.ntab.msums1.map(val => Math.round(val / this.ntab.N));
+        this.ptab.msums2 = this.ntab.msums2.map(val => Math.round(val / this.ntab.N));
+
+        // TODO: Return if change was made:
+        // return !arrayEquals(refsums, this.ntab.msums1);
+    }
+
 
     // Method to try and complete the set:
     try_completion() {
@@ -125,6 +136,7 @@ class RiskCollection {
         nchange += this.ntab.get_N();
         nchange += this.ptab.complete_margins();  // calculate margin sums.
         nchange += this.n_from_p();  // get numbers from probabilities.
+        this.p_from_n();  // TODO: Check for chage.
         nchange += this.ntab.complete_table();  // try to complete the table.
 
         console.log("n changes: " + nchange);
@@ -207,11 +219,16 @@ class Basetable {
         }
 
         this.N = compare_vals(this.N, N_tab);
+
+        return isNaN(this.N);
     }
 
     // Function to complete margins:
     complete_margins() {
         // TODO: Don't do this if all values are NA!
+
+        console.log(`Complete margins in`);
+        console.log(this);
 
         const nonmissings_m1 = this.msums1.reduce((d, i) => d + !isNaN(i), 0);
         const nonmissings_m2 = this.msums2.reduce((d, i) => d + !isNaN(i), 0);
