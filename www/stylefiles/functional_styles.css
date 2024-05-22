@@ -198,6 +198,8 @@ canvas {
     color: darkgrey;
     text-align: center;
     height: 100%;
+    /*display: flex;*/
+    align-content: center;
 }
 
 

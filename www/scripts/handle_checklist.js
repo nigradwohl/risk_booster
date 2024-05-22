@@ -183,13 +183,13 @@ $(document).ready(function () {
                     (Math.sign(arc) * Math.round(arc * curscale) + " aus " + curscale + meaning_arc);
 
                 // Note: If the risk is negative, it corresponds to an increase!
-                const rrc = group_risks[1][1] / group_risks[0][1]; // relative risk change.
+                const rrc = Math.abs(arc / group_risks[0][1]); // relative risk change.
                 // How many times higher is the risk in the treatment group?
 
-                const rrr = Math.round((1 - rrc) * 1000) / 1000;
+                const rrr = Math.round(rrc * 1000) / 1000;
                 console.log("RRR is " + rrr);
                 const rr_factor = Math.abs(rrr) >= 2 ? 1 : 100;
-                const rrr_p = Math.round(Math.sign(arc) * rrr * rr_factor) +
+                const rrr_p = Math.round(rrr * rr_factor) +
                     (rr_factor === 100 ? "% " : " mal ") +
                     meaning_arc;
                 // For numbers greater than 2 "x mal mehr" may be more appropriate.
