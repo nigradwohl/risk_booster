@@ -204,7 +204,7 @@ $(document).ready(function () {
         // python: https://github.com/IBM/wort-to-number
         const pat_numwords = RegExp(collapse_regex_or(
             ["[Ee]in", "[Zz]wei", "[Dd]rei"]), "dg");
-        const numwords_ix = token_dat.id.filter((x) => token_dat.token[x].search(pat_numwords));
+        const numwords_ix = token_dat.id.filter((x) => pat_numwords.test(token_dat.token[x]));
         // Investigate these tokens further!
         const numword_arr = investigate_context(token_dat, numwords_ix,
             {"numword_keys": RegExp(collapse_regex_or(["Verl[aä]uf"]))});
