@@ -151,8 +151,6 @@ $(document).ready(function () {
         const regex_matches = detect_regex_match(inputText, token_dat, check_numbers_dict);
 
 
-
-
         // Text-level: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Add information to object:
         token_dat.add_column(regex_matches.match_id, "match");
@@ -194,7 +192,7 @@ $(document).ready(function () {
         console.log(new_units);
         // Replace the missing units:
         let ix = -1;
-        for(let i = 0; i < no_unit_ix.length; i++){
+        for (let i = 0; i < no_unit_ix.length; i++) {
             ix = no_unit_ix[i];
             token_dat.unit[ix] = new_units[ix];
         }
@@ -392,7 +390,9 @@ $(document).ready(function () {
         const risknum_rows = risknum_ix.map((x) => token_dat.get_row(x));
         const risknums_flat = risknum_rows.flat();
 
-        function check_any_arr(arrs, check_arr){return arrs.some((arr) => check_arr.every((x) => arr.includes(x)))};
+        function check_any_arr(arrs, check_arr) {
+            return arrs.some((arr) => check_arr.every((x) => arr.includes(x)))
+        };
 
         // 1. and 2. Global tests: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // List of keys; decide for each true/false and keep those that are true!
@@ -597,6 +597,69 @@ $(document).ready(function () {
         // Update the text:
         $("#text-result").html('<h3>Ihr Text</h3><br>' + procText);
 
+
+        // Alternative tooltip as popup:
+        $(".tooltip").on("click", function (e) {
+            const thispos = $(this).position();
+            console.log(thispos);
+
+            // Change the popup text here:
+            const cur_popup = $("#tooltip-popup");
+
+            const popup_height = cur_popup.height();
+            const popup_pad = cur_popup.innerHeight() - popup_height;
+            const num_height = $(this).height();
+
+            cur_popup
+                .css({
+                    top: thispos.top - popup_height - num_height - popup_pad * 2,
+                    left: thispos.left,
+                    position: 'absolute'
+                })
+                .addClass("selected-blur")
+                .show();
+
+            // Prevent propagation:
+            e.stopPropagation();
+
+            $(window).on("click", function (e) {
+
+                console.log(e.target);
+
+                // May need to become more complex with more elements!
+                // Get all parent node IDs?
+                let node_arr = [];
+                let curnode = e.target;
+                while(curnode.localName !== "body"){
+                    node_arr = node_arr.concat(curnode.id);
+                    curnode = curnode.parentNode;
+                }
+
+                console.log("Array of parent nodes:");
+                console.log(node_arr);
+
+
+                if (!node_arr.includes("tooltip-popup")) {
+                    $("#tooltip-popup").hide().removeClass("selected-blur");
+                    $(window).unbind("click").unbind("scroll");
+                    $(".text-output").unbind("scroll");
+                }
+
+            })
+
+            $(window).on("scroll", function () {
+                $("#tooltip-popup").hide().removeClass("selected-blur");
+                $(window).unbind("click").unbind("scroll");
+                $(".text-output").unbind("scroll");
+            })
+
+            $(".text-output").on("scroll", function () {
+                $("#tooltip-popup").hide().removeClass("selected-blur");
+                $(this).unbind("scroll");
+                $(window).unbind("click").unbind("scroll");
+            })
+
+        })
     })
 
 
