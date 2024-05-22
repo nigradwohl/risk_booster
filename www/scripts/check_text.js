@@ -238,8 +238,8 @@ $(document).ready(function () {
             .map((ntype, ix) => token_dat.unit[ix] === "perc" && ntype.toString() === "other" ? "ABS" : ntype);
 
 
-        console.log("Index of numbers with subgroup:");
-        console.log(n_subgroup_ix);
+        // console.log("Index of numbers with subgroup:");
+        // console.log(n_subgroup_ix);
 
         // Replace subgroup info:
         // TODO: Here we should eventually create informative labels for the tooltips!
@@ -662,6 +662,9 @@ const check_numbers_dict = {
     "multi2": {
         "regex": /(?<multi>([Hh]alb|[Dd]oppelt|[Dd]reifach|[Dd]reimal) so( ?viele|groß|hoch|niedrig|besser))/dg
     },
+    "pval": {
+        "regex": RegExp("(?<pval>p ?[\\<\\=] ?" + pat_num + ")", "dg")
+    },
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Simple matches:
     "age": {
@@ -840,6 +843,12 @@ const unit_note_dict = {
             return "Der Text enthält relative Vergleiche (10-mal so groß, halb so groß)." +
                 "Bitte achten Sie darauf, auch die absoluten Risiken in jeder Gruppe anzugeben -- am besten als natürliche Häufigkeit " +
                 "(z.B., unter denen ohne Impfung steckten sich 2 aus 1000 an unter den geimpften nur 1 aus 1000)."
+        }
+    },
+    "pval": {
+        "tooltip": {"other": "P-Wert"},
+        "note": function (type_arr) {
+            return "Der Text enthält p-Werte. Diese sind leicht missverständlich und sollten vermieden werden."
         }
     },
     // Unidentified matches:
@@ -1217,8 +1226,8 @@ function detect_number_type(token_data, txt) {
 
                 for (const [key, value] of Object.entries(key_obj)) {
 
-                    console.log(`Data judged for key ${key}:`);
-                    console.log(`Token: ${token_data.token[curnum_id]}, Unit: ${token_data.unit[curnum_id]}`);
+                    // console.log(`Data judged for key ${key}:`);
+                    // console.log(`Token: ${token_data.token[curnum_id]}, Unit: ${token_data.unit[curnum_id]}`);
                     // console.log(value);
 
                     // Check for the number type to select whether the number type (cases, percentage...) applies:
@@ -1754,9 +1763,9 @@ function detect_regex_match(txt, token_dat, check_dict) {
         // Match end must be smaller or equal to token end and larger than token start
         // Search from the back!
         let match_end = token_dat.end.findLastIndex(x => x <= (match.start_end[1] - 1) && x > match.start_end[0]);
-
-        console.log("Match start and end: " + match_start + ", " + match_end);
-        console.log(match);
+        //
+        // console.log("Match start and end: " + match_start + ", " + match_end);
+        // console.log(match);
 
         // If one of the idices can be found:
         if (match_start !== -1 || match_end !== -1) {
