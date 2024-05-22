@@ -146,9 +146,16 @@ class RiskCollection {
     update_by_arr(arr, val){
         let expr = "this";
         // Create a string expression:
-        for(const curkey of arr){expr += `[${curkey}]`}
+        for(const curkey of arr){
+            // Ensure that ALL keys are quoted (seems to work for arrays, too!)
+            let strkey = String(curkey);
+            strkey = (!["\"", "\'"].includes(strkey[0]) ? "\"" : "") +
+                strkey +
+                (!["\"", "\'"].includes(strkey[strkey.length]) ? "\"" : "");
+            expr += `[${strkey}]`
+        }
 
-        expr += ` = ${val}`;  // add value.
+        expr += ` = ${val}`;  // add target value.
         console.log(expr);
 
         try {

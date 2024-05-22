@@ -19,20 +19,20 @@ $(document).ready(function () {
 
     let entry_ix = 0;  // index for the current entry.
 
-    const ntabb = new Basetable(na_tab,  // condition.
+    const ntab = new Basetable(na_tab,  // condition.
         [NaN, NaN],
         [NaN, NaN],
         NaN);
-    const ptabb = new Basetable(
+    const ptab = new Basetable(
         na_tab,
         [NaN, NaN], [NaN, NaN], 1);
     // NOTE: Make sure to appropriately distinguish relative risk increase and reduction!
-    const mtab1b = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
-    const mtab2b = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
+    const mtab1 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
+    const mtab2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
 
 
-    const check_risk2 = new RiskCollection(ntabb, ptabb, mtab1b, mtab2b);
-    console.log(check_risk2);
+    const check_risk = new RiskCollection(ntabb, ptabb, mtab1b, mtab2b);
+    console.log(check_risk);
 
     // Show the first element:
     console.log("#" + q_order[entry_ix] + "-q");
@@ -109,11 +109,12 @@ $(document).ready(function () {
                 }
 
                 // Save value to dictionary:
-                risk_numbers[cur_q_key] = checked_val;
+                // risk_numbers[cur_q_key] = checked_val;
 
                 // Save value to table object:
-                check_risk2
-
+                check_risk.update_by_arr(number_dict[cur_q_key], checked_val);
+                console.log("Current object:");
+                console.log(check_risk);
 
             }
 
@@ -143,24 +144,24 @@ $(document).ready(function () {
                 // First index is condition, second index is treatment!
                 console.log(risk_numbers);
 
-                const ntab = new Basetable(
-                    [
-                        [risk_numbers.n00, risk_numbers.n01],  // no condition.
-                        [risk_numbers.n10, risk_numbers.n11]],  // condition.
-                    [risk_numbers.msum0x, risk_numbers.msum1x],
-                    [risk_numbers.msumx0, risk_numbers.msumx1],
-                    risk_numbers.N_tot);
-                const ptab = new Basetable(
-                    [
-                        [risk_numbers.p00, risk_numbers.p01],
-                        [risk_numbers.p10, risk_numbers.p11]],
-                    [NaN, NaN], [risk_numbers.mpx0, risk_numbers.mpx1], 1);
-                // NOTE: Make sure to appropriately distinguish relative risk increase and reduction!
-                const mtab1 = new Margintable(na_tab, [NaN, 1 - risk_numbers.rrr], [NaN, NaN]);
-                const mtab2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
-
-
-                const check_risk = new RiskCollection(ntab, ptab, mtab1, mtab2);
+                // const ntab = new Basetable(
+                //     [
+                //         [risk_numbers.n00, risk_numbers.n01],  // no condition.
+                //         [risk_numbers.n10, risk_numbers.n11]],  // condition.
+                //     [risk_numbers.msum0x, risk_numbers.msum1x],
+                //     [risk_numbers.msumx0, risk_numbers.msumx1],
+                //     risk_numbers.N_tot);
+                // const ptab = new Basetable(
+                //     [
+                //         [risk_numbers.p00, risk_numbers.p01],
+                //         [risk_numbers.p10, risk_numbers.p11]],
+                //     [NaN, NaN], [risk_numbers.mpx0, risk_numbers.mpx1], 1);
+                // // NOTE: Make sure to appropriately distinguish relative risk increase and reduction!
+                // const mtab1 = new Margintable(na_tab, [NaN, 1 - risk_numbers.rrr], [NaN, NaN]);
+                // const mtab2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
+                //
+                //
+                // const check_risk = new RiskCollection(ntab, ptab, mtab1, mtab2);
                 check_risk.ptab.complete_margins();
                 check_risk.n_from_p();
 
@@ -350,19 +351,53 @@ const id_to_num_dict = {
  * Keys for each input, to be mapped onto 2x2 table.
  * @type {string[]}
  */
-const entry_keys = [
-    "rrr", "N_tot",
-    "n00", "n01", "n10", "n11",
-    "msum0x", "msum1x", "msum0x", "msum1x",
-    "p00", "p01", "p10", "p11",
-    "mpx0",
-    // Non-numeric info:
-    "any_control"
-]
-const risk_numbers = Object.fromEntries(entry_keys.map((x) => [x, NaN]));
+// const entry_keys = [
+//     "rrr", "N_tot",
+//     "n00", "n01", "n10", "n11",
+//     "msum0x", "msum1x", "msum0x", "msum1x",
+//     "p00", "p01", "p10", "p11",
+//     "mpx0",
+//     // Non-numeric info:
+//     "any_control"
+// ]
+// const risk_numbers = Object.fromEntries(entry_keys.map((x) => [x, NaN]));
 
 // TODO: Pass the position in table object instead? e.g., as
 // "rrr": ["mtab", "rel1", 1]
+const number_dict = {
+    "rrr": ["mtab1", "rel1", 1],
+    "N_tot": ["ntab", "N"],
+    "n00": ["ntab", "tab", "tab2x2", 0, 0],
+    "n01": ["ntab", "tab", "tab2x2", 0, 1],
+    "n10": ["ntab", "tab", "tab2x2", 1, 0],
+    "n11": ["ntab", "tab", "tab2x2", 1, 1],
+    "msum0x": ["ntab", "msums1", 0], "msum1x": ["ntab", "msums1", 1],
+    "msumx0": ["ntab", "msums2", 0], "msumx1": ["ntab", "msums2", 1],
+    "p00": ["ptab", "tab", "tab2x2", 0, 0],
+    "p01": ["ptab", "tab", "tab2x2", 0, 1],
+    "p10": ["ptab", "tab", "tab2x2", 1, 0],
+    "p11": ["ptab", "tab", "tab2x2", 1, 1],
+    "mpx0": [],
+    // Non-numeric info:
+    "any_control": []
+}
+
+// // For reference:
+// const ntab = new Basetable(
+//     [
+//         [risk_numbers.n00, risk_numbers.n01],  // no condition.
+//         [risk_numbers.n10, risk_numbers.n11]],  // condition.
+//     [risk_numbers.msum0x, risk_numbers.msum1x],
+//     [risk_numbers.msumx0, risk_numbers.msumx1],
+//     risk_numbers.N_tot);
+// const ptab = new Basetable(
+//     [
+//         [risk_numbers.p00, risk_numbers.p01],
+//         [risk_numbers.p10, risk_numbers.p11]],
+//     [NaN, NaN], [risk_numbers.mpx0, risk_numbers.mpx1], 1);
+// // NOTE: Make sure to appropriately distinguish relative risk increase and reduction!
+// const mtab1 = new Margintable(na_tab, [NaN, 1 - risk_numbers.rrr], [NaN, NaN]);
+// const mtab2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
 
 // Lists of formats:
 /**
