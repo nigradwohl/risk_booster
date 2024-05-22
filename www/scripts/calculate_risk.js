@@ -141,6 +141,23 @@ class RiskCollection {
         //     alert("Done changing stuff!");
         // }
     }
+
+    // Update by array index:
+    update_by_arr(arr, val){
+        let expr = "this";
+        // Create a string expression:
+        for(const curkey of arr){expr += `[${curkey}]`}
+
+        expr += ` = ${val}`;  // add value.
+        console.log(expr);
+
+        try {
+            eval(expr);
+        } catch (e) {
+            console.error(`Assignment of ${expr} failed`);
+        }
+
+    }
 }
 
 
@@ -247,6 +264,8 @@ class Margintable {
     // A marginal table with known relations:
     constructor(nested_list, rel1, rel2) {
         this.tab = new Table2x2(nested_list);
+        this.rel1 = rel1;
+        this.rel2 = rel2;
     }
 }
 
@@ -347,3 +366,15 @@ function compare_vals(val1, val2){
 }
 
 
+// TESTING ONLY:
+const ntabb = new Basetable(na_tab,  // condition.
+    [NaN, NaN],
+    [NaN, NaN],
+    NaN);
+const ptabb = new Basetable(
+    na_tab,
+    [NaN, NaN], [NaN, NaN], 1);
+// NOTE: Make sure to appropriately distinguish relative risk increase and reduction!
+const mtab1b = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
+const mtab2b = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
+const check_risk2 = new RiskCollection(ntabb, ptabb, mtab1b, mtab2b);

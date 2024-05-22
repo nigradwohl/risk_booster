@@ -19,6 +19,21 @@ $(document).ready(function () {
 
     let entry_ix = 0;  // index for the current entry.
 
+    const ntabb = new Basetable(na_tab,  // condition.
+        [NaN, NaN],
+        [NaN, NaN],
+        NaN);
+    const ptabb = new Basetable(
+        na_tab,
+        [NaN, NaN], [NaN, NaN], 1);
+    // NOTE: Make sure to appropriately distinguish relative risk increase and reduction!
+    const mtab1b = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
+    const mtab2b = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
+
+
+    const check_risk2 = new RiskCollection(ntabb, ptabb, mtab1b, mtab2b);
+    console.log(check_risk2);
+
     // Show the first element:
     console.log("#" + q_order[entry_ix] + "-q");
     $("#" + q_order[entry_ix] + "-q").css('display', 'flex');
@@ -33,6 +48,8 @@ $(document).ready(function () {
         console.log(`Current inputs for ID ${curid}:`);
         console.log(q_inputs);
         console.log(q_inputs[curid]);
+
+        // Check whether input can be skipped:
 
         // Loop over defined input fields:
         for (const cur_input of q_inputs[curid]) {
@@ -93,6 +110,9 @@ $(document).ready(function () {
 
                 // Save value to dictionary:
                 risk_numbers[cur_q_key] = checked_val;
+
+                // Save value to table object:
+                check_risk2
 
 
             }
@@ -340,6 +360,9 @@ const entry_keys = [
     "any_control"
 ]
 const risk_numbers = Object.fromEntries(entry_keys.map((x) => [x, NaN]));
+
+// TODO: Pass the position in table object instead? e.g., as
+// "rrr": ["mtab", "rel1", 1]
 
 // Lists of formats:
 /**
