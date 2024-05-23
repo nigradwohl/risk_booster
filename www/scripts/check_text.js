@@ -160,13 +160,15 @@ $(document).ready(function () {
 
         // Detect topis:
         token_dat.detect_topic("impf", ["(?<!(gl|sch))[Ii]mpf"]);  // must be preceded
+        token_dat.detect_topic("mask", ["Maske|FFP"]);  // must be preceded
         token_dat.detect_topic("lower_risk", ["mindern", "Risiko"]);
+        token_dat.detect_topic("lower_risk", ["schützen|Schutz", "Infekt|Ansteck"]);
         token_dat.detect_topic("cancer_risk", ["[Rr]isiko", "Krebs"]);  // must be preceded
         token_dat.detect_topic("cancer_drug", ["[Mm]edikament", "Krebs"])
 
         // Detect topic features:
         token_dat.detect_topic("eff", ["Nutz", "(?<!Neben)[Ww]irks(am|ung)", "Schutz",
-            "geschützt"]);
+            "schütz"]);
         token_dat.detect_topic("side", ["Nebenwirk"]);
         // NOTE: Do not add specific side effects, because they may be effects (symptoms) in other contexts!
         token_dat.detect_topic("treatgroup", ["(Impf|Behandlungs)-?.*[Gg]ruppe"]);
@@ -335,6 +337,8 @@ $(document).ready(function () {
         // Notes about topics:
         const key_topic_dict = {
             "impf": "Impfung",
+            "mask": "Schutzmasken",
+            "protective_measures": "Schutzmaßnahmen",
             "cancer_risk": "Krebsrisiko",
             "lower_risk": "Risikominderung"
         };  // {"impf": "Impfung", "eff": "Wirksamkeit", "side": "Nebenwirkungen"};
@@ -406,17 +410,27 @@ $(document).ready(function () {
             "eff_treat_num": check_any_arr(risknum_rows, ["eff", "treatment"]),
             "side_treat_num": check_any_arr(risknum_rows, ["side", "treatment"]),
             "eff_contr_num": check_any_arr(risknum_rows, ["eff", "control"]),
-            "side_contr_num": check_any_arr(risknum_rows, ["side", "control"]),
-            "eff": this.eff_num || token_dat.topics.includes("eff"),
-            "side": this.side_num || token_dat.topics.includes("side"),
-            "treat": this.treat_num || token_dat.topics.includes("treatgroup"),
-            "contr": this.contr_num || token_dat.topics.includes("controlgroup"),
-            // Specific number info:
-            "rel": ["REL", "mult"].some((x) => token_dat.numtype.includes(x)),  // tests if one of the elements exists.
-            "rel_only": this.rel && !token_dat.numtype.includes("ABS") &&
-                // Is there a row that fulfills both criteria?
-                !check_any_arr(risknum_rows, ["case", "subgroup"]),
+            "side_contr_num": check_any_arr(risknum_rows, ["side", "control"])
+            // "eff": this.eff_num || token_dat.topics.includes("eff"),
+            // "side": this.side_num || token_dat.topics.includes("side"),
+            // "treat": this.treat_num || token_dat.topics.includes("treatgroup"),
+            // "contr": this.contr_num || token_dat.topics.includes("controlgroup"),
+            // // Specific number info:
+            // "rel": ["REL", "mult"].some((x) => token_dat.numtype.includes(x)),  // tests if one of the elements exists.
+            // "rel_only": this.rel && !token_dat.numtype.includes("ABS") &&
+            //     // Is there a row that fulfills both criteria?
+            //     !check_any_arr(risknum_rows, ["case", "subgroup"])
         };
+
+        txtfeat_dict["eff"] = txtfeat_dict.eff_num || token_dat.topics.includes("eff");
+        txtfeat_dict["side"] = txtfeat_dict.side_num || token_dat.topics.includes("side");
+        txtfeat_dict["treat"] = txtfeat_dict.treat_num || token_dat.topics.includes("treatgroup");
+        txtfeat_dict["contr"] = txtfeat_dict.contr_num || token_dat.topics.includes("controlgroup");
+            // Specific number info:
+        txtfeat_dict["rel"] = ["REL", "mult"].some((x) => token_dat.numtype.includes(x));  // tests if one of the elements exists.
+        txtfeat_dict["rel_only"] = txtfeat_dict.rel && !token_dat.numtype.includes("ABS") &&
+            // Is there a row that fulfills both criteria?
+            !check_any_arr(risknum_rows, ["case", "subgroup"]);
 
 
         console.log("~~~~~~~~~~~~ Text features: ~~~~~~~~~~~~~~~~");
@@ -475,7 +489,9 @@ $(document).ready(function () {
                 feature_str += " werden nur Informationen " + value.zumzur + feats_present.toString() + " berichtet. Es sollten auch Informationen " + value.zumzur + feats_missing + " berichtet werden.";
             } else {
                 feature_str = "<i class=\"fa fa-thumbs-down in-text-icon error\"></i>" + feature_str;
-                feature_str += " werden weder Informationen zu " + value.fset.map((key) => feature_dict[key]).join(" noch " + value.zumzur) + " berichtet.";
+                feature_str += " werden weder Informationen zu " +
+                    value.fset.map((key) => feature_dict[key]).join(" noch " + value.zumzur) + " berichtet." +
+                    "<br>NOTE: In Wiki mention the reasons and that one should mention if the envidence is not based on a group comparison";
             }
 
 
@@ -506,7 +522,7 @@ $(document).ready(function () {
             } else if (eff_num || side_num) {
                 feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> " +
                     "Zahlen nur zu" +
-                    (eff_num ? "r Nutzen" : " Schaden") +
+                    (eff_num ? "m Nutzen" : " Schaden") +
                     " angegeben."
             } else {
                 feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> " +
@@ -630,7 +646,7 @@ $(document).ready(function () {
                 // Get all parent node IDs?
                 let node_arr = [];
                 let curnode = e.target;
-                while(curnode.localName !== "body"){
+                while (curnode.localName !== "body") {
                     node_arr = node_arr.concat(curnode.id);
                     curnode = curnode.parentNode;
                 }
@@ -1195,7 +1211,7 @@ function detect_number_type(token_data, txt) {
     // Detect matches that are indicative of certain data types:
     const relation_dict = {
         "treatre_pre": {
-            "regex": /(?<treatment>(\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,3}(auf die|unter den) ([a-zA-ZÄÖÜßäöü]+ ){0,2}geimpften (Proband\w+|Teilnehm\w+)))/dg  // (\w+ ){0,2} are up to 2 more words.
+            "regex": /(?<treatment>(\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,3}(auf die|unter den) ([a-zA-ZÄÖÜßäöü]+ ){0,2}geimpften (Proband\w+|Teilnehm\w+|Kind\w+)))/dg  // (\w+ ){0,2} are up to 2 more words.
             // / (auf die tatsächlich geimpften (Proband\w+|Teilnehm\w+))/
         },
         "controlrel_pre": {
