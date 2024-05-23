@@ -196,7 +196,10 @@ $(document).ready(function () {
         let ix = -1;
         for (let i = 0; i < no_unit_ix.length; i++) {
             ix = no_unit_ix[i];
-            token_dat.unit[ix] = new_units[ix];
+            if(new_units[ix].length > 0){
+                token_dat.unit[ix] = new_units[ix];
+            }
+
         }
 
         // Detect number words:
@@ -1697,7 +1700,7 @@ function detect_unit(token_data) {
     // ALTERNATIVELY use dict etc.?
     const unit_lookup = [
         [/(%|[Pp]rozent\w*)/, "perc"],  // percentages.
-        [/Teilnehm|F[aä]ll|Proband|Mensch|Verl[aä]uf/, "case"]  // frequencies.
+        [/Teilnehm|[Ff][aä]ll|Proband|Mensch|Verl[aä]uf/, "case"]  // frequencies.
         // natural/relative frequencies.
     ]
     // Note: Percentage signs may also be contained in the number token!
