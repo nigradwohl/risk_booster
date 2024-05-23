@@ -903,7 +903,9 @@ const unit_note_dict = {
             "other": "Natürliche Häufigkeit"
         },
         "note": function (type_arr) {
-            return "Der Text enthält Natürliche Häufigkeiten. Sehr gut! Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
+            return "Der Text enthält " +
+                "Natürliche Häufigkeiten. " +
+                "Sehr gut! Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
         }
     },
     "case": {
@@ -916,7 +918,8 @@ const unit_note_dict = {
             "control": "Anzahl in der Kontrollgruppe"
         },
         "note": function (type_arr) {
-            return "Der Text enthält Anzahlen von Fällen. Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
+            return "Der Text enthält Anzahlen von Fällen. " +
+                "Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
         }
     },
     "multi": {
@@ -930,7 +933,9 @@ const unit_note_dict = {
     "pval": {
         "tooltip": {"other": "P-Wert"},
         "note": function (type_arr) {
-            return "Der Text enthält p-Werte. Diese sind leicht missverständlich und sollten vermieden werden."
+            return "Der Text enthält p-Werte. Diese sind leicht missverständlich und sollten vermieden werden. " +
+                "Ein besseres Maß für Unsicherheit sind Zahlenspannen (z.B., Credibilitätsintervalle oder Konfidenzintervalle." +
+                "z.B., die Anzahl an vermiedenen Todensfällen unter den Behandelten liegt zwischen 5 und 10)"
         }
     },
     // Unidentified matches:
@@ -1500,7 +1505,7 @@ function investigate_context(token_data, index_arr, keyset) {
     // For each number query:
     for (const token_ix of index_arr) {
 
-        // // console.log("-------- NEW TOKEN --------");
+        // console.log("-------- NEW TOKEN --------");
         // console.log(`+++ Token number ${token_ix}: ${tokens[token_ix]} +++`);
 
         // PREPARE THE WINDOW: ~~~~~~~~~~~~~~
@@ -1648,9 +1653,10 @@ function investigate_context(token_data, index_arr, keyset) {
 
             // Fix a maximum number of iterations to avoid breakdown!
             if (testcounter > 50) {
-                // console.log("BREAK DESCRIPTION");
+                console.log("BREAK DESCRIPTION");
                 description_complete = true;
                 // console.log(numberfeats);
+                numberfeats = numberfeats.add("unknown");
             }
 
             testcounter++;  // should maybe remain implemented!
