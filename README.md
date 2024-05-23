@@ -42,11 +42,12 @@ Features are sorted by importance and are further split by features that should 
 * Create one functional checklist
     + improve calculations (from relative) 
     + hide redundant questions 
+* Split the icon arrays 
 
 ### Nice to have
 
 ## Wiki
-* 
+
 * Decide on the central entries and fill them with information 
 
 ### Nice to have
