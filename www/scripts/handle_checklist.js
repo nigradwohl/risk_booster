@@ -2,6 +2,24 @@
  * Manage the display of a risk checklist.
  */
 
+let entry_ix = 0;  // index for the current entry.
+
+const ntab = new Basetable(na_tab,  // condition.
+    [NaN, NaN],
+    [NaN, NaN],
+    NaN);
+const ptab = new Basetable(
+    na_tab,
+    [NaN, NaN], [NaN, NaN], 1);
+// NOTE: Make sure to appropriately distinguish relative risk increase and reduction!
+const mtab1 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
+const mtab2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
+
+
+const check_risk = new RiskCollection(ntab, ptab, mtab1, mtab2);
+console.log(check_risk);
+
+
 $(document).ready(function () {
 
     console.log("Handle questions");
@@ -17,299 +35,22 @@ $(document).ready(function () {
 
     // Define order by type (press release, article etc.):
 
-    let entry_ix = 0;  // index for the current entry.
-
-    const ntab = new Basetable(na_tab,  // condition.
-        [NaN, NaN],
-        [NaN, NaN],
-        NaN);
-    const ptab = new Basetable(
-        na_tab,
-        [NaN, NaN], [NaN, NaN], 1);
-    // NOTE: Make sure to appropriately distinguish relative risk increase and reduction!
-    const mtab1 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
-    const mtab2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
-
-
-    const check_risk = new RiskCollection(ntab, ptab, mtab1, mtab2);
-    console.log(check_risk);
-
     // Show the first element:
     console.log("#" + q_order[entry_ix] + "-q");
     $("#" + q_order[entry_ix] + "-q").css('display', 'flex');
 
     // Handle button clicks:
     $(".continue-btn").on("click", function () {
-
-        // Check entry:
-        const curid = q_order[entry_ix];  // id of current page.
-        let error = false;
-
-        console.log(`Current inputs for ID ${curid}:`);
-        console.log(q_inputs);
-        console.log(q_inputs[curid]);
-
-        // Loop over defined input fields:
-        for (const cur_input of q_inputs[curid]) {
-
-            const cur_q_key = id_to_num_dict[cur_input];  // curent input field.
-            let curval;
-
-            // console.log("Is this a button with meaning? " + $(this).hasClass("input-btn"))
-
-            if ($(this).hasClass("input-btn")) {
-                console.log("Button with meaning!");
-                // console.log($(this).val());
-                curval = $(this).val();
-            } else {
-                curval = $("#" + cur_input).val();  // current input value.
-            }
-            console.log("Current value is: " + curval);
-
-            if ([undefined, "", " "].includes(curval)) {
-                alert("Sie haben nichts eingegeben! Absicht?");
-                // Show popup that can be skipped!
-            } else {
-
-                // Evaluate entry:
-                // TODO: Check format!
-                let checked_val;
-
-                // Replace comma with period:
-                checked_val = curval.replace(/,/, ".");
-
-                // Test, if it is a number and convert if true:
-                const is_num = !isNaN(parseFloat(checked_val));
-                if (is_num) {
-                    // Note: Ignores additional text!
-                    checked_val = parseFloat(checked_val);
-                }
-
-                if (int_keys.includes(cur_q_key)) {
-                    // Check integer entries:
-                    if (!is_num) {
-                        alert("KEINE ZAHL!");
-                        error = true;
-                    } else if (!Number.isInteger(checked_val)) {
-                        alert("KEINE GANZE ZAHL!");
-                        error = true;
-                    }
-                } else if (float_keys.includes(cur_q_key)) {
-
-                    // Check float entries:
-                    if (!is_num) {
-                        alert("KEINE ZAHL!");
-                        error = true;
-                    }
-
-                } else {
-                    // All other keys (string, boolean etc.)
-                }
-
-                // Save value to dictionary:
-                // risk_numbers[cur_q_key] = checked_val;
-
-                // Save value to table object:
-                check_risk.update_by_arr(number_dict[cur_q_key], checked_val);
-                console.log("Current object:");
-                console.log(check_risk);
-
-            }
-
-        }
-
-        // Try completing the table before advancing:
-        check_risk.try_completion();
-
-        // Advance page:
-        if (!error) {
-            if (entry_ix < q_order.length) {
-
-                // Check whether input can be skipped: ~~~~~~~~~~~~
-                console.log("+++ CHECK IF SKIPPABLE +++");
-                const skiplist = ["n-total", "p-treat"];
-                const cur_entry = q_order[entry_ix];
-                let next_entry;
-
-                let skip = true;
-
-                do {
-                    entry_ix++;  // Increment entry index.
-                    next_entry = q_order[entry_ix];  // get the next entry.
-                    skip = false;  // set to false.
-
-                    console.log(`Next entry is ${next_entry}`);
-
-                    if (skiplist.includes(next_entry)) {
-
-                        console.log("Index array");
-                        console.log(number_dict[id_to_num_dict[next_entry]]);
-
-                        // Get the previous value for the field(s):
-                        const prevval = check_risk.get_by_arr(number_dict[id_to_num_dict[next_entry]]);
-
-                        console.log(`Previous value was ${prevval}`);
-                        console.log(prevval);
-
-                        // MAY ALSO TEST MULTIPLE INPUTS in loop/map!
-
-                        if (!isNaN(prevval)) {
-                            skip = true;  // May be done more sophisticated in the future!
-                        }
-
-                    }
-
-                } while (skip)
-
-
-                $("#" + q_order[entry_ix] + "-q").css('display', 'flex');
-                $("#" + cur_entry + "-q").hide();
-
-                // Show back button:
-                if (entry_ix > 0) {
-                    $(".back-btn").css('display', 'inline-block');
-                }
-            }
-
-            // Final button:
-            // Calculate the table if possible!
-            if (entry_ix === q_order.length - 1) {
-
-                // Hide the continue button:
-                $(".continue-btn").hide();
-
-                console.log("~~~~~~~~~~~~~~~~ Calculate table ~~~~~~~~~~~~~~~~");
-                // First index is condition, second index is treatment!
-                console.log(risk_numbers);
-
-                // const ntab = new Basetable(
-                //     [
-                //         [risk_numbers.n00, risk_numbers.n01],  // no condition.
-                //         [risk_numbers.n10, risk_numbers.n11]],  // condition.
-                //     [risk_numbers.msum0x, risk_numbers.msum1x],
-                //     [risk_numbers.msumx0, risk_numbers.msumx1],
-                //     risk_numbers.N_tot);
-                // const ptab = new Basetable(
-                //     [
-                //         [risk_numbers.p00, risk_numbers.p01],
-                //         [risk_numbers.p10, risk_numbers.p11]],
-                //     [NaN, NaN], [risk_numbers.mpx0, risk_numbers.mpx1], 1);
-                // // NOTE: Make sure to appropriately distinguish relative risk increase and reduction!
-                // const mtab1 = new Margintable(na_tab, [NaN, 1 - risk_numbers.rrr], [NaN, NaN]);
-                // const mtab2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
-                //
-                //
-                // const check_risk = new RiskCollection(ntab, ptab, mtab1, mtab2);
-                check_risk.ptab.complete_margins();
-                check_risk.n_from_p();
-
-                check_risk.try_completion();
-                check_risk.ntab.complete_margins();
-                console.log(check_risk);
-
-                // USe the 2x2 table to calculate outputs:
-                console.log(check_risk.ntab.tab.margin1_mean());
-
-                // Following the current definition this is the risk:
-                const group_risks = check_risk.ntab.tab.margin2_mean();
-                console.log("Risks in each group:");
-                console.log(group_risks);
-
-                const group_risks_flat = group_risks.flat();
-
-                // Translate to natural frequencies:
-                // const curscale = 1000;  // fixed reference! Should eventually be so that the smallest number is detectable!
-                const curscale = [100, 1000, 2000, 5000, 10000, 50000, 100000]
-                    .filter((x) => group_risks_flat.every((r) => (r * x) >= 5))[0];
-                // Get the first reference for which the product is greater 1!
-                // Altering this threshhold will lead to larger references (which may differentiate better!)
-                console.log("Curscale is " + curscale);
-
-                // Round the group risks
-
-                const risk_treat = Math.round(group_risks[1][1] * curscale) / curscale;
-                const risk_control = Math.round(group_risks[0][1] * curscale) / curscale;
-                const risk_treat_nh = Math.round(risk_treat * curscale) + " aus " + curscale;
-                const risk_control_nh = Math.round(risk_control * curscale) + " aus " + curscale;
-
-                // Risk reduction:
-                // Absolute change in risk:
-                const arc = group_risks[0][1] - group_risks[1][1];  // risk change in favor of treatment group.
-                const meaning_arc = arc > 0 ? " weniger" : " mehr";
-
-                const arr = Math.sign(arc) * Math.round(arc * curscale) / curscale;
-                const arr_p = // arr > 0.01 ? Math.round(arr * 100) + "%" :
-                    (Math.sign(arc) * Math.round(arc * curscale) + " aus " + curscale + meaning_arc);
-
-                // Note: If the risk is negative, it corresponds to an increase!
-                const rrc = Math.abs(arc / group_risks[0][1]); // relative risk change.
-                // How many times higher is the risk in the treatment group?
-
-                const rrr = Math.round(rrc * 1000) / 1000;
-                console.log("RRR is " + rrr);
-                const rr_factor = Math.abs(rrr) >= 2 ? 1 : 100;
-                const rrr_p = Math.round(rrr * rr_factor) +
-                    (rr_factor === 100 ? "% " : " mal ") +
-                    meaning_arc;
-                // For numbers greater than 2 "x mal mehr" may be more appropriate.
-
-
-                $("#risk-treat").text(risk_treat_nh);
-                $("#risk-control").text(risk_control_nh);
-                $("#arr").text(arr_p);
-                $("#rrr").text(rrr_p);
-                // Rounding can eventually be improved!
-
-                check_risk.ntab.get_N();  // calculate N if not provided.
-                console.log(`N is ${check_risk.ntab.N}`);
-
-                // Flexible scaling for large numbers:
-                let N_scale = curscale;
-                if (curscale > 1000) {  // Determine useful maximum.
-                    N_scale = 1000;
-                }
-
-                // Icon array:
-                // const cur2x2 = check_risk.ntab.tab.tab2x2.map((x) => x.map((y) => Math.round(y / N_scale)));
-                const cur2x2 = group_risks.map((x) => x.map((y) => Math.round(y * N_scale)));
-                console.log(cur2x2);
-
-                create_icon_array(
-                    cur2x2[1][0], cur2x2[1][1],  // treatment group.
-                    cur2x2[0][0], cur2x2[0][1],  // control group.
-                    'dotdisplay');
-                $("#dotdisplay").show();
-                buttonPrintOrSaveDocument.addEventListener("click", printOrSave);  // allow saving.
-
-                // Allow zooming into the canvas:
-                $("canvas").on("click", function (e) {
-                    // $(this).clone().appendTo(".canvas-zoom");
-                    create_icon_array(
-                        cur2x2[1][0], cur2x2[1][1],  // treatment group.
-                        cur2x2[0][0], cur2x2[0][1],  // control group.
-                        'dotdisplay-zoom');
-
-                    const mindim = Math.min(window.innerWidth, window.innerHeight);
-
-                    $(".canvas-zoom")
-                        .width(mindim)
-                        .height(mindim)
-                        .css("display", "flex");
-                    $("#dotdisplay-zoom").show();
-
-                    // Allow clicking anywhere to close:
-                    e.stopPropagation();  // stop event propagation to avoid immediate hiding on click.
-                    $(window).on("click", function () {
-                        $(".canvas-zoom").hide();
-                        // $(this).unbind("click");
-                    });
-                })
-            }
-        }
-
-
+        continue_page();
     })
 
+    $(window).on("keypress", function (e) {
+        console.log(e);
+        if (e.key === "Enter") {
+            continue_page();
+        }
+
+    })
 
     $(".back-btn").on("click", function () {
         if (entry_ix > 0) {
@@ -341,6 +82,276 @@ $(document).ready(function () {
     //
     // console.log("~~~~~~~~~ eof. test icon array ~~~~~~~~~~~");
 });
+
+function continue_page() {
+    // Check entry:
+    const curid = q_order[entry_ix];  // id of current page.
+    let error = false;
+
+    console.log(`Current inputs for ID ${curid}:`);
+    console.log(q_inputs);
+    console.log(q_inputs[curid]);
+
+    // Loop over defined input fields:
+    for (const cur_input of q_inputs[curid]) {
+
+        const cur_q_key = id_to_num_dict[cur_input];  // curent input field.
+        let curval;
+
+        // console.log("Is this a button with meaning? " + $(this).hasClass("input-btn"))
+
+        if ($(this).hasClass("input-btn")) {
+            console.log("Button with meaning!");
+            // console.log($(this).val());
+            curval = $(this).val();
+        } else {
+            curval = $("#" + cur_input).val();  // current input value.
+        }
+        console.log("Current value is: " + curval);
+
+        if ([undefined, "", " "].includes(curval)) {
+            alert("Sie haben nichts eingegeben! Absicht?");
+            // Show popup that can be skipped!
+        } else {
+
+            // Evaluate entry:
+            // TODO: Check format!
+            let checked_val;
+
+            // Replace comma with period:
+            checked_val = curval.replace(/,/, ".");
+
+            // Test, if it is a number and convert if true:
+            const is_num = !isNaN(parseFloat(checked_val));
+            if (is_num) {
+                // Note: Ignores additional text!
+                checked_val = parseFloat(checked_val);
+            }
+
+            if (int_keys.includes(cur_q_key)) {
+                // Check integer entries:
+                if (!is_num) {
+                    alert("KEINE ZAHL!");
+                    error = true;
+                } else if (!Number.isInteger(checked_val)) {
+                    alert("KEINE GANZE ZAHL!");
+                    error = true;
+                }
+            } else if (float_keys.includes(cur_q_key)) {
+
+                // Check float entries:
+                if (!is_num) {
+                    alert("KEINE ZAHL!");
+                    error = true;
+                }
+
+            } else {
+                // All other keys (string, boolean etc.)
+            }
+
+            // Save value to dictionary:
+            // risk_numbers[cur_q_key] = checked_val;
+
+            // Save value to table object:
+            check_risk.update_by_arr(number_dict[cur_q_key], checked_val);
+            console.log("Current object:");
+            console.log(check_risk);
+
+        }
+
+    }
+
+    // Try completing the table before advancing:
+    check_risk.try_completion();
+
+    // Advance page:
+    if (!error) {
+        if (entry_ix < q_order.length) {
+
+            // Check whether input can be skipped: ~~~~~~~~~~~~
+            console.log("+++ CHECK IF SKIPPABLE +++");
+            const skiplist = ["n-total", "p-treat"];
+            const cur_entry = q_order[entry_ix];
+            let next_entry;
+
+            let skip = true;
+
+            do {
+                entry_ix++;  // Increment entry index.
+                next_entry = q_order[entry_ix];  // get the next entry.
+                skip = false;  // set to false.
+
+                console.log(`Next entry is ${next_entry}`);
+
+                if (skiplist.includes(next_entry)) {
+
+                    console.log("Index array");
+                    console.log(number_dict[id_to_num_dict[next_entry]]);
+
+                    // Get the previous value for the field(s):
+                    const prevval = check_risk.get_by_arr(number_dict[id_to_num_dict[next_entry]]);
+
+                    console.log(`Previous value was ${prevval}`);
+                    console.log(prevval);
+
+                    // MAY ALSO TEST MULTIPLE INPUTS in loop/map!
+
+                    if (!isNaN(prevval)) {
+                        skip = true;  // May be done more sophisticated in the future!
+                    }
+
+                }
+
+            } while (skip)
+
+
+            $("#" + q_order[entry_ix] + "-q").css('display', 'flex');
+            $("#" + cur_entry + "-q").hide();
+
+            // Show back button:
+            if (entry_ix > 0) {
+                $(".back-btn").css('display', 'inline-block');
+            }
+        }
+
+        // Final button:
+        // Calculate the table if possible!
+        if (entry_ix === q_order.length - 1) {
+
+            // Hide the continue button:
+            $(".continue-btn").hide();
+
+            console.log("~~~~~~~~~~~~~~~~ Calculate table ~~~~~~~~~~~~~~~~");
+            // First index is condition, second index is treatment!
+            // console.log(risk_numbers);
+
+
+            // const ntab = new Basetable(
+            //     [
+            //         [risk_numbers.n00, risk_numbers.n01],  // no condition.
+            //         [risk_numbers.n10, risk_numbers.n11]],  // condition.
+            //     [risk_numbers.msum0x, risk_numbers.msum1x],
+            //     [risk_numbers.msumx0, risk_numbers.msumx1],
+            //     risk_numbers.N_tot);
+            // const ptab = new Basetable(
+            //     [
+            //         [risk_numbers.p00, risk_numbers.p01],
+            //         [risk_numbers.p10, risk_numbers.p11]],
+            //     [NaN, NaN], [risk_numbers.mpx0, risk_numbers.mpx1], 1);
+            // // NOTE: Make sure to appropriately distinguish relative risk increase and reduction!
+            // const mtab1 = new Margintable(na_tab, [NaN, 1 - risk_numbers.rrr], [NaN, NaN]);
+            // const mtab2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
+            //
+            //
+            // const check_risk = new RiskCollection(ntab, ptab, mtab1, mtab2);
+            check_risk.ptab.complete_margins();
+            check_risk.n_from_p();
+
+            check_risk.try_completion();
+            check_risk.ntab.complete_margins();
+            console.log(check_risk);
+
+            // USe the 2x2 table to calculate outputs:
+            console.log(check_risk.ntab.tab.margin1_mean());
+
+            // Following the current definition this is the risk:
+            const group_risks = check_risk.ntab.tab.margin2_mean();
+            console.log("Risks in each group:");
+            console.log(group_risks);
+
+            const group_risks_flat = group_risks.flat();
+
+            // Translate to natural frequencies:
+            // const curscale = 1000;  // fixed reference! Should eventually be so that the smallest number is detectable!
+            const curscale = [100, 1000, 2000, 5000, 10000, 50000, 100000]
+                .filter((x) => group_risks_flat.every((r) => (r * x) >= 5))[0];
+            // Get the first reference for which the product is greater 1!
+            // Altering this threshhold will lead to larger references (which may differentiate better!)
+            console.log("Curscale is " + curscale);
+
+            // Round the group risks
+
+            const risk_treat = Math.round(group_risks[1][1] * curscale) / curscale;
+            const risk_control = Math.round(group_risks[0][1] * curscale) / curscale;
+            const risk_treat_nh = Math.round(risk_treat * curscale) + " aus " + curscale;
+            const risk_control_nh = Math.round(risk_control * curscale) + " aus " + curscale;
+
+            // Risk reduction:
+            // Absolute change in risk:
+            const arc = group_risks[0][1] - group_risks[1][1];  // risk change in favor of treatment group.
+            const meaning_arc = arc > 0 ? " weniger" : " mehr";
+            console.log(`Absolute change is ${arc}`);
+
+            const arr = Math.sign(arc) * Math.round(arc * curscale) / curscale;
+            const arr_p = // arr > 0.01 ? Math.round(arr * 100) + "%" :
+                (Math.sign(arc) * Math.round(arc * curscale) + " aus " + curscale + meaning_arc);
+
+            // Note: If the risk is negative, it corresponds to an increase!
+            const rrc = Math.abs(arc / group_risks[0][1]); // relative risk change.
+            // How many times higher is the risk in the treatment group?
+
+            const rrr = Math.round(rrc * 1000) / 1000;
+            console.log("RRR is " + rrr);
+            const rr_factor = Math.abs(rrr) >= 2 ? 1 : 100;
+            const rrr_p = Math.round(rrr * rr_factor) +
+                (rr_factor === 100 ? "% " : " mal ") +
+                meaning_arc;
+            // For numbers greater than 2 "x mal mehr" may be more appropriate.
+
+
+            $("#risk-treat").text(risk_treat_nh);
+            $("#risk-control").text(risk_control_nh);
+            $("#abs-change").html(`Absolute${arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe erkranken <span class="risk-info" id="arr">${arr_p}</span>`);
+            $("#rel-change").html(`Relative${arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${rrr_p}</span>`);
+            // Rounding can eventually be improved!
+
+            check_risk.ntab.get_N();  // calculate N if not provided.
+            console.log(`N is ${check_risk.ntab.N}`);
+
+            // Flexible scaling for large numbers:
+            let N_scale = curscale;
+            if (curscale > 1000) {  // Determine useful maximum.
+                N_scale = 1000;
+            }
+
+            // Icon array:
+            // const cur2x2 = check_risk.ntab.tab.tab2x2.map((x) => x.map((y) => Math.round(y / N_scale)));
+            const cur2x2 = group_risks.map((x) => x.map((y) => Math.round(y * N_scale)));
+            console.log(cur2x2);
+
+            create_icon_array(
+                cur2x2[1][0], cur2x2[1][1],  // treatment group.
+                cur2x2[0][0], cur2x2[0][1],  // control group.
+                'dotdisplay');
+            $("#dotdisplay").show();
+            buttonPrintOrSaveDocument.addEventListener("click", printOrSave);  // allow saving.
+
+            // Allow zooming into the canvas:
+            $("canvas").on("click", function (e) {
+                // $(this).clone().appendTo(".canvas-zoom");
+                create_icon_array(
+                    cur2x2[1][0], cur2x2[1][1],  // treatment group.
+                    cur2x2[0][0], cur2x2[0][1],  // control group.
+                    'dotdisplay-zoom');
+
+                const mindim = Math.min(window.innerWidth, window.innerHeight);
+
+                $(".canvas-zoom")
+                    .width(mindim)
+                    .height(mindim)
+                    .css("display", "flex");
+                $("#dotdisplay-zoom").show();
+
+                // Allow clicking anywhere to close:
+                e.stopPropagation();  // stop event propagation to avoid immediate hiding on click.
+                $(window).on("click", function () {
+                    $(".canvas-zoom").hide();
+                    // $(this).unbind("click");
+                });
+            })
+        }
+    }
+}
 
 // ~~~~~~~~~~~~~~~~ DICTIONARIES ~~~~~~~~~~~~~~~~~~~~~~~~~
 
