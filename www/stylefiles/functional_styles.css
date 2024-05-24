@@ -271,6 +271,7 @@ canvas {
 
 .content-cell {
     width: 80%;
+    position: relative;
 }
 
 .risk-info {
@@ -281,4 +282,17 @@ canvas {
 
 .fa.back-btn {
     display: none;
+}
+
+#noentry-popup{
+    border: 1px solid darkred;
+    background-color: #f1f1f1;
+    padding: 1em;
+    margin: 1em;
+    position: absolute;
+    display: none;
+}
+
+.missing-input{
+    border: 2px solid darkred;
 }

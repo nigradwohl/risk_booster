@@ -40,14 +40,18 @@ $(document).ready(function () {
     $("#" + q_order[entry_ix] + "-q").css('display', 'flex');
 
     // Handle button clicks:
-    $(".continue-btn").on("click", function () {
-        continue_page();
+    $(".continue-btn").on("click", function (ev) {
+        continue_page(ev);
     })
 
-    $(window).on("keypress", function (e) {
-        console.log(e);
-        if (e.key === "Enter") {
-            continue_page();
+    $("#input-missing").on("click", function (ev) {
+        $("#noentry-popup").hide();
+    })
+
+    $(window).on("keypress", function (ev) {
+        console.log(ev);
+        if (ev.key === "Enter") {
+            continue_page(ev);
         }
 
     })
@@ -83,14 +87,21 @@ $(document).ready(function () {
     // console.log("~~~~~~~~~ eof. test icon array ~~~~~~~~~~~");
 });
 
-function continue_page() {
+function continue_page(ev) {
     // Check entry:
     const curid = q_order[entry_ix];  // id of current page.
+    let missing_entries = [];
     let error = false;
 
     console.log(`Current inputs for ID ${curid}:`);
     console.log(q_inputs);
     console.log(q_inputs[curid]);
+
+    console.log("Calling event is");
+    console.log(ev);
+
+    const skip_misses = ev.currentTarget.id === "skip-missing";
+    console.log(`Current target ID is ${ev.currentTarget.id}; Skip misses ${skip_misses}`);
 
     // Loop over defined input fields:
     for (const cur_input of q_inputs[curid]) {
@@ -109,53 +120,57 @@ function continue_page() {
         }
         console.log("Current value is: " + curval);
 
-        if ([undefined, "", " "].includes(curval)) {
-            alert("Sie haben nichts eingegeben! Absicht?");
-            // Show popup that can be skipped!
-        } else {
-
-            // Evaluate entry:
-            // TODO: Check format!
-            let checked_val;
-
-            // Replace comma with period:
-            checked_val = curval.replace(/,/, ".");
-
-            // Test, if it is a number and convert if true:
-            const is_num = !isNaN(parseFloat(checked_val));
-            if (is_num) {
-                // Note: Ignores additional text!
-                checked_val = parseFloat(checked_val);
-            }
-
-            if (int_keys.includes(cur_q_key)) {
-                // Check integer entries:
-                if (!is_num) {
-                    alert("KEINE ZAHL!");
-                    error = true;
-                } else if (!Number.isInteger(checked_val)) {
-                    alert("KEINE GANZE ZAHL!");
-                    error = true;
-                }
-            } else if (float_keys.includes(cur_q_key)) {
-
-                // Check float entries:
-                if (!is_num) {
-                    alert("KEINE ZAHL!");
-                    error = true;
-                }
+        if (!skip_misses) {
+            if ([undefined, "", " "].includes(curval)) {
+                missing_entries = missing_entries.concat(cur_input);
+                console.log("Sie haben nichts eingegeben! Absicht?");
 
             } else {
-                // All other keys (string, boolean etc.)
+
+                // Evaluate entry:
+                // TODO: Check format!
+                let checked_val;
+
+                // Replace comma with period:
+                checked_val = curval.replace(/,/, ".");
+
+                // Test, if it is a number and convert if true:
+                const is_num = !isNaN(parseFloat(checked_val));
+                if (is_num) {
+                    // Note: Ignores additional text!
+                    checked_val = parseFloat(checked_val);
+                }
+
+                if (int_keys.includes(cur_q_key)) {
+                    // Check integer entries:
+                    if (!is_num) {
+                        alert("KEINE ZAHL!");
+                        error = true;
+                    } else if (!Number.isInteger(checked_val)) {
+                        alert("KEINE GANZE ZAHL!");
+                        error = true;
+                    }
+                } else if (float_keys.includes(cur_q_key)) {
+
+                    // Check float entries:
+                    if (!is_num) {
+                        alert("KEINE ZAHL!");
+                        error = true;
+                    }
+
+                } else {
+                    // All other keys (string, boolean etc.)
+                }
+
+                // Save value to dictionary:
+                // risk_numbers[cur_q_key] = checked_val;
+
+                // Save value to table object:
+                check_risk.update_by_arr(number_dict[cur_q_key], checked_val);
+                console.log("Current object:");
+                console.log(check_risk);
             }
 
-            // Save value to dictionary:
-            // risk_numbers[cur_q_key] = checked_val;
-
-            // Save value to table object:
-            check_risk.update_by_arr(number_dict[cur_q_key], checked_val);
-            console.log("Current object:");
-            console.log(check_risk);
 
         }
 
@@ -164,8 +179,49 @@ function continue_page() {
     // Try completing the table before advancing:
     check_risk.try_completion();
 
+    // Handle missing entries:
+    if (missing_entries.length > 0) {
+        // alert("Sie haben nichts eingegeben! Absicht?");
+        // Show popup that can be skipped!
+
+        const input_field = $("#" + missing_entries[0]);
+        const thispos = input_field.position();  // get position of current question.
+        console.log(thispos);
+
+        missing_entries.forEach((id) => $("#" + id).addClass("missing-input"));
+
+        // Change the popup text here:
+        const cur_popup = $("#noentry-popup");
+
+        const popup_height = cur_popup.height();
+        const popup_pad = cur_popup.innerHeight() - popup_height;
+        const num_height = input_field.height();
+
+        cur_popup
+            .css({
+                top: thispos.top - popup_height - num_height - popup_pad * 2,
+                left: thispos.left,
+                position: 'absolute'
+            })
+            .addClass("selected-blur")
+            .show();
+
+        // Prevent propagation:
+        ev.stopPropagation();
+
+        $(window).on("click", function (e) {
+
+            $("#noentry-popup").hide().removeClass("selected-blur");
+            $(window).unbind("click");
+        })
+
+    }
+
+    console.log("Missing entries:");
+    console.log(missing_entries);
+
     // Advance page:
-    if (!error) {
+    if (!error && missing_entries.length === 0) {
         if (entry_ix < q_order.length) {
 
             // Check whether input can be skipped: ~~~~~~~~~~~~
