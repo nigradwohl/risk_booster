@@ -25,10 +25,20 @@ $(document).ready(function () {
 
     // Eventual example:
     // Basic tables:
-    const ntab = new Basetable([[NaN, NaN], [NaN, 141]], [NaN, NaN], [NaN, NaN], 32449);
-    const ptab = new Basetable(na_tab, [NaN, 0.67], [NaN, NaN], 1);
-    const mtab1 = new Margintable(na_tab, [NaN, 1 - 0.79], [NaN, NaN]);
-    const mtab2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
+    const ntab = new Basetable(
+        [
+            [NaN, NaN],  // non-cases among control and treatment.
+            [NaN, 141]], // cases among control and treatment.
+        [NaN, NaN], [NaN, NaN], 32449);
+    const ptab = new Basetable(na_tab,
+        [NaN, NaN], [NaN, 0.67], 1);
+    const mtab1 = new Margintable(na_tab,
+        [NaN, NaN], [NaN, NaN]);
+    const mtab2 = new Margintable(na_tab,
+        [NaN, NaN],  // relative risk (NOT reduction) between dim0 1/0
+        [NaN, 1 - 0.79]  // the array position indicates the direction.
+            // relative risk (NOT REDUCTION) between dim1 1/0 (typically treatment/control)
+    );
 
     const testcase = new RiskCollection(ntab, ptab, mtab1, mtab2);
 
@@ -50,7 +60,8 @@ $(document).ready(function () {
     // console.log(simple_risk);
 
     // How far are we with out testcase?
-    console.log("Main testcase");
+    console.log("+++ Main testcase +++");
+    console.log(JSON.stringify(testcase));
     // testcase.ptab.complete_margins();
     // testcase.n_from_p();
     // testcase.ntab.complete_table();
@@ -58,6 +69,8 @@ $(document).ready(function () {
     testcase.try_completion();
     console.log(testcase);
     console.log(testcase.ntab.tab.tab2x2);
+
+    console.log("+++ eof. Main testcase +++");
 
 
 })
@@ -102,26 +115,46 @@ class RiskCollection {
     // Method to combine information in ntab and ptab:
     n_from_p() {
         console.log("n from p");
-        let refsums = Object.assign([], this.ntab.msums1);
-        this.ntab.msums1 = this.ptab.msums1.map(val => Math.round(val * this.ntab.N));
 
-        console.log(refsums);
-        console.log(this.ntab.msums1);
-        console.log(arrayEquals(refsums, this.ntab.msums1));
+        // MArgins:
+        const refsums_m1 = Object.assign([], this.ntab.msums1);
+        const refsums_m2 = Object.assign([], this.ntab.msums2);
 
-        return !arrayEquals(refsums, this.ntab.msums1);
+        this.ntab.msums1 = this.ntab.msums1
+            .map((val, ix) => isNaN(val) ? Math.round(this.ptab.msums1[ix] * this.ntab.N) : val);
+        this.ntab.msums2 = this.ntab.msums2
+            .map((val, ix) => isNaN(val) ? Math.round(this.ptab.msums2[ix] * this.ntab.N) : val);
+
+        console.log(refsums_m1);
+        console.log(refsums_m2);
+        console.log(JSON.stringify(this.ntab.msums1));
+        console.log(JSON.stringify(this.ntab.msums2));
+        console.log(arrayEquals(refsums_m1, this.ntab.msums1));
+
+        return !arrayEquals(refsums_m1, this.ntab.msums1);
     }
 
     p_from_n() {
         console.log("p from n");
+        const refsums_m1 = Object.assign([], this.ptab.msums1);
+        const refsums_m2 = Object.assign([], this.ptab.msums2);
+
+        console.log("p margins from n margins:");
+        console.log(JSON.stringify(refsums_m1) +
+            "\n" +
+            JSON.stringify(refsums_m2));
 
         // Margin sums:
-        this.ptab.msums1 = this.ntab.msums1.map(val => Math.round(val / this.ntab.N));
-        this.ptab.msums2 = this.ntab.msums2.map(val => Math.round(val / this.ntab.N));
+        this.ptab.msums1 = this.ptab.msums1
+            .map((val, ix) => isNaN(val) ? Math.round(this.ntab.msums1[ix] / this.ntab.N) : val);
+        this.ptab.msums2 = this.ptab.msums2
+            .map((val, ix) => isNaN(val) ? Math.round(this.ntab.msums2[ix] / this.ntab.N) : val);
 
         // TODO: Return if change was made:
-        // return !arrayEquals(refsums, this.ntab.msums1);
+        return !arrayEquals(refsums_m1, this.ptab.msums1) || !arrayEquals(refsums_m2, this.ptab.msums2);
     }
+
+    // Method to get the margin from p-table margins:
 
 
     // Method to try and complete the set:
@@ -129,29 +162,56 @@ class RiskCollection {
         // Clone reference tables to compare:
         // https://www.freecodecamp.org/news/clone-an-object-in-javascript/  on cloning...
         let reftab_n = Object.assign([], this.ntab.tab.tab2x2);
-        let reftab_p = {...this.ptab.tab.tab2x2};
+        let reftab_p = Object.assign([], this.ptab.tab.tab2x2);  // was: {...this.ptab.tab.tab2x2};
 
         let nchange = 0;
 
         nchange += this.ntab.get_N();
         nchange += this.ptab.complete_margins();  // calculate margin sums.
         nchange += this.n_from_p();  // get numbers from probabilities.
-        this.p_from_n();  // TODO: Check for chage.
+        nchange += this.p_from_n();  // get probabilities from numbers.
+        nchange += this.get_margintabs();
         nchange += this.ntab.complete_table();  // try to complete the table.
 
         console.log("n changes: " + nchange);
 
         console.log("Reftabs:");
-        console.log(reftab_n);
+        console.log("Reftab n: " + JSON.stringify(reftab_n));
         console.log(this.ntab.tab.tab2x2);
         console.log(arrayEquals(reftab_n.flat(), this.ntab.tab.tab2x2.flat()));
-        console.log(reftab_p);
+        console.log("Reftab p: " + JSON.stringify(reftab_p));
         // Recursively retry, when there was a change:
         // if(reftab_n !== this.ntab.tab.tab2x2 || reftab_p !== this.ptab.tab.tab2x2){
         //     this.try_completion();
         // } else {
         //     alert("Done changing stuff!");
         // }
+    }
+
+    // Get margin table:
+    get_margintabs() {
+
+        console.log("Calculate margin tables");
+        // Decide whether to get from ntab or ptab!
+
+        // Ensure that margins are completed beforehand!
+        this.ntab.complete_margins();
+
+        // Get the margin tables:
+        this.mtab1.tab = this.ntab.tab.tab2x2
+            .map((x, ix) => x
+                .map(y => y / this.ntab.msums1[ix]))
+        this.mtab2.tab = transpose(transpose(this.ntab.tab.tab2x2)
+            .map((x, ix) => x
+                .map(y => y / this.ntab.msums2[ix])))
+
+        // Try to complete the margin tables:
+        this.mtab1.get_from_rel();
+        this.mtab2.get_from_rel();
+
+        console.log(this.mtab1);
+        console.log(this.mtab2);
+
     }
 
     // Update by array index:
@@ -197,11 +257,14 @@ class Basetable {
     // A basic table with margin sums:
     constructor(nested_list, msums1, msums2, N) {
         this.tab = new Table2x2(nested_list);
+
+        //
         this.msums1 = msums1;  // this.tab.margin1_sum();
         this.msums2 = msums2;  // this.tab.margin2_sum();
         // TODO: Eventually compare them with provided info?
         this.N = N;
 
+        // Call initial functions:
         this.get_N();
     }
 
@@ -212,7 +275,7 @@ class Basetable {
         // console.log(N_tab);
 
         // If not caclulable get from margins:
-        if(isNaN(N_tab)){
+        if (isNaN(N_tab)) {
 
             N_tab = compare_vals(this.msums1.flat().reduce((d, i) => d + i),
                 this.msums2.flat().reduce((d, i) => d + i));
@@ -227,12 +290,12 @@ class Basetable {
     complete_margins() {
         // TODO: Don't do this if all values are NA!
 
-        console.log(`Complete margins in`);
-        console.log(this);
+        // console.log(`Complete margins in`);
+        // console.log(JSON.stringify(this));
 
         const nonmissings_m1 = this.msums1.reduce((d, i) => d + !isNaN(i), 0);
         const nonmissings_m2 = this.msums2.reduce((d, i) => d + !isNaN(i), 0);
-        let repval = -99;
+        let repval = -99;  // initialize replacement value.
 
         if (nonmissings_m1 > 0) {
             repval = this.N - this.msums1.reduce((d, i) => d + (isNaN(i) ? 0 : i), 0);
@@ -245,6 +308,10 @@ class Basetable {
             repval = this.N - this.msums2.reduce((d, i) => d + (isNaN(i) ? 0 : i), 0);
             this.msums2 = this.msums2.map(val => isNaN(val) ? repval : val);
         }
+
+        // console.log(`Tried to complete margins in`);
+        // console.log(JSON.stringify(this));
+
 
         // Return whether change was made:
         return repval !== -99;
@@ -313,6 +380,34 @@ class Margintable {
         this.rel1 = rel1;
         this.rel2 = rel2;
     }
+
+    // Complete margins to sum up to 1:
+
+    // Get entries from relative:
+    get_from_rel(){
+
+        // Potentially make more concise?
+
+        // Complete the relations:
+        this.rel2[0] = isNaN(this.rel2[0]) ? 1/this.rel2[1] : this.rel2[0];
+        this.rel2[1] = isNaN(this.rel2[1]) ? 1/this.rel2[0] : this.rel2[1];
+
+        // Note: Currently ONLY for dim1 in margin table!
+        this.tab[1][1] = isNaN(this.tab[1][1]) ? this.tab[1][0] / this.rel2[0] : this.tab[1][1];
+        this.tab[1][0] = isNaN(this.tab[1][0]) ? this.tab[1][1] / this.rel2[1] : this.tab[1][0];
+
+        // Try completing missing fields:
+        // TODO!
+        // +++ HERE NOW +++
+        this.tab[1][1] = isNaN(this.tab[1][1]) ? this.tab[1][0] / this.rel2[0] : this.tab[1][1];
+
+        // Next: Link this completed table in the risk collection to get ptab/ntab!
+
+        // console.log("Margintable:");
+        // console.log(this);
+    }
+
+
 }
 
 
