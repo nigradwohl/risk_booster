@@ -674,23 +674,24 @@ $(document).ready(function () {
 
                 if (!node_arr.includes("tooltip-popup")) {
                     $("#tooltip-popup").hide().removeClass("selected-blur");
-                    $(window).unbind("click").unbind("scroll");
+                    // $(window).unbind("click").unbind("scroll");
                     $(".text-output").unbind("scroll");
                 }
 
             })
 
-            $(window).on("scroll", function () {
-                $("#tooltip-popup").hide().removeClass("selected-blur");
-                $(window).unbind("click").unbind("scroll");
-                $(".text-output").unbind("scroll");
-            })
-
-            $(".text-output").on("scroll", function () {
-                $("#tooltip-popup").hide().removeClass("selected-blur");
-                $(this).unbind("scroll");
-                $(window).unbind("click").unbind("scroll");
-            })
+            // Handle scrolling:
+            // $(window).on("scroll", function () {
+            //     $("#tooltip-popup").hide().removeClass("selected-blur");
+            //     $(window).unbind("click").unbind("scroll");
+            //     $(".text-output").unbind("scroll");
+            // })
+            //
+            // $(".text-output").on("scroll", function () {
+            //     $("#tooltip-popup").hide().removeClass("selected-blur");
+            //     $(this).unbind("scroll");
+            //     $(window).unbind("click").unbind("scroll");
+            // })
 
         })
     })
