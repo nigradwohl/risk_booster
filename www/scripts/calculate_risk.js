@@ -162,8 +162,13 @@ class RiskCollection {
         this.ptab.complete_margins();  // calculate margin sums.
         this.n_from_p();  // get numbers from probabilities.
         this.p_from_n();  // get probabilities from numbers.
-        this.get_margintabs();
+        this.get_margintabs();  // Try to complete the margin tables.
+
+        this.get_tab_from_margins(this.ntab); // Get elements from margin tables.
+        // TODO: make method to get anything from margins?
+
         this.ntab.complete_table();  // try to complete the table.
+        this.ptab.complete_table();
 
         // console.log("n changes: " + nchange);
         //
@@ -186,7 +191,7 @@ class RiskCollection {
             this.try_completion(nchange + 1);
         } else {
             console.log(`Done changing stuff after ${nchange} iterations!`);
-            alert(`Done changing stuff after ${nchange} iterations!`);
+            // alert(`Done changing stuff after ${nchange} iterations!`);
         }
     }
 
@@ -196,32 +201,37 @@ class RiskCollection {
         console.log("Calculate margin tables");
         // Decide whether to get from ntab or ptab!
 
-        const ref_mtab1 = Object.assign([], this.mtab1);
-        const ref_mtab2 = Object.assign([], this.mtab2);
-
         // Ensure that margins are completed beforehand!
         this.ntab.complete_margins();
 
         // Get the margin tables:
         this.mtab1.tab = this.ntab.tab.tab2x2
             .map((x, ix) => x
-                .map(y => y / this.ntab.msums1[ix]))
-        this.mtab2.tab = transpose(transpose(this.ntab.tab.tab2x2)
+                .map(y => y / this.ntab.msums1[ix]));
+        this.mtab2.tab = transpose(this.ntab.tab.tab2x2)
             .map((x, ix) => x
-                .map(y => y / this.ntab.msums2[ix])))
+                .map(y => y / this.ntab.msums2[ix]));
 
         // Try to complete the margin tables:
         this.mtab1.get_from_rel();
         this.mtab2.get_from_rel();
 
         console.log("Output margin tables");
-        console.log(this.mtab1);
-        console.log(ref_mtab1);
-        console.log(this.mtab2);
-        console.log(ref_mtab2);
+        console.log(JSON.stringify(this.mtab1));
+        console.log(JSON.stringify(this.mtab2));
 
-        return !arrayEquals(this.mtab1, ref_mtab1);
+    }
 
+    // Get n from margin tables:
+    get_tab_from_margins(){
+        console.log("Calculate from margins:");
+        console.log(JSON.stringify(this.mtab1));
+        console.log(JSON.stringify(this.mtab2));
+
+        // Exemplary for mtab2:
+        this.ntab.msums2;
+
+        // ++++ HERE NOW +++
     }
 
     // Update by array index:
@@ -396,26 +406,28 @@ class Margintable {
     // Get entries from relative:
     get_from_rel(){
 
-        const refrel =
-
         // Potentially make more concise?
+        // Add other dimensions?
+
+        // Margins should be designed so that the arrays add up to 1.
 
         // Complete the relations:
         this.rel2[0] = isNaN(this.rel2[0]) ? 1/this.rel2[1] : this.rel2[0];
         this.rel2[1] = isNaN(this.rel2[1]) ? 1/this.rel2[0] : this.rel2[1];
 
         // Note: Currently ONLY for dim1 in margin table!
-        this.tab[1][1] = isNaN(this.tab[1][1]) ? this.tab[1][0] / this.rel2[0] : this.tab[1][1];
-        this.tab[1][0] = isNaN(this.tab[1][0]) ? this.tab[1][1] / this.rel2[1] : this.tab[1][0];
+        this.tab[1][1] = isNaN(this.tab[1][1]) ? this.tab[0][1] / this.rel2[0] : this.tab[1][1];
+        this.tab[0][1] = isNaN(this.tab[0][1]) ? this.tab[1][1] / this.rel2[1] : this.tab[0][1];
 
-        // Try completing missing fields:
-        // TODO!
-        // +++ HERE NOW +++
+        // Try completing missing fields (adding up t 1 within array[0] and array[1]:
+        this.tab[0][0] = isNaN(this.tab[0][0]) ? 1 - this.tab[0][1] : this.tab[0][0];
+        this.tab[0][1] = isNaN(this.tab[0][1]) ? 1 - this.tab[0][0] : this.tab[0][1];
+        this.tab[1][0] = isNaN(this.tab[1][0]) ? 1 - this.tab[1][1] : this.tab[1][0];
+        this.tab[1][1] = isNaN(this.tab[1][1]) ? 1 - this.tab[1][0] : this.tab[1][1];
 
-        // Next: Link this completed table in the risk collection to get ptab/ntab!
 
-        // console.log("Margintable:");
-        // console.log(this);
+        console.log("Margintable:");
+        console.log(this);
     }
 
 
