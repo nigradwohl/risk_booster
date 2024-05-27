@@ -311,7 +311,7 @@ function continue_page(ev) {
             console.log(check_risk.ntab.tab.margin1_mean());
 
             // Following the current definition this is the risk:
-            const group_risks = check_risk.ntab.tab.margin2_mean();
+            const group_risks = check_risk.ntab.tab.margin1_mean();
             console.log("Risks in each group:");
             console.log(group_risks);
 
@@ -397,7 +397,7 @@ function continue_page(ev) {
             buttonPrintOrSaveDocument.addEventListener("click", printOrSave);  // allow saving.
 
             // Allow zooming into the canvas:
-            $("canvas").on("click", function (e) {
+            $(".canvas-base").on("click", function (e) {
 
                 console.log($(this).attr("id"));
                 $(".zoomed-canvas").hide();
@@ -487,7 +487,7 @@ const id_to_num_dict = {
 // ]
 // const risk_numbers = Object.fromEntries(entry_keys.map((x) => [x, NaN]));
 
-// TODO: Pass the position in table object instead? e.g., as
+// Pass the position in table object instead? e.g., as
 // "rrr": ["mtab", "rel1", 1]
 const number_dict = {
     "rrr": ["mtab2", "rel2", 1],
