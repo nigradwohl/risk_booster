@@ -443,9 +443,21 @@ $(document).ready(function () {
             // Is there a row that fulfills both criteria?
             !check_any_arr(risknum_rows, ["case", "subgroup"]);
 
+        // Additional information:
+        const addfeat_dict = {
+            // Which number types are there?
+            "effunit": new Set(token_dat.unit.filter((x, ix) => token_dat.n_effside[ix] === "eff" && x !== -1)),
+            "effnumtype": new Set(token_dat.numtype.filter((x, ix) => token_dat.n_effside[ix] === "eff" && x !== "other" && x !== -1)),
+            "sideunit": new Set(token_dat.unit.filter((x, ix) => token_dat.n_effside[ix] === "side" && x !== -1)),
+            "sidenumtype": new Set(token_dat.numtype.filter((x, ix) => token_dat.n_effside[ix] === "side" && x !== "other" && x !== -1))
+        };
+
+        // This collection allows to hint at communicating about differences between reporting about effectivity and side effects.
+
 
         console.log("~~~~~~~~~~~~ Text features: ~~~~~~~~~~~~~~~~");
         console.log(txtfeat_dict);
+        console.log(addfeat_dict);
 
         // Turn keys into array:
         const feature_arr = Object.entries(txtfeat_dict)
