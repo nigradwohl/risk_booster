@@ -633,18 +633,26 @@ $(document).ready(function () {
 
         // Alternative tooltip as popup:
         $(".tooltip").on("click", function (e) {
-            const thispos = $(this).position();
+
+
+            const cur_num = $(this);
+            const thispos = cur_num.position();
             console.log(thispos);
 
             // Change the popup text here:
             const cur_popup = $("#tooltip-popup");
 
+            // Remove highlighting classes:
+            cur_popup.removeClass("selected-blur");
+            $(".highlight-num").removeClass("selected-blur");
+
             const popup_height = cur_popup.height();
+            const popup_width = cur_popup.width();
             const popup_pad = cur_popup.innerHeight() - popup_height;
-            const num_height = $(this).height();
+            const num_height = cur_num.height();
 
             // Get text for the  popup:
-            const token_id = $(this).attr("id").replace("hn", "");
+            const token_id = cur_num.attr("id").replace("hn", "");
 
             console.log("Clicked token");
             console.log(token_dat.token[token_id] + ", unit: " + token_dat.unit[token_id] +
@@ -653,9 +661,7 @@ $(document).ready(function () {
             const numtype = unit_note_dict[token_dat.unit[token_id]].tooltip[token_dat.numtype[token_id]];
 
             // Transfer to more central place!
-            const txt_snips = {
-
-            };
+            const txt_snips = {};
 
             cur_popup.html(
                 `<h4>${numtype}</h4>` +
@@ -663,14 +669,19 @@ $(document).ready(function () {
             );
 
             // Style the popup, position it and show:
+            const correction_left = $("#text-result").position().left + $("#text-result").width();
+
             cur_popup
                 .css({
-                    top: thispos.top - popup_height - num_height - popup_pad * 2,
-                    left: thispos.left,
+                    top: thispos.top - popup_height - num_height - popup_pad,
+                    // If the popup goes out of bounds, correct.
+                    left: thispos.left + popup_width > correction_left ? thispos.left / 2 : thispos.left,
                     position: 'absolute'
                 })
                 .addClass("selected-blur")
                 .show();
+
+            $(this).addClass("selected-blur");
 
             // Prevent propagation:
             e.stopPropagation();
@@ -693,7 +704,8 @@ $(document).ready(function () {
 
 
                 if (!node_arr.includes("tooltip-popup")) {
-                    $("#tooltip-popup").hide().removeClass("selected-blur");
+                    cur_popup.hide().removeClass("selected-blur");
+                    cur_num.removeClass("selected-blur");
                     // $(window).unbind("click").unbind("scroll");
                     // $(".text-output").unbind("scroll");
                 }
