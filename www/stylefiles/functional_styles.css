@@ -159,6 +159,7 @@
     background-color: whitesmoke;
     border: 1px darkgrey solid;
 }
+
 /*#quit-zoom{*/
 /*    cursor: pointer;*/
 /*    text-align: right;*/
@@ -166,7 +167,7 @@
 
 /*}*/
 
-.canvas-container{
+.canvas-container {
     cursor: pointer;
 }
 
@@ -179,11 +180,21 @@
 canvas {
     display: none;
     background: white;
-    width: 250px;
-    height: 250px;
+    /*width: 250px;*/
+    /*height: 250px;*/
     /*border-radius: 50%;*/
     margin: 0 auto;
     /*border: 1px solid black;*/
+}
+
+.canvas-base {
+    width: 250px;
+    height: 250px;
+}
+
+.zoomed-canvas {
+    width: 95%;
+    height: 95%;
 }
 
 .split-content {
@@ -284,7 +295,7 @@ canvas {
     display: none;
 }
 
-#noentry-popup{
+#noentry-popup {
     border: 1px solid darkred;
     background-color: #f1f1f1;
     padding: 1em;
@@ -293,6 +304,6 @@ canvas {
     display: none;
 }
 
-.missing-input{
+.missing-input {
     border: 2px solid darkred;
 }

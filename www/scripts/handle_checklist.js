@@ -375,20 +375,39 @@ function continue_page(ev) {
             const cur2x2 = group_risks.map((x) => x.map((y) => Math.round(y * N_scale)));
             console.log(cur2x2);
 
+            const group_arrs = {
+                "treat": [cur2x2[1][0], cur2x2[1][1]],
+                "control": [cur2x2[0][0], cur2x2[0][1]]
+            }
+
             create_icon_array(
-                cur2x2[1][0], cur2x2[1][1],  // treatment group.
-                cur2x2[0][0], cur2x2[0][1],  // control group.
-                'dotdisplay');
-            $("#dotdisplay").show();
+                group_arrs.treat,  // treatment group.
+                // cur2x2[0][0], cur2x2[0][1],  // control group.
+                'dotdisplay-treat');
+            $("#dotdisplay-treat").show();
+
+            create_icon_array(
+                // [cur2x2[1][0], cur2x2[1][1]],  // treatment group.
+                group_arrs.control,  // control group.
+                'dotdisplay-control');
+            $("#dotdisplay-control").show();
+
+
+            // Add button for saving the page:
             buttonPrintOrSaveDocument.addEventListener("click", printOrSave);  // allow saving.
 
             // Allow zooming into the canvas:
             $("canvas").on("click", function (e) {
+
+                console.log($(this).attr("id"));
+                $(".zoomed-canvas").hide();
+
+                const cur_type = $(this).attr("id").replace("dotdisplay-", "");
+
                 // $(this).clone().appendTo(".canvas-zoom");
                 create_icon_array(
-                    cur2x2[1][0], cur2x2[1][1],  // treatment group.
-                    cur2x2[0][0], cur2x2[0][1],  // control group.
-                    'dotdisplay-zoom');
+                    group_arrs[cur_type],  // control group.
+                    $(this).attr("id") + '-zoom');
 
                 const mindim = Math.min(window.innerWidth, window.innerHeight);
 
@@ -396,12 +415,13 @@ function continue_page(ev) {
                     .width(mindim)
                     .height(mindim)
                     .css("display", "flex");
-                $("#dotdisplay-zoom").show();
+                $("#" + $(this).attr("id") + '-zoom').show();
 
                 // Allow clicking anywhere to close:
                 e.stopPropagation();  // stop event propagation to avoid immediate hiding on click.
                 $(window).on("click", function () {
                     $(".canvas-zoom").hide();
+                    $(".zoomed-canvas").hide();
                     // $(this).unbind("click");
                 });
             })
@@ -470,7 +490,7 @@ const id_to_num_dict = {
 // TODO: Pass the position in table object instead? e.g., as
 // "rrr": ["mtab", "rel1", 1]
 const number_dict = {
-    "rrr": ["mtab1", "rel1", 1],
+    "rrr": ["mtab2", "rel2", 1],
     "N_tot": ["ntab", "N"],
     "n00": ["ntab", "tab", "tab2x2", 0, 0],
     "n01": ["ntab", "tab", "tab2x2", 0, 1],
@@ -520,7 +540,7 @@ const float_keys = ["rrr",
 
 
 // FUNCTIONS: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function create_icon_array(n1, n2, n3, n4, id) {
+function create_icon_array(arr_n, id) {
 
     // Check for non-integer inputs:
     // https://stackoverflow.com/questions/469357/html-text-input-allow-only-numeric-input/469362#469362
@@ -534,7 +554,7 @@ function create_icon_array(n1, n2, n3, n4, id) {
         // const n2 = risk_numbers.n01;
         // const n3 = risk_numbers.n10;
         // const n4 = risk_numbers.n11;
-        const n_dots = n1 + n2 + n3 + n4;
+        const n_dots = arr_n.reduce((d, i) => d + i);
 
         // Create an array of types:
         // Determine number of rows:
@@ -545,7 +565,7 @@ function create_icon_array(n1, n2, n3, n4, id) {
         console.log(n_dots + " dots, " + nrows + " rows and " + ncols + " columns");
 
         // Create a vector of dot types:
-        const type_vec = Array(n1).fill(1).concat(Array(n2).fill(2), Array(n3).fill(3), Array(n4).fill(4));
+        const type_vec = arr_n.map((x, i) => Array(x).fill(i + 1)).flat();
         console.log("Type vec:");
         console.log(type_vec);
 

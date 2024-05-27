@@ -249,7 +249,11 @@
                             <div class="output-col figure-output">
 
                                 <div class="canvas-container">
-                                    <canvas id="dotdisplay"></canvas>
+                                    <canvas id="dotdisplay-treat" class="canvas-base"></canvas>
+                                </div>
+
+                                <div class="canvas-container">
+                                    <canvas id="dotdisplay-control" class="canvas-base"></canvas>
                                 </div>
                             </div>
 
@@ -284,7 +288,8 @@
 
 <div class="canvas-zoom">
     <!--        <span id="quit-zoom">X</span>-->
-    <canvas id="dotdisplay-zoom"></canvas>
+    <canvas id="dotdisplay-treat-zoom" class="zoomed-canvas"></canvas>
+    <canvas id="dotdisplay-control-zoom" class="zoomed-canvas"></canvas>
 </div>
 
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ EOF MAIN CONTENT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
