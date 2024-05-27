@@ -447,3 +447,14 @@ h3 {
     padding: 0.5em;
     border: 1px solid black;
 }
+
+.instruction-par {
+    color: #666
+}
+
+.fillout-info {
+    background-color: var(---column-bg-secondary);
+    border-radius: 5px;
+    padding: 1em;
+    margin-bottom: 0.5em;
+}

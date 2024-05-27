@@ -614,7 +614,13 @@ $(document).ready(function () {
         $("#text-notes-list").html(feature_list + notes_html);
 
         // Update the text:
-        $("#text-result").html('<h3>Ihr Text</h3><br>' + procText);
+        $("#text-result").html('<h3>Ihr Text</h3>' +
+            '<div class="fillout-info">' +
+            '<p class="instruction-par">Fahren Sie mit dem Mauszeiger über die hervorgehobenen Zahlen, um zu Erfahren, ' +
+            'welchem Format wir die Zahl zugeordnet haben.' +
+            '<br>Klicken Sie auf die Zahl, um mehr zu erfahren.</p>' +
+            '</div>' +
+            procText);
 
 
         // Alternative tooltip as popup:
