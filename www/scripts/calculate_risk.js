@@ -37,7 +37,7 @@ $(document).ready(function () {
     const mtab2 = new Margintable(na_tab,
         [NaN, NaN],  // relative risk (NOT reduction) between dim0 1/0
         [NaN, 1 - 0.79]  // the array position indicates the direction.
-            // relative risk (NOT REDUCTION) between dim1 1/0 (typically treatment/control)
+        // relative risk (NOT REDUCTION) between dim1 1/0 (typically treatment/control)
     );
 
     const testcase = new RiskCollection(ntab, ptab, mtab1, mtab2);
@@ -164,7 +164,7 @@ class RiskCollection {
         this.p_from_n();  // get probabilities from numbers.
         this.get_margintabs();  // Try to complete the margin tables.
 
-        this.get_tab_from_margins(this.ntab); // Get elements from margin tables.
+        this.get_tab_from_margins("ntab"); // Get elements from margin tables.
         // TODO: make method to get anything from margins?
 
         this.ntab.complete_table();  // try to complete the table.
@@ -179,13 +179,12 @@ class RiskCollection {
         // console.log(reftab_m2); console.log(JSON.stringify(this.mtab2));
 
 
-
         // Recursively retry, when there was a change:
-        if(reftab_n !== JSON.stringify(this.ntab) ||
+        if (reftab_n !== JSON.stringify(this.ntab) ||
             reftab_p !== JSON.stringify(this.ptab) ||
             reftab_m1 !== JSON.stringify(this.mtab1) ||
             reftab_m2 !== JSON.stringify(this.mtab2) &&
-        nchange < 100){
+            nchange < 100) {
 
             // Retry completion:
             this.try_completion(nchange + 1);
@@ -223,13 +222,26 @@ class RiskCollection {
     }
 
     // Get n from margin tables:
-    get_tab_from_margins(){
+    get_tab_from_margins(tabtype) {
         console.log("Calculate from margins:");
         console.log(JSON.stringify(this.mtab1));
         console.log(JSON.stringify(this.mtab2));
 
         // Exemplary for mtab2:
-        this.ntab.msums2;
+        const curmsums = this[tabtype].msums2;
+        // can be done analogously for msums 2!
+
+        const tab_from_margins = this.mtab2.tab
+            .map((x, ix) => x
+                .map(y => Math.round(y * curmsums[ix])));
+
+        console.log(tab_from_margins);
+        // Note: Must be transposed for margins 2.
+
+        this[tabtype].tab.tab2x2 = this[tabtype].tab.tab2x2
+            .map((x, ix) => x
+                .map((z, iz) => isNaN(z) ? tab_from_margins[ix][iz] : z));
+
 
         // ++++ HERE NOW +++
     }
@@ -404,7 +416,7 @@ class Margintable {
     // Complete margins to sum up to 1:
 
     // Get entries from relative:
-    get_from_rel(){
+    get_from_rel() {
 
         // Potentially make more concise?
         // Add other dimensions?
@@ -412,8 +424,8 @@ class Margintable {
         // Margins should be designed so that the arrays add up to 1.
 
         // Complete the relations:
-        this.rel2[0] = isNaN(this.rel2[0]) ? 1/this.rel2[1] : this.rel2[0];
-        this.rel2[1] = isNaN(this.rel2[1]) ? 1/this.rel2[0] : this.rel2[1];
+        this.rel2[0] = isNaN(this.rel2[0]) ? 1 / this.rel2[1] : this.rel2[0];
+        this.rel2[1] = isNaN(this.rel2[1]) ? 1 / this.rel2[0] : this.rel2[1];
 
         // Note: Currently ONLY for dim1 in margin table!
         this.tab[1][1] = isNaN(this.tab[1][1]) ? this.tab[0][1] / this.rel2[0] : this.tab[1][1];
