@@ -654,9 +654,9 @@ $(document).ready(function () {
             // Get text for the  popup:
             const token_id = cur_num.attr("id").replace("hn", "");
 
-            console.log("Clicked token");
-            console.log(token_dat.token[token_id] + ", unit: " + token_dat.unit[token_id] +
-                ", numtype: " + token_dat.numtype[token_id]);
+            // console.log("Clicked token");
+            // console.log(token_dat.token[token_id] + ", unit: " + token_dat.unit[token_id] +
+            //     ", numtype: " + token_dat.numtype[token_id]);
 
             const numtype = unit_note_dict[token_dat.unit[token_id]].tooltip[token_dat.numtype[token_id]];
 
@@ -699,8 +699,8 @@ $(document).ready(function () {
                     curnode = curnode.parentNode;
                 }
 
-                console.log("Array of parent nodes:");
-                console.log(node_arr);
+                // console.log("Array of parent nodes:");
+                // console.log(node_arr);
 
 
                 if (!node_arr.includes("tooltip-popup")) {
