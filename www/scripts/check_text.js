@@ -237,8 +237,8 @@ $(document).ready(function () {
 
         // Update missing information: ~~~~~~~~~~~
         // Absolute percentages (for now code as remainder that is not relative and see if it fails).
-        token_dat.numtype = token_dat.numtype
-            .map((ntype, ix) => token_dat.unit[ix] === "perc" && ntype.toString() === "other" ? "ABS" : ntype);
+        // token_dat.numtype = token_dat.numtype
+        //     .map((ntype, ix) => token_dat.unit[ix] === "perc" && ntype.toString() === "other" ? "ABS" : ntype);
 
 
         // console.log("Index of numbers with subgroup:");
@@ -310,16 +310,27 @@ $(document).ready(function () {
 
                 cur_ix = token_dat.end[i + match_len - 1] + 1;  // save index of final character to continue from there.
 
+                // Numbers that issue warnings:
+                // Strong warnings:
                 const warn_num = ["REL"].includes(cur_numtype[0]) || ["pval"].includes(cur_unit);
-                const highlight_type = warn_num ? "highlight-warning" : "highlight-base";
+
+                // Unclarities (e.g., missing reference groups):
+                // Percentages that apply to all are suspicious (if there is any talk about groups, that is).
+                const warn_noref = token_dat.n_trtctrl[i] === "all" && cur_unit === "perc" && ["eff", "side"].includes(token_dat.n_effside[i]);
+                    // but these should be only highlighted (or only receive an icon?).
+
+                // prepare warnings:
+                const highlight_type = warn_num || warn_noref ? "highlight-warning" : "highlight-base";
                 const warn_icon = warn_num ? "<sup><i class=\"fa fa-exclamation-triangle annote-text-icon\"></i></sup>" : "";
 
+                // Assemble text:
                 procText += text_pre +
                     ('<div id=hn' + i + ' class="highlight-num ' + highlight_type + ' tooltip">' +
                         inputText.slice(token_dat.start[i], cur_ix) +
                         warn_icon +
                         '<span class="tooltiptext">' +
                         cur_tooltip +
+                        (warn_noref ? "<br>(Bezug unklar)" : "") +
                         '</span></div>');
 
                 i += match_len;  // ensure to continue from next match.
