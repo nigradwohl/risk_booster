@@ -271,71 +271,76 @@ $(document).ready(function () {
         // Loop over all tokens:
         for (let i = 0; i < token_dat.nrow; i++) {
 
-            // console.log(i);
-            let cur_unit = token_dat.unit[i];  // determine unit of current token.
+            if (token_dat.is_num) {
 
-            // console.log("current unit (is array: " + Array.isArray(cur_unit) + ")");
-            // console.log(cur_unit);
+                // console.log(i);
+                let cur_unit = token_dat.unit[i];  // determine unit of current token.
 
-            if (Array.isArray(cur_unit)) {
-                cur_unit = cur_unit[0];  // for now take the first array element.
-            }
+                // console.log("current unit (is array: " + Array.isArray(cur_unit) + ")");
+                // console.log(cur_unit);
 
-            if (cur_unit !== -1 && !units_exc.includes(cur_unit)) {
-                // Text prior to match:
-                let text_pre = inputText.slice(cur_ix, token_dat.start[i]);
-
-                // Get units and length:
-                let match_len = 0;
-                // let match = token_dat.token.slice(i);
-
-                while (token_dat.unit[i + match_len] !== -1 && i + match_len < token_dat.nrow) {
-                    // match = token_dat.token[i];
-                    // i++;
-                    // console.log(token_dat.token[i + match_len]);
-                    match_len++;
+                if (Array.isArray(cur_unit)) {
+                    cur_unit = cur_unit[0];  // for now take the first array element.
                 }
 
-                // Get types for each tooltip from dictionary:
-                let cur_numtype = token_dat.numtype.slice(i, i + match_len).filter((x) => x !== -1);
-                // console.log(token_dat.numtype.slice(i, i + match_len));
-                const cur_tooltip = unit_note_dict[cur_unit].tooltip[cur_numtype[0]];  // NOTE: currently first type only.
+                if (cur_unit !== -1 && !units_exc.includes(cur_unit)) {
+                    // Text prior to match:
+                    let text_pre = inputText.slice(cur_ix, token_dat.start[i]);
 
-                // Token information:
-                // console.log(token_dat.token[i] + "; Start: " + token_dat.start[i] + ", end: " + token_dat.end[i + match_len - 1] +
-                //     ", match length: " + match_len + ", unit: " + cur_unit + ", numtype: " + cur_numtype);
+                    // Get units and length:
+                    let match_len = 0;
+                    // let match = token_dat.token.slice(i);
 
-                console.log("Current number type is");
-                console.log(cur_numtype);
+                    while (token_dat.unit[i + match_len] !== -1 && i + match_len < token_dat.nrow) {
+                        // match = token_dat.token[i];
+                        // i++;
+                        // console.log(token_dat.token[i + match_len]);
+                        match_len++;
+                    }
 
-                cur_ix = token_dat.end[i + match_len - 1] + 1;  // save index of final character to continue from there.
+                    // Get types for each tooltip from dictionary:
+                    let cur_numtype = token_dat.numtype.slice(i, i + match_len).filter((x) => x !== -1);
+                    // console.log(token_dat.numtype.slice(i, i + match_len));
+                    const cur_tooltip = unit_note_dict[cur_unit].tooltip[cur_numtype[0]];  // NOTE: currently first type only.
 
-                // Numbers that issue warnings:
-                // Strong warnings:
-                const warn_num = ["REL"].includes(cur_numtype[0]) || ["pval"].includes(cur_unit);
+                    // Token information:
+                    // console.log(token_dat.token[i] + "; Start: " + token_dat.start[i] + ", end: " + token_dat.end[i + match_len - 1] +
+                    //     ", match length: " + match_len + ", unit: " + cur_unit + ", numtype: " + cur_numtype);
 
-                // Unclarities (e.g., missing reference groups):
-                // Percentages that apply to all are suspicious (if there is any talk about groups, that is).
-                const warn_noref = token_dat.n_trtctrl[i] === "all" && cur_unit === "perc" && ["eff", "side"].includes(token_dat.n_effside[i]);
+                    console.log("Current number type is");
+                    console.log(cur_numtype);
+
+                    cur_ix = token_dat.end[i + match_len - 1] + 1;  // save index of final character to continue from there.
+
+                    // Numbers that issue warnings:
+                    // Strong warnings:
+                    const warn_num = ["REL"].includes(cur_numtype[0]) || ["pval"].includes(cur_unit);
+
+                    // Unclarities (e.g., missing reference groups):
+                    // Percentages that apply to all are suspicious (if there is any talk about groups, that is).
+                    const warn_noref = token_dat.n_trtctrl[i] === "all" && cur_unit === "perc" && ["eff", "side"].includes(token_dat.n_effside[i]);
                     // but these should be only highlighted (or only receive an icon?).
 
-                // prepare warnings:
-                const highlight_type = warn_num || warn_noref ? "highlight-warning" : "highlight-base";
-                const warn_icon = warn_num ? "<sup><i class=\"fa fa-exclamation-triangle annote-text-icon\"></i></sup>" : "";
+                    // prepare warnings:
+                    const highlight_type = warn_num || warn_noref ? "highlight-warning" : "highlight-base";
+                    const warn_icon = warn_num ? "<sup><i class=\"fa fa-exclamation-triangle annote-text-icon\"></i></sup>" : "";
 
-                // Assemble text:
-                procText += text_pre +
-                    ('<div id=hn' + i + ' class="highlight-num ' + highlight_type + ' tooltip">' +
-                        inputText.slice(token_dat.start[i], cur_ix) +
-                        warn_icon +
-                        '<span class="tooltiptext">' +
-                        cur_tooltip +
-                        (warn_noref ? "<br>(Bezug unklar)" : "") +
-                        '</span></div>');
+                    // Assemble text:
+                    procText += text_pre +
+                        ('<div id=hn' + i + ' class="highlight-num ' + highlight_type + ' tooltip">' +
+                            inputText.slice(token_dat.start[i], cur_ix) +
+                            warn_icon +
+                            '<span class="tooltiptext">' +
+                            cur_tooltip +
+                            (warn_noref ? "<br>(Bezug unklar)" : "") +
+                            '</span></div>');
 
-                i += match_len;  // ensure to continue from next match.
+                    i += match_len;  // ensure to continue from next match.
+
+                }
 
             }
+
 
         }
 
@@ -418,7 +423,7 @@ $(document).ready(function () {
 
         function check_any_arr(arrs, check_arr) {
             return arrs.some((arr) => check_arr.every((x) => arr.includes(x)))
-        };
+        }
 
         // 1. and 2. Global tests: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // List of keys; decide for each true/false and keep those that are true!
@@ -609,7 +614,7 @@ $(document).ready(function () {
                 console.log(value);
 
                 let numtypes = Object.keys(value.tooltip)
-                    .filter((key) => token_dat.numtype.includes(key))
+                    .filter((inkey) => check_any_arr(risknum_rows, [key, inkey]))
                     .map((x) => value.tooltip[x]);
                 console.log(numtypes);
 
@@ -689,10 +694,10 @@ $(document).ready(function () {
             const txt_snips = {
                 "REL": ["Relative ",
                     {"perc": "Prozentzahl"},
-                "Achtung vor <a href='risk_wiki.html#wiki-rel'>relativen Angaben</a>!<br>" +
-                "Relative Angaben sollten niemals alleine verwendet werden. " +
-                "Es müssen immer die absoluten Risiken in den Gruppen berichtet werden. " +
-                "[SCHEINT DAS HIER DER FALL ZU SEIN? Differenziert für Effektivität und NW ausweisen!]"]
+                    "Achtung vor <a href='risk_wiki.html#wiki-rel'>relativen Angaben</a>!<br>" +
+                    "Relative Angaben sollten niemals alleine verwendet werden. " +
+                    "Es müssen immer die absoluten Risiken in den Gruppen berichtet werden. " +
+                    "[SCHEINT DAS HIER DER FALL ZU SEIN? Differenziert für Effektivität und NW ausweisen!]"]
             };
 
             cur_popup.html(
