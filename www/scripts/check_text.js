@@ -318,7 +318,7 @@ $(document).ready(function () {
 
                     // Unclarities (e.g., missing reference groups):
                     // Percentages that apply to all are suspicious (if there is any talk about groups, that is).
-                    const warn_noref = token_dat.n_trtctrl[i] === "all" && cur_unit === "perc" && ["eff", "side"].includes(token_dat.n_effside[i]);
+                    const warn_noref = (token_dat.n_trtctrl[i] === "all" || token_dat.n_trtctrl[i] === "") && cur_unit === "perc" && ["eff", "side"].includes(token_dat.n_effside[i]);
                     // but these should be only highlighted (or only receive an icon?).
 
                     // prepare warnings:
