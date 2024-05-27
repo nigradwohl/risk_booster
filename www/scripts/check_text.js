@@ -305,11 +305,19 @@ $(document).ready(function () {
                 // console.log(token_dat.token[i] + "; Start: " + token_dat.start[i] + ", end: " + token_dat.end[i + match_len - 1] +
                 //     ", match length: " + match_len + ", unit: " + cur_unit + ", numtype: " + cur_numtype);
 
+                console.log("Current number type is");
+                console.log(cur_numtype);
+
                 cur_ix = token_dat.end[i + match_len - 1] + 1;  // save index of final character to continue from there.
 
+                const warn_num = ["REL"].includes(cur_numtype[0]) || ["pval"].includes(cur_unit);
+                const highlight_type = warn_num ? "highlight-warning" : "highlight-base";
+                const warn_icon = warn_num ? "<sup><i class=\"fa fa-exclamation-triangle annote-text-icon\"></i></sup>" : "";
+
                 procText += text_pre +
-                    ('<div class="highlight-num tooltip">' +
+                    ('<div class="highlight-num ' + highlight_type + ' tooltip">' +
                         inputText.slice(token_dat.start[i], cur_ix) +
+                        warn_icon +
                         '<span class="tooltiptext">' +
                         cur_tooltip +
                         '</span></div>');
