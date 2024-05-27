@@ -159,6 +159,7 @@ class RiskCollection {
 
         // Try the different completion functions:
         this.ntab.get_N();
+        this.ntab.complete_margins();
         this.ptab.complete_margins();  // calculate margin sums.
         this.n_from_p();  // get numbers from probabilities.
         this.p_from_n();  // get probabilities from numbers.
@@ -344,9 +345,6 @@ class Basetable {
         // console.log(`Tried to complete margins in`);
         // console.log(JSON.stringify(this));
 
-
-        // Return whether change was made:
-        return repval !== -99;
 
     }
 
