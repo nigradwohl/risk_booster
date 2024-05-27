@@ -681,14 +681,25 @@ $(document).ready(function () {
             // console.log(token_dat.token[token_id] + ", unit: " + token_dat.unit[token_id] +
             //     ", numtype: " + token_dat.numtype[token_id]);
 
-            const numtype = unit_note_dict[token_dat.unit[token_id]].tooltip[token_dat.numtype[token_id]];
+            // const numtype = unit_note_dict[token_dat.unit[token_id]].tooltip[token_dat.numtype[token_id]];
+            const numtype = token_dat.numtype[token_id];
+            console.log(numtype);
 
             // Transfer to more central place!
-            const txt_snips = {};
+            const txt_snips = {
+                "REL": ["Relative ",
+                    {"perc": "Prozentzahl"},
+                "Achtung vor <a href='risk_wiki.html#wiki-rel'>relativen Angaben</a>!<br>" +
+                "Relative Angaben sollten niemals alleine verwendet werden. " +
+                "Es müssen immer die absoluten Risiken in den Gruppen berichtet werden. " +
+                "[SCHEINT DAS HIER DER FALL ZU SEIN? Differenziert für Effektivität und NW ausweisen!]"]
+            };
 
             cur_popup.html(
-                `<h4>${numtype}</h4>` +
-                `<p>${unit_note_dict[token_dat.unit[token_id]].note([numtype])}</p>`
+                // `<h4>${numtype}</h4>` +
+                // `<p>${unit_note_dict[token_dat.unit[token_id]].note([numtype])}</p>`
+                `<h4>${txt_snips[numtype][0] + txt_snips[numtype][1][token_dat.unit[token_id]]}</h4>` +
+                `<p>${txt_snips[numtype][2]}</p>`
             );
 
             // Style the popup, position it and show:
