@@ -19,6 +19,8 @@ const mtab2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
 const check_risk = new RiskCollection(ntab, ptab, mtab1, mtab2);
 console.log(check_risk);
 
+let is_skip = false;
+
 
 $(document).ready(function () {
 
@@ -100,7 +102,9 @@ function continue_page(ev) {
     console.log("Calling event is");
     console.log(ev);
 
-    const skip_misses = ev.currentTarget.id === "skip-missing";
+    // Ensure that the continue button and enter allow to skip, too!
+
+    const skip_misses = ev.currentTarget.id === "skip-missing" || is_skip;
     console.log(`Current target ID is ${ev.currentTarget.id}; Skip misses ${skip_misses}`);
 
     // Loop over defined input fields:
@@ -172,6 +176,9 @@ function continue_page(ev) {
             }
 
 
+        } else {
+            // If misses were skipped:
+            is_skip = false;
         }
 
     }
@@ -184,6 +191,7 @@ function continue_page(ev) {
         // alert("Sie haben nichts eingegeben! Absicht?");
         // Show popup that can be skipped!
 
+        is_skip = true;
         const input_field = $("#" + missing_entries[0]);
         const thispos = input_field.position();  // get position of current question.
         console.log(thispos);
