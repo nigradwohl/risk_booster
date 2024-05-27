@@ -196,7 +196,7 @@ $(document).ready(function () {
         let ix = -1;
         for (let i = 0; i < no_unit_ix.length; i++) {
             ix = no_unit_ix[i];
-            if(new_units[ix].length > 0){
+            if (new_units[ix].length > 0) {
                 token_dat.unit[ix] = new_units[ix];
             }
 
@@ -315,7 +315,7 @@ $(document).ready(function () {
                 const warn_icon = warn_num ? "<sup><i class=\"fa fa-exclamation-triangle annote-text-icon\"></i></sup>" : "";
 
                 procText += text_pre +
-                    ('<div class="highlight-num ' + highlight_type + ' tooltip">' +
+                    ('<div id=hn' + i + ' class="highlight-num ' + highlight_type + ' tooltip">' +
                         inputText.slice(token_dat.start[i], cur_ix) +
                         warn_icon +
                         '<span class="tooltiptext">' +
@@ -437,7 +437,7 @@ $(document).ready(function () {
         txtfeat_dict["side"] = txtfeat_dict.side_num || token_dat.topics.includes("side");
         txtfeat_dict["treat"] = txtfeat_dict.treat_num || token_dat.topics.includes("treatgroup");
         txtfeat_dict["contr"] = txtfeat_dict.contr_num || token_dat.topics.includes("controlgroup");
-            // Specific number info:
+        // Specific number info:
         txtfeat_dict["rel"] = ["REL", "mult"].some((x) => token_dat.numtype.includes(x));  // tests if one of the elements exists.
         txtfeat_dict["rel_only"] = txtfeat_dict.rel && !token_dat.numtype.includes("ABS") &&
             // Is there a row that fulfills both criteria?
@@ -643,6 +643,26 @@ $(document).ready(function () {
             const popup_pad = cur_popup.innerHeight() - popup_height;
             const num_height = $(this).height();
 
+            // Get text for the  popup:
+            const token_id = $(this).attr("id").replace("hn", "");
+
+            console.log("Clicked token");
+            console.log(token_dat.token[token_id] + ", unit: " + token_dat.unit[token_id] +
+                ", numtype: " + token_dat.numtype[token_id]);
+
+            const numtype = unit_note_dict[token_dat.unit[token_id]].tooltip[token_dat.numtype[token_id]];
+
+            // Transfer to more central place!
+            const txt_snips = {
+
+            };
+
+            cur_popup.html(
+                `<h4>${numtype}</h4>` +
+                `<p>${unit_note_dict[token_dat.unit[token_id]].note([numtype])}</p>`
+            );
+
+            // Style the popup, position it and show:
             cur_popup
                 .css({
                     top: thispos.top - popup_height - num_height - popup_pad * 2,
@@ -675,7 +695,7 @@ $(document).ready(function () {
                 if (!node_arr.includes("tooltip-popup")) {
                     $("#tooltip-popup").hide().removeClass("selected-blur");
                     // $(window).unbind("click").unbind("scroll");
-                    $(".text-output").unbind("scroll");
+                    // $(".text-output").unbind("scroll");
                 }
 
             })
