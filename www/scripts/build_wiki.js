@@ -35,7 +35,7 @@ $(document).ready(function () {
         // Main text from object:
         if (curinfo.maintext.length > 0) {
             wiki_text += '<div class="wiki-text">' +
-                "<p>" + curinfo.maintext.join("</p><p>") +
+                curinfo.maintext +
                 '</div>'
         }
 
