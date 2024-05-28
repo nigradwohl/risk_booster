@@ -1,6 +1,6 @@
 /**
  * Dictionary with information to be presented in the Wiki and summaries to be used in otherplaces.
- IDs for wiki will be pre-pendend with "wiki-"
+ IDs for wiki will receive the prefix "wiki-"
  * @type {{}}
  */
 
@@ -10,7 +10,7 @@ const info_data = {
         "heading": "Prozentzahlen",
         "annotation": "",
         "overview": ["Bezugsgröße ist entscheidend, besonders für <a href=\"#wiki-rel\">relative Angaben</a>" +
-        "(z.B., eine Erhöhung von 50%, eine Impfstoffwirksamkeit von 90%)",
+        " (z.B., eine Erhöhung von 50%, eine Impfstoffwirksamkeit von 90%)",
             "Absolute Ereigniswahrscheinlichkeiten sind <a href=\"#wiki-rel\">relativen Angaben</a> vorzuziehen"],
         "examples": [],
         "maintext": ["Prozentzahlen sollten nur bei Angaben größer als 1% verwendet werden.",
