@@ -341,7 +341,6 @@ $(document).ready(function () {
 
             }
 
-
         }
 
         // Add remaining text to procText.
@@ -733,7 +732,6 @@ $(document).ready(function () {
                 `<p><strong>Bezug</strong>: ${token_dat.n_trtctrl[token_id]}</p>` +  // Some additional info!
                 `<p><ul><li>${curinfo.overview.join("</li><li>")}</li></ul></p>` +
                 `<p>[Place to add more info, if needed!]</p>`
-
             );
 
             // Style the popup, position it and show:
@@ -794,8 +792,39 @@ $(document).ready(function () {
             // })
 
         })
+
+        // Show button for printing:
+        $("#btn-print").show();
     })
 
+    // Printing:
+    $("#btn-print").on("click", function (e) {
+        const divContents = $(".text-output").html();
+        // console.log(divContents);
+        // divContents.print();
+
+        // Create the PDF as overlay and print it!
+
+        $("#pdf-output").text($(".text-notes").html() +
+            `<table><tr><td>${divContents}</td><td>ANMERKUNGEN</td></tr></table>`);
+
+        window.print();
+
+        // THe highlighting currently gets lost!
+
+        $("#pdf-output").html("");  // Empty the HTML!
+
+        // e.stopPropagation();
+
+
+        // let printWindow = window.open('', '', 'height=400,width=800');
+        // printWindow.document.write('<html><head><title>DIV Contents</title>');
+        // printWindow.document.write('</head><body >');
+        // printWindow.document.write(divContents);
+        // printWindow.document.write('</body></html>');
+        // printWindow.document.close();
+        // printWindow.print();
+    });
 
 })
 
@@ -2223,6 +2252,27 @@ function combine_str_arr(arr) {
 
     return output;
 }
+
+// Printing:
+// https://stackoverflow.com/questions/18191893/generate-pdf-from-html-in-div-using-javascript
+// function printDiv({divId, title}) {
+//   let mywindow = window.open('', 'PRINT', 'height=650,width=900,top=100,left=150');
+//
+//   // ASSEMBLE THE ANNOTATIONS HERE? ESSENTIALLY RE-CREATE THE TEXT?
+//
+//   mywindow.document.write(`<html><head><title>${title}</title>`);
+//   mywindow.document.write('</head><body >');
+//   mywindow.document.write(document.getElementById(divId).innerHTML);
+//   mywindow.document.write('</body></html>');
+//
+//   mywindow.document.close(); // necessary for IE >= 10
+//   mywindow.focus(); // necessary for IE >= 10*/
+//
+//   mywindow.print();
+//   mywindow.close();
+//
+//   return true;
+// }
 
 // ~~~~~~~~~~~~~~~~~~~~ Unused functionality ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // // Get duplicates:

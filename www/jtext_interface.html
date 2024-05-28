@@ -13,6 +13,12 @@
     <script src="global_scripts.js"></script>
     <script src="scripts/info_data.js"></script>
     <title>Text processing test</title>
+
+    <style media="print">
+        .noprint {
+            display: none;
+        }
+    </style>
 </head>
 <body>
 
@@ -31,13 +37,13 @@
 <div class="row current-theme">
 
 
-    <div class="input-col text-input">
+    <div class="input-col text-input noprint">
         <textarea class="longtext" name="description" id="text-query"></textarea>
         <br>
         <button class="input-button" id="check-text">Prüfe meinen Text</button>
     </div>
 
-    <div class="output-col text-notes">
+    <div class="output-col text-notes noprint">
         <h3>Anmerkungen</h3>
         <div id="text-note-general">
             <p>Geben Sie einen Text ein und klicken Sie auf "Prüfe meinen Text", um Anmerkungen zu
@@ -52,72 +58,72 @@
 
         <!--        For testing (generating a link does not (yet?) work properly.-->
         <!--        <a href="risk_wiki.html">Prozentangabe</a>-->
-<!--        <div id="notes-dummy">-->
-<!--            <h4>Alternative:</h4>-->
-<!--            <table>-->
-<!--                <tr>-->
-<!--                    <td style="background-color: #6AB187">-->
+        <!--        <div id="notes-dummy">-->
+        <!--            <h4>Alternative:</h4>-->
+        <!--            <table>-->
+        <!--                <tr>-->
+        <!--                    <td style="background-color: #6AB187">-->
 
-<!--                        <div class="tooltip">-->
-<!--                            <i class="fa fa-thumbs-up in-text-icon good"></i> Nutzen und Schaden-->
-<!--                            <span class="tooltiptext">-->
-<!--                        Sehr gut! Sie haben Nutzen und Schaden thematisiert-->
-<!--                        </span></div>-->
-<!--                    </td>-->
-<!--                    <td style="background-color: lightcoral">-->
+        <!--                        <div class="tooltip">-->
+        <!--                            <i class="fa fa-thumbs-up in-text-icon good"></i> Nutzen und Schaden-->
+        <!--                            <span class="tooltiptext">-->
+        <!--                        Sehr gut! Sie haben Nutzen und Schaden thematisiert-->
+        <!--                        </span></div>-->
+        <!--                    </td>-->
+        <!--                    <td style="background-color: lightcoral">-->
 
-<!--                        <div class="tooltip">-->
-<!--                            <i class="fa fa-thumbs-up in-text-icon error"></i>-->
-<!--                            Behandlungs- und Kontrollgruppe-->
-<!--                            <span class="tooltiptext">-->
-<!--                        Sie haben keine Informationen zu Behandlungs- und Kontrollgruppe thematisiert.-->
-<!--                        </span></div>-->
-<!--                    </td>-->
-<!--                </tr>-->
-<!--                <tr>-->
-<!--                    <td>-->
-<!--                        <div class="tooltip">-->
-<!--                            <i class="fa fa-thumbs-up in-text-icon good"></i> Zahlen zum Nutzen-->
-<!--                            <span class="tooltiptext">-->
-<!--                        Sie haben den Nutzen mit Zahlen belegt.-->
-<!--                        </span></div>-->
-<!--                    </td>-->
-<!--                    <td>-->
-<!--                        <div class="tooltip">-->
-<!--                            <i class="fa fa-thumbs-down in-text-icon error"></i>-->
-<!--                            Nutzen in Behandlungs und Kontrollgruppe-->
-<!--                            <span class="tooltiptext">-->
-<!--                        Sie haben den Nutzen nicht mit Zahlen für Behandlungs- und Kontrollgruppe-->
-<!--                                belegt.-->
-<!--                        </span></div>-->
-<!--                    </td>-->
+        <!--                        <div class="tooltip">-->
+        <!--                            <i class="fa fa-thumbs-up in-text-icon error"></i>-->
+        <!--                            Behandlungs- und Kontrollgruppe-->
+        <!--                            <span class="tooltiptext">-->
+        <!--                        Sie haben keine Informationen zu Behandlungs- und Kontrollgruppe thematisiert.-->
+        <!--                        </span></div>-->
+        <!--                    </td>-->
+        <!--                </tr>-->
+        <!--                <tr>-->
+        <!--                    <td>-->
+        <!--                        <div class="tooltip">-->
+        <!--                            <i class="fa fa-thumbs-up in-text-icon good"></i> Zahlen zum Nutzen-->
+        <!--                            <span class="tooltiptext">-->
+        <!--                        Sie haben den Nutzen mit Zahlen belegt.-->
+        <!--                        </span></div>-->
+        <!--                    </td>-->
+        <!--                    <td>-->
+        <!--                        <div class="tooltip">-->
+        <!--                            <i class="fa fa-thumbs-down in-text-icon error"></i>-->
+        <!--                            Nutzen in Behandlungs und Kontrollgruppe-->
+        <!--                            <span class="tooltiptext">-->
+        <!--                        Sie haben den Nutzen nicht mit Zahlen für Behandlungs- und Kontrollgruppe-->
+        <!--                                belegt.-->
+        <!--                        </span></div>-->
+        <!--                    </td>-->
 
-<!--                </tr>-->
-<!--                <tr>-->
-<!--                    <td>-->
+        <!--                </tr>-->
+        <!--                <tr>-->
+        <!--                    <td>-->
 
-<!--                        <div class="tooltip">-->
-<!--                            <i class="fa fa-thumbs-down in-text-icon error"></i> Zahlen zum Schaden-->
-<!--                            <span class="tooltiptext">-->
-<!--                                Sie haben den Schaden nicht mit Zahlen belegt.-->
-<!--                                Das sollte immer gewährleistet sein.-->
-<!--                                Klicken Sie-->
-<!--                        <a href="risk_wiki.html">hier</a>,-->
-<!--                                um mehr zu erfahren.-->
-<!--                        </span></div>-->
-<!--                    </td>-->
-<!--                    <td>-->
-<!--                        <div class="tooltip">-->
-<!--                            <i class="fa fa-thumbs-down in-text-icon warning"></i>-->
-<!--                            Schaden in Behandlungs und Kontrollgruppe-->
-<!--                            <span class="tooltiptext">-->
-<!--                        Sie haben den Schaden nur für die Behandlungsgruppe mit Zahlen belegt-->
-<!--                                belegt.-->
-<!--                        </span></div>-->
-<!--                    </td>-->
-<!--                </tr>-->
-<!--            </table>-->
-<!--        </div>-->
+        <!--                        <div class="tooltip">-->
+        <!--                            <i class="fa fa-thumbs-down in-text-icon error"></i> Zahlen zum Schaden-->
+        <!--                            <span class="tooltiptext">-->
+        <!--                                Sie haben den Schaden nicht mit Zahlen belegt.-->
+        <!--                                Das sollte immer gewährleistet sein.-->
+        <!--                                Klicken Sie-->
+        <!--                        <a href="risk_wiki.html">hier</a>,-->
+        <!--                                um mehr zu erfahren.-->
+        <!--                        </span></div>-->
+        <!--                    </td>-->
+        <!--                    <td>-->
+        <!--                        <div class="tooltip">-->
+        <!--                            <i class="fa fa-thumbs-down in-text-icon warning"></i>-->
+        <!--                            Schaden in Behandlungs und Kontrollgruppe-->
+        <!--                            <span class="tooltiptext">-->
+        <!--                        Sie haben den Schaden nur für die Behandlungsgruppe mit Zahlen belegt-->
+        <!--                                belegt.-->
+        <!--                        </span></div>-->
+        <!--                    </td>-->
+        <!--                </tr>-->
+        <!--            </table>-->
+        <!--        </div>-->
     </div>
 
 </div>
@@ -140,12 +146,14 @@
     </div>
 
     <!--    The resulting text with intext annotations:-->
-    <div class="output-col text-output">
+    <div class="output-col text-output noprint">
 
         <div id="text-result"></div>
 
-
+        <button id="btn-print" class="noprint">Text drucken</button>
     </div>
+
+    <div id="pdf-output"></div>
 </div>
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ EOF MAIN CONTENT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 
