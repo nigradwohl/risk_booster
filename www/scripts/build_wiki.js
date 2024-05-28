@@ -1,4 +1,4 @@
-const wiki_order = ["prozent", "nh"]
+const wiki_order = ["prozent", "nh", "rel"]
 
 
 $(document).ready(function () {
