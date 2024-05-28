@@ -467,8 +467,13 @@ $(document).ready(function () {
             "sidenumtype": new Set(token_dat.numtype.filter((x, ix) => token_dat.n_effside[ix] === "side" && x !== "other" && x !== -1))
         };
 
-        // This collection allows to hint at communicating about differences between reporting about effectivity and side effects.
-
+        // This collection allows to hint at communicating about differences between reporting about effectivity and side effects (mismatched framing).
+        // +++ HERE +++
+        let mismatched_framing = false;
+        if(txtfeat_dict.eff_num && txtfeat_dict.side_num &&
+            addfeat_dict.effnumtype.has("REL") && !addfeat_dict.sidenumtype.has("REL")){
+            mismatched_framing = true;
+        }
 
         console.log("~~~~~~~~~~~~ Text features: ~~~~~~~~~~~~~~~~");
         console.log(txtfeat_dict);
@@ -601,6 +606,13 @@ $(document).ready(function () {
         // Output topics:
         $("#text-note-general").html("<p id=\"text-note-general\">" + key_topics_str + "</p>");
 
+
+        // Add mismatched framing:
+        if(mismatched_framing){
+            arr_li.add('Achtung: Sie haben in Behandlungsgruppe relative Zahlen und in der Vergleichsgruppe absolute Zahlen verwendet.' +
+                'Dieses "mismatched framing" sollte vermieden werden, ' +
+                'da es <a>[LINK]Die Wirksamkeit größer und den Schaden kleiner [ODER ANDERSHERUM!] erscheinen lässt</a>');
+        }
 
         // List of notes on number types:
         for (const [key, value] of Object.entries(unit_note_dict)) {
