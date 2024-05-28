@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <script src="global_scripts.js"></script>
+    <script src="scripts/info_data.js"></script>
+    <script src="scripts/build_wiki.js"></script>
     <title>Wiki</title>
 </head>
 <body>
@@ -28,71 +30,71 @@
         </p>
     </div>
 
+    <div id="entry-list"></div>
 
-    <div class="wiki-entry full-column" id="wiki-prozent">
-
-
-        <h2>Prozentzahlen</h2>
-
-        <div class="wiki-overview">
-            <ul>
-                <li>
-                    Bezugsgröße ist entscheidend, besonders für <a href="#wiki-rel">relative Angaben</a> (z.B., eine
-                    Erhöhung von 50%, eine
-                    Impfstoffwirksamkeit von 90%)
-                </li>
-                <li>
-                    Absolute Ereigniswahrscheinlichkeiten sind <a href="#wiki-rel">relativen Angaben</a> vorzuziehen
-                </li>
-            </ul>
-        </div>
-        <div class="wiki-text">
-            <p>
-                Prozentzahlen sollten nur bei Angaben größer als 1% verwendet werden.
-            </p>
-            <p>
-                Besser als <a href="">Prozentzahlen</a> sind <a href="#wiki-nh">natürliche Häufigkeiten</a>.
-            </p>
-        </div>
+<!--    <div class="wiki-entry full-column" id="wiki-prozent">-->
 
 
-    </div>
+<!--        <h2>Prozentzahlen</h2>-->
 
-    <div class="wiki-entry full-column" id="wiki-nh">
-
-
-        <h2>Natürliche Häufigkeiten</h2>
-
-        [TODO: Improve design of examples!]
-        <div class="wiki-examples">
-            <p>Beispiele: </p>
-            <ul>
-                <li>
-                    440 von 1000 Personen ohne Auffrischungsimpfung gegen COVID-19 erkranken, während unter den
-                    Geimpften nur 270 von 1000 erkranken.
-                    <br>
-                    <a href="https://www.hardingcenter.de/de/impfungen/mrna-schutzimpfung-gegen-covid-19-fuer-erwachsene-unter-60-jahren">https://www.hardingcenter.de/de/impfungen/mrna-schutzimpfung-gegen-covid-19-fuer-erwachsene-unter-60-jahren</a>
-                </li>
-            </ul>
-        </div>
-
-
-        <div class="wiki-overview">
-            <ul>
-                <li>
-                    Bezugsgröße sollte konstant sein.
-                </li>
-                <li>
-                    Absolute Ereigniswahrscheinlichkeiten sind relativen Angaben vorzuziehen
-                </li>
-            </ul>
-        </div>
-        <div class="wiki-text">
-
-        </div>
+<!--        <div class="wiki-overview">-->
+<!--            <ul>-->
+<!--                <li>-->
+<!--                    Bezugsgröße ist entscheidend, besonders für <a href="#wiki-rel">relative Angaben</a> (z.B., eine-->
+<!--                    Erhöhung von 50%, eine Impfstoffwirksamkeit von 90%)-->
+<!--                </li>-->
+<!--                <li>-->
+<!--                    Absolute Ereigniswahrscheinlichkeiten sind <a href="#wiki-rel">relativen Angaben</a> vorzuziehen-->
+<!--                </li>-->
+<!--            </ul>-->
+<!--        </div>-->
+<!--        <div class="wiki-text">-->
+<!--            <p>-->
+<!--                Prozentzahlen sollten nur bei Angaben größer als 1% verwendet werden.-->
+<!--            </p>-->
+<!--            <p>-->
+<!--                Besser als <a href="">Prozentzahlen</a> sind <a href="#wiki-nh">natürliche Häufigkeiten</a>.-->
+<!--            </p>-->
+<!--        </div>-->
 
 
-    </div>
+<!--    </div>-->
+
+<!--    <div class="wiki-entry full-column" id="wiki-nh">-->
+
+
+<!--        <h2>Natürliche Häufigkeiten</h2>-->
+
+<!--        [TODO: Improve design of examples!]-->
+<!--        <div class="wiki-examples">-->
+<!--            <p>Beispiele: </p>-->
+<!--            <ul>-->
+<!--                <li>-->
+<!--                    440 von 1000 Personen ohne Auffrischungsimpfung gegen COVID-19 erkranken, während unter den-->
+<!--                    Geimpften nur 270 von 1000 erkranken.-->
+<!--                    <br>-->
+<!--                    <a href="https://www.hardingcenter.de/de/impfungen/mrna-schutzimpfung-gegen-covid-19-fuer-erwachsene-unter-60-jahren">https://www.hardingcenter.de/de/impfungen/mrna-schutzimpfung-gegen-covid-19-fuer-erwachsene-unter-60-jahren</a>-->
+<!--                </li>-->
+<!--            </ul>-->
+<!--        </div>-->
+
+
+<!--        <div class="wiki-overview">-->
+<!--            <ul>-->
+<!--                <li>-->
+<!--                    Bezugsgröße sollte konstant sein.-->
+<!--                </li>-->
+<!--                <li>-->
+<!--                    Absolute Ereigniswahrscheinlichkeiten sind relativen Angaben vorzuziehen-->
+<!--                </li>-->
+<!--            </ul>-->
+<!--        </div>-->
+<!--        <div class="wiki-text">-->
+
+<!--        </div>-->
+
+
+<!--    </div>-->
 
     <div class="wiki-entry full-column" id="wiki-rel">
 
