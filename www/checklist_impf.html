@@ -47,8 +47,10 @@
 <div id="header-section" class="no-print">
 </div>
 
+
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ MAIN CONTENT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 <div class="row current-theme">
+
     <p class="no-print">
         Anmerkungen: Aktuelle Reihenfolge anhand von Informationen in Beispiel Pressemitteilung.
         Anpassung auf Abfrage nach Quelle (PM, Studie, Nachrichtenartikel) hin denkbar.
@@ -71,6 +73,13 @@
                     </div>
                 </td>
                 <td class="content-cell">
+
+                    <div id="noentry-popup">
+                        <p>Hey! Gib mal was ein!</p>
+                        <button id="input-missing">Na gut...</button>
+                        <br>
+                        <button id="skip-missing" class="continue-btn">Nein!</button>
+                    </div>
 
 
                     <div class="checklist-question" id="rel-risk-reduction-q">
@@ -232,16 +241,19 @@
                                 <p>In der Behandlungsgruppe erkranken <span class="risk-info" id="risk-treat"></span>
                                 </p>
                                 <p>In der Kontrollgruppe erkranken <span class="risk-info" id="risk-control"></span></p>
-                                <p>Absolute Risikoreduktion: Unter den Behandelten erkranken <span class="risk-info"
-                                                                                                   id="arr"></span></p>
-                                <p>Relative Risikoreduktion (Wirksamkeit): <span class="risk-info" id="rrr"></span></p>
+                                <p id="abs-change"></p>
+                                <p id="rel-change"></p>
                             </div>
 
                             <!--    The results from providing numbers:-->
                             <div class="output-col figure-output">
 
                                 <div class="canvas-container">
-                                    <canvas id="dotdisplay"></canvas>
+                                    <canvas id="dotdisplay-treat" class="canvas-base"></canvas>
+                                </div>
+
+                                <div class="canvas-container">
+                                    <canvas id="dotdisplay-control" class="canvas-base"></canvas>
                                 </div>
                             </div>
 
@@ -276,7 +288,8 @@
 
 <div class="canvas-zoom">
     <!--        <span id="quit-zoom">X</span>-->
-    <canvas id="dotdisplay-zoom"></canvas>
+    <canvas id="dotdisplay-treat-zoom" class="zoomed-canvas"></canvas>
+    <canvas id="dotdisplay-control-zoom" class="zoomed-canvas"></canvas>
 </div>
 
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ EOF MAIN CONTENT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
@@ -287,7 +300,8 @@
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--Space for scripts-->
-<script src="scripts/handle_checklist.js"></script>
 <script src="scripts/calculate_risk.js"></script>
+<script src="scripts/handle_checklist.js"></script>
+
 
 </body>

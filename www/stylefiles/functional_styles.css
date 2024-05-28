@@ -170,6 +170,7 @@
     background-color: whitesmoke;
     border: 1px darkgrey solid;
 }
+
 /*#quit-zoom{*/
 /*    cursor: pointer;*/
 /*    text-align: right;*/
@@ -177,7 +178,7 @@
 
 /*}*/
 
-.canvas-container{
+.canvas-container {
     cursor: pointer;
 }
 
@@ -190,11 +191,21 @@
 canvas {
     display: none;
     background: white;
-    width: 250px;
-    height: 250px;
+    /*width: 250px;*/
+    /*height: 250px;*/
     /*border-radius: 50%;*/
     margin: 0 auto;
     /*border: 1px solid black;*/
+}
+
+.canvas-base {
+    width: 250px;
+    height: 250px;
+}
+
+.zoomed-canvas {
+    width: 95%;
+    height: 95%;
 }
 
 .split-content {
@@ -209,6 +220,8 @@ canvas {
     color: darkgrey;
     text-align: center;
     height: 100%;
+    /*display: flex;*/
+    align-content: center;
 }
 
 
@@ -280,6 +293,7 @@ canvas {
 
 .content-cell {
     width: 80%;
+    position: relative;
 }
 
 .risk-info {
@@ -290,4 +304,17 @@ canvas {
 
 .fa.back-btn {
     display: none;
+}
+
+#noentry-popup {
+    border: 1px solid darkred;
+    background-color: #f1f1f1;
+    padding: 1em;
+    margin: 1em;
+    position: absolute;
+    display: none;
+}
+
+.missing-input {
+    border: 2px solid darkred;
 }
