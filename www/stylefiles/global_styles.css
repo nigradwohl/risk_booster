@@ -408,3 +408,35 @@ h3 {
 
     margin: 0 0.5em;
 }
+
+#tooltip-popup {
+    background-color: white;
+    border: 1px solid black;
+    display: none;
+    z-index: 9999;
+    max-width: 50%;
+    margin: 1em;
+    padding: 1em;
+    /*width: 10em;*/
+    /*height: 3em;*/
+}
+
+.selected-blur {
+    box-shadow: 0 0 0 999999px rgba(0, 0, 0, 0.5);
+}
+
+#notes-dummy td {
+    padding: 0.5em;
+    border: 1px solid black;
+}
+
+.instruction-par {
+    color: #666
+}
+
+.fillout-info {
+    background-color: var(---column-bg-secondary);
+    border-radius: 5px;
+    padding: 1em;
+    margin-bottom: 0.5em;
+}

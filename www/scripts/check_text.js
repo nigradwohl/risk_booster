@@ -151,8 +151,6 @@ $(document).ready(function () {
         const regex_matches = detect_regex_match(inputText, token_dat, check_numbers_dict);
 
 
-
-
         // Text-level: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Add information to object:
         token_dat.add_column(regex_matches.match_id, "match");
@@ -162,13 +160,15 @@ $(document).ready(function () {
 
         // Detect topis:
         token_dat.detect_topic("impf", ["(?<!(gl|sch))[Ii]mpf"]);  // must be preceded
+        token_dat.detect_topic("mask", ["Maske|FFP"]);  // must be preceded
         token_dat.detect_topic("lower_risk", ["mindern", "Risiko"]);
+        token_dat.detect_topic("lower_risk", ["schützen|Schutz", "Infekt|Ansteck"]);
         token_dat.detect_topic("cancer_risk", ["[Rr]isiko", "Krebs"]);  // must be preceded
         token_dat.detect_topic("cancer_drug", ["[Mm]edikament", "Krebs"])
 
         // Detect topic features:
         token_dat.detect_topic("eff", ["Nutz", "(?<!Neben)[Ww]irks(am|ung)", "Schutz",
-            "geschützt"]);
+            "schütz"]);
         token_dat.detect_topic("side", ["Nebenwirk"]);
         // NOTE: Do not add specific side effects, because they may be effects (symptoms) in other contexts!
         token_dat.detect_topic("treatgroup", ["(Impf|Behandlungs)-?.*[Gg]ruppe"]);
@@ -194,9 +194,12 @@ $(document).ready(function () {
         console.log(new_units);
         // Replace the missing units:
         let ix = -1;
-        for(let i = 0; i < no_unit_ix.length; i++){
+        for (let i = 0; i < no_unit_ix.length; i++) {
             ix = no_unit_ix[i];
-            token_dat.unit[ix] = new_units[ix];
+            if (new_units[ix].length > 0) {
+                token_dat.unit[ix] = new_units[ix];
+            }
+
         }
 
         // Detect number words:
@@ -234,8 +237,8 @@ $(document).ready(function () {
 
         // Update missing information: ~~~~~~~~~~~
         // Absolute percentages (for now code as remainder that is not relative and see if it fails).
-        token_dat.numtype = token_dat.numtype
-            .map((ntype, ix) => token_dat.unit[ix] === "perc" && ntype.toString() === "other" ? "ABS" : ntype);
+        // token_dat.numtype = token_dat.numtype
+        //     .map((ntype, ix) => token_dat.unit[ix] === "perc" && ntype.toString() === "other" ? "ABS" : ntype);
 
 
         // console.log("Index of numbers with subgroup:");
@@ -268,52 +271,76 @@ $(document).ready(function () {
         // Loop over all tokens:
         for (let i = 0; i < token_dat.nrow; i++) {
 
-            // console.log(i);
-            let cur_unit = token_dat.unit[i];  // determine unit of current token.
+            if (token_dat.is_num) {
 
-            // console.log("current unit (is array: " + Array.isArray(cur_unit) + ")");
-            // console.log(cur_unit);
+                // console.log(i);
+                let cur_unit = token_dat.unit[i];  // determine unit of current token.
 
-            if (Array.isArray(cur_unit)) {
-                cur_unit = cur_unit[0];  // for now take the first array element.
-            }
+                // console.log("current unit (is array: " + Array.isArray(cur_unit) + ")");
+                // console.log(cur_unit);
 
-            if (cur_unit !== -1 && !units_exc.includes(cur_unit)) {
-                // Text prior to match:
-                let text_pre = inputText.slice(cur_ix, token_dat.start[i]);
-
-                // Get units and length:
-                let match_len = 0;
-                // let match = token_dat.token.slice(i);
-
-                while (token_dat.unit[i + match_len] !== -1 && i + match_len < token_dat.nrow) {
-                    // match = token_dat.token[i];
-                    // i++;
-                    // console.log(token_dat.token[i + match_len]);
-                    match_len++;
+                if (Array.isArray(cur_unit)) {
+                    cur_unit = cur_unit[0];  // for now take the first array element.
                 }
 
-                // Get types for each tooltip from dictionary:
-                let cur_numtype = token_dat.numtype.slice(i, i + match_len).filter((x) => x !== -1);
-                // console.log(token_dat.numtype.slice(i, i + match_len));
-                const cur_tooltip = unit_note_dict[cur_unit].tooltip[cur_numtype[0]];  // NOTE: currently first type only.
+                if (cur_unit !== -1 && !units_exc.includes(cur_unit)) {
+                    // Text prior to match:
+                    let text_pre = inputText.slice(cur_ix, token_dat.start[i]);
 
-                // Token information:
-                // console.log(token_dat.token[i] + "; Start: " + token_dat.start[i] + ", end: " + token_dat.end[i + match_len - 1] +
-                //     ", match length: " + match_len + ", unit: " + cur_unit + ", numtype: " + cur_numtype);
+                    // Get units and length:
+                    let match_len = 0;
+                    // let match = token_dat.token.slice(i);
 
-                cur_ix = token_dat.end[i + match_len - 1] + 1;  // save index of final character to continue from there.
+                    while (token_dat.unit[i + match_len] !== -1 && i + match_len < token_dat.nrow) {
+                        // match = token_dat.token[i];
+                        // i++;
+                        // console.log(token_dat.token[i + match_len]);
+                        match_len++;
+                    }
 
-                procText += text_pre +
-                    ('<div class="highlight-num tooltip">' +
-                        inputText.slice(token_dat.start[i], cur_ix) +
-                        '<span class="tooltiptext">' +
-                        cur_tooltip +
-                        '</span></div>');
+                    // Get types for each tooltip from dictionary:
+                    let cur_numtype = token_dat.numtype.slice(i, i + match_len).filter((x) => x !== -1);
+                    // console.log(token_dat.numtype.slice(i, i + match_len));
+                    const cur_tooltip = unit_note_dict[cur_unit].tooltip[cur_numtype[0]];  // NOTE: currently first type only.
 
-                i += match_len;  // ensure to continue from next match.
+                    // Token information:
+                    // console.log(token_dat.token[i] + "; Start: " + token_dat.start[i] + ", end: " + token_dat.end[i + match_len - 1] +
+                    //     ", match length: " + match_len + ", unit: " + cur_unit + ", numtype: " + cur_numtype);
+
+                    console.log("Current number type is");
+                    console.log(cur_numtype);
+
+                    cur_ix = token_dat.end[i + match_len - 1] + 1;  // save index of final character to continue from there.
+
+                    // Numbers that issue warnings:
+                    // Strong warnings:
+                    const warn_num = ["REL"].includes(cur_numtype[0]) || ["pval"].includes(cur_unit);
+
+                    // Unclarities (e.g., missing reference groups):
+                    // Percentages that apply to all are suspicious (if there is any talk about groups, that is).
+                    const warn_noref = (token_dat.n_trtctrl[i] === "all" || token_dat.n_trtctrl[i] === "") && cur_unit === "perc" && ["eff", "side"].includes(token_dat.n_effside[i]);
+                    // but these should be only highlighted (or only receive an icon?).
+
+                    // prepare warnings:
+                    const highlight_type = warn_num || warn_noref ? "highlight-warning" : "highlight-base";
+                    const warn_icon = warn_num ? "<sup><i class=\"fa fa-exclamation-triangle annote-text-icon\"></i></sup>" : "";
+
+                    // Assemble text:
+                    procText += text_pre +
+                        ('<div id=hn' + i + ' class="highlight-num ' + highlight_type + ' tooltip">' +
+                            inputText.slice(token_dat.start[i], cur_ix) +
+                            warn_icon +
+                            '<span class="tooltiptext">' +
+                            cur_tooltip +
+                            (warn_noref ? "<br>(Bezug unklar)" : "") +
+                            '</span></div>');
+
+                    i += match_len;  // ensure to continue from next match.
+
+                }
 
             }
+
 
         }
 
@@ -337,6 +364,8 @@ $(document).ready(function () {
         // Notes about topics:
         const key_topic_dict = {
             "impf": "Impfung",
+            "mask": "Schutzmasken",
+            "protective_measures": "Schutzmaßnahmen",
             "cancer_risk": "Krebsrisiko",
             "lower_risk": "Risikominderung"
         };  // {"impf": "Impfung", "eff": "Wirksamkeit", "side": "Nebenwirkungen"};
@@ -392,7 +421,9 @@ $(document).ready(function () {
         const risknum_rows = risknum_ix.map((x) => token_dat.get_row(x));
         const risknums_flat = risknum_rows.flat();
 
-        function check_any_arr(arrs, check_arr){return arrs.some((arr) => check_arr.every((x) => arr.includes(x)))};
+        function check_any_arr(arrs, check_arr) {
+            return arrs.some((arr) => check_arr.every((x) => arr.includes(x)))
+        }
 
         // 1. and 2. Global tests: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // List of keys; decide for each true/false and keep those that are true!
@@ -406,21 +437,43 @@ $(document).ready(function () {
             "eff_treat_num": check_any_arr(risknum_rows, ["eff", "treatment"]),
             "side_treat_num": check_any_arr(risknum_rows, ["side", "treatment"]),
             "eff_contr_num": check_any_arr(risknum_rows, ["eff", "control"]),
-            "side_contr_num": check_any_arr(risknum_rows, ["side", "control"]),
-            "eff": this.eff_num || token_dat.topics.includes("eff"),
-            "side": this.side_num || token_dat.topics.includes("side"),
-            "treat": this.treat_num || token_dat.topics.includes("treatgroup"),
-            "contr": this.contr_num || token_dat.topics.includes("controlgroup"),
-            // Specific number info:
-            "rel": ["REL", "mult"].some((x) => token_dat.numtype.includes(x)),  // tests if one of the elements exists.
-            "rel_only": this.rel && !token_dat.numtype.includes("ABS") &&
-                // Is there a row that fulfills both criteria?
-                !check_any_arr(risknum_rows, ["case", "subgroup"]),
+            "side_contr_num": check_any_arr(risknum_rows, ["side", "control"])
+            // "eff": this.eff_num || token_dat.topics.includes("eff"),
+            // "side": this.side_num || token_dat.topics.includes("side"),
+            // "treat": this.treat_num || token_dat.topics.includes("treatgroup"),
+            // "contr": this.contr_num || token_dat.topics.includes("controlgroup"),
+            // // Specific number info:
+            // "rel": ["REL", "mult"].some((x) => token_dat.numtype.includes(x)),  // tests if one of the elements exists.
+            // "rel_only": this.rel && !token_dat.numtype.includes("ABS") &&
+            //     // Is there a row that fulfills both criteria?
+            //     !check_any_arr(risknum_rows, ["case", "subgroup"])
         };
+
+        txtfeat_dict["eff"] = txtfeat_dict.eff_num || token_dat.topics.includes("eff");
+        txtfeat_dict["side"] = txtfeat_dict.side_num || token_dat.topics.includes("side");
+        txtfeat_dict["treat"] = txtfeat_dict.treat_num || token_dat.topics.includes("treatgroup");
+        txtfeat_dict["contr"] = txtfeat_dict.contr_num || token_dat.topics.includes("controlgroup");
+        // Specific number info:
+        txtfeat_dict["rel"] = ["REL", "mult"].some((x) => token_dat.numtype.includes(x));  // tests if one of the elements exists.
+        txtfeat_dict["rel_only"] = txtfeat_dict.rel && !token_dat.numtype.includes("ABS") &&
+            // Is there a row that fulfills both criteria?
+            !check_any_arr(risknum_rows, ["case", "subgroup"]);
+
+        // Additional information:
+        const addfeat_dict = {
+            // Which number types are there?
+            "effunit": new Set(token_dat.unit.filter((x, ix) => token_dat.n_effside[ix] === "eff" && x !== -1)),
+            "effnumtype": new Set(token_dat.numtype.filter((x, ix) => token_dat.n_effside[ix] === "eff" && x !== "other" && x !== -1)),
+            "sideunit": new Set(token_dat.unit.filter((x, ix) => token_dat.n_effside[ix] === "side" && x !== -1)),
+            "sidenumtype": new Set(token_dat.numtype.filter((x, ix) => token_dat.n_effside[ix] === "side" && x !== "other" && x !== -1))
+        };
+
+        // This collection allows to hint at communicating about differences between reporting about effectivity and side effects.
 
 
         console.log("~~~~~~~~~~~~ Text features: ~~~~~~~~~~~~~~~~");
         console.log(txtfeat_dict);
+        console.log(addfeat_dict);
 
         // Turn keys into array:
         const feature_arr = Object.entries(txtfeat_dict)
@@ -475,7 +528,9 @@ $(document).ready(function () {
                 feature_str += " werden nur Informationen " + value.zumzur + feats_present.toString() + " berichtet. Es sollten auch Informationen " + value.zumzur + feats_missing + " berichtet werden.";
             } else {
                 feature_str = "<i class=\"fa fa-thumbs-down in-text-icon error\"></i>" + feature_str;
-                feature_str += " werden weder Informationen zu " + value.fset.map((key) => feature_dict[key]).join(" noch " + value.zumzur) + " berichtet.";
+                feature_str += " werden weder Informationen zu " +
+                    value.fset.map((key) => feature_dict[key]).join(" noch " + value.zumzur) + " berichtet." +
+                    "<br>NOTE: In Wiki mention the reasons and that one should mention if the envidence is not based on a group comparison";
             }
 
 
@@ -506,7 +561,7 @@ $(document).ready(function () {
             } else if (eff_num || side_num) {
                 feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> " +
                     "Zahlen nur zu" +
-                    (eff_num ? "r Nutzen" : " Schaden") +
+                    (eff_num ? "m Nutzen" : " Schaden") +
                     " angegeben."
             } else {
                 feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> " +
@@ -559,7 +614,7 @@ $(document).ready(function () {
                 console.log(value);
 
                 let numtypes = Object.keys(value.tooltip)
-                    .filter((key) => token_dat.numtype.includes(key))
+                    .filter((inkey) => check_any_arr(risknum_rows, [key, inkey]))
                     .map((x) => value.tooltip[x]);
                 console.log(numtypes);
 
@@ -595,8 +650,121 @@ $(document).ready(function () {
         $("#text-notes-list").html(feature_list + notes_html);
 
         // Update the text:
-        $("#text-result").html('<h3>Ihr Text</h3><br>' + procText);
+        $("#text-result").html('<h3>Ihr Text</h3>' +
+            '<div class="fillout-info">' +
+            '<p class="instruction-par">Fahren Sie mit dem Mauszeiger über die hervorgehobenen Zahlen, um zu Erfahren, ' +
+            'welchem Format wir die Zahl zugeordnet haben.' +
+            '<br>Klicken Sie auf die Zahl, um mehr zu erfahren.</p>' +
+            '</div>' +
+            procText);
 
+
+        // Alternative tooltip as popup:
+        $(".tooltip").on("click", function (e) {
+
+
+            const cur_num = $(this);
+            const thispos = cur_num.position();
+            console.log(thispos);
+
+            // Change the popup text here:
+            const cur_popup = $("#tooltip-popup");
+
+            // Remove highlighting classes:
+            cur_popup.removeClass("selected-blur");
+            $(".highlight-num").removeClass("selected-blur");
+
+            const popup_height = cur_popup.height();
+            const popup_width = cur_popup.width();
+            const popup_pad = cur_popup.innerHeight() - popup_height;
+            const num_height = cur_num.height();
+
+            // Get text for the  popup:
+            const token_id = cur_num.attr("id").replace("hn", "");
+
+            // console.log("Clicked token");
+            // console.log(token_dat.token[token_id] + ", unit: " + token_dat.unit[token_id] +
+            //     ", numtype: " + token_dat.numtype[token_id]);
+
+            // const numtype = unit_note_dict[token_dat.unit[token_id]].tooltip[token_dat.numtype[token_id]];
+            const numtype = token_dat.numtype[token_id];
+            console.log(numtype);
+
+            // Transfer to more central place!
+            const txt_snips = {
+                "REL": ["Relative ",
+                    {"perc": "Prozentzahl"},
+                    "Achtung vor <a href='risk_wiki.html#wiki-rel'>relativen Angaben</a>!<br>" +
+                    "Relative Angaben sollten niemals alleine verwendet werden. " +
+                    "Es müssen immer die absoluten Risiken in den Gruppen berichtet werden. " +
+                    "[SCHEINT DAS HIER DER FALL ZU SEIN? Differenziert für Effektivität und NW ausweisen!]"]
+            };
+
+            cur_popup.html(
+                // `<h4>${numtype}</h4>` +
+                // `<p>${unit_note_dict[token_dat.unit[token_id]].note([numtype])}</p>`
+                `<h4>${txt_snips[numtype][0] + txt_snips[numtype][1][token_dat.unit[token_id]]}</h4>` +
+                `<p>${txt_snips[numtype][2]}</p>`
+            );
+
+            // Style the popup, position it and show:
+            const correction_left = $("#text-result").position().left + $("#text-result").width();
+
+            cur_popup
+                .css({
+                    top: thispos.top - popup_height - num_height - popup_pad,
+                    // If the popup goes out of bounds, correct.
+                    left: thispos.left + popup_width > correction_left ? thispos.left / 2 : thispos.left,
+                    position: 'absolute'
+                })
+                .addClass("selected-blur")
+                .show();
+
+            $(this).addClass("selected-blur");
+
+            // Prevent propagation:
+            e.stopPropagation();
+
+            $(window).on("click", function (e) {
+
+                console.log(e.target);
+
+                // May need to become more complex with more elements!
+                // Get all parent node IDs?
+                let node_arr = [];
+                let curnode = e.target;
+                while (curnode.localName !== "body") {
+                    node_arr = node_arr.concat(curnode.id);
+                    curnode = curnode.parentNode;
+                }
+
+                // console.log("Array of parent nodes:");
+                // console.log(node_arr);
+
+
+                if (!node_arr.includes("tooltip-popup")) {
+                    cur_popup.hide().removeClass("selected-blur");
+                    cur_num.removeClass("selected-blur");
+                    // $(window).unbind("click").unbind("scroll");
+                    // $(".text-output").unbind("scroll");
+                }
+
+            })
+
+            // Handle scrolling:
+            // $(window).on("scroll", function () {
+            //     $("#tooltip-popup").hide().removeClass("selected-blur");
+            //     $(window).unbind("click").unbind("scroll");
+            //     $(".text-output").unbind("scroll");
+            // })
+            //
+            // $(".text-output").on("scroll", function () {
+            //     $("#tooltip-popup").hide().removeClass("selected-blur");
+            //     $(this).unbind("scroll");
+            //     $(window).unbind("click").unbind("scroll");
+            // })
+
+        })
     })
 
 
@@ -821,7 +989,9 @@ const unit_note_dict = {
             "other": "Natürliche Häufigkeit"
         },
         "note": function (type_arr) {
-            return "Der Text enthält Natürliche Häufigkeiten. Sehr gut! Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
+            return "Der Text enthält " +
+                "Natürliche Häufigkeiten. " +
+                "Sehr gut! Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
         }
     },
     "case": {
@@ -834,7 +1004,8 @@ const unit_note_dict = {
             "control": "Anzahl in der Kontrollgruppe"
         },
         "note": function (type_arr) {
-            return "Der Text enthält Anzahlen von Fällen. Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
+            return "Der Text enthält Anzahlen von Fällen. " +
+                "Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
         }
     },
     "multi": {
@@ -848,7 +1019,9 @@ const unit_note_dict = {
     "pval": {
         "tooltip": {"other": "P-Wert"},
         "note": function (type_arr) {
-            return "Der Text enthält p-Werte. Diese sind leicht missverständlich und sollten vermieden werden."
+            return "Der Text enthält p-Werte. Diese sind leicht missverständlich und sollten vermieden werden. " +
+                "Ein besseres Maß für Unsicherheit sind Zahlenspannen (z.B., Credibilitätsintervalle oder Konfidenzintervalle." +
+                "z.B., die Anzahl an vermiedenen Todensfällen unter den Behandelten liegt zwischen 5 und 10)"
         }
     },
     // Unidentified matches:
@@ -1132,7 +1305,7 @@ function detect_number_type(token_data, txt) {
     // Detect matches that are indicative of certain data types:
     const relation_dict = {
         "treatre_pre": {
-            "regex": /(?<treatment>(\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,3}(auf die|unter den) ([a-zA-ZÄÖÜßäöü]+ ){0,2}geimpften (Proband\w+|Teilnehm\w+)))/dg  // (\w+ ){0,2} are up to 2 more words.
+            "regex": /(?<treatment>(\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,3}(auf die|unter den) ([a-zA-ZÄÖÜßäöü]+ ){0,2}geimpften (Proband\w+|Teilnehm\w+|Kind\w+)))/dg  // (\w+ ){0,2} are up to 2 more words.
             // / (auf die tatsächlich geimpften (Proband\w+|Teilnehm\w+))/
         },
         "controlrel_pre": {
@@ -1418,7 +1591,7 @@ function investigate_context(token_data, index_arr, keyset) {
     // For each number query:
     for (const token_ix of index_arr) {
 
-        // // console.log("-------- NEW TOKEN --------");
+        // console.log("-------- NEW TOKEN --------");
         // console.log(`+++ Token number ${token_ix}: ${tokens[token_ix]} +++`);
 
         // PREPARE THE WINDOW: ~~~~~~~~~~~~~~
@@ -1566,9 +1739,10 @@ function investigate_context(token_data, index_arr, keyset) {
 
             // Fix a maximum number of iterations to avoid breakdown!
             if (testcounter > 50) {
-                // console.log("BREAK DESCRIPTION");
+                console.log("BREAK DESCRIPTION");
                 description_complete = true;
                 // console.log(numberfeats);
+                numberfeats = numberfeats.add("unknown");
             }
 
             testcounter++;  // should maybe remain implemented!
@@ -1618,7 +1792,7 @@ function detect_unit(token_data) {
     // ALTERNATIVELY use dict etc.?
     const unit_lookup = [
         [/(%|[Pp]rozent\w*)/, "perc"],  // percentages.
-        [/Teilnehm|F[aä]ll|Proband|Mensch|Verl[aä]uf/, "case"]  // frequencies.
+        [/Teilnehm|[Ff][aä]ll|Proband|Mensch|Verl[aä]uf/, "case"]  // frequencies.
         // natural/relative frequencies.
     ]
     // Note: Percentage signs may also be contained in the number token!

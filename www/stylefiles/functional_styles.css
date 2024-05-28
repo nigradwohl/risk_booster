@@ -18,11 +18,22 @@
     color: #1abc9c;
 }
 
+.annote-text-icon{
+    font-size: 0.2em;
+}
+
 
 .highlight-num {
-    background-color: #1abc9c;
     opacity: 60%;
     border-radius: 2px;
+}
+
+.highlight-base {
+    background-color: lightsteelblue;
+}
+
+.highlight-warning {
+    background-color: palegoldenrod;
 }
 
 /* Tooltip container */
@@ -52,7 +63,7 @@
 
     /* Position the tooltip text */
     position: absolute;
-    z-index: 100;
+    z-index: 9999;
     bottom: 125%;
     left: 50%;
     margin-left: -70px;

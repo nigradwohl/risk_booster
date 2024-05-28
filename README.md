@@ -26,8 +26,9 @@ Features are sorted by importance and are further split by features that should 
     + also add links to wiki 
 * Increase the number of test-texts that are successfully handled
     + also handle number words
-    + detect absolute risk reductions (e.g., smaller percentages, percentage points)
-* Adapt the highlighting to potentially critical numbers (e.g., relative risk reductions) 
+    + detect absolute risk reductions (e.g., smaller percentages, percentage points): distinguish from unidentified percentages (and mention if they are likely relative)
+* Identify whether numbers seem to have a reference 
+* Adapt the highlighting color to potentially critical numbers (e.g., relative risk reductions) 
 * Handle margins for tooltips 
 
 ### Nice to have
@@ -41,11 +42,12 @@ Features are sorted by importance and are further split by features that should 
 * Create one functional checklist
     + improve calculations (from relative) 
     + hide redundant questions 
+* Split the icon arrays 
 
 ### Nice to have
 
 ## Wiki
-* 
+
 * Decide on the central entries and fill them with information 
 
 ### Nice to have
