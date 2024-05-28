@@ -23,13 +23,13 @@ const info_data = {
         "annotation": "",
         "overview": ["Bezugsgröße ist entscheidend, besonders für <a href=\"#wiki-rel\">relative Angaben</a>" +
         " (z.B., eine Erhöhung von 50%, eine Impfstoffwirksamkeit von 90%)",
-            "Absolute Ereigniswahrscheinlichkeiten sind <a href=\"#wiki-rel\">relativen Angaben</a> vorzuziehen",
+"Absolute Ereigniswahrscheinlichkeiten sind <a href=\"#wiki-rel\">relativen Angaben</a> vorzuziehen",
         "Prozentzahlen sollten nur für Zahlenwerte größer 1% verwedet werden. Ansonsten sind <a>"],
         "examples": [],
         "maintext": "Prozentzahlen sollten nur bei Angaben größer als 1% verwendet werden." +
-            "Besser als <a href=\"\">Prozentzahlen</a> sind <a href=\"#wiki-nh\">natürliche Häufigkeiten</a>."
-            // ["Prozentzahlen sollten nur bei Angaben größer als 1% verwendet werden.",
-            // "Besser als <a href=\"\">Prozentzahlen</a> sind <a href=\"#wiki-nh\">natürliche Häufigkeiten</a>."]
+"Besser als <a href=\"\">Prozentzahlen</a> sind <a href=\"#wiki-nh\">natürliche Häufigkeiten</a>."
+// ["Prozentzahlen sollten nur bei Angaben größer als 1% verwendet werden.",
+// "Besser als <a href=\"\">Prozentzahlen</a> sind <a href=\"#wiki-nh\">natürliche Häufigkeiten</a>."]
     },
     // Frequencies:
     "freq": {
@@ -40,8 +40,8 @@ const info_data = {
         "overview": ["Wenn es sich nicht um die Gesamtzahl handelt, sollte klar werden auf welche Gesamtzahl sich die Häufigkeit bezieht (z.B., 100 Erkrankte von wie vielen?)"],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": ["100 Personen", "10.000 Studienteilnehmende", "3456 Todesfälle", "12 Geimpfte", "21 Äpfel"],  // array of list items with examples.
         "maintext": "<p>Häufigkeiten natürliche Zahlen, die die Anzahl von Personen oder Dingen beschreiben.</p>" +
-            "<p>Im Kontext medizinischer Berichterstattung handelt es sich häufig um die Anzahl von Erkrankungsfällen oder " +
-            "die Anzahl von Personen mit nebenwirkungen in einer Studie.</p>"   // array of paragraphs as main text for wiki.
+"<p>Im Kontext medizinischer Berichterstattung handelt es sich häufig um die Anzahl von Erkrankungsfällen oder " +
+"die Anzahl von Personen mit nebenwirkungen in einer Studie.</p>"   // array of paragraphs as main text for wiki.
     },
     "sample_size": {
         "heading": "Stichprobengröße",  // the heading.
@@ -58,7 +58,7 @@ const info_data = {
         "aliases": [""],  // list of other names.
         "annotation": "[TODO: Improve design of examples!]<br>",
         "overview": ["Bezugsgröße sollte konstant sein.",
-            "Absolute Ereigniswahrscheinlichkeiten sind relativen Angaben vorzuziehen"],
+"Absolute Ereigniswahrscheinlichkeiten sind relativen Angaben vorzuziehen"],
         "examples": ["440 von 1000 Personen ohne Auffrischungsimpfung gegen COVID-19 erkranken, während unter den " +
         "Geimpften nur 270 von 1000 erkranken.<br><a href=\"https://www.hardingcenter.de/de/impfungen/mrna-schutzimpfung-gegen-covid-19-fuer-erwachsene-unter-60-jahren\">https://www.hardingcenter.de/de/impfungen/mrna-schutzimpfung-gegen-covid-19-fuer-erwachsene-unter-60-jahren</a>"],
         "maintext": "<p>Im Unterschied zu <a href='wiki-freq'>Häufigkeiten</a>, haben <a href=\"#wiki-nh\">natürliche Häufigkeiten</a> eine Bezugsgruppe(?).</p>"
@@ -68,39 +68,41 @@ const info_data = {
         "subheading": "",  // placeholder for a potential subheading.
         "aliases": [""],  // list of other names.
         "annotation": "",  // internal annotations; should be eventually ""
-        "overview": ["Vorsicht vor relativen Angaben!",
-            "Relative Angaben sollten niemals alleine (ohne absolute Wahrscheinlichkeiten) verwendet werden.",
-            "Es sollte immer mindestens das Basisrisiko (die Basiswahrscheinlichkeit) in der <a>[LINK]Kontrollgruppe</a> berichtet werden.",
-            "Falls nur relative Angaben verwendet werden können, müssen sie gleichermaßen für Nutzen und Schaden der Impfung, des Medikamentes oder des Verhaltens verwendet werden."
+        "overview": ["<i class=\"fa fa-exclamation-triangle annote-text-icon\"></i>Vorsicht vor relativen Angaben! Relativ zu was?",
+"Relative Angaben sollten niemals alleine (ohne absolute Wahrscheinlichkeiten) verwendet werden.",
+"Es sollte immer mindestens das Basisrisiko (die Basiswahrscheinlichkeit) in der <a>[LINK]Kontrollgruppe</a> berichtet werden."
+// "Falls nur relative Angaben verwendet werden können, müssen sie gleichermaßen für Nutzen und Schaden der Impfung, des Medikamentes oder des Verhaltens verwendet werden."
         ],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": ["20-mal so viel", "Impfwirksamkeit[LINK] von 90%"],  // array of list items with examples.
-        "maintext": "<h4>Relative Angaben können missverständlich sein.</h4>\n" +
-            "            <p>\n" +
-            "\n" +
-            "                Eine Impfwirksamkeit von 90% etwa bedeutet dass unter den Geimpften 90% weniger Personen erkranken.\n" +
-            "                Erkranken in der nicht geimpften Gruppe zum Beispiel 10 aus 1000, so erkrankt in der geimpften Gruppe\n" +
-            "                1 aus 1000.\n" +
-            "            </p>\n" +
-            "            <p>\n" +
-            "                Das entspricht einer absoluten Risikoreduktion um 0.9% (von 1% auf 0.1%).\n" +
-            "                [CHECK!]\n" +
-            "                Dieser Effekt wirkt erheblich kleiner als die relativen 90%.\n" +
-            "                <span id=\"wiki-error-rel\">Da relative Angaben oft zu einer Fehleinschätzung führen</span>, sollten sie\n" +
-            "                vermieden werden.\n" +
-            "                Wenn sie verwendet werden, sollten sie gemeinsam mit <a>absoluten Risikoangaben[TODO]</a> verwendet\n" +
-            "                werden.\n" +
-            "            </p>\n" +
-            "\n" +
-            "\n" +
-            "            <h4>Verwendung derselben Zahlentypen für Nutzen und Schaden</h4>\n" +
-            "            [MAKE REFERENCEABLE?]\n" +
-            "            <p>\n" +
-            "                Falls nur relative Angaben verwendet werden, sollten sie gleichermaßen für Nutzen und Schaden\n" +
-            "                des Medikamentes oder des Verhaltens verwendet werden.\n" +
-            "                <br>\n" +
-            "                Wenn der Nutzen relativ ausgedrückt wird, wird er häufig überschätzt (<a href=\"#wiki-error-rel\">s.\n" +
-            "                oben</a>)\n" +
-            "                [BEISPIEL!]\n" +
-            "            </p>"
+        "maintext": "<h4>Verwendung</h4>" +
+            "<p></p>" +
+            "<h4>Relative Angaben können missverständlich sein.</h4>" +
+            "<p>Ein relativer Risikoanstieg um das 5-fache klingt viel. Bei einer Erkrankung die nur 1 Person unter 10.000 betrifft, " +
+            "bedeutet ein solcher Anstieg aber nur dass unter denjenigen mit dem Risikofaktor (z.B., mit einer bestimmten Ernährungsweise)" +
+            "anstelle von einer Person (0.01%), 5 Personen in 10.000 (0.05%), erkranken.</p>" +
+            "<p>Ähnlich verhält es sich mit der <span class='rrr'>relativen Risikoreduktion</span>, wie sie häufig zur angaben von Impfwirksamkeiten verwendet wird." +
+            "Eine Impfwirksamkeit von 90% etwa bedeutet dass unter den Geimpften 90% weniger Personen erkranken." +
+            "Erkranken in der nicht geimpften Gruppe zum Beispiel 10 aus 1000, so erkrankt in der geimpften Gruppe" +
+            "1 aus 1000." +
+            "</p>" +
+            "<p>" +
+            "Das entspricht einer absoluten Risikoreduktion um 0.9% (von 1% auf 0.1%)." +
+            "[CHECK!]" +
+            "Dieser Effekt wirkt erheblich kleiner als die relativen 90%." +
+            "<span id=\"wiki-error-rel\">Da relative Angaben oft zu einer Fehleinschätzung führen</span>, sollten sie" +
+            "vermieden werden." +
+            "Wenn sie verwendet werden, sollten sie gemeinsam mit <a>absoluten Risikoangaben[TODO]</a> verwendet" +
+            "werden, um so eine transparente Einschätzung des Risikos zu gewährleisten." +
+            "</p>" +
+            "<h4>Verwendung derselben Zahlentypen für Nutzen und Schaden</h4>" +
+            "[MAKE REFERENCEABLE?]" +
+            "<p>" +
+            "Falls nur relative Angaben verwendet werden, sollten sie gleichermaßen für Nutzen und Schaden" +
+            "des Medikamentes oder des Verhaltens verwendet werden." +
+            "<br>" +
+            "Wenn der Nutzen relativ ausgedrückt wird, wird er häufig überschätzt (<a href=\"#wiki-error-rel\">s." +
+            "oben</a>)" +
+            "[BEISPIEL!]" +
+            "</p>"
     }
 }

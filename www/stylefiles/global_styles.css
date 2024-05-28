@@ -297,6 +297,11 @@ body {
     .text-input {
         flex: 20em;
     }
+
+    #tooltip-popup{
+        max-width: 90%;
+    }
+
 }
 
 .container {
@@ -414,7 +419,7 @@ h3 {
     border: 1px solid black;
     display: none;
     z-index: 9999;
-    max-width: 50%;
+    max-width: 60%;
     margin: 1em;
     padding: 1em;
     /*width: 10em;*/

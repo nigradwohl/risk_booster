@@ -688,9 +688,13 @@ $(document).ready(function () {
 
             // const numtype = unit_note_dict[token_dat.unit[token_id]].tooltip[token_dat.numtype[token_id]];
             const numtype = token_dat.numtype[token_id];
-            console.log(numtype);
+            // console.log(numtype);
             const curunit = token_dat.unit[token_id];
-            console.log(curunit);
+            // console.log(curunit);
+
+            // Collapse unit and numtype:
+            const infokey = [curunit, numtype].join("_");
+            console.log(`Current info key: ${infokey}`);
 
             // Transfer to more central place!
             const txt_snips = {
@@ -704,13 +708,18 @@ $(document).ready(function () {
 
             // Reference to the wiki object:
             const wiki_ref = {
-                "perc": "prozent",
-                "case": "freq"  // TODO!
+                "perc_other": "prozent",
+                "perc_REL": "rel",
+                // Types of cases -- update!
+                "case_N_TOT": "freq",
+                "case_N_CASE_TOT": "freq",
+                "case_treatment": "freq",
+                "case_control": "freq"
             };
 
             // Note: Here, we might also allow to exclude certain elements!
 
-            const curinfo = info_data[wiki_ref[curunit]];
+            const curinfo = info_data[wiki_ref[infokey]];
 
             cur_popup.html(
                 // `<h4>${numtype}</h4>` +
@@ -718,7 +727,10 @@ $(document).ready(function () {
                 // `<h4>${txt_snips[numtype][0] + txt_snips[numtype][1][token_dat.unit[token_id]]}</h4>` +
                 // `<p>${txt_snips[numtype][2]}</p>`
                 `<h4>${curinfo.heading}</h4>` +
-                `<p><ul><li>${curinfo.overview.join("</li><li>")}</li></ul></p>`
+                `<p><strong>Bezug</strong>: ${token_dat.n_trtctrl[token_id]}</p>` +  // Some additional info!
+                `<p><ul><li>${curinfo.overview.join("</li><li>")}</li></ul></p>` +
+                `<p>[Place to add more info, if needed!]</p>`
+
             );
 
             // Style the popup, position it and show:
