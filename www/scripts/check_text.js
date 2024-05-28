@@ -697,14 +697,14 @@ $(document).ready(function () {
             console.log(`Current info key: ${infokey}`);
 
             // Transfer to more central place!
-            const txt_snips = {
-                "REL": ["Relative ",
-                    {"perc": "Prozentzahl"},
-                    "Achtung vor <a href='risk_wiki.html#wiki-rel'>relativen Angaben</a>!<br>" +
-                    "Relative Angaben sollten niemals alleine verwendet werden. " +
-                    "Es müssen immer die absoluten Risiken in den Gruppen berichtet werden. " +
-                    "[SCHEINT DAS HIER DER FALL ZU SEIN? Differenziert für Effektivität und NW ausweisen!]"]
-            };
+            // const txt_snips = {
+            //     "REL": ["Relative ",
+            //         {"perc": "Prozentzahl"},
+            //         "Achtung vor <a href='risk_wiki.html#wiki-rel'>relativen Angaben</a>!<br>" +
+            //         "Relative Angaben sollten niemals alleine verwendet werden. " +
+            //         "Es müssen immer die absoluten Risiken in den Gruppen berichtet werden. " +
+            //         "[SCHEINT DAS HIER DER FALL ZU SEIN? Differenziert für Effektivität und NW ausweisen!]"]
+            // };
 
             // Reference to the wiki object:
             const wiki_ref = {
@@ -714,7 +714,10 @@ $(document).ready(function () {
                 "case_N_TOT": "freq",
                 "case_N_CASE_TOT": "freq",
                 "case_treatment": "freq",
-                "case_control": "freq"
+                "case_control": "freq",
+                "case_other": "freq",
+                // Other kinds of numbers:
+                "pval_other": "pval"
             };
 
             // Note: Here, we might also allow to exclude certain elements!
