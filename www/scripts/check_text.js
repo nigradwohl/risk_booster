@@ -222,20 +222,20 @@ $(document).ready(function () {
 
         // For all numbers with non-.excluded units:
         const allnum_ix = token_dat.id.filter((d, ix) => token_dat.is_num[ix] && !units_exc.includes(token_dat.unit[ix]));
-        const case_ix = token_dat.id.filter((d, ix) => token_dat.unit[ix] === "case");
+        const case_ix = token_dat.id.filter((d, ix) => token_dat.unit[ix] === "freq");
 
         // Identify if numbers are total counts or refer to a subgroup:
-        token_dat.add_column(investigate_context(token_dat, allnum_ix, window_keys.grouptype), "n_gtype");
+        token_dat.add_column(investigate_context(token_dat, allnum_ix, window_keys.grouptype), "gtype");
         // Percentages MUST be subgroups by definition:
-        token_dat.n_gtype = token_dat.n_gtype.map((x, ix) => token_dat.unit[ix] === "perc" ? "subgroup" : token_dat.n_gtype[ix]);
+        token_dat.gtype = token_dat.gtype.map((x, ix) => token_dat.unit[ix] === "perc" ? "subgroup" : token_dat.gtype[ix]);
 
         // Do not apply the following to total numbers:
         const n_subgroup_ix = token_dat.id.filter((d, ix) => token_dat.is_num[ix] &&
-            token_dat.n_gtype[ix] !== "total" && token_dat.n_gtype[ix] !== -1);
+            token_dat.gtype[ix] !== "total" && token_dat.gtype[ix] !== -1);
         // console.log("---------- Get treatment and control: -----------");
-        token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.treat_contr), "n_trtctrl");
+        token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.treat_contr), "group");
         // console.log("---------- Get effectivity and side effects: -----------");
-        token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.effside), "n_effside");
+        token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.effside), "effside");
         // Note: Nutzen muss bei Verhaltensrisiken ggf. nicht unbedingt benannt werden (wenn es keinen ersichtlichen gibt)
 
         // Update missing information: ~~~~~~~~~~~
@@ -250,11 +250,11 @@ $(document).ready(function () {
         // Replace subgroup info:
         // Note: caused a bug in some cases -- solve differently?
         // First, replace unknown subgroups:
-        token_dat.n_gtype = token_dat.n_gtype
-            .map((gtype, ix) => token_dat.numtype[ix] === "N_CASE_TOT" && ["unknown", "all"].includes(token_dat.n_trtctrl[ix]) ? "total" : gtype);
+        token_dat.gtype = token_dat.gtype
+            .map((gtype, ix) => token_dat.numtype[ix] === "ncase" && ["unknown", "all"].includes(token_dat.group[ix]) ? "total" : gtype);
 
         token_dat.numtype = token_dat.numtype
-            .map((ntype, ix) => token_dat.n_gtype[ix] === "subgroup" && ["N_CASE_TOT", "N_AFFECTED"].includes(ntype.toString()) ? token_dat.n_trtctrl[ix] : ntype);
+            .map((ntype, ix) => token_dat.gtype[ix] === "subgroup" && ["ncase"].includes(ntype.toString()) ? token_dat.group[ix] : ntype);
 
 
         // Display for testing:
@@ -321,11 +321,11 @@ $(document).ready(function () {
 
                     // Numbers that issue warnings:
                     // Strong warnings:
-                    const warn_num = ["REL"].includes(cur_numtype[0]) || ["pval"].includes(cur_unit);
+                    const warn_num = ["change"].includes(cur_numtype[0]) || ["pval"].includes(cur_unit);
 
                     // Unclarities (e.g., missing reference groups):
                     // Percentages that apply to all are suspicious (if there is any talk about groups, that is).
-                    const warn_noref = (token_dat.n_trtctrl[i] === "all" || token_dat.n_trtctrl[i] === "") && cur_unit === "perc" && ["eff", "side"].includes(token_dat.n_effside[i]);
+                    const warn_noref = (token_dat.group[i] === "all" || token_dat.group[i] === "") && cur_unit === "perc" && ["eff", "side"].includes(token_dat.effside[i]);
                     // but these should be only highlighted (or only receive an icon?).
 
                     // prepare warnings:
@@ -419,7 +419,7 @@ $(document).ready(function () {
 
         // Get numbers related to risk communication for 2. and 3.:
         const risknum_ix = token_dat.id
-            .filter((x) => ["perc", "case", "nh", "multi"].includes(token_dat.unit[x]) && token_dat.is_num[x]);
+            .filter((x) => ["perc", "freq", "nh", "multi"].includes(token_dat.unit[x]) && token_dat.is_num[x]);
         console.log("Risknum indices:");
         console.log(risknum_ix);
 
@@ -437,13 +437,13 @@ $(document).ready(function () {
             "any_risknum": risknum_ix.length > 0,
             "eff_num": risknums_flat.includes("eff"),
             "side_num": risknums_flat.includes("side"),
-            "treat_num": risknums_flat.includes("treatment"),
-            "contr_num": risknums_flat.includes("control"),
+            "treat_num": risknums_flat.includes("treat"),
+            "contr_num": risknums_flat.includes("contr"),
             // Interactions:
-            "eff_treat_num": check_any_arr(risknum_rows, ["eff", "treatment"]),
-            "side_treat_num": check_any_arr(risknum_rows, ["side", "treatment"]),
-            "eff_contr_num": check_any_arr(risknum_rows, ["eff", "control"]),
-            "side_contr_num": check_any_arr(risknum_rows, ["side", "control"])
+            "eff_treat_num": check_any_arr(risknum_rows, ["eff", "treat"]),
+            "side_treat_num": check_any_arr(risknum_rows, ["side", "treat"]),
+            "eff_contr_num": check_any_arr(risknum_rows, ["eff", "contr"]),
+            "side_contr_num": check_any_arr(risknum_rows, ["side", "contr"])
             // "eff": this.eff_num || token_dat.topics.includes("eff"),
             // "side": this.side_num || token_dat.topics.includes("side"),
             // "treat": this.treat_num || token_dat.topics.includes("treatgroup"),
@@ -460,25 +460,25 @@ $(document).ready(function () {
         txtfeat_dict["treat"] = txtfeat_dict.treat_num || token_dat.topics.includes("treatgroup");
         txtfeat_dict["contr"] = txtfeat_dict.contr_num || token_dat.topics.includes("controlgroup");
         // Specific number info:
-        txtfeat_dict["rel"] = ["REL", "mult"].some((x) => token_dat.numtype.includes(x));  // tests if one of the elements exists.
+        txtfeat_dict["rel"] = ["change", "mult"].some((x) => token_dat.numtype.includes(x));  // tests if one of the elements exists.
         txtfeat_dict["rel_only"] = txtfeat_dict.rel && !token_dat.numtype.includes("ABS") &&
             // Is there a row that fulfills both criteria?
-            !check_any_arr(risknum_rows, ["case", "subgroup"]);
+            !check_any_arr(risknum_rows, ["freq", "subgroup"]);
 
         // Additional information:
         const addfeat_dict = {
             // Which number types are there?
-            "effunit": new Set(token_dat.unit.filter((x, ix) => token_dat.n_effside[ix] === "eff" && x !== -1)),
-            "effnumtype": new Set(token_dat.numtype.filter((x, ix) => token_dat.n_effside[ix] === "eff" && x !== "other" && x !== -1)),
-            "sideunit": new Set(token_dat.unit.filter((x, ix) => token_dat.n_effside[ix] === "side" && x !== -1)),
-            "sidenumtype": new Set(token_dat.numtype.filter((x, ix) => token_dat.n_effside[ix] === "side" && x !== "other" && x !== -1))
+            "effunit": new Set(token_dat.unit.filter((x, ix) => token_dat.effside[ix] === "eff" && x !== -1)),
+            "effnumtype": new Set(token_dat.numtype.filter((x, ix) => token_dat.effside[ix] === "eff" && x !== "other" && x !== -1)),
+            "sideunit": new Set(token_dat.unit.filter((x, ix) => token_dat.effside[ix] === "side" && x !== -1)),
+            "sidenumtype": new Set(token_dat.numtype.filter((x, ix) => token_dat.effside[ix] === "side" && x !== "other" && x !== -1))
         };
 
         // This collection allows to hint at communicating about differences between reporting about effectivity and side effects (mismatched framing).
         // +++ HERE +++
         let mismatched_framing = false;
         if (txtfeat_dict.eff_num && txtfeat_dict.side_num &&
-            addfeat_dict.effnumtype.has("REL") && !addfeat_dict.sidenumtype.has("REL")) {
+            addfeat_dict.effnumtype.has("change") && !addfeat_dict.sidenumtype.has("change")) {
             mismatched_framing = true;
         }
 
@@ -510,7 +510,7 @@ $(document).ready(function () {
                 "fset": ["eff", "side"],
                 "zumzur": "zum "
             },
-            "treat_control": {
+            "treat_contr": {
                 "fset": ["treat", "contr"],
                 "zumzur": "zur "
             }
@@ -551,15 +551,15 @@ $(document).ready(function () {
 
         // Flag out the use of numbers: ~~~~~~~~~~~~~~~~~~~~~~~
         let feature_num = "<li>";
-        const any_risk_num = ["perc", "cases", "nh", "multi"].filter((x) => token_dat.unit.includes(x));
+        const any_risk_num = ["perc", "freq", "nh", "multi"].filter((x) => token_dat.unit.includes(x));
         // console.log("Any risk num:");
         // console.log(token_dat.unit);
         if (any_risk_num.length > 0) {
             feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> Der Text scheint Zahlen zu den genannten Risiken zu berichten. </li><li>";
 
 
-            // Differentiate numbers for control and treatment group:
-            // Do numbers apply to treatment and control group
+            // Differentiate numbers for control and treat group:
+            // Do numbers apply to treat and contr group
             // (or: affected and general population for other risks)
 
             // Differentiate: Does it report numbers only about effectivity? Also about side effects?
@@ -716,7 +716,7 @@ $(document).ready(function () {
 
             // Transfer to more central place!
             // const txt_snips = {
-            //     "REL": ["Relative ",
+            //     "change": ["Relative ",
             //         {"perc": "Prozentzahl"},
             //         "Achtung vor <a href='risk_wiki.html#wiki-rel'>relativen Angaben</a>!<br>" +
             //         "Relative Angaben sollten niemals alleine verwendet werden. " +
@@ -727,13 +727,13 @@ $(document).ready(function () {
             // Reference to the wiki object:
             const wiki_ref = {
                 "perc_other": "prozent",
-                "perc_REL": "rel",
-                // Types of cases -- update!
-                "case_N_TOT": "freq",
-                "case_N_CASE_TOT": "freq",
-                "case_treatment": "freq",
-                "case_control": "freq",
-                "case_other": "freq",
+                "perc_change": "rel",  // +++ UPDATE! +++
+                // Types of freqs -- update!
+                "freq_ntot": "freq",
+                "freq_ncase": "freq",
+                "freq_treat": "freq",
+                "freq_contr": "freq",
+                "freq_other": "freq",
                 // Other kinds of numbers:
                 "multi_other": "rel",
                 "pval_other": "pval"
@@ -749,7 +749,7 @@ $(document).ready(function () {
                 // `<h4>${txt_snips[numtype][0] + txt_snips[numtype][1][token_dat.unit[token_id]]}</h4>` +
                 // `<p>${txt_snips[numtype][2]}</p>`
                 `<h4>${curinfo.heading}</h4>` +
-                `<p><strong>Bezug</strong>: ${token_dat.n_trtctrl[token_id]}</p>` +  // Some additional info!
+                `<p><strong>Bezug</strong>: ${token_dat.group[token_id]}</p>` +  // Some additional info!
                 `<p><ul><li>${curinfo.overview.join("</li><li>")}</li></ul></p>` +
                 `<p>[Place to add more info, if needed!]</p>`
             );
@@ -942,8 +942,8 @@ const check_numbers_dict = {
 }
 
 //
-const key_obj = {
-    "REL": {
+const numtype_dict = {
+    "change": {
         "number_unit": "perc",  // add in other types eventually! 30-fach etc.
         "keyset": [
             // A first entry to a domain-general keyset for risk:
@@ -953,47 +953,29 @@ const key_obj = {
     },
     // Total nuber of cases/incidents:
     // NOTE: Order matters!
-    "N_CASE_TOT": {
-        "number_unit": "case",
+    "ncase": {
+        "number_unit": "freq",
         "keyset": [
             // TODO: Double check these!
-            [RegExp("Fälle|Verläufe"), RegExp("insgesamt|nach")]
-        ]
-    },
-    "N_TOT": {
-        "number_unit": "case",
-        "keyset": [
-            // TODO: Double check these!
-            [RegExp("Proband|[Tt]eilnehme|Versuchspers|Menschen|Frauen|Männer|Kinder"), RegExp("insgesamt|Studie|Untersuchung|umfass(t|en)")]
-        ]
-    },
-    // Part of cases:
-    "N_AFFECTED": {
-        "number_unit": "case",
-        "keyset": [
+            [RegExp("Fälle|Verläufe"), RegExp("insgesamt|nach|Studie")],
             [RegExp("[Ee]rkrankt|[Bb]etroffen")]
         ]
+    },
+    "ntot": {
+        "number_unit": "freq",
+        "keyset": [
+            // TODO: Double check these!
+            [RegExp("Proband|[Tt]eilnehme|Versuchspers|Menschen|Frauen|Männer|Kinder"),
+                RegExp("insgesamt|Studie|Untersuchung|umfass(t|en)")]
+        ]
     }
-    // Treatment and control:
-    // "N_TREAT": {
-    //     "number_unit": "case",
-    //     "keyset": [
-    //         [RegExp("(?!un)geimpft|behandelt")]
-    //     ]
-    // },
-    // "N_CONTROL": {
-    //     "number_unit": "case",
-    //     "keyset": [
-    //         [RegExp("[Ee]rkrank(t(en)?)|[Bb]etroffen")]
-    //     ]
-    // }
 }
 
 // The following should be its own (because numbers belong to a category and can be an approximation)
 // "APPROX": {
 //     "number_unit": "perc",  // ACTUALLY ALSO OTHERS?
 //     "keyset": []
-//     // Pattern would be "mehr/weniger als; ungefähr" --> percent, nh or also cases!
+//     // Pattern would be "mehr/weniger als; ungefähr" --> percent, nh or also freqs!
 // },
 
 // Additional set for vaccination topic:
@@ -1005,7 +987,7 @@ const unit_note_dict = {
     "perc": {
         "tooltip": {
             "ABS": "absolute Prozentzahl",
-            "REL": "relative Prozentzahl",
+            "change": "Veränderung",
             "other": "andere Prozentzahl"
         },
         "note": function (type_arr) {
@@ -1050,14 +1032,13 @@ const unit_note_dict = {
                 "Sehr gut! Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
         }
     },
-    "case": {
+    "freq": {
         "tooltip": {
             "other": "Personen oder Fälle",
-            "N_TOT": "Gesamtzahl an Personen",
-            "N_AFFECTED": "Gesamtzahl Betroffene (Erkrankte)",
-            "N_CASE_TOT": "Gesamtzahl Betroffene (Erkrankte)",
-            "treatment": "Anzahl unter den Behandelten",
-            "control": "Anzahl in der Kontrollgruppe"
+            "ntot": "Gesamtzahl an Personen",
+            "ncase": "Gesamtzahl Betroffene (Erkrankte)",
+            "treat": "Anzahl unter den Behandelten",
+            "contr": "Anzahl in der Kontrollgruppe"
         },
         "note": function (type_arr) {
             return "Der Text enthält Anzahlen von Fällen. " +
@@ -1305,7 +1286,7 @@ function get_token_data(text) {
 
         // Assign sentence ID:
         sentence_ids = sentence_ids.concat(cur_sentence_id);
-        if (["?", ".", "!"].includes(text_tokens[i])) {
+        if (["?", ".", "!", ";"].includes(text_tokens[i])) {
             cur_sentence_id++
         }  // increment the id when a punctuation token is found
 
@@ -1343,39 +1324,39 @@ function detect_number_type(token_data, txt) {
     const sentence_set = new Set(token_data.sent);
     const sentence_counts = count(token_data.sent);
 
-    // console.log("Sentence counts");
-    // console.log(sentence_counts);
+    console.log("Sentence counts");
+    console.log(sentence_counts);
 
     // Update the keyset:
     console.log("Current keyset:");
-    console.log(key_obj);
+    console.log(numtype_dict);
 
     // Include topic-specific keywords:
     if (token_data.topics.includes("impf")) {
         // Include Impf-specific keys
         // Do so as an inclusive disjunction.
-        key_obj.REL.keyset = key_obj.REL.keyset.concat(keyset_impf);
+        numtype_dict.change.keyset = numtype_dict.change.keyset.concat(keyset_impf);
         // testcount++;
     }
 
     // Detect matches that are indicative of certain data types:
     const relation_dict = {
         "treatre_pre": {
-            "regex": /(?<treatment>(\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,3}(auf die|unter den) ([a-zA-ZÄÖÜßäöü]+ ){0,2}geimpften (Proband\w+|Teilnehm\w+|Kind\w+)))/dg  // (\w+ ){0,2} are up to 2 more words.
+            "regex": /(?<treat>(\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,3}(auf die|unter den) ([a-zA-ZÄÖÜßäöü]+ ){0,2}geimpften (Proband\w+|Teilnehm\w+|Kind\w+)))/dg  // (\w+ ){0,2} are up to 2 more words.
             // / (auf die tatsächlich geimpften (Proband\w+|Teilnehm\w+))/
         },
         "controlrel_pre": {
-            "regex": /(?<control>\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,3}(in der|unter den (Teilnehme\w+ |Proband\w+){,2} der|auf die (Teilnehme\w+ |Proband\w+){,2}) (Kontroll|Placebo)-?[Gg]ruppe)/dg
+            "regex": /(?<contr>\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,3}(in der|unter den (Teilnehme\w+ |Proband\w+){,2} der|auf die (Teilnehme\w+ |Proband\w+){,2}) (Kontroll|Placebo)-?[Gg]ruppe)/dg
         },
         "treatre_post": {
-            "regex": /(?<treatment>((auf die|unter den) ([a-zA-ZÄÖÜßäöü]+ ){0,2}geimpften (Proband\w+|Teilnehm\w+)) ([a-zA-ZÄÖÜßäöü]+ ){1,2}\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,2})/dg  // (\w+ ){0,2} are up to 2 more words.
+            "regex": /(?<treat>((auf die|unter den) ([a-zA-ZÄÖÜßäöü]+ ){0,2}geimpften (Proband\w+|Teilnehm\w+)) ([a-zA-ZÄÖÜßäöü]+ ){1,2}\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,2})/dg  // (\w+ ){0,2} are up to 2 more words.
             // / (auf die tatsächlich geimpften (Proband\w+|Teilnehm\w+))/
         },
         "controlrel_post1": {
-            "regex": /(?<control>(auf die|unter den) (Teilnehme\w+ |Proband\w+){,2} ([a-zA-ZÄÖÜßäöü]+ ){1,2}(Kontroll|Placebo)-?[Gg]ruppe ([a-zA-ZÄÖÜßäöü]+ ){1,2}\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,2})/dg
+            "regex": /(?<contr>(auf die|unter den) (Teilnehme\w+ |Proband\w+){,2} ([a-zA-ZÄÖÜßäöü]+ ){1,2}(Kontroll|Placebo)-?[Gg]ruppe ([a-zA-ZÄÖÜßäöü]+ ){1,2}\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,2})/dg
         },
         "controlrel_post2": {
-            "regex": /(?<control>in der (Kontroll|Placebo)[- ]?[Gg]ruppe ([a-zA-ZÄÖÜßäöü]+ ){1,2}\d+( [a-zA-ZÄÖÜßäöü]+){0,2})/dg
+            "regex": /(?<contr>in der (Kontroll|Placebo)[- ]?[Gg]ruppe ([a-zA-ZÄÖÜßäöü]+ ){1,2}\d+( [a-zA-ZÄÖÜßäöü]+){0,2})/dg
         }
     }
 
@@ -1450,10 +1431,10 @@ function detect_number_type(token_data, txt) {
                 // Check for type:
                 let numtype = "other";
 
-                // console.log("Current key_obj:");
-                // console.log(key_obj);
+                // console.log("Current numtype_dict:");
+                // console.log(numtype_dict);
 
-                for (const [key, value] of Object.entries(key_obj)) {
+                for (const [key, value] of Object.entries(numtype_dict)) {
 
                     // console.log(`Data judged for key ${key}:`);
                     // console.log(`Token: ${token_data.token[curnum_id]}, Unit: ${token_data.unit[curnum_id]}`);
@@ -1481,9 +1462,9 @@ function detect_number_type(token_data, txt) {
 
                         // Check each token:
                         // const key_present = sentence_tokens.filter((x) => keyrex.test(x));
-                        // console.log(`Keys from ${key} present in sentence:`);
+                        console.log(`Keys from ${key} present in sentence:`);
                         // console.log(keyset);
-                        // console.log(keys_present);
+                        console.log(keys_present);
 
                         /*
                          Implement:
@@ -1500,7 +1481,7 @@ function detect_number_type(token_data, txt) {
 
                             // Eventually fix!
                             // if (token_data.unit[curnum_id].includes("perc")) {
-                            //     numtype = "REL";
+                            //     numtype = "change";
                             // } else {
                             //     numtype = "ABS";
                             // }
@@ -1559,9 +1540,9 @@ const window_keys = {
     },
     "treat_contr": {
         // Types of subgroups:
-        "control": RegExp(collapse_regex_or(["Kontroll-?\\w*[Gg]ruppe", "Placebo-?\\w*[Gg]ruppe",
+        "contr": RegExp(collapse_regex_or(["Kontroll-?\\w*[Gg]ruppe", "Placebo-?\\w*[Gg]ruppe",
             "Prävention\\w*wenigsten\\w*befolgte"]), "dg"),
-        "treatment": RegExp(collapse_regex_or(["[Gg]eimpfte?n?", "Impf-?\\w*[Gg]ruppe",
+        "treat": RegExp(collapse_regex_or(["[Gg]eimpfte?n?", "Impf-?\\w*[Gg]ruppe",
             "([Tt]eilnehmer|Probanden).*Impfung",
             "gesündesten\\w*Lebensstil"]), "dg"),
         // "all": RegExp(collapse_regex_or(["insgesamt.*([Tt]eilnehmer|Probanden)"]), "dg"),
@@ -1590,7 +1571,7 @@ const window_keys = {
         "ill": RegExp(collapse_regex_or(["erkrank(t|en)", "Verl[äa]uf"]), "dg")
     },
     "units": {
-        "case": RegExp(collapse_regex_or(["Proband", "Teilnehm", "Infektion"]), "dg"),
+        "freq": RegExp(collapse_regex_or(["Proband", "Teilnehm", "Infektion"]), "dg"),
         "death": RegExp(collapse_regex_or(["(ge|ver)st[aeo]rben"]), "dg")
     }
 
@@ -1869,7 +1850,7 @@ function detect_unit(token_data) {
     // ALTERNATIVELY use dict etc.?
     const unit_lookup = [
         [/(%|[Pp]rozent\w*)/, "perc"],  // percentages.
-        [/Teilnehm|[Ff][aä]ll|Proband|Mensch|Kind|Mädchen|Junge|Männer|Frauen|Verl[aä]uf/, "case"]  // frequencies.
+        [/Teilnehm|[Ff][aä]ll|Proband|Mensch|Kind|Mädchen|Junge|Männer|Frauen|Verl[aä]uf/, "freq"]  // frequencies.
         // natural/relative frequencies.
     ]
     // Note: Percentage signs may also be contained in the number token!
@@ -2172,7 +2153,7 @@ function word_tokenizer(txt) {
  * @param txt {String} A text, in which sentences are delimited by [.?!].
  */
 function sentence_tokenizer(txt) {
-    const split = txt.split(/(?<=[.?!])[ \r\n]/g);
+    const split = txt.split(/(?<=[.?!;])[ \r\n]/g);
 
     // Remove empty tokens:
     return split.filter(x => x);
