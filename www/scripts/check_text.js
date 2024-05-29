@@ -248,7 +248,11 @@ $(document).ready(function () {
         // console.log(n_subgroup_ix);
 
         // Replace subgroup info:
-        // TODO: Here we should eventually create informative labels for the tooltips!
+        // Note: caused a bug in some cases -- solve differently?
+        // First, replace unknown subgroups:
+        token_dat.n_gtype  = token_dat.n_gtype
+            .map((gtype, ix) => token_dat.numtype[ix] === "N_CASE_TOT" && token_dat.n_trtctrl[ix] === "unknown" ? "total" : gtype);
+
         token_dat.numtype = token_dat.numtype
             .map((ntype, ix) => token_dat.n_gtype[ix] === "subgroup" && ntype.toString() === "N_CASE_TOT" ? token_dat.n_trtctrl[ix] : ntype);
 
@@ -731,6 +735,7 @@ $(document).ready(function () {
                 "case_control": "freq",
                 "case_other": "freq",
                 // Other kinds of numbers:
+                "multi_other": "rel",
                 "pval_other": "pval"
             };
 
@@ -943,7 +948,7 @@ const key_obj = {
         "number_unit": "case",
         "keyset": [
             // TODO: Double check these!
-            [RegExp("Fälle"), RegExp("insgesamt")]
+            [RegExp("Fälle"), RegExp("insgesamt|nach")]
         ]
     },
     "N_TOT": {
@@ -1547,8 +1552,8 @@ const window_keys = {
         // Types of subgroups:
         "control": RegExp(collapse_regex_or(["Kontroll-?\\w*[Gg]ruppe", "Placebo-?\\w*[Gg]ruppe"]), "dg"),
         "treatment": RegExp(collapse_regex_or(["[Gg]eimpfte?n?", "Impf-?\\w*[Gg]ruppe",
-            "[Tt]eilnehmer|Probanden.*Impfung"]), "dg"),
-        "all": RegExp(collapse_regex_or(["[Tt]eilnehmer", "Probanden"]), "dg")
+            "([Tt]eilnehmer|Probanden).*Impfung"]), "dg"),
+        "all": RegExp(collapse_regex_or(["insgesamt.*([Tt]eilnehmer|Probanden)"]), "dg")  // problematic!
     },
     "effside": {
         "eff": RegExp(collapse_regex_or(["(?<![Nn]eben)[Ww]irk", "Impfschutz",
@@ -1556,6 +1561,8 @@ const window_keys = {
             // The following may only apply to vaccination? (But likely also to treatment!)
             "Infektion", "[Ee]rkrank", "Verl[aä]uf"]), "dg"),
         "side": RegExp(collapse_regex_or(["Nebenwirk", "Komplikation"]), "dg"),  // more keywords?
+        // Other types (age etc.):
+        "sample": RegExp(collapse_regex_or(["im.*Alter"]), "dg")  // sample description.
     },
     "incr_decr": {
         "risk_incr": RegExp(collapse_regex_or([
@@ -1571,7 +1578,8 @@ const window_keys = {
         "ill": RegExp(collapse_regex_or(["erkrank(t|en)", "Verl[äa]uf"]), "dg")
     },
     "units": {
-        "case": RegExp(collapse_regex_or(["Proband", "Teilnehm"]), "dg")
+        "case": RegExp(collapse_regex_or(["Proband", "Teilnehm", "Infektion"]), "dg"),
+        "death": RegExp(collapse_regex_or(["(ge|ver)st[aeo]rben"]), "dg")
     }
 
 }
@@ -1725,7 +1733,8 @@ function investigate_context(token_data, index_arr, keyset) {
                             stop_update_count,  // stop_token_set.length - stop_tokens.length,  // number of tokens removed.
                             testcounter];  // number of iteration.
                         console.log(key_info);
-                        console.log(stop_tokens);
+
+
                     }
 
                     // Add the feature:
@@ -1777,8 +1786,8 @@ function investigate_context(token_data, index_arr, keyset) {
             // If one category could be clarified, exclude it?
 
             if (Object.keys(keyset).filter((x) => numberfeats.has(x)).length > 0) {
-                // console.log("FINAL TESTSTRING:\n" + test_str);
-                // console.log(test_tokens);
+                console.log("FINAL TESTSTRING:\n" + test_str);
+                console.log(test_tokens);
                 console.log("DESCRIPTION COMPLETE");
                 description_complete = true;
 
