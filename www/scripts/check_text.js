@@ -805,38 +805,7 @@ $(document).ready(function () {
 
         })
 
-        // Show button for printing:
-        $("#btn-print").show();
     })
-
-    // Printing:
-    $("#btn-print").on("click", function (e) {
-        const divContents = $(".text-output").html();
-        // console.log(divContents);
-        // divContents.print();
-
-        // Create the PDF as overlay and print it!
-
-        $("#pdf-output").text($(".text-notes").html() +
-            `<table><tr><td>${divContents}</td><td>ANMERKUNGEN</td></tr></table>`);
-
-        window.print();
-
-        // THe highlighting currently gets lost!
-
-        $("#pdf-output").html("");  // Empty the HTML!
-
-        // e.stopPropagation();
-
-
-        // let printWindow = window.open('', '', 'height=400,width=800');
-        // printWindow.document.write('<html><head><title>DIV Contents</title>');
-        // printWindow.document.write('</head><body >');
-        // printWindow.document.write(divContents);
-        // printWindow.document.write('</body></html>');
-        // printWindow.document.close();
-        // printWindow.print();
-    });
 
 })
 
