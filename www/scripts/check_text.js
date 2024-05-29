@@ -149,6 +149,8 @@ $(document).ready(function () {
 
         // Get regex-based matches:
         const regex_matches = detect_regex_match(inputText, token_dat, check_numbers_dict);
+        console.log("Regex matches");
+        console.log(regex_matches);
 
 
         // Text-level: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -257,6 +259,39 @@ $(document).ready(function () {
             .map((ntype, ix) => token_dat.gtype[ix] === "subgroup" && ["ncase"].includes(ntype.toString()) ? token_dat.group[ix] : ntype);
 
 
+        // Detect whether a change is relative:
+        // Some context detection:
+        const n_change_ix = token_dat.id.filter((d, ix) => token_dat.is_num[ix] &&
+            ["incr", "decr"].includes(token_dat.numtype[ix]));
+        const rel_context = investigate_context(token_dat, n_change_ix, window_keys.treat_contr);
+        console.log("rel_context");
+
+        // Column for relative and absolute:
+        token_dat.add_column(token_dat.numtype.map((x) => !["incr", "decr", -1].includes(x) ? "abs" : x), "relabs");
+
+        // Column for percentages <1%:
+        token_dat.add_column(token_dat.unit.map((x, ix) => x === "perc" && token_dat.is_num[ix] ?
+            token_dat.token[ix].match(regex_num)[0].replace(",", ".") < 1 : -1), "smperc");
+
+        for (const ix of n_change_ix) {
+
+            let out = "unclear";
+
+            if (token_dat.unit[ix] === "mult") {
+                out = "rel";
+            } else {
+
+                // For small percentages assume absolute:
+                // console.log("Get relative percentages and percentages <1%!");
+                const numpart = token_dat.token[ix].match(regex_num)[0].replace(",", ".");
+                // console.log(numpart);
+                out = numpart < 20 ? "abs" : "rel";
+            }
+            // Assign the result:
+            token_dat.relabs[ix] = out;
+        }
+
+
         // Display for testing:
         console.log("Updated token data:");
         console.log(token_dat);
@@ -321,7 +356,7 @@ $(document).ready(function () {
 
                     // Numbers that issue warnings:
                     // Strong warnings:
-                    const warn_num = ["change"].includes(cur_numtype[0]) || ["pval"].includes(cur_unit);
+                    const warn_num = ["incr", "decr"].includes(cur_numtype[0]) || ["pval"].includes(cur_unit);
 
                     // Unclarities (e.g., missing reference groups):
                     // Percentages that apply to all are suspicious (if there is any talk about groups, that is).
@@ -419,7 +454,7 @@ $(document).ready(function () {
 
         // Get numbers related to risk communication for 2. and 3.:
         const risknum_ix = token_dat.id
-            .filter((x) => ["perc", "freq", "nh", "multi"].includes(token_dat.unit[x]) && token_dat.is_num[x]);
+            .filter((x) => ["perc", "freq", "nh", "mult"].includes(token_dat.unit[x]) && token_dat.is_num[x]);
         console.log("Risknum indices:");
         console.log(risknum_ix);
 
@@ -460,7 +495,7 @@ $(document).ready(function () {
         txtfeat_dict["treat"] = txtfeat_dict.treat_num || token_dat.topics.includes("treatgroup");
         txtfeat_dict["contr"] = txtfeat_dict.contr_num || token_dat.topics.includes("controlgroup");
         // Specific number info:
-        txtfeat_dict["rel"] = ["change", "mult"].some((x) => token_dat.numtype.includes(x));  // tests if one of the elements exists.
+        txtfeat_dict["rel"] = ["incr", "decr", "mult"].some((x) => token_dat.numtype.includes(x));  // tests if one of the elements exists.
         txtfeat_dict["rel_only"] = txtfeat_dict.rel && !token_dat.numtype.includes("ABS") &&
             // Is there a row that fulfills both criteria?
             !check_any_arr(risknum_rows, ["freq", "subgroup"]);
@@ -477,9 +512,10 @@ $(document).ready(function () {
         // This collection allows to hint at communicating about differences between reporting about effectivity and side effects (mismatched framing).
         // +++ HERE +++
         let mismatched_framing = false;
-        if (txtfeat_dict.eff_num && txtfeat_dict.side_num &&
-            addfeat_dict.effnumtype.has("change") && !addfeat_dict.sidenumtype.has("change")) {
-            mismatched_framing = true;
+        if (txtfeat_dict.eff_num && txtfeat_dict.side_num) {
+
+            mismatched_framing = check_any_arr(risknum_rows, ["side", "abs"]) && !check_any_arr(risknum_rows, ["side", "rel"]) &&
+                !check_any_arr(risknum_rows, ["eff", "abs"]) && check_any_arr(risknum_rows, ["eff", "rel"]);
         }
 
         console.log("~~~~~~~~~~~~ Text features: ~~~~~~~~~~~~~~~~");
@@ -551,7 +587,7 @@ $(document).ready(function () {
 
         // Flag out the use of numbers: ~~~~~~~~~~~~~~~~~~~~~~~
         let feature_num = "<li>";
-        const any_risk_num = ["perc", "freq", "nh", "multi"].filter((x) => token_dat.unit.includes(x));
+        const any_risk_num = ["perc", "freq", "nh", "mult"].filter((x) => token_dat.unit.includes(x));
         // console.log("Any risk num:");
         // console.log(token_dat.unit);
         if (any_risk_num.length > 0) {
@@ -727,7 +763,8 @@ $(document).ready(function () {
             // Reference to the wiki object:
             const wiki_ref = {
                 "perc_other": "prozent",
-                "perc_change": "rel",  // +++ UPDATE! +++
+                "perc_incr": "rel",  // +++ UPDATE! +++
+                "perc_decr": "rel",
                 // Types of freqs -- update!
                 "freq_ntot": "freq",
                 "freq_ncase": "freq",
@@ -735,7 +772,7 @@ $(document).ready(function () {
                 "freq_contr": "freq",
                 "freq_other": "freq",
                 // Other kinds of numbers:
-                "multi_other": "rel",
+                "mult_other": "rel",
                 "pval_other": "pval"
             };
 
@@ -850,12 +887,12 @@ const pat_num = "(?:(?<![\\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,:][0-9]+)
 const regex_num = new RegExp("(?<unknown>" + pat_num + ")", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
 const regex_perc = new RegExp("(?<perc>" + pat_num + " ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.?!])" + ")", "dg");
 const regex_nh = new RegExp("(?<nh>" + pat_num + " (von|aus) " + pat_num + ")", "dg");
-const regex_multi = new RegExp("(?<multi>" + pat_num + "[ \\-]?([Mm]al|[Ff]ach) (so )?( ?viele|groß|hoch|niedrig|besser)(?=[\\s.?!])" + ")", "dg");
+const regex_mult = new RegExp("(?<mult>" + pat_num + "[ \\-]?([Mm]al|[Ff]ach) (so )?( ?viele|gr[oö]ß|hoch|niedrig|besser|erhöht|höher)(?=[\\s.?!])" + ")", "dg");
 // Note: in regex_nh we may also try to get the denominator as a group or as its own entity.
 // nh must also be identified from tokens (e.g., In der Gruppe von 1000[case] Leuten sterben 4[num/case].
 
 // Define units to not consider further:
-const units_exc = ["age", "currency", "time", "date", "year", "duration", "legal", "misc"];
+const units_exc = ["age", "currency", "time", "date", "year", "dur", "legal", "misc"];
 
 /*
 Tests for simple units:
@@ -876,12 +913,12 @@ const check_numbers_dict = {
         // "tooltip": "Ich bin eine \"natürliche\" Häufigkeit",
         // "note": "Sie haben eine natürliche Häufigkeit verwendet. Das ist sehr gut. Am besten sollte der Nenner über Vergleiche der Gleiche sein (z.B. 1 aus 100 Geimpften erkrankt, während 3 aus 100 ungeimpften erkranken)."
     },
-    // Multitude of something (e.g. 20-fach).
-    "multi": {
-        "regex": regex_multi
+    // multtude of something (e.g. 20-fach).
+    "mult": {
+        "regex": regex_mult
     },
-    "multi2": {
-        "regex": /(?<multi>([Hh]alb|[Dd]oppelt|[Dd]reifach|[Dd]reimal) so( ?viele|groß|hoch|niedrig|besser))/dg
+    "mult2": {
+        "regex": /(?<mult>([Hh]alb|[Dd]oppelt|[Dd]reifach|[Dd]reimal) (so )?(viele|gr[oö]ß|hoch|niedrig|besser|erhöht|höher))/dg
     },
     "pval": {
         "regex": RegExp("(?<pval>p ?[\\<\\=] ?" + pat_num + ")", "dg")
@@ -912,8 +949,8 @@ const check_numbers_dict = {
     "yearrange": {
         "regex": /(?<year>(zwischen|von) (18|19|20)\d{2} (und|bis) (18|19|20)\d{2})/dg
     },
-    "duration": {
-        "regex": /(?<duration>[0-9]+(-stündig|-tägig| Minuten?| Stunden?| Tagen?| Wochen?))/dg
+    "dur": {
+        "regex": /(?<dur>[0-9]+(-stündig|-tägig| Minuten?| Stunden?| Tagen?| Wochen?))/dg
     },
     "legal": {
         "regex": /(?<legal>(Artikel|§|Absatz) ?\d+)/dg
@@ -943,18 +980,26 @@ const check_numbers_dict = {
 
 //
 const numtype_dict = {
-    "change": {
-        "number_unit": "perc",  // add in other types eventually! 30-fach etc.
+    "incr": {
+        "number_unit": ["perc", "mult"],  // add in other types eventually! 30-fach etc.
         "keyset": [
             // A first entry to a domain-general keyset for risk:
             [RegExp(collapse_regex_or(["[Rr]isiko", "[Ww]ahrscheinlich", "Inzidenz", "Todesfälle"])),
-                RegExp(collapse_regex_or(["höher", "erhöht", "reduziert", "niedriger", "(ge|ver)ringert?"]))]
+                RegExp(collapse_regex_or(["höher", "erhöht"]))]
+        ]
+    },
+    "decr": {
+        "number_unit": ["perc", "mult"],  // add in other types eventually! 30-fach etc.
+        "keyset": [
+            // A first entry to a domain-general keyset for risk:
+            [RegExp(collapse_regex_or(["[Rr]isiko", "[Ww]ahrscheinlich", "Inzidenz", "Todesfälle"])),
+                RegExp(collapse_regex_or(["reduziert", "niedriger", "(ge|ver)ringert?"]))]
         ]
     },
     // Total nuber of cases/incidents:
     // NOTE: Order matters!
     "ncase": {
-        "number_unit": "freq",
+        "number_unit": ["freq", "nh"],
         "keyset": [
             // TODO: Double check these!
             [RegExp("Fälle|Verläufe"), RegExp("insgesamt|nach|Studie")],
@@ -962,7 +1007,7 @@ const numtype_dict = {
         ]
     },
     "ntot": {
-        "number_unit": "freq",
+        "number_unit": ["freq"],
         "keyset": [
             // TODO: Double check these!
             [RegExp("Proband|[Tt]eilnehme|Versuchspers|Menschen|Frauen|Männer|Kinder"),
@@ -987,7 +1032,8 @@ const unit_note_dict = {
     "perc": {
         "tooltip": {
             "ABS": "absolute Prozentzahl",
-            "change": "Veränderung",
+            "incr": "Anstieg",
+            "decr": "Minderung",
             "other": "andere Prozentzahl"
         },
         "note": function (type_arr) {
@@ -1045,7 +1091,7 @@ const unit_note_dict = {
                 "Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
         }
     },
-    "multi": {
+    "mult": {
         "tooltip": {"other": "Relative Angabe"},
         "note": function (type_arr) {
             return "Der Text enthält relative Vergleiche (10-mal so groß, halb so groß)." +
@@ -1335,7 +1381,7 @@ function detect_number_type(token_data, txt) {
     if (token_data.topics.includes("impf")) {
         // Include Impf-specific keys
         // Do so as an inclusive disjunction.
-        numtype_dict.change.keyset = numtype_dict.change.keyset.concat(keyset_impf);
+        numtype_dict.decr.keyset = numtype_dict.decr.keyset.concat(keyset_impf);
         // testcount++;
     }
 
@@ -1441,7 +1487,10 @@ function detect_number_type(token_data, txt) {
                     // console.log(value);
 
                     // Check for the number type to select whether the number type (cases, percentage...) applies:
-                    if (token_data.unit[curnum_id].includes(value.number_unit)) {
+                    if (value.number_unit.includes(token_data.unit[curnum_id].toString())) {
+                        // reversed relative to previous version, was: token_data.unit[curnum_id].includes(value.number_unit)
+                        // Allows to associate numbertypes with different units!
+
                         // Note: may also apply to other number types like
                         // "30-faches Risiko", "das Risiko ist zweimal so hoch"
                         // console.log("It's a percentage!");
@@ -1573,6 +1622,9 @@ const window_keys = {
     "units": {
         "freq": RegExp(collapse_regex_or(["Proband", "Teilnehm", "Infektion"]), "dg"),
         "death": RegExp(collapse_regex_or(["(ge|ver)st[aeo]rben"]), "dg")
+    },
+    "rel": {
+        "rel": RegExp(collapse_regex_or(["Wirksamkeit", "Impfschutz"]), "dg")
     }
 
 }
