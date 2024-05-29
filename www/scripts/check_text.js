@@ -343,12 +343,15 @@ $(document).ready(function () {
 
 
                     const tooltip_dict = {
-                        "freq_ntot": "Anzahl in Studie",
+                        "freq_ntot": "Gesamtzahl Personen",
                         "freq_ncase": "Anzahl Fälle gesamt",
+                        "freq_ncase_all_eff": "Anzahl Erkrankungen",  // oder: andere Fälle!
                         "freq_ncase_treat_eff": "Anzahl Fälle Behandelte",
                         "freq_ncase_contr_eff": "Anzahl Fälle Vergleichsgruppe",
                         "perc_decr_eff_rel": "Relative Risikoreduktion",
-                        "perc_other_side_abs": "Wahrscheinlichkeit Nebenwirkungen"
+                        "perc_other_side_abs": "Wahrscheinlichkeit Nebenwirkungen",
+                        "perc_other_sample_abs": "Prozentzahl Stichprobenbeschreibung",
+                        "perc_other_eff_abs": "Absolute Prozentangabe"
                     }
 
                     // Get types for each tooltip from dictionary:
