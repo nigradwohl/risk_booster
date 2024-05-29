@@ -682,14 +682,14 @@ $(document).ready(function () {
 
 
             const cur_num = $(this);
-            const thispos = cur_num.position();
-            console.log(thispos);
+            const thispos = cur_num.position();  // position of clicked number.
+            // console.log(thispos);
 
             // Change the popup text here:
             const cur_popup = $("#tooltip-popup");
 
             // Remove highlighting classes:
-            cur_popup.removeClass("selected-blur");
+            // cur_popup.removeClass("selected-blur");
             $(".highlight-num").removeClass("selected-blur");
 
             const popup_height = cur_popup.height();
@@ -755,7 +755,10 @@ $(document).ready(function () {
             );
 
             // Style the popup, position it and show:
-            const correction_left = $("#text-result").position().left + $("#text-result").width();
+            const txt_ele = $("#text-result");  // element for text container
+            const correction_left = txt_ele.position().left + txt_ele.width();
+
+            // Note: Eventuall improve positioning; seemingly, the issue occurs only on the first click!
 
             cur_popup
                 .css({
@@ -764,7 +767,7 @@ $(document).ready(function () {
                     left: thispos.left + popup_width > correction_left ? thispos.left / 2 : thispos.left,
                     position: 'absolute'
                 })
-                .addClass("selected-blur")
+                // .addClass("selected-blur")
                 .show();
 
             $(this).addClass("selected-blur");
@@ -774,7 +777,7 @@ $(document).ready(function () {
 
             $(window).on("click", function (e) {
 
-                console.log(e.target);
+                // console.log(e.target);
 
                 // May need to become more complex with more elements!
                 // Get all parent node IDs?
@@ -900,6 +903,9 @@ const check_numbers_dict = {
     "date": {
         "regex": /(?<date>\d{1,2}\.\d{1,2}\.(18|19|20)\d{2})/dg
     },
+    "year": {
+        "regex": /(?<year>Jahr (18|19|20)\d{2})/dg
+    },
     "yearrange": {
         "regex": /(?<year>(zwischen|von) (18|19|20)\d{2} (und|bis) (18|19|20)\d{2})/dg
     },
@@ -938,8 +944,8 @@ const key_obj = {
         "number_unit": "perc",  // add in other types eventually! 30-fach etc.
         "keyset": [
             // A first entry to a domain-general keyset for risk:
-            [RegExp(collapse_regex_or(["Risiko", "[Ww]ahrscheinlich", "Inzidenz", "Todesfälle"])),
-                RegExp(collapse_regex_or(["höher", "erhöht", "reduziert", "(ge|ver)ringert?"]))]
+            [RegExp(collapse_regex_or(["[Rr]isiko", "[Ww]ahrscheinlich", "Inzidenz", "Todesfälle"])),
+                RegExp(collapse_regex_or(["höher", "erhöht", "reduziert", "niedriger", "(ge|ver)ringert?"]))]
         ]
     },
     // Total nuber of cases/incidents:
@@ -955,7 +961,7 @@ const key_obj = {
         "number_unit": "case",
         "keyset": [
             // TODO: Double check these!
-            [RegExp("Proband|[Tt]eilnehme|Versuchspers|Menschen"), RegExp("insgesamt|Studie|umfass(t|en)")]
+            [RegExp("Proband|[Tt]eilnehme|Versuchspers|Menschen|Frauen|Männer|Kinder"), RegExp("insgesamt|Studie|Untersuchung|umfass(t|en)")]
         ]
     },
     // Part of cases:
@@ -1550,9 +1556,11 @@ const window_keys = {
     },
     "treat_contr": {
         // Types of subgroups:
-        "control": RegExp(collapse_regex_or(["Kontroll-?\\w*[Gg]ruppe", "Placebo-?\\w*[Gg]ruppe"]), "dg"),
+        "control": RegExp(collapse_regex_or(["Kontroll-?\\w*[Gg]ruppe", "Placebo-?\\w*[Gg]ruppe",
+            "Prävention\\w*wenigsten\\w*befolgte"]), "dg"),
         "treatment": RegExp(collapse_regex_or(["[Gg]eimpfte?n?", "Impf-?\\w*[Gg]ruppe",
-            "([Tt]eilnehmer|Probanden).*Impfung"]), "dg"),
+            "([Tt]eilnehmer|Probanden).*Impfung",
+            "gesündesten\\w*Lebensstil"]), "dg"),
         // "all": RegExp(collapse_regex_or(["insgesamt.*([Tt]eilnehmer|Probanden)"]), "dg"),
         "all": RegExp(collapse_regex_or(["[Tt]eilnehmer|Probanden"]), "dg")  // problematic!
     },
@@ -1797,7 +1805,7 @@ function investigate_context(token_data, index_arr, keyset) {
 
                 // console.log(numberfeats);
 
-                if(numberfeats.size > 1){
+                if (numberfeats.size > 1) {
                     numberfeats.delete("all");  // give more specific features precedence!
                 }
 
@@ -1858,7 +1866,7 @@ function detect_unit(token_data) {
     // ALTERNATIVELY use dict etc.?
     const unit_lookup = [
         [/(%|[Pp]rozent\w*)/, "perc"],  // percentages.
-        [/Teilnehm|[Ff][aä]ll|Proband|Mensch|Kind|Verl[aä]uf/, "case"]  // frequencies.
+        [/Teilnehm|[Ff][aä]ll|Proband|Mensch|Kind|Mädchen|Junge|Männer|Frauen|Verl[aä]uf/, "case"]  // frequencies.
         // natural/relative frequencies.
     ]
     // Note: Percentage signs may also be contained in the number token!
@@ -2035,11 +2043,14 @@ function detect_regex_match(txt, token_dat, check_dict) {
                 droplist = droplist.concat(i);
                 const prev_ix = token_match[match_start]
 
-                match_id = prev_ix.concat(i)
-                cur_type = match.type;  // might also concat...
+                if (prev_ix !== -1) {
+                    match_id = prev_ix.concat(i)
+                    cur_type = match.type;  // might also concat...
 
-                // Also amend the previous match to include the other type?
-                arr_match[prev_ix[0]].type = arr_match[prev_ix[0]].type.concat(match.type);
+                    // Also amend the previous match to include the other type?
+                    arr_match[prev_ix[0]].type = arr_match[prev_ix[0]].type.concat(match.type);
+                }
+
 
             } else {
                 droplist = droplist.concat(i);
