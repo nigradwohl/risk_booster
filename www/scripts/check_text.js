@@ -683,7 +683,7 @@ $(document).ready(function () {
 
             const cur_num = $(this);
             const thispos = cur_num.position();  // position of clicked number.
-            // console.log(thispos);
+            console.log(thispos);
 
             // Change the popup text here:
             const cur_popup = $("#tooltip-popup");
@@ -760,9 +760,12 @@ $(document).ready(function () {
 
             // Note: Eventuall improve positioning; seemingly, the issue occurs only on the first click!
 
+            console.log(`Popup height (pad): ${popup_height} (${popup_pad}), Num heihgt: ${num_height}, 
+            num pos (top, bottom) ${thispos.top}, ${thispos.left}`);
+
             cur_popup
                 .css({
-                    top: thispos.top - popup_height - num_height - popup_pad,
+                    top: thispos.top,  // - popup_height - num_height - popup_pad,
                     // If the popup goes out of bounds, correct.
                     left: thispos.left + popup_width > correction_left ? thispos.left / 2 : thispos.left,
                     position: 'absolute'
