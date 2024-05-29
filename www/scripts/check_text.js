@@ -205,16 +205,16 @@ $(document).ready(function () {
         // Detect number words:
         // ++++ HERE NOW +++
         // python: https://github.com/IBM/wort-to-number
-        const pat_numwords = RegExp(collapse_regex_or(
-            ["[Ee]in", "[Zz]wei", "[Dd]rei"]), "dg");
-        const numwords_ix = token_dat.id.filter((x) => pat_numwords.test(token_dat.token[x]));
-        // Investigate these tokens further!
-        const numword_arr = investigate_context(token_dat, numwords_ix,
-            {"numword_keys": RegExp(collapse_regex_or(["Verl[aä]uf"]))});
-        console.log("+++ Get numwords +++");
-        console.log(pat_numwords);
-        console.log(numwords_ix);
-        console.log(numword_arr);
+        // const pat_numwords = RegExp(collapse_regex_or(
+        //     ["[Ee]in", "[Zz]wei", "[Dd]rei"]), "dg");
+        // const numwords_ix = token_dat.id.filter((x) => pat_numwords.test(token_dat.token[x]));
+        // // Investigate these tokens further!
+        // const numword_arr = investigate_context(token_dat, numwords_ix,
+        //     {"numword_keys": RegExp(collapse_regex_or(["Verl[aä]uf"]))});
+        // console.log("+++ Get numwords +++");
+        // console.log(pat_numwords);
+        // console.log(numwords_ix);
+        // console.log(numword_arr);
         // Rather do reverse search? Search for "Verläufe", "Erkrankungen" etc.
 
 
@@ -230,8 +230,11 @@ $(document).ready(function () {
         token_dat.n_gtype = token_dat.n_gtype.map((x, ix) => token_dat.unit[ix] === "perc" ? "subgroup" : token_dat.n_gtype[ix]);
 
         // Do not apply the following to total numbers:
-        const n_subgroup_ix = token_dat.id.filter((d, ix) => token_dat.n_gtype[ix] !== "total" && token_dat.n_gtype[ix] !== -1);
+        const n_subgroup_ix = token_dat.id.filter((d, ix) => token_dat.is_num[ix] &&
+            token_dat.n_gtype[ix] !== "total" && token_dat.n_gtype[ix] !== -1);
+        console.log("---------- Get treatment and control: -----------");
         token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.treat_contr), "n_trtctrl");
+        console.log("---------- Get effectivity and side effects: -----------");
         token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.effside), "n_effside");
         // Note: Nutzen muss bei Verhaltensrisiken ggf. nicht unbedingt benannt werden (wenn es keinen ersichtlichen gibt)
 
@@ -470,8 +473,8 @@ $(document).ready(function () {
         // This collection allows to hint at communicating about differences between reporting about effectivity and side effects (mismatched framing).
         // +++ HERE +++
         let mismatched_framing = false;
-        if(txtfeat_dict.eff_num && txtfeat_dict.side_num &&
-            addfeat_dict.effnumtype.has("REL") && !addfeat_dict.sidenumtype.has("REL")){
+        if (txtfeat_dict.eff_num && txtfeat_dict.side_num &&
+            addfeat_dict.effnumtype.has("REL") && !addfeat_dict.sidenumtype.has("REL")) {
             mismatched_framing = true;
         }
 
@@ -608,7 +611,7 @@ $(document).ready(function () {
 
 
         // Add mismatched framing:
-        if(mismatched_framing){
+        if (mismatched_framing) {
             arr_li.add('Achtung: Sie haben in Behandlungsgruppe relative Zahlen und in der Vergleichsgruppe absolute Zahlen verwendet.' +
                 'Dieses "mismatched framing" sollte vermieden werden, ' +
                 'da es <a>[LINK]Die Wirksamkeit größer und den Schaden kleiner [ODER ANDERSHERUM!] erscheinen lässt</a>');
@@ -1631,7 +1634,7 @@ function investigate_context(token_data, index_arr, keyset) {
     for (const token_ix of index_arr) {
 
         // console.log("-------- NEW TOKEN --------");
-        // console.log(`+++ Token number ${token_ix}: ${tokens[token_ix]} +++`);
+        console.log(`+++ Token number ${token_ix}: ${token_data.token[token_ix]} +++`);
 
         // PREPARE THE WINDOW: ~~~~~~~~~~~~~~
         let testcounter = 0;  // testcounter to avoid infinite loops!
@@ -1649,6 +1652,7 @@ function investigate_context(token_data, index_arr, keyset) {
         let key_info = {};
 
         // Initialize flag for having encountered stop-tokens:
+        // const stop_token_set = ["\\n", ".", "?", "!", ":", "oder", "und", ";", ",", "-"];
         let stop_tokens = ["\\n", ".", "?", "!", ":", "oder", "und", ";", ",", "-"];  // renew for each number!
         let stop_token_start = false;
         let stop_token_end = false;
@@ -1663,7 +1667,7 @@ function investigate_context(token_data, index_arr, keyset) {
         // OPEN THE WINDOW: ~~~~~~~~~~~~~~~~
         while (!description_complete && (lock_start > min_start || lock_end < max_end)) {
 
-            // console.log(`Token ${token_ix}, lock start: ${lock_start}, lock end: ${lock_end}; range before: ${token_ix - lock_start}, range after: ${lock_end - token_ix}, current stop tokens: ${stop_tokens.join(" ")}`);
+            // console.log(`Token ${token_ix}, window start: ${window_start}, lock start: ${lock_start}, window end: ${window_end}, lock end: ${lock_end}; range before: ${token_ix - lock_start}, range after: ${lock_end - token_ix}, current stop tokens: ${stop_tokens.join(" ")}`);
 
             while (window_start > lock_start) {
                 window_start--;
@@ -1717,9 +1721,14 @@ function investigate_context(token_data, index_arr, keyset) {
                 if (match !== null) {
 
                     if (!numberfeats.has(key)) {
-                        key_info[key] = [match.indices, testcounter];  // match positions in teststring and iteration.
-                        // console.log(key_info);
+                        key_info[key] = [match.indices,  // positions in teststring
+                            stop_update_count,  // stop_token_set.length - stop_tokens.length,  // number of tokens removed.
+                            testcounter];  // number of iteration.
+                        console.log(key_info);
+                        console.log(stop_tokens);
                     }
+
+                    // Add the feature:
                     numberfeats = numberfeats.add(key);
                 }
             }
@@ -1739,13 +1748,20 @@ function investigate_context(token_data, index_arr, keyset) {
 
             // console.log(`Stop token at start: ${stop_token_start}, at end: ${stop_token_end}`);
 
+            // Extend the window:
+            // Possible extension: Asymmetric updating (dependent on context words -- e.g., we will want to know what happens after "in").
+            // Do before or after stop tokens?
+            lock_start = !stop_token_start && lock_start > min_start ? lock_start - 1 : lock_start;
+            lock_end = !stop_token_end && lock_end < max_end ? lock_end + 1 : lock_end;
+
+
             // Update the stop tokens:
             if ((stop_token_start && stop_token_end) || (stop_token_end && lock_start === min_start) || (stop_token_start && lock_end === max_end)) {
                 // console.log("UPDATE STOP TOKENS");
                 stop_tokens.pop();  // remove the last stop token and retry.
                 // When both are at the end, reset them.
-                stop_token_start = false;
-                stop_token_end = false;
+                stop_token_start = stop_tokens.includes(token_data.token[window_start]);
+                stop_token_end = stop_tokens.includes(token_data.token[window_end]);
                 stop_update_count++;
             }
 
@@ -1753,12 +1769,6 @@ function investigate_context(token_data, index_arr, keyset) {
             //     console.log("UPDATE STOP TOKENS when one window is at the end");
             //     stop_tokens.pop();  // remove the last stop token and retry.
             // }
-
-            // Extend the window:
-            // Possible extension: Asymmetric updating (dependent on context words -- e.g., we will want to know what happens after "in").
-            // Do before or after stop tokens?
-            lock_start = !stop_token_start && lock_start > min_start ? lock_start - 1 : lock_start;
-            lock_end = !stop_token_end && lock_end < max_end ? lock_end + 1 : lock_end;
 
 
             // conditions for completeness:
@@ -1769,7 +1779,7 @@ function investigate_context(token_data, index_arr, keyset) {
             if (Object.keys(keyset).filter((x) => numberfeats.has(x)).length > 0) {
                 // console.log("FINAL TESTSTRING:\n" + test_str);
                 // console.log(test_tokens);
-                // console.log("DESCRIPTION COMPLETE");
+                console.log("DESCRIPTION COMPLETE");
                 description_complete = true;
 
                 // console.log(numberfeats);
