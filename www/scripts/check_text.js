@@ -229,7 +229,7 @@ $(document).ready(function () {
         // Identify if numbers are total counts or refer to a subgroup:
         token_dat.add_column(investigate_context(token_dat, allnum_ix, window_keys.grouptype), "gtype");
         // Percentages MUST be subgroups by definition:
-        token_dat.gtype = token_dat.gtype.map((x, ix) => token_dat.unit[ix] === "perc" ? "subgroup" : token_dat.gtype[ix]);
+        token_dat.gtype = token_dat.gtype.map((x, ix) => token_dat.unit[ix] === "perc" ? "sub" : token_dat.gtype[ix]);
 
         // Do not apply the following to total numbers:
         const n_subgroup_ix = token_dat.id.filter((d, ix) => token_dat.is_num[ix] &&
@@ -313,7 +313,7 @@ $(document).ready(function () {
         // Loop over all tokens:
         for (let i = 0; i < token_dat.nrow; i++) {
 
-            if (token_dat.is_num) {
+            if (token_dat.is_num[i]) {
 
                 // console.log(i);
                 let cur_unit = token_dat.unit[i];  // determine unit of current token.
@@ -325,6 +325,7 @@ $(document).ready(function () {
                     cur_unit = cur_unit[0];  // for now take the first array element.
                 }
 
+                // If the number has a unit and it is not one the exxclusion list:
                 if (cur_unit !== -1 && !units_exc.includes(cur_unit)) {
                     // Text prior to match:
                     let text_pre = inputText.slice(cur_ix, token_dat.start[i]);
@@ -340,19 +341,50 @@ $(document).ready(function () {
                         match_len++;
                     }
 
+
+                    const tooltip_dict = {
+                        "freq_ntot": "Anzahl in Studie",
+                        "freq_ncase": "Anzahl Fälle gesamt",
+                        "freq_ncase_treat_eff": "Anzahl Fälle Behandelte",
+                        "freq_ncase_contr_eff": "Anzahl Fälle Vergleichsgruppe",
+                        "perc_decr_eff_rel": "Relative Risikoreduktion",
+                        "perc_other_side_abs": "Wahrscheinlichkeit Nebenwirkungen"
+                    }
+
                     // Get types for each tooltip from dictionary:
                     let cur_numtype = token_dat.numtype.slice(i, i + match_len).filter((x) => x !== -1);
                     // console.log(token_dat.numtype.slice(i, i + match_len));
-                    const cur_tooltip = unit_note_dict[cur_unit].tooltip[cur_numtype[0]];  // NOTE: currently first type only.
+
+                    // ignature of current number:
+                    const currow = token_dat.get_row(i);
+
+                    let col_arr = ["unit", "numtype", "effside"];
+                    if(cur_unit === "perc"){col_arr = col_arr.concat(["effside", "relabs"])}
+                    if(cur_unit === "freq"){col_arr = col_arr.concat("group")}
+
+                    const cur_sign = currow
+                        .filter((x, ix) => col_arr.includes(token_dat.colnames[ix]) &&
+                            x !== -1)
+                        .join("_");
+                    console.log(cur_sign);
+
+
+                    let cur_tooltip = "Unbekannt";
+                    if(Object.keys(tooltip_dict).includes(cur_sign)){
+                        cur_tooltip = tooltip_dict[cur_sign];
+                    }
+
+                    // const cur_tooltip = unit_note_dict[cur_unit].tooltip[cur_numtype[0]];  // NOTE: currently first type only.
 
                     // Token information:
                     // console.log(token_dat.token[i] + "; Start: " + token_dat.start[i] + ", end: " + token_dat.end[i + match_len - 1] +
                     //     ", match length: " + match_len + ", unit: " + cur_unit + ", numtype: " + cur_numtype);
 
-                    console.log("Current number type is");
-                    console.log(cur_numtype);
+                    // console.log("Current number type is");
+                    // console.log(cur_numtype);
 
                     cur_ix = token_dat.end[i + match_len - 1] + 1;  // save index of final character to continue from there.
+
 
                     // Numbers that issue warnings:
                     // Strong warnings:
@@ -496,9 +528,9 @@ $(document).ready(function () {
         txtfeat_dict["contr"] = txtfeat_dict.contr_num || token_dat.topics.includes("controlgroup");
         // Specific number info:
         txtfeat_dict["rel"] = ["incr", "decr", "mult"].some((x) => token_dat.numtype.includes(x));  // tests if one of the elements exists.
-        txtfeat_dict["rel_only"] = txtfeat_dict.rel && !token_dat.numtype.includes("ABS") &&
+        txtfeat_dict["rel_only"] = txtfeat_dict.rel && !token_dat.relabs.includes("abs") &&
             // Is there a row that fulfills both criteria?
-            !check_any_arr(risknum_rows, ["freq", "subgroup"]);
+            !check_any_arr(risknum_rows, ["freq", "sub"]);
 
         // Additional information:
         const addfeat_dict = {
@@ -1584,7 +1616,7 @@ function detect_number_type(token_data, txt) {
 const window_keys = {
     "grouptype": {
         "total": RegExp(collapse_regex_or(["insgesamt", "alle_", "Basis"]), "dg"),
-        "subgroup": RegExp(collapse_regex_or(["[Ii]n_", "[Uu]nter_", "[Dd]avon_",
+        "sub": RegExp(collapse_regex_or(["[Ii]n_", "[Uu]nter_", "[Dd]avon_",
             "der\\w*[Tt]eilnehmer", "entfielen\w*auf"]), "dg")
     },
     "treat_contr": {
