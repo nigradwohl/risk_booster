@@ -224,7 +224,7 @@ $(document).ready(function () {
 
         // For all numbers with non-.excluded units:
         const allnum_ix = token_dat.id.filter((d, ix) => token_dat.is_num[ix] && !units_exc.includes(token_dat.unit[ix]));
-        const case_ix = token_dat.id.filter((d, ix) => token_dat.unit[ix] === "freq");
+        const freq_ix = token_dat.id.filter((d, ix) => token_dat.unit[ix] === "freq");
 
         // Identify if numbers are total counts or refer to a subgroup:
         token_dat.add_column(investigate_context(token_dat, allnum_ix, window_keys.grouptype), "gtype");
@@ -239,6 +239,9 @@ $(document).ready(function () {
         // console.log("---------- Get effectivity and side effects: -----------");
         token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.effside), "effside");
         // Note: Nutzen muss bei Verhaltensrisiken ggf. nicht unbedingt benannt werden (wenn es keinen ersichtlichen gibt)
+
+        // Get information about the underlying conditions (morbidity, mortality...):
+        token_dat.add_column(investigate_context(token_dat, freq_ix, window_keys.conditions), "ftype");
 
         // Update missing information: ~~~~~~~~~~~
         // Absolute percentages (for now code as remainder that is not relative and see if it fails).
@@ -1650,9 +1653,10 @@ const window_keys = {
             "sinkt|verringert\\w*(Risiko|Wahrscheinlichkeit)",
             "schütz(en|t)\\w*(Erkrankung|Ansteckung)"]), "dg")
     },
-    "verbs": {
+    "conditions": {
         // Verbs:
-        "ill": RegExp(collapse_regex_or(["erkrank(t|en)", "Verl[äa]uf"]), "dg")
+        "ill": RegExp(collapse_regex_or(["erkrank(t|en)", "Verl[äa]uf", "[Ii]nfiziert"]), "dg"),
+        "death": RegExp(collapse_regex_or(["st[eao]rben", "Todesfälle", "Todesfall(!?e)"]), "dg")
     },
     "units": {
         "freq": RegExp(collapse_regex_or(["Proband", "Teilnehm", "Infektion"]), "dg"),
