@@ -232,9 +232,9 @@ $(document).ready(function () {
         // Do not apply the following to total numbers:
         const n_subgroup_ix = token_dat.id.filter((d, ix) => token_dat.is_num[ix] &&
             token_dat.n_gtype[ix] !== "total" && token_dat.n_gtype[ix] !== -1);
-        console.log("---------- Get treatment and control: -----------");
+        // console.log("---------- Get treatment and control: -----------");
         token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.treat_contr), "n_trtctrl");
-        console.log("---------- Get effectivity and side effects: -----------");
+        // console.log("---------- Get effectivity and side effects: -----------");
         token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.effside), "n_effside");
         // Note: Nutzen muss bei Verhaltensrisiken ggf. nicht unbedingt benannt werden (wenn es keinen ersichtlichen gibt)
 
@@ -250,11 +250,11 @@ $(document).ready(function () {
         // Replace subgroup info:
         // Note: caused a bug in some cases -- solve differently?
         // First, replace unknown subgroups:
-        token_dat.n_gtype  = token_dat.n_gtype
-            .map((gtype, ix) => token_dat.numtype[ix] === "N_CASE_TOT" && token_dat.n_trtctrl[ix] === "unknown" ? "total" : gtype);
+        token_dat.n_gtype = token_dat.n_gtype
+            .map((gtype, ix) => token_dat.numtype[ix] === "N_CASE_TOT" && ["unknown", "all"].includes(token_dat.n_trtctrl[ix]) ? "total" : gtype);
 
         token_dat.numtype = token_dat.numtype
-            .map((ntype, ix) => token_dat.n_gtype[ix] === "subgroup" && ntype.toString() === "N_CASE_TOT" ? token_dat.n_trtctrl[ix] : ntype);
+            .map((ntype, ix) => token_dat.n_gtype[ix] === "subgroup" && ["N_CASE_TOT", "N_AFFECTED"].includes(ntype.toString()) ? token_dat.n_trtctrl[ix] : ntype);
 
 
         // Display for testing:
@@ -948,7 +948,7 @@ const key_obj = {
         "number_unit": "case",
         "keyset": [
             // TODO: Double check these!
-            [RegExp("Fälle"), RegExp("insgesamt|nach")]
+            [RegExp("Fälle|Verläufe"), RegExp("insgesamt|nach")]
         ]
     },
     "N_TOT": {
@@ -1553,7 +1553,8 @@ const window_keys = {
         "control": RegExp(collapse_regex_or(["Kontroll-?\\w*[Gg]ruppe", "Placebo-?\\w*[Gg]ruppe"]), "dg"),
         "treatment": RegExp(collapse_regex_or(["[Gg]eimpfte?n?", "Impf-?\\w*[Gg]ruppe",
             "([Tt]eilnehmer|Probanden).*Impfung"]), "dg"),
-        "all": RegExp(collapse_regex_or(["insgesamt.*([Tt]eilnehmer|Probanden)"]), "dg")  // problematic!
+        // "all": RegExp(collapse_regex_or(["insgesamt.*([Tt]eilnehmer|Probanden)"]), "dg"),
+        "all": RegExp(collapse_regex_or(["[Tt]eilnehmer|Probanden"]), "dg")  // problematic!
     },
     "effside": {
         "eff": RegExp(collapse_regex_or(["(?<![Nn]eben)[Ww]irk", "Impfschutz",
@@ -1642,7 +1643,7 @@ function investigate_context(token_data, index_arr, keyset) {
     for (const token_ix of index_arr) {
 
         // console.log("-------- NEW TOKEN --------");
-        console.log(`+++ Token number ${token_ix}: ${token_data.token[token_ix]} +++`);
+        // console.log(`+++ Token number ${token_ix}: ${token_data.token[token_ix]} +++`);
 
         // PREPARE THE WINDOW: ~~~~~~~~~~~~~~
         let testcounter = 0;  // testcounter to avoid infinite loops!
@@ -1661,7 +1662,7 @@ function investigate_context(token_data, index_arr, keyset) {
 
         // Initialize flag for having encountered stop-tokens:
         // const stop_token_set = ["\\n", ".", "?", "!", ":", "oder", "und", ";", ",", "-"];
-        let stop_tokens = ["\\n", ".", "?", "!", ":", "oder", "und", ";", ",", "-"];  // renew for each number!
+        let stop_tokens = ["\\n", ".", "?", "!", ":", "und", ";", ",", "oder", "-"];  // renew for each number!
         let stop_token_start = false;
         let stop_token_end = false;
         let stop_update_count = 0;
@@ -1784,14 +1785,21 @@ function investigate_context(token_data, index_arr, keyset) {
             // Note: Currently a dummy condition!
             // MAYBE: Require at least one update of stop tokens to make it greedy? stop_update_count > 0
             // If one category could be clarified, exclude it?
+            // Now also require that at least one stop token has been encountered (?)
 
-            if (Object.keys(keyset).filter((x) => numberfeats.has(x)).length > 0) {
-                console.log("FINAL TESTSTRING:\n" + test_str);
-                console.log(test_tokens);
-                console.log("DESCRIPTION COMPLETE");
+            if (Object.keys(keyset).filter((x) => numberfeats.has(x)).length > 0 &&
+                stop_update_count > 2  // NOTE: KEEP?
+            ) {
+                // console.log("FINAL TESTSTRING:\n" + test_str);
+                // console.log(test_tokens);
+                // console.log("DESCRIPTION COMPLETE");
                 description_complete = true;
 
                 // console.log(numberfeats);
+
+                if(numberfeats.size > 1){
+                    numberfeats.delete("all");  // give more specific features precedence!
+                }
 
             }
 
@@ -1850,7 +1858,7 @@ function detect_unit(token_data) {
     // ALTERNATIVELY use dict etc.?
     const unit_lookup = [
         [/(%|[Pp]rozent\w*)/, "perc"],  // percentages.
-        [/Teilnehm|[Ff][aä]ll|Proband|Mensch|Verl[aä]uf/, "case"]  // frequencies.
+        [/Teilnehm|[Ff][aä]ll|Proband|Mensch|Kind|Verl[aä]uf/, "case"]  // frequencies.
         // natural/relative frequencies.
     ]
     // Note: Percentage signs may also be contained in the number token!
