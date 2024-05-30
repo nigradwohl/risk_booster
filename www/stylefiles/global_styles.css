@@ -1,15 +1,26 @@
 /* Definition of different themes */
+
+/*Charite*/
+/*        <div class="color-block" style="background-color: #004d9b"></div>*/
+/*        <div class="color-block" style="background-color: #0077be"></div>*/
+/*        <div class="color-block" style="background-color: #cbcfd2"></div>*/
+/*        <div class="color-block" style="background-color: #5e676c"></div>*/
+/*        <div class="color-block" style="background-color: #002451"></div>*/
+/*        <div class="color-block" style="background-color: #e5e7e9"></div>*/
+/*        <div class="color-block" style="background-color: #e95956"></div>*/
+/*        <div class="color-block" style="background-color: #78ad6c"></div>*/
+/*        <div class="color-block" style="background-color: #d31d19"></div>*/
 .current-theme {
     ---body-background: #f5f5fA;
-    ---header-background: #c97469;
+    ---header-background: #f5f5fA;
     ---textcol-header: white;
-    ---navbar-bg: #E7E8D1;
+    ---navbar-bg: #cbcfd2;
     ---navbar-text: #444;
     ---navbar-hover-bg: #ddd;
     ---navbar-hover-text: black;
     ---footer-bg: #ddd;
     ---footer-text: black;
-    ---footer-hover-bg: slategray;
+    ---footer-hover-bg: #5e676c;
     ---footer-hover-text: lightgrey;
     ---dropdown-content-bg: #f1f1f1;
     ---dropdown-content-text: black;
@@ -30,6 +41,39 @@
     ---text-color-primary: black;
     ---text-color-secondary: #333;
 }
+
+ /*Previous:*/
+/*.current-theme {*/
+/*    ---body-background: #f5f5fA;*/
+/*    ---header-background: #c97469;*/
+/*    ---textcol-header: white;*/
+/*    ---navbar-bg: #E7E8D1;*/
+/*    ---navbar-text: #444;*/
+/*    ---navbar-hover-bg: #ddd;*/
+/*    ---navbar-hover-text: black;*/
+/*    ---footer-bg: #ddd;*/
+/*    ---footer-text: black;*/
+/*    ---footer-hover-bg: slategray;*/
+/*    ---footer-hover-text: lightgrey;*/
+/*    ---dropdown-content-bg: #f1f1f1;*/
+/*    ---dropdown-content-text: black;*/
+/*    ---dropdown-content-hover-text: #ddd;*/
+/*    ---column-bg-primary: white;*/
+/*    ---column-bg-secondary: #f1f1f1;*/
+/*    ---colum-bg-tertiary: white;*/
+/*    ---checklist-question-bg: #EEE;*/
+/*    ---checklist-shadow: slategray;*/
+/*    ---button-primary: #E7E8D1;*/
+/*    ---button-secondary: lightgrey;*/
+/*    ---wiki-bg: #E7E8D1;*/
+/*    ---wiki-example-bg: lightgrey;*/
+/*    ---wiki-overview-bg: #A7BEAE;*/
+/*    ---wiki-border: #444;*/
+/*    ---card-bg: silver;*/
+/*    ---card-hover-bg: #ddd;*/
+/*    ---text-color-primary: black;*/
+/*    ---text-color-secondary: #333;*/
+/*}*/
 
 /*.theme-1 {*/
 /*    .current-theme {*/
