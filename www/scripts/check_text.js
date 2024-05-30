@@ -174,7 +174,7 @@ $(document).ready(function () {
         token_dat.detect_topic("side", ["Nebenwirk"]);
         // NOTE: Do not add specific side effects, because they may be effects (symptoms) in other contexts!
         token_dat.detect_topic("treatgroup", ["(Impf|Behandlungs)-?.*[Gg]ruppe"]);
-        token_dat.detect_topic("controlgroup", ["(Kontroll|Placebo)-?.*[Gg]ruppe"]);
+        token_dat.detect_topic("controlgroup", ["(Kontroll|Placebo|Vergleichs)-?.*[Gg]ruppe"]);
 
 
         // Number level: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -240,7 +240,7 @@ $(document).ready(function () {
         token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.effside), "effside");
         // Note: Nutzen muss bei Verhaltensrisiken ggf. nicht unbedingt benannt werden (wenn es keinen ersichtlichen gibt)
 
-        // Get information about the underlying conditions (morbidity, mortality...):
+        // Get information about the underlyeing conditions (morbidity, mortality...):
         token_dat.add_column(investigate_context(token_dat, freq_ix, window_keys.conditions), "ftype");
 
         // Update missing information: ~~~~~~~~~~~
@@ -924,7 +924,7 @@ const pat_num = "(?:(?<![\\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,:][0-9]+)
 
 const regex_num = new RegExp("(?<unknown>" + pat_num + ")", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
 const regex_perc = new RegExp("(?<perc>" + pat_num + " ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.?!])" + ")", "dg");
-const regex_nh = new RegExp("(?<nh>" + pat_num + " (von|aus) " + pat_num + ")", "dg");
+const regex_nh = new RegExp("(?<nh>" + pat_num + " (\\w+ )?(von|aus) (\\w+ )?" + pat_num + ")", "dg");
 const regex_mult = new RegExp("(?<mult>" + pat_num + "[ \\-]?([Mm]al|[Ff]ach) (so )?( ?viele|gr[oö]ß|hoch|niedrig|besser|erhöht|höher)(?=[\\s.?!])" + ")", "dg");
 // Note: in regex_nh we may also try to get the denominator as a group or as its own entity.
 // nh must also be identified from tokens (e.g., In der Gruppe von 1000[case] Leuten sterben 4[num/case].
@@ -995,7 +995,8 @@ const check_numbers_dict = {
     },
     // Carry-forward match:
     "carry_forward_pre": {
-        "regex": RegExp("(?<ucarryforward>((waren|sind) es|[Dd]avon[^.]*) " + pat_num + "(?=\\W))", "dg")
+        "regex": RegExp("(?<ucarryforward>((waren|sind) es|[Dd]avon[^.]*) (\\w+ ){0,2}" + pat_num + "(?=\\W))", "dg")
+        // (\w+ ){0,2} allows up to 2 more words.
     },
     "carry_forward_post": {
         "regex": RegExp("(?<ucarryforward>" + pat_num + " (waren|sind) es)", "dg")
@@ -1041,15 +1042,21 @@ const numtype_dict = {
         "keyset": [
             // TODO: Double check these!
             [RegExp("Fälle|Verläufe"), RegExp("insgesamt|nach|Studie")],
-            [RegExp("[Ee]rkrankt|[Bb]etroffen")]
+            [RegExp("[Ee]rkrankt|[Bb]etroffen")],
+            [RegExp("verst[aeo]rben"), RegExp("Personen|Teilnehm|[Gg]ruppe")],
+            // Reporting certain effects in study:
+            [RegExp("berichte(te)?n"), RegExp("Unwohlsein|Nebenwirkungen")],
+            [RegExp("berichte(te)?n"), RegExp("wohl"), RegExp("fühlen")]
         ]
     },
     "ntot": {
         "number_unit": ["freq"],
         "keyset": [
             // TODO: Double check these!
-            [RegExp("Proband|[Tt]eilnehme|Versuchspers|Menschen|Frauen|Männer|Kinder"),
-                RegExp("insgesamt|Studie|Untersuchung|umfass(t|en)")]
+            [RegExp("Proband|[Tt]eilnehme|[Pp]ersonen|Menschen|Frauen|Männer|Kinder"),
+                RegExp(collapse_regex_or(["insgesamt", "nahmen",
+                    "Studie", "Untersuchung", "umfass(t|en)", "erh(a|ie)lten", "jeweils"]))
+            ]
         ]
     }
 }
@@ -1430,17 +1437,17 @@ function detect_number_type(token_data, txt) {
             // / (auf die tatsächlich geimpften (Proband\w+|Teilnehm\w+))/
         },
         "controlrel_pre": {
-            "regex": /(?<contr>\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,3}(in der|unter den (Teilnehme\w+ |Proband\w+){,2} der|auf die (Teilnehme\w+ |Proband\w+){,2}) (Kontroll|Placebo)-?[Gg]ruppe)/dg
+            "regex": /(?<contr>\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,3}(in der|unter den (Teilnehme\w+ |Proband\w+){,2} der|auf die (Teilnehme\w+ |Proband\w+){,2}) (Kontroll|Placebo|Vergleichs)-?[Gg]ruppe)/dg
         },
         "treatre_post": {
             "regex": /(?<treat>((auf die|unter den) ([a-zA-ZÄÖÜßäöü]+ ){0,2}geimpften (Proband\w+|Teilnehm\w+)) ([a-zA-ZÄÖÜßäöü]+ ){1,2}\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,2})/dg  // (\w+ ){0,2} are up to 2 more words.
             // / (auf die tatsächlich geimpften (Proband\w+|Teilnehm\w+))/
         },
         "controlrel_post1": {
-            "regex": /(?<contr>(auf die|unter den) (Teilnehme\w+ |Proband\w+){,2} ([a-zA-ZÄÖÜßäöü]+ ){1,2}(Kontroll|Placebo)-?[Gg]ruppe ([a-zA-ZÄÖÜßäöü]+ ){1,2}\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,2})/dg
+            "regex": /(?<contr>(auf die|unter den) (Teilnehme\w+ |Proband\w+){,2} ([a-zA-ZÄÖÜßäöü]+ ){1,2}(Kontroll|Placebo|Vergleichs)-?[Gg]ruppe ([a-zA-ZÄÖÜßäöü]+ ){1,2}\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,2})/dg
         },
         "controlrel_post2": {
-            "regex": /(?<contr>in der (Kontroll|Placebo)[- ]?[Gg]ruppe ([a-zA-ZÄÖÜßäöü]+ ){1,2}\d+( [a-zA-ZÄÖÜßäöü]+){0,2})/dg
+            "regex": /(?<contr>in der (Kontroll|Placebo|Vergleichs)[- ]?[Gg]ruppe ([a-zA-ZÄÖÜßäöü]+ ){1,2}\d+( [a-zA-ZÄÖÜßäöü]+){0,2})/dg
         }
     }
 
@@ -1628,16 +1635,22 @@ const window_keys = {
     "treat_contr": {
         // Types of subgroups:
         "contr": RegExp(collapse_regex_or(["Kontroll-?\\w*[Gg]ruppe", "Placebo-?\\w*[Gg]ruppe",
+            "Vergleichs-?\\w*[Gg]ruppe",
             "Prävention\\w*wenigsten\\w*befolgte"]), "dg"),
         "treat": RegExp(collapse_regex_or(["[Gg]eimpfte?n?", "Impf-?\\w*[Gg]ruppe",
+            "Behandlungsgruppe",
             "([Tt]eilnehmer|Probanden).*Impfung",
+            "erh(a|ie)lten\\w*(Präparat|Medikament)",
             "gesündesten\\w*Lebensstil"]), "dg"),
         // "all": RegExp(collapse_regex_or(["insgesamt.*([Tt]eilnehmer|Probanden)"]), "dg"),
-        "all": RegExp(collapse_regex_or(["[Tt]eilnehmer|Probanden"]), "dg")  // problematic!
+        "all": RegExp(collapse_regex_or(["[Tt]eilnehmer|Probanden",
+        "beiden\\w*Gruppen", "sowohl\\w*[Gg]ruppe"]), "dg")  // problematic!
     },
     "effside": {
         "eff": RegExp(collapse_regex_or(["(?<![Nn]eben)[Ww]irk", "Impfschutz",
             "Schutz", "geschützt",
+            "(reduziert|verringert)\\w*Risiko", "Risiko\\w*(reduziert|verringert)",
+            "(mindert|reduziert)\\w*Symptome",
             // The following may only apply to vaccination? (But likely also to treatment!)
             "Infektion", "[Ee]rkrank", "Verl[aä]uf"]), "dg"),
         "side": RegExp(collapse_regex_or(["Nebenwirk", "Komplikation"]), "dg"),  // more keywords?
@@ -1941,7 +1954,7 @@ function detect_unit(token_data) {
     // ALTERNATIVELY use dict etc.?
     const unit_lookup = [
         [/(%|[Pp]rozent\w*)/, "perc"],  // percentages.
-        [/Teilnehm|[Ff][aä]ll|Proband|Mensch|Kind|Mädchen|Junge|Männer|Frauen|Verl[aä]uf/, "freq"]  // frequencies.
+        [/Teilnehm|[Ff][aä]ll|Proband|Person|Mensch|Kind|Mädchen|Junge|Männer|Frauen|Verl[aä]uf/, "freq"]  // frequencies.
         // natural/relative frequencies.
     ]
     // Note: Percentage signs may also be contained in the number token!

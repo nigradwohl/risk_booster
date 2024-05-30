@@ -419,11 +419,28 @@ h3 {
     border: 1px solid black;
     display: none;
     z-index: 9999;
-    max-width: 60%;
+    max-width: 30%;
     margin: 1em;
     padding: 0.4em 1em;
     /*width: 10em;*/
     /*height: 3em;*/
+}
+
+
+@media screen and (max-width: 700px) {
+
+    #tooltip-popup{
+        max-width: 40%;
+    }
+
+}
+
+@media screen and (max-width: 350px) {
+
+    #tooltip-popup{
+        max-width: 90%;
+    }
+
 }
 
 #tooltip-popup > h4 {
