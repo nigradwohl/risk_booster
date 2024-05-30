@@ -1,4 +1,7 @@
-const wiki_order = ["prozent", "freq", "nh", "rel", "cprob", "pval"]
+const wiki_order = ["risk", "prozent", "freq", "nh",
+    "rel", "baseprob", "sample_size",
+    "cprob", "pval",
+"rct", "treat", "control", "placebo"]
 
 
 $(document).ready(function () {
