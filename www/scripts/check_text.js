@@ -246,6 +246,7 @@ $(document).ready(function () {
         // console.log("---------- Get treatment and control: -----------");
         token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.treat_contr), "group");
         // console.log("---------- Get effectivity and side effects: -----------");
+        window_keys.effside.eff = window_keys.effside.eff.concat(targetconds);
         token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.effside), "effside");
         // Note: Nutzen muss bei Verhaltensrisiken ggf. nicht unbedingt benannt werden (wenn es keinen ersichtlichen gibt)
 
@@ -375,7 +376,8 @@ $(document).ready(function () {
 
                     let col_arr = ["unit", "numtype", "effside"];
                     if(cur_unit === "perc"){col_arr = col_arr.concat(["effside", "relabs"])}
-                    if(cur_unit === "freq"){col_arr = col_arr.concat("group")}
+                    if(cur_unit === "freq"){col_arr = col_arr.concat("group", "effside")}
+                    if(cur_unit === "nh"){col_arr = col_arr.concat("group", "effside")}
 
                     const cur_sign = currow
                         .filter((x, ix) => col_arr.includes(token_dat.colnames[ix]) &&
@@ -1428,7 +1430,7 @@ function detect_number_type(token_data, txt, numtype_dict) {
     console.log(sentence_counts);
 
     // Update the keyset:
-    console.log("Current keyset:");
+    console.log("Current keyset numtype:");
     console.log(numtype_dict);
 
     // Include topic-specific keywords:
@@ -1442,14 +1444,18 @@ function detect_number_type(token_data, txt, numtype_dict) {
     // Detect matches that are indicative of certain data types:
     const relation_dict = {
         "treatre_pre": {
-            "regex": /(?<treat>(\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,3}(auf die|unter den) ([a-zA-ZÄÖÜßäöü]+ ){0,2}geimpften (Proband\w+|Teilnehm\w+|Kind\w+)))/dg  // (\w+ ){0,2} are up to 2 more words.
+            "regex": /(?<treat>(\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,3}(auf die|unter den) ([a-zA-ZÄÖÜßäöü]+ ){0,2}geimpften (Proband\w+|Teilnehm\w+|Kind\w+|Behandelt)))/dg  // (\w+ ){0,2} are up to 2 more words.
             // / (auf die tatsächlich geimpften (Proband\w+|Teilnehm\w+))/
         },
         "controlrel_pre": {
             "regex": /(?<contr>\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,3}(in der|unter den (Teilnehme\w+ |Proband\w+){,2} der|auf die (Teilnehme\w+ |Proband\w+){,2}) (Kontroll|Placebo|Vergleichs)-?[Gg]ruppe)/dg
         },
         "treatre_post": {
-            "regex": /(?<treat>((auf die|unter den) ([a-zA-ZÄÖÜßäöü]+ ){0,2}geimpften (Proband\w+|Teilnehm\w+)) ([a-zA-ZÄÖÜßäöü]+ ){1,2}\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,2})/dg  // (\w+ ){0,2} are up to 2 more words.
+            "regex": /(?<treat>((auf die|unter den) ([a-zA-ZÄÖÜßäöü]+ ){0,2}(geimpften|behandelten) (Proband\w+|Teilnehm\w+)) ([a-zA-ZÄÖÜßäöü]+ ){1,2}\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,2})/dg  // (\w+ ){0,2} are up to 2 more words.
+            // / (auf die tatsächlich geimpften (Proband\w+|Teilnehm\w+))/
+        },
+        "treatre_post2": {
+            "regex": /(?<treat>((auf die|unter den) ([a-zA-ZÄÖÜßäöü]+ ){0,2}(Behandelt\w+)) ([a-zA-ZÄÖÜßäöü]+ ){1,2}\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,2})/dg  // (\w+ ){0,2} are up to 2 more words.
             // / (auf die tatsächlich geimpften (Proband\w+|Teilnehm\w+))/
         },
         "controlrel_post1": {
@@ -1637,55 +1643,55 @@ function detect_number_type(token_data, txt, numtype_dict) {
  */
 const window_keys = {
     "grouptype": {
-        "total": RegExp(collapse_regex_or(["insgesamt", "alle_", "Basis"]), "dg"),
-        "sub": RegExp(collapse_regex_or(["[Ii]n_", "[Uu]nter_", "[Dd]avon_",
-            "der\\w*[Tt]eilnehmer", "entfielen\w*auf"]), "dg")
+        "total": ["insgesamt", "alle_", "Basis"],
+        "sub": ["[Ii]n_", "[Uu]nter_", "[Dd]avon_",
+            "der\\w*[Tt]eilnehmer", "entfielen\w*auf"]
     },
     "treat_contr": {
         // Types of subgroups:
-        "contr": RegExp(collapse_regex_or(["Kontroll-?\\w*[Gg]ruppe", "Placebo-?\\w*[Gg]ruppe",
+        "contr": ["Kontroll-?\\w*[Gg]ruppe", "Placebo-?\\w*[Gg]ruppe",
             "Vergleichs-?\\w*[Gg]ruppe",
-            "Prävention\\w*wenigsten\\w*befolgte"]), "dg"),
-        "treat": RegExp(collapse_regex_or(["[Gg]eimpfte?n?", "Impf-?\\w*[Gg]ruppe",
-            "Behandlungsgruppe",
+            "Prävention\\w*wenigsten\\w*befolgte"],
+        "treat": ["[Gg]eimpfte?n?", "Impf-?\\w*[Gg]ruppe",
+            "Behandlungsgruppe", "Behandelte",
             "([Tt]eilnehmer|Probanden).*Impfung",
             "erh(a|ie)lten\\w*(Präparat|Medikament)",
-            "gesündesten\\w*Lebensstil"]), "dg"),
-        // "all": RegExp(collapse_regex_or(["insgesamt.*([Tt]eilnehmer|Probanden)"]), "dg"),
-        "all": RegExp(collapse_regex_or(["[Tt]eilnehmer|Probanden",
-        "beiden\\w*Gruppen", "sowohl\\w*[Gg]ruppe"]), "dg")  // problematic!
+            "gesündesten\\w*Lebensstil"],
+        // "all": ["insgesamt.*([Tt]eilnehmer|Probanden)"],
+        "all": ["[Tt]eilnehmer|Probanden",
+        "beiden\\w*Gruppen", "sowohl\\w*[Gg]ruppe"]  // problematic!
     },
     "effside": {
-        "eff": RegExp(collapse_regex_or(["(?<![Nn]eben)[Ww]irk", "Impfschutz",
+        "eff": ["(?<![Nn]eben)[Ww]irk", "Impfschutz",
             "Schutz", "geschützt",
             "(reduziert|verringert)\\w*Risiko", "Risiko\\w*(reduziert|verringert)",
             "(mindert|reduziert)\\w*Symptome",
             // The following may only apply to vaccination? (But likely also to treatment!)
-            "Infektion", "[Ee]rkrank", "Verl[aä]uf"]), "dg"),
-        "side": RegExp(collapse_regex_or(["Nebenwirk", "Komplikation"]), "dg"),  // more keywords?
+            "Infektion", "[Ee]rkrank", "Verl[aä]uf"],
+        "side": ["Nebenwirk", "Komplikation"],  // more keywords?
         // Other types (age etc.):
-        "sample": RegExp(collapse_regex_or(["im.*Alter"]), "dg")  // sample description.
+        "sample": ["im.*Alter"]  // sample description.
     },
     "incr_decr": {
-        "risk_incr": RegExp(collapse_regex_or([
+        "risk_incr": [
             "(Risiko|Wahrscheinlichkeit)\\w*(erhöht|steigt)",
-            "(erhöht|steigt)\\w*(Risiko|Wahrscheinlichkeit)"]), "dg"),
-        "risk_decr": RegExp(collapse_regex_or([
+            "(erhöht|steigt)\\w*(Risiko|Wahrscheinlichkeit)"],
+        "risk_decr": [
             "(Risiko|Wahrscheinlichkeit)\\w*sinkt|verringert",
             "sinkt|verringert\\w*(Risiko|Wahrscheinlichkeit)",
-            "schütz(en|t)\\w*(Erkrankung|Ansteckung)"]), "dg")
+            "schütz(en|t)\\w*(Erkrankung|Ansteckung)"]
     },
     "conditions": {
         // Verbs:
-        "ill": RegExp(collapse_regex_or(["erkrank(t|en)", "Verl[äa]uf", "[Ii]nfiziert", "entwickeln"]), "dg"),
-        "death": RegExp(collapse_regex_or(["st[eao]rben", "Todesfälle", "Todesfall(!?e)"]), "dg")
+        "ill": ["erkrank(t|en)", "Verl[äa]uf", "[Ii]nfiziert", "entwickeln"],
+        "death": ["st[eao]rben", "Todesfälle", "Todesfall(!?e)"]
     },
     "units": {
-        "freq": RegExp(collapse_regex_or(["Proband", "Teilnehm", "Infektion"]), "dg"),
-        "death": RegExp(collapse_regex_or(["(ge|ver)st[aeo]rben"]), "dg")
+        "freq": ["Proband", "Teilnehm", "Infektion"],
+        "death": ["(ge|ver)st[aeo]rben"]
     },
     "rel": {
-        "rel": RegExp(collapse_regex_or(["Wirksamkeit", "Impfschutz"]), "dg")
+        "rel": ["Wirksamkeit", "Impfschutz"]
     }
 
 }
@@ -1742,6 +1748,16 @@ function investigate_context(token_data, index_arr, keyset) {
     // console.log(index_arr);
 
     // const tokens = token_data.token;
+
+    // console.log("Current keyset window:");
+    // console.log(JSON.stringify(keyset));
+    // Turn the keyset into regex:
+    keyset = {...keyset};  // copy the object to prevent that it is overridden
+    for(const key of Object.keys(keyset)){
+        // console.log(keyset[key]);
+        keyset[key] = RegExp(collapse_regex_or(keyset[key]), "dg")
+    }
+    // console.log(keyset);
 
 
     // For each number query:
