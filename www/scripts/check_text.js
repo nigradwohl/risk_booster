@@ -168,9 +168,16 @@ $(document).ready(function () {
         token_dat.detect_topic("cancer_risk", ["[Rr]isiko", "Krebs"]);  // must be preceded
         token_dat.detect_topic("cancer_drug", ["[Mm]edikament", "Krebs"])
 
+        // Try to detect outcomes and conditions!
+        const regex_targetcond = /(?:Schutz vor|Krankheit) (?<targetcond>(?:\w+(?=[ .,;?!])){1,2})/mg;  // capture 1 or 2 words!
+        console.log("Condition matches");
+        const condmatches = [...inputText.matchAll(regex_targetcond)];  // .exec(inputText);
+        const targetconds = condmatches.map((x) => x.groups.targetcond);
+        console.log(targetconds);
+
         // Detect topic features:
         token_dat.detect_topic("eff", ["Nutz", "(?<!Neben)[Ww]irks(am|ung)", "Schutz",
-            "schütz"]);
+            "schütz"].concat(targetconds));
         token_dat.detect_topic("side", ["Nebenwirk"]);
         // NOTE: Do not add specific side effects, because they may be effects (symptoms) in other contexts!
         token_dat.detect_topic("treatgroup", ["(Impf|Behandlungs)-?.*[Gg]ruppe"]);
@@ -180,7 +187,9 @@ $(document).ready(function () {
         // Number level: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         // Detect number types (may eventually need the topics to inform context names!):
-        token_dat.detect_number_type(inputText);
+        numtype_keyset.ncase.keyset = numtype_keyset.ncase.keyset.concat([[RegExp(collapse_regex_or(targetconds))]]);  // modify qwith targetconds!
+        console.log(numtype_keyset);
+        token_dat.detect_number_type(inputText, numtype_keyset);
 
         // Context detection: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1018,7 +1027,7 @@ const check_numbers_dict = {
 }
 
 //
-const numtype_dict = {
+const numtype_keyset = {
     "incr": {
         "number_unit": ["perc", "mult"],  // add in other types eventually! 30-fach etc.
         "keyset": [
@@ -1045,7 +1054,7 @@ const numtype_dict = {
             [RegExp("[Ee]rkrankt|[Bb]etroffen")],
             [RegExp("verst[aeo]rben"), RegExp("Personen|Teilnehm|[Gg]ruppe")],
             // Reporting certain effects in study:
-            [RegExp("berichte(te)?n"), RegExp("Unwohlsein|Nebenwirkungen")],
+            [RegExp("berichte(te)?n|entwickel"), RegExp("Unwohlsein|Nebenwirkungen")],
             [RegExp("berichte(te)?n"), RegExp("wohl"), RegExp("fühlen")]
         ]
     },
@@ -1318,8 +1327,8 @@ class TokenData {
     }
 
     // Method to detect number types:
-    detect_number_type(txt) {
-        this.add_column(detect_number_type(this, txt), "numtype");
+    detect_number_type(txt, numtype_dict) {
+        this.add_column(detect_number_type(this, txt, numtype_dict), "numtype");
     }
 }
 
@@ -1399,7 +1408,7 @@ let testcount = 0;
  * @param token_data {Object} A token data object with information about numbers.
  * @param txt {String} The text corresponding to the token data, allowing to detect matches.
  */
-function detect_number_type(token_data, txt) {
+function detect_number_type(token_data, txt, numtype_dict) {
 
     console.log("Detecting the number type");
 
@@ -1668,7 +1677,7 @@ const window_keys = {
     },
     "conditions": {
         // Verbs:
-        "ill": RegExp(collapse_regex_or(["erkrank(t|en)", "Verl[äa]uf", "[Ii]nfiziert"]), "dg"),
+        "ill": RegExp(collapse_regex_or(["erkrank(t|en)", "Verl[äa]uf", "[Ii]nfiziert", "entwickeln"]), "dg"),
         "death": RegExp(collapse_regex_or(["st[eao]rben", "Todesfälle", "Todesfall(!?e)"]), "dg")
     },
     "units": {
