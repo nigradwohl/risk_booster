@@ -198,11 +198,11 @@ $(document).ready(function () {
         token_dat.is_num = token_dat.is_num.map((x, ix) => x && !token_dat.token[ix].search(nonumpat));
 
         // Detect missing units:
-        console.log(" +++ detecting missing units +++");
+        // console.log(" +++ detecting missing units +++");
         const no_unit_ix = token_dat.id.filter((d, ix) => token_dat.is_num[ix] && token_dat.unit[ix] === "unknown");
-        console.log(no_unit_ix);
+        // console.log(no_unit_ix);
         const new_units = investigate_context(token_dat, no_unit_ix, window_keys.units);
-        console.log(new_units);
+        // console.log(new_units);
         // Replace the missing units:
         let ix = -1;
         for (let i = 0; i < no_unit_ix.length; i++) {
@@ -298,7 +298,7 @@ $(document).ready(function () {
                 // console.log("Get relative percentages and percentages <1%!");
                 const numpart = token_dat.token[ix].match(regex_num)[0].replace(",", ".");
                 // console.log(numpart);
-                out = numpart < 20 ? "abs" : "rel";
+                out = numpart < 10 ? "abs" : "rel";
             }
             // Assign the result:
             token_dat.relabs[ix] = out;
@@ -357,14 +357,28 @@ $(document).ready(function () {
 
                     const tooltip_dict = {
                         "freq_ntot": "Gesamtzahl Personen",
-                        "freq_ncase": "Anzahl Fälle gesamt",
+                        "freq_ntot_all_all": "Gesamtzahl Personen",
+                        "freq_ncase_all": "Anzahl Fälle gesamt",
                         "freq_ncase_all_eff": "Anzahl Erkrankungen",  // oder: andere Fälle!
                         "freq_ncase_treat_eff": "Anzahl Fälle Behandelte",
                         "freq_ncase_contr_eff": "Anzahl Fälle Vergleichsgruppe",
+                        "freq_ntot_treat_eff": "Anzahl Behandelte",
+                        "freq_ntot_contr_eff": "Anzahl Vergleichsgruppe",
+                        // Oddities (that may be fixed eventually):
+                        "freq_ntot_unknown_unknown": "Gesamtzahl Personen",  // if the subgroup cannot  be identified it may be something else.
+                        "freq_ntot_all_unknown": "Gesamtzahl Personen",  // Likewise if it apples to all.
+                        // Percentages:
+                        "perc_incr_rel": "Relative Risikoreduktion",
+                        "perc_decr_rel": "Relative Risikoreduktion",
                         "perc_decr_eff_rel": "Relative Risikoreduktion",
                         "perc_other_side_abs": "Wahrscheinlichkeit Nebenwirkungen",
                         "perc_other_sample_abs": "Prozentzahl Stichprobenbeschreibung",
-                        "perc_other_eff_abs": "Absolute Prozentangabe"
+                        "perc_other_eff_abs": "Absolute Prozentangabe",
+                        // Natural frequencies:
+                        "nh_ncase_eff": "Natürliche Häufigkeit",
+                        "nh_ncase_side": "Natürliche Häufigkeit",
+                        // Multiples:
+                        "mult_other_eff": "Relative Angabe"
                     }
 
                     // Get types for each tooltip from dictionary:
@@ -375,9 +389,17 @@ $(document).ready(function () {
                     const currow = token_dat.get_row(i);
 
                     let col_arr = ["unit", "numtype", "effside"];
-                    if(cur_unit === "perc"){col_arr = col_arr.concat(["effside", "relabs"])}
-                    if(cur_unit === "freq"){col_arr = col_arr.concat("group", "effside")}
-                    if(cur_unit === "nh"){col_arr = col_arr.concat("group", "effside")}
+                    if (cur_unit === "perc") {
+                        col_arr = col_arr.concat(["relabs"]);
+
+                        if (currow.includes("rel")) {
+                            // console.log("+++ Remove effside!");
+                            col_arr.splice(col_arr.indexOf("effside"), 1);
+                        }
+                    }
+                    if (cur_unit === "freq") {
+                        col_arr = col_arr.concat("group", "effside");
+                    }
 
                     const cur_sign = currow
                         .filter((x, ix) => col_arr.includes(token_dat.colnames[ix]) &&
@@ -386,8 +408,8 @@ $(document).ready(function () {
                     console.log(cur_sign);
 
 
-                    let cur_tooltip = "Unbekannt";
-                    if(Object.keys(tooltip_dict).includes(cur_sign)){
+                    let cur_tooltip = "Konnte nicht identifiziert werden";
+                    if (Object.keys(tooltip_dict).includes(cur_sign)) {
                         cur_tooltip = tooltip_dict[cur_sign];
                     }
 
@@ -405,7 +427,8 @@ $(document).ready(function () {
 
                     // Numbers that issue warnings:
                     // Strong warnings:
-                    const warn_num = ["incr", "decr"].includes(cur_numtype[0]) || ["pval"].includes(cur_unit);
+                    const warn_num = ["incr", "decr"].includes(cur_numtype[0]) || ["pval", "mult"].includes(cur_unit);
+                    const warn_small = token_dat.smperc[i] === true;
 
                     // Unclarities (e.g., missing reference groups):
                     // Percentages that apply to all are suspicious (if there is any talk about groups, that is).
@@ -413,7 +436,7 @@ $(document).ready(function () {
                     // but these should be only highlighted (or only receive an icon?).
 
                     // prepare warnings:
-                    const highlight_type = warn_num || warn_noref ? "highlight-warning" : "highlight-base";
+                    const highlight_type = warn_num || warn_noref || warn_small ? "highlight-warning" : "highlight-base";
                     const warn_icon = warn_num ? "<sup><i class=\"fa fa-exclamation-triangle annote-text-icon\"></i></sup>" : "";
 
                     // Assemble text:
@@ -424,6 +447,7 @@ $(document).ready(function () {
                             '<span class="tooltiptext">' +
                             cur_tooltip +
                             (warn_noref ? "<br>(Bezug unklar)" : "") +
+                            (warn_small ? "<br>Prozentzahl < 1%" : "") +
                             '</span></div>');
 
                     i += match_len;  // ensure to continue from next match.
@@ -792,11 +816,35 @@ $(document).ready(function () {
             // const numtype = unit_note_dict[token_dat.unit[token_id]].tooltip[token_dat.numtype[token_id]];
             const numtype = token_dat.numtype[token_id];
             // console.log(numtype);
-            const curunit = token_dat.unit[token_id];
+            const curunit = token_dat.unit[token_id].toString();
             // console.log(curunit);
 
             // Collapse unit and numtype:
-            const infokey = [curunit, numtype].join("_");
+            // Signature of current number:
+            const currow = token_dat.get_row(token_id);
+            console.log(currow);
+
+            let col_arr = ["unit", "numtype"];
+            if (curunit === "perc") {
+                col_arr = col_arr.concat(["effside", "relabs"])
+
+                if (currow.includes("rel")) {
+                    // console.log("+++ Remove effside!");
+                    col_arr.splice(col_arr.indexOf("effside"), 1);
+                }
+
+            }
+            if (curunit === "freq") {
+                col_arr = col_arr.concat(["gtype", "group"])
+            }
+            console.log(col_arr);
+
+            const infokey = currow
+                .filter((x, ix) => col_arr.includes(token_dat.colnames[ix]) &&
+                    x !== -1)
+                .join("_");
+
+            // const infokey = [curunit, numtype].join("_");
             console.log(`Current info key: ${infokey}`);
 
             // Transfer to more central place!
@@ -812,14 +860,25 @@ $(document).ready(function () {
             // Reference to the wiki object:
             const wiki_ref = {
                 "perc_other": "prozent",
-                "perc_incr": "rel",  // +++ UPDATE! +++
-                "perc_decr": "rel",
+                "perc_other_eff_abs": "prozent",
+                "perc_other_side_abs": "prozent",
+                // Relative percentages:
+                "perc_decr_rel": "rel",
+                "perc_decr_eff_rel": "rel",  // +++ UPDATE! +++
+                "perc_decr_side_rel": "rel",
                 // Types of freqs -- update!
-                "freq_ntot": "freq",
-                "freq_ncase": "freq",
+                "freq_ntot": "sample_size",
+                "freq_ntot_total": "sample_size",
+                "freq_ntot_sub_treat": "sample_size",
+                "freq_ntot_sub_contr": "sample_size",
+                "freq_ncase_total_all": "freq",  // total numbers of cases often not informative!
+                "freq_ncase_sub_treat": "freq",
+                "freq_ncase_sub_contr": "freq",  // here: reference.
                 "freq_treat": "freq",
                 "freq_contr": "freq",
                 "freq_other": "freq",
+                // Natural frequencies:
+                "nh_ncase": "nh",
                 // Other kinds of numbers:
                 "mult_other": "rel",
                 "pval_other": "pval"
@@ -829,15 +888,33 @@ $(document).ready(function () {
 
             const curinfo = info_data[wiki_ref[infokey]];
 
+            const addinfo_perc = "<p>" +
+                "Die Prozentzahl scheint " + (/_abs/.test(infokey) ? "absolut" : "relativ") + " zu sein." +
+                (token_dat.smperc[token_id] === true ? "<br>Sie ist < 1. Greifen Sie bitte auf <a href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> " +
+                    "(z.B., 1 aus 100 oder 1 aus 1000) zurück." : "") +
+                // Alternativ: Wir konnten
+                "</p>";  // z.B., relative/absolute Prozentzahl.
+
+
+            // const addinfo_sub = "<p>" +
+            //     "Die Zahl bezieht sich" + (/_sub/.test(infokey) ? "absolut" : "relativ") + " zu sein." +
+            //     "</p>";  // z.B., relative/absolute Prozentzahl.
+
             cur_popup.html(
                 // `<h4>${numtype}</h4>` +
                 // `<p>${unit_note_dict[token_dat.unit[token_id]].note([numtype])}</p>`
                 // `<h4>${txt_snips[numtype][0] + txt_snips[numtype][1][token_dat.unit[token_id]]}</h4>` +
                 // `<p>${txt_snips[numtype][2]}</p>`
-                `<h4>${curinfo.heading}</h4>` +
-                `<p><strong>Bezug</strong>: ${token_dat.group[token_id]}</p>` +  // Some additional info!
-                `<p><ul><li>${curinfo.overview.join("</li><li>")}</li></ul></p>` +
-                `<p>[Place to add more info, if needed!]</p>`
+                // `<h4>${curinfo.heading}</h4>` +
+                // `<p><strong>Bezug</strong>: ${token_dat.group[token_id]}</p>` +  // Some additional info!
+                `${curunit === "perc" ? addinfo_perc : ""}` +  // additional info.
+                `${(/_sub/.test(infokey) ? ("<p>Die Zahl bezieht sich auf eine Subgruppe. " +
+                    "Stellen Sie sicher, das klar ist auf welche übergeordnete Gruppe sie sich bezieht.</p>") : "")}` +
+                // `<p><ul><li>${curinfo.overview.join("</li><li>")}</li></ul></p>` +
+                // `<p><ul><li>${curinfo.popup.join("</li><li>")}</li></ul></p>`  // to process an array as list.
+                `${curinfo === undefined ? "<p>Diese Zahl konnten wir leider nicht näher identifizieren.</p>" : curinfo.popup}`
+
+                // +++ `<p>[Place to add more info, if needed!]</p>`+++
             );
 
             // Style the popup, position it and show:
@@ -935,7 +1012,7 @@ const pat_num = "(?:(?<![\\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,:][0-9]+)
 
 const regex_num = new RegExp("(?<unknown>" + pat_num + ")", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
 const regex_perc = new RegExp("(?<perc>" + pat_num + " ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.?!])" + ")", "dg");
-const regex_nh = new RegExp("(?<nh>" + pat_num + " (\\w+ )?(von|aus) (\\w+ )?" + pat_num + ")", "dg");
+const regex_nh = new RegExp("(?<nh>" + pat_num + " (\\w+ )?(von|aus|in) (\\w+ )?" + pat_num + ")", "dg");
 const regex_mult = new RegExp("(?<mult>" + pat_num + "[ \\-]?([Mm]al|[Ff]ach) (so )?( ?viele|gr[oö]ß|hoch|niedrig|besser|erhöht|höher)(?=[\\s.?!])" + ")", "dg");
 // Note: in regex_nh we may also try to get the denominator as a group or as its own entity.
 // nh must also be identified from tokens (e.g., In der Gruppe von 1000[case] Leuten sterben 4[num/case].
@@ -1054,20 +1131,19 @@ const numtype_keyset = {
             // TODO: Double check these!
             [RegExp("Fälle|Verläufe"), RegExp("insgesamt|nach|Studie")],
             [RegExp("[Ee]rkrankt|[Bb]etroffen")],
+            [RegExp("Todesfälle")],
             [RegExp("verst[aeo]rben"), RegExp("Personen|Teilnehm|[Gg]ruppe")],
             // Reporting certain effects in study:
-            [RegExp("berichte(te)?n|entwickel"), RegExp("Unwohlsein|Nebenwirkungen")],
+            [RegExp("berichte(te)?n|entwickel|beobacht"), RegExp("Unwohlsein|Nebenwirkungen")],
             [RegExp("berichte(te)?n"), RegExp("wohl"), RegExp("fühlen")]
         ]
     },
     "ntot": {
         "number_unit": ["freq"],
         "keyset": [
-            // TODO: Double check these!
             [RegExp("Proband|[Tt]eilnehme|[Pp]ersonen|Menschen|Frauen|Männer|Kinder"),
                 RegExp(collapse_regex_or(["insgesamt", "nahmen",
-                    "Studie", "Untersuchung", "umfass(t|en)", "erh(a|ie)lten", "jeweils"]))
-            ]
+                    "Studie", "Untersuchung", "umfass(t|en)", "erh(a|ie)lten", "jeweils"]))]
         ]
     }
 }
@@ -1088,8 +1164,8 @@ const unit_note_dict = {
     "perc": {
         "tooltip": {
             "ABS": "absolute Prozentzahl",
-            "incr": "Anstieg",
-            "decr": "Minderung",
+            "incr": "Veränderung",
+            "decr": "Veränderung",
             "other": "andere Prozentzahl"
         },
         "note": function (type_arr) {
@@ -1632,8 +1708,8 @@ function detect_number_type(token_data, txt, numtype_dict) {
 
 
     // OUTPUT: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    console.log("Output numtypes:");
-    console.log(num_types);
+    // console.log("Output numtypes:");
+    // console.log(num_types);
     return num_types;
 
 }
@@ -1659,7 +1735,8 @@ const window_keys = {
             "gesündesten\\w*Lebensstil"],
         // "all": ["insgesamt.*([Tt]eilnehmer|Probanden)"],
         "all": ["[Tt]eilnehmer|Probanden",
-        "beiden\\w*Gruppen", "sowohl\\w*[Gg]ruppe"]  // problematic!
+            "insgesamt\\w*(Fälle|Verläufe)", "(Fälle|Verläufe)\\w*insgesamt",
+            "beiden\\w*Gruppen", "sowohl\\w*[Gg]ruppe"]  // problematic!
     },
     "effside": {
         "eff": ["(?<![Nn]eben)[Ww]irk", "Impfschutz",
@@ -1669,6 +1746,7 @@ const window_keys = {
             // The following may only apply to vaccination? (But likely also to treatment!)
             "Infektion", "[Ee]rkrank", "Verl[aä]uf"],
         "side": ["Nebenwirk", "Komplikation"],  // more keywords?
+        "all": ["jeweils", "beiden\\w*Gruppen"],
         // Other types (age etc.):
         "sample": ["im.*Alter"]  // sample description.
     },
@@ -1753,7 +1831,7 @@ function investigate_context(token_data, index_arr, keyset) {
     // console.log(JSON.stringify(keyset));
     // Turn the keyset into regex:
     keyset = {...keyset};  // copy the object to prevent that it is overridden
-    for(const key of Object.keys(keyset)){
+    for (const key of Object.keys(keyset)) {
         // console.log(keyset[key]);
         keyset[key] = RegExp(collapse_regex_or(keyset[key]), "dg")
     }
@@ -1835,7 +1913,7 @@ function investigate_context(token_data, index_arr, keyset) {
 
             // Visualize the list of tokens:
             const test_tokens = token_data.token.slice(window_start, window_end);
-            const test_str = test_tokens.join("_");
+            const test_str = test_tokens.join("_").replaceAll("-", "_");
             // Issue could be that underscore counts as word character; will exploit this for now!!
             // console.log(test_tokens);
             // console.log("TESTSTRING:\n" + test_str);
