@@ -137,16 +137,23 @@ body {
     align-items: center;
     background: var(---header-background);
     color: var(---textcol-header);
+
 }
 
 .header > h2 {
     display: inline-block;
 }
 
-.header > h3 {
+.subhead {
+    /*background-image: url("../images/221215_Charite_Bildmarke_CMYK.jpg");*/
+    /*background-repeat: no-repeat;*/
+    /* background-position: center; !* Center the image *!*/
+    /*background-size: 30%; !* Resize the background image to cover the entire container *!*/
+}
+
+.subhead > h3 {
     display: inline-block;
     padding-left: 2em;
-    background-image: url("../images/221215_Charite_Bildmarke_CMYK.jpg");
 }
 
 
