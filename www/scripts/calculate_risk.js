@@ -25,26 +25,26 @@ $(document).ready(function () {
 
     // Eventual example:
     // Basic tables:
-    const ntab = new Basetable(
+    const ntab2 = new Basetable(
         [
             [NaN, NaN],  // non-cases among control and treatment.
             [NaN, 141]], // cases among control and treatment.
         [NaN, NaN], [NaN, NaN], 32449);
-    const ptab = new Basetable(na_tab,
+    const ptab2 = new Basetable(na_tab,
         [NaN, NaN], [NaN, 0.67], 1);
-    const mtab1 = new Margintable(na_tab,
+    const mtab12 = new Margintable(na_tab,
         [NaN, NaN], [NaN, NaN]);
-    const mtab2 = new Margintable(na_tab,
+    const mtab22 = new Margintable(na_tab,
         [NaN, NaN],  // relative risk (NOT reduction) between dim0 1/0
         [NaN, 1 - 0.79]  // the array position indicates the direction.
         // relative risk (NOT REDUCTION) between dim1 1/0 (typically treatment/control)
     );
 
-    const testcase = new RiskCollection(ntab, ptab, mtab1, mtab2);
+    const testcase = new RiskCollection(ntab2, ptab2, mtab12, mtab22);
 
     // Simple example:
-    const ntab2 = new Basetable([[10708, NaN], [NaN, 141]], [NaN, NaN], [11040, NaN], 32449);
-    const ptab2 = new Basetable(na_tab, [NaN, 0.67], [NaN, NaN], 1);
+    const ntab3 = new Basetable([[10708, NaN], [NaN, 141]], [NaN, NaN], [11040, NaN], 32449);
+    const ptab3 = new Basetable(na_tab, [NaN, 0.67], [NaN, NaN], 1);
     // console.log(ntab2);
     // console.log(ntab2.complete_margins());
     // console.log(ntab2.complete_table());
@@ -54,7 +54,7 @@ $(document).ready(function () {
     // console.log(ptab2);
     // console.log(ptab2.tab.count_missings());
 
-    const simple_risk = new RiskCollection(ntab2, ptab2, mtab1, mtab2);
+    const simple_risk = new RiskCollection(ntab3, ptab3, mtab12, mtab22);
     simple_risk.ptab.complete_margins();
     simple_risk.n_from_p();
     // console.log(simple_risk);
@@ -114,30 +114,33 @@ class RiskCollection {
 
     // Method to combine information in ntab and ptab:
     n_from_p() {
-        console.log("n from p");
+        // console.log("n from p");
 
         this.ntab.msums1 = this.ntab.msums1
             .map((val, ix) => isNaN(val) ? Math.round(this.ptab.msums1[ix] * this.ntab.N) : val);
         this.ntab.msums2 = this.ntab.msums2
             .map((val, ix) => isNaN(val) ? Math.round(this.ptab.msums2[ix] * this.ntab.N) : val);
 
-        console.log("Output n from p:");
-        console.log(JSON.stringify(this.ntab.msums1));
-        console.log(JSON.stringify(this.ntab.msums2));
+        // console.log("Output n from p:");
+        // console.log(JSON.stringify(this.ntab.msums1));
+        // console.log(JSON.stringify(this.ntab.msums2));
 
     }
 
     p_from_n() {
-        console.log("p from n");
-
+        // console.log("p from n");
+        //
         console.log("p margins from n margins:");
+        console.log(this.ptab);
+        console.log(JSON.stringify(this.ptab));
 
         // Margin sums:
         this.ptab.msums1 = this.ptab.msums1
-            .map((val, ix) => isNaN(val) ? Math.round(this.ntab.msums1[ix] / this.ntab.N) : val);
+            .map((val, ix) => isNaN(val) ? this.ntab.msums1[ix] / this.ntab.N : val);
         this.ptab.msums2 = this.ptab.msums2
-            .map((val, ix) => isNaN(val) ? Math.round(this.ntab.msums2[ix] / this.ntab.N) : val);
+            .map((val, ix) => isNaN(val) ? this.ntab.msums2[ix] / this.ntab.N : val);
 
+        console.log(JSON.stringify(this.ptab));
     }
 
     // Method to get the margin from p-table margins:
@@ -198,7 +201,7 @@ class RiskCollection {
     // Get margin table:
     get_margintabs() {
 
-        console.log("Calculate margin tables");
+        // console.log("Calculate margin tables");
         // Decide whether to get from ntab or ptab!
 
         // Ensure that margins are completed beforehand!
@@ -216,17 +219,17 @@ class RiskCollection {
         this.mtab1.get_from_rel();
         this.mtab2.get_from_rel();
 
-        console.log("Output margin tables");
-        console.log(JSON.stringify(this.mtab1));
-        console.log(JSON.stringify(this.mtab2));
+        // console.log("Output margin tables");
+        // console.log(JSON.stringify(this.mtab1));
+        // console.log(JSON.stringify(this.mtab2));
 
     }
 
     // Get n from margin tables:
     get_tab_from_margins(tabtype) {
-        console.log("Calculate from margins:");
-        console.log(JSON.stringify(this.mtab1));
-        console.log(JSON.stringify(this.mtab2));
+        // console.log("Calculate from margins:");
+        // console.log(JSON.stringify(this.mtab1));
+        // console.log(JSON.stringify(this.mtab2));
 
         // Exemplary for mtab2:
         const curmsums = this[tabtype].msums2;
@@ -236,7 +239,8 @@ class RiskCollection {
             .map((x, ix) => x
                 .map(y => Math.round(y * curmsums[ix])));
 
-        console.log(tab_from_margins);
+        // console.log("Table from margins:");
+        // console.log(tab_from_margins);
         // Note: Must be transposed for margins 2.
 
         this[tabtype].tab.tab2x2 = this[tabtype].tab.tab2x2
@@ -251,7 +255,7 @@ class RiskCollection {
     update_by_arr(arr, val) {
 
         const expr = "this" + get_expression(arr) + ` = ${val}`;  // add target value.
-        console.log(expr);
+        // console.log(expr);
 
         try {
             eval(expr);
@@ -263,7 +267,7 @@ class RiskCollection {
 
     get_by_arr(arr) {
         const expr = "this" + get_expression(arr);
-        console.log("Get expression " + expr);
+        // console.log("Get expression " + expr);
         return eval(expr);
     }
 }
@@ -356,7 +360,7 @@ class Basetable {
         let repval = NaN;
 
         let reftab = Object.assign([], this.tab.tab2x2);  // {...curtab};
-        console.log("Complete the table from within");
+        // console.log("Complete the table from within");
         // console.log(transpose(transpose(curtab)));  // tweak the printout!
 
         // Check if can be completed with N:
@@ -436,8 +440,8 @@ class Margintable {
         this.tab[1][1] = isNaN(this.tab[1][1]) ? 1 - this.tab[1][0] : this.tab[1][1];
 
 
-        console.log("Margintable:");
-        console.log(this);
+        // console.log("Margintable:");
+        // console.log(this);
     }
 
 

@@ -208,7 +208,7 @@ canvas {
 
 .canvas-base {
     width: 250px;
-    height: 250px;
+    height: 125px;
 }
 
 .zoomed-canvas {

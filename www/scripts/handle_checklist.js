@@ -2,31 +2,30 @@
  * Manage the display of a risk checklist.
  */
 
-let entry_ix = 0;  // index for the current entry.
-
-const ntab = new Basetable(na_tab,  // condition.
-    [NaN, NaN],
-    [NaN, NaN],
-    NaN);
-const ptab = new Basetable(
-    na_tab,
-    [NaN, NaN], [NaN, NaN], 1);
-// NOTE: Make sure to appropriately distinguish relative risk increase and reduction!
-const mtab1 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
-const mtab2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
-
-
-const check_risk = new RiskCollection(ntab, ptab, mtab1, mtab2);
-console.log(check_risk);
-
-let is_skip = false;
-
 
 $(document).ready(function () {
 
+    let entry_ix = 0;  // index for the current entry.
+    let is_skip = false;
+    let out_arr = [0, false];
+
+    // Preparations:
+    const ntab = new Basetable(na_tab,  // condition.
+        [NaN, NaN],
+        [NaN, NaN],
+        NaN);
+    const ptab = new Basetable(
+        na_tab,
+        [NaN, NaN], [NaN, NaN], 1);
+// NOTE: Make sure to appropriately distinguish relative risk increase and reduction!
+    const mtab1 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
+    const mtab2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
+
+
+    const check_risk = new RiskCollection(ntab, ptab, mtab1, mtab2);
+    console.log(check_risk);
+
     console.log("Handle questions");
-
-
     // Get the JSON file for the topic:
     // const page_obj = JSON.parse("scripts/");
     /*
@@ -43,7 +42,9 @@ $(document).ready(function () {
 
     // Handle button clicks:
     $(".continue-btn").on("click", function (ev) {
-        continue_page(ev);
+        out_arr = continue_page(ev, entry_ix, check_risk, is_skip);
+        entry_ix = out_arr[0];
+        is_skip = out_arr[1];
     })
 
     $("#input-missing").on("click", function (ev) {
@@ -53,7 +54,9 @@ $(document).ready(function () {
     $(window).on("keypress", function (ev) {
         console.log(ev);
         if (ev.key === "Enter") {
-            continue_page(ev);
+            out_arr = continue_page(ev, entry_ix, check_risk, is_skip);
+            entry_ix = out_arr[0];
+            is_skip = out_arr[1];
         }
 
     })
@@ -89,7 +92,7 @@ $(document).ready(function () {
     // console.log("~~~~~~~~~ eof. test icon array ~~~~~~~~~~~");
 });
 
-function continue_page(ev) {
+function continue_page(ev, entry_ix, check_risk, is_skip) {
     // Check entry:
     const curid = q_order[entry_ix];  // id of current page.
     let missing_entries = [];
@@ -172,26 +175,24 @@ function continue_page(ev) {
                 // risk_numbers[cur_q_key] = checked_val;
 
                 // Update percentages:
-                if(perc_keys.includes(cur_q_key)){
+                if (perc_keys.includes(cur_q_key)) {
 
-                    if(curval < 1){
+                    if (curval < 1) {
                         alert("Prozentzahl kleiner 0; Absicht?");
                     }
 
-                    checked_val = checked_val / 100;  // percentage to folatin gpoint number.
+                    checked_val = checked_val / 100;  // percentage to floating point number.
 
-                    if(cur_q_key === "rrr"){
+                    if (cur_q_key === "rrr") {
                         checked_val = 1 - checked_val;  // maybe code transformation in dictionary object?
                     }
-
 
 
                 }
 
                 // Save value to table object:
                 check_risk.update_by_arr(number_dict[cur_q_key], checked_val);
-                console.log("Current object:");
-                console.log(check_risk);
+
             }
 
 
@@ -202,8 +203,14 @@ function continue_page(ev) {
 
     }
 
+    console.log("Current object after entry");
+    console.log(JSON.stringify(check_risk, undefined, 2));
+
     // Try completing the table before advancing:
     check_risk.try_completion();
+
+    console.log("Current object after completion attempt");
+    console.log(JSON.stringify(check_risk, undefined, 2));
 
     // Handle missing entries:
     if (missing_entries.length > 0) {
@@ -215,7 +222,7 @@ function continue_page(ev) {
         const thispos = input_field.position();  // get position of current question.
         console.log(thispos);
 
-        missing_entries.forEach((id) => $("#" + id).addClass("missing-input"));
+        missing_entries.forEach((id) => $("#" + id).addClass("missing-input").addClass("selected-blur"));
 
         // Change the popup text here:
         const cur_popup = $("#noentry-popup");
@@ -230,7 +237,6 @@ function continue_page(ev) {
                 left: thispos.left,
                 position: 'absolute'
             })
-            .addClass("selected-blur")
             .show();
 
         // Prevent propagation:
@@ -295,6 +301,9 @@ function continue_page(ev) {
             if (entry_ix > 0) {
                 $(".back-btn").css('display', 'inline-block');
             }
+
+            console.log("Final risk object");
+            console.log(check_risk);
         }
 
         // Final button:
@@ -332,6 +341,8 @@ function continue_page(ev) {
 
             check_risk.try_completion();
             check_risk.ntab.complete_margins();
+
+            console.log("Final risk object");
             console.log(check_risk);
 
             // USe the 2x2 table to calculate outputs:
@@ -407,16 +418,20 @@ function continue_page(ev) {
                 "control": [cur2x2[0][0], cur2x2[0][1]]
             }
 
+            let ncol = N_scale === 1000 ? 50 : 10;
+
             create_icon_array(
                 group_arrs.treat,  // treatment group.
                 // cur2x2[0][0], cur2x2[0][1],  // control group.
-                'dotdisplay-treat');
+                'dotdisplay-treat',
+                ncol);
             $("#dotdisplay-treat").show();
 
             create_icon_array(
                 // [cur2x2[1][0], cur2x2[1][1]],  // treatment group.
                 group_arrs.control,  // control group.
-                'dotdisplay-control');
+                'dotdisplay-control',
+                ncol);
             $("#dotdisplay-control").show();
 
 
@@ -454,6 +469,8 @@ function continue_page(ev) {
             })
         }
     }
+
+    return [entry_ix, is_skip];
 }
 
 // ~~~~~~~~~~~~~~~~ DICTIONARIES ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -569,7 +586,7 @@ const perc_keys = ["rrr", "mpx1"]
 
 
 // FUNCTIONS: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function create_icon_array(arr_n, id) {
+function create_icon_array(arr_n, id, ncol) {
 
     // Check for non-integer inputs:
     // https://stackoverflow.com/questions/469357/html-text-input-allow-only-numeric-input/469362#469362
@@ -587,9 +604,17 @@ function create_icon_array(arr_n, id) {
 
         // Create an array of types:
         // Determine number of rows:
-        const ncols = Math.floor(Math.sqrt(n_dots));   // Math.floor(n_dots / 10);  // n_dots % 10;  // remainder.
-        const remainder = n_dots % ncols;
+        let ncols;
+        if (ncol === undefined) {
+            // Square default:
+            ncols = Math.floor(Math.sqrt(n_dots));   // Math.floor(n_dots / 10);  // n_dots % 10;  // remainder.
+
+        } else {
+            ncols = ncol;   // Math.floor(n_dots / 10);  // n_dots % 10;  // remainder.
+        }
+
         const nrows = Math.ceil(n_dots / ncols);
+
 
         console.log(n_dots + " dots, " + nrows + " rows and " + ncols + " columns");
 
@@ -601,7 +626,7 @@ function create_icon_array(arr_n, id) {
         // Determine fontsize:
         const fsize = "40px";
         const maxdim = Math.max(ncols, nrows);
-        const wh = maxdim * 50;  // controls the area, the larger the smaller the icons appear.
+        const wh = maxdim * 40;  // controls the area, the larger the smaller the icons appear.
         // Increasing wh above the icons size creates a (relative) margin for each.
 
         // Pad any missing elements with empty elements?
@@ -617,7 +642,7 @@ function create_icon_array(arr_n, id) {
             var ctx = c.getContext('2d');
             // NOTE: THESE CONTROL THE SIZE OF THE DOTS!
             var w = c.width = wh;  // window.innerWidth;
-            var h = c.height = wh;  // window.innerHeight;
+            var h = c.height = wh / Math.round(ncols / nrows);  // window.innerHeight;
             // Fixed values ensure equal height and width of points.
             // current dots
             var balls = [];
@@ -665,15 +690,15 @@ function create_icon_array(arr_n, id) {
 
                     // ctx.clearRect(0, 0, c.width, c.height);
                     ctx.font = '900 ' + fsize + ' FontAwesome';  // For font awesome 5+: '900 48px "Font Awesome 5 Free"';
-                    // ctx.fillText('\uF007', dot.x, dot.y);  // use user icon.
-                    // https://stackoverflow.com/questions/63601531/draw-font-awesome-icons-to-canvas-based-on-class-names
 
                     // Define dot colors:
                     // const col_arr = ["#90f6d7", "#41506b", "#35bcbf", "#263849"];
-                    const col_arr = ["blue", "red", "green", "purple"];
+                    const col_arr = ["lightgrey", "coral", "green", "purple"];
                     ctx.fillStyle = col_arr[dot.type - 1];
 
-                    ctx.fillText(((dot.type % 2 === 0) ? "\uf119" : '\uf118'), dot.x, dot.y);  // smile or frown.
+                    // ctx.fillText(((dot.type % 2 === 0) ? "\uf119" : '\uf118'), dot.x, dot.y);  // smile or frown.
+                    ctx.fillText('\uF007', dot.x, dot.y);  // use user icon.
+                    // https://stackoverflow.com/questions/63601531/draw-font-awesome-icons-to-canvas-based-on-class-names
                     // (dot.type % 2 === 0) ? ctx.stroke() : '';
 
 

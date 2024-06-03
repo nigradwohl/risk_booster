@@ -533,6 +533,10 @@ h3 {
     margin: 0.5em 0;
 }
 
+.error-prompt {
+    z-index: 9999;
+}
+
 .selected-blur {
     box-shadow: 0 0 0 999999px rgba(0, 0, 0, 0.5);
     z-index: 9998;
