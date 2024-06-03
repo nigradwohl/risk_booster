@@ -135,6 +135,8 @@ function continue_page(ev) {
                 // TODO: Check format!
                 let checked_val;
 
+                // replace period with nothing:
+                checked_val = curval.replace(/\./, "");
                 // Replace comma with period:
                 checked_val = curval.replace(/,/, ".");
 
@@ -168,6 +170,23 @@ function continue_page(ev) {
 
                 // Save value to dictionary:
                 // risk_numbers[cur_q_key] = checked_val;
+
+                // Update percentages:
+                if(perc_keys.includes(cur_q_key)){
+
+                    if(curval < 1){
+                        alert("Prozentzahl kleiner 0; Absicht?");
+                    }
+
+                    checked_val = checked_val / 100;  // percentage to folatin gpoint number.
+
+                    if(cur_q_key === "rrr"){
+                        checked_val = 1 - checked_val;  // maybe code transformation in dictionary object?
+                    }
+
+
+
+                }
 
                 // Save value to table object:
                 check_risk.update_by_arr(number_dict[cur_q_key], checked_val);
@@ -546,6 +565,7 @@ const int_keys = ["N_tot",
 const float_keys = ["rrr",
     "p00", "p01", "p10", "p11",
     "mpx0"]
+const perc_keys = ["rrr", "mpx1"]
 
 
 // FUNCTIONS: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
