@@ -23,7 +23,7 @@ const info_data = {
         "aliases": ["Wahrscheinlichkeit"],  // list of other names.
         "annotation": "",  // internal annotations; should be eventually ""
         "overview": ["Das Risiko beschreibt wie wahrscheinlich es ist, dass ein bestimmtes Ereignis eintritt (im medizinischen Kontext häufig eine Erkrankung)",
-            "EDer Begriff ist nicht deckungsgleich mit dem Alltagsverständnis",
+            "Der Begriff ist nicht deckungsgleich mit dem Alltagsverständnis",
             "Der Risikobegriff im Kontext der Risikokommunikation kann meist durch \"Wahrscheinlichkeit\" ersetzt werden."],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": ["Das Risiko, sich mit einer Erkrankung anzustecken",
             "Symptome auszubilden",
