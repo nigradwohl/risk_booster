@@ -508,8 +508,9 @@ $(document).ready(function () {
 
         // Notes about features (presence of effectivity and harm; reporting of comparison group):
         const feature_dict = {
-            "eff": "Nutzen", "side": "Schaden",
-            "treat": "Behandlungsgruppe", "contr": "Kontrollgruppe"
+            "eff": "<a href='risk_wiki.html#wiki-effside'>Nutzen</a>", "side": "<a href='risk_wiki.html#wiki-effside'>Schaden</a>",
+            "treat": "<a href='risk_wiki.html#wiki-treat'>Behandlungsgruppe</a>",
+            "contr": "<a href='risk_wiki.html#wiki-control'>Kontrollgruppe</a>"
         };
         // let feature_arr = [];  // initialize array to be filled.
 
@@ -664,7 +665,8 @@ $(document).ready(function () {
         // console.log("Any risk num:");
         // console.log(token_dat.unit);
         if (any_risk_num.length > 0) {
-            feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> Der Text scheint Zahlen zu den genannten Risiken zu berichten. </li><li>";
+            feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> Der Text scheint Zahlen zu den genannten " +
+                "<a href='risk_wiki.html#wiki-risk'>Risiken</a> zu berichten. </li><li>";
 
 
             // Differentiate numbers for control and treat group:
@@ -889,7 +891,7 @@ $(document).ready(function () {
             const curinfo = info_data[wiki_ref[infokey]];
 
             const addinfo_perc = "<p>" +
-                "Die Prozentzahl scheint " + (/_abs/.test(infokey) ? "absolut" : "relativ") + " zu sein." +
+                "Diese <a href='risk_wiki.html#wiki-prozent'>Prozentzahl</a> scheint " + (/_abs/.test(infokey) ? "absolut" : "relativ") + " zu sein." +
                 (token_dat.smperc[token_id] === true ? "<br>Sie ist < 1. Greifen Sie bitte auf <a href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> " +
                     "(z.B., 1 aus 100 oder 1 aus 1000) zurück." : "") +
                 // Alternativ: Wir konnten
@@ -1206,7 +1208,7 @@ const unit_note_dict = {
         },
         "note": function (type_arr) {
             return "Der Text enthält " +
-                "Natürliche Häufigkeiten. " +
+                "<a href=\"risk_wiki.html#wiki-nh\">Natürliche Häufigkeiten.</a> " +
                 "Sehr gut! Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
         }
     },
@@ -1219,22 +1221,22 @@ const unit_note_dict = {
             "contr": "Anzahl in der Kontrollgruppe"
         },
         "note": function (type_arr) {
-            return "Der Text enthält Anzahlen von Fällen. " +
-                "Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
+            return "Der Text enthält <a href='risk_wiki.html#wiki-freq'>Anzahlen von Fällen</a>. "
+                // "Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
         }
     },
     "mult": {
         "tooltip": {"other": "Relative Angabe"},
         "note": function (type_arr) {
-            return "Der Text enthält relative Vergleiche (10-mal so groß, halb so groß)." +
-                "Bitte achten Sie darauf, auch die absoluten Risiken in jeder Gruppe anzugeben -- am besten als natürliche Häufigkeit " +
+            return "Der Text enthält <a href='risk_wiki.html#wiki-rel'>relative Vergleiche</a> (10-mal so groß, halb so groß)." +
+                "Bitte achten Sie darauf, auch die <a href='risk_wiki.html#wiki-abs'>absoluten Risiken</a> in jeder Gruppe anzugeben &ndash; am besten als <a href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> " +
                 "(z.B., unter denen ohne Impfung steckten sich 2 aus 1000 an unter den geimpften nur 1 aus 1000)."
         }
     },
     "pval": {
         "tooltip": {"other": "P-Wert"},
         "note": function (type_arr) {
-            return "Der Text enthält p-Werte. Diese sind leicht missverständlich und sollten vermieden werden. " +
+            return "Der Text enthält <a href='risk_wiki.html#wiki-pval'>p-Werte</a>. Diese sind leicht missverständlich und sollten vermieden werden. " +
                 "Ein besseres Maß für Unsicherheit sind Zahlenspannen (z.B., Credibilitätsintervalle oder Konfidenzintervalle." +
                 "z.B., die Anzahl an vermiedenen Todensfällen unter den Behandelten liegt zwischen 5 und 10)"
         }

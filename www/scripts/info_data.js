@@ -33,6 +33,20 @@ const info_data = {
         "maintext": "Erwähnen: Relative risiken"
 
     },
+    "effside": {
+        "heading": "Nutzen und Schaden",  // the heading.
+        "subheading": "",  // placeholder for a potential subheading.
+        "aliases": [""],  // list of other names.
+        "annotation": "",  // internal annotations; should be eventually ""
+        "overview": [
+            "Die meisten Medikamente und Impfungen haben nicht nur einen Nutzen, sondern können auch das Risiko für negative Folgen (Nebenwirkungen) erhöhen.",
+            "Bei allen Interventionen müssen sowohl Nutzen als auch Schaden thematisiert werden."
+        ],  // array of list items overview of most important points, displayed in wiki and text checker.
+        "examples": ["Während in der Placebogruppe etwa 5 aus 1000 verstarben, verstarben in der Behandlungsgruppe nur etwa 2 aus 1000. " +
+        "Nebenwirkungen, wie Kopfschmerz oder Schwindel traten in der Placebogruppe bei 1% auf, in der Behandlungsgruppe waren es 2%."],  // array of list items with examples.
+        "popup": [],
+        "maintext": ""   // string of main text for wiki.
+    },
     "baseprob": {
         "heading": "Basisirisiko (Basiswahrscheinlichkeit)",  // the heading.
         "subheading": "",  // placeholder for a potential subheading.

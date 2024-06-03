@@ -1,4 +1,4 @@
-const wiki_order = ["risk", "prozent", "freq", "nh",
+const wiki_order = ["risk", "effside", "prozent", "freq", "nh",
     "rel", "baseprob", "sample_size",
     "cprob", "pval",
 "rct", "treat", "control", "placebo"]
