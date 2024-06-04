@@ -133,14 +133,20 @@ class RiskCollection {
         // console.log("p margins from n margins:");
         // console.log(this.ptab);
         // console.log(JSON.stringify(this.ptab));
+        const cur_ntab = this.ntab;
 
         // Margin sums:
         this.ptab.msums1 = this.ptab.msums1
-            .map((val, ix) => isNaN(val) ? this.ntab.msums1[ix] / this.ntab.N : val);
+            .map((val, ix) => isNaN(val) ? cur_ntab.msums1[ix] / cur_ntab.N : val);
         this.ptab.msums2 = this.ptab.msums2
-            .map((val, ix) => isNaN(val) ? this.ntab.msums2[ix] / this.ntab.N : val);
+            .map((val, ix) => isNaN(val) ? cur_ntab.msums2[ix] / cur_ntab.N : val);
 
         // console.log(JSON.stringify(this.ptab));
+
+        // Complete the inner p-table:
+        this.ptab.tab.tab2x2 = this.ptab.tab.tab2x2
+            .map((vx, ix) => vx
+                .map((vy, iy) => compare_vals(vy, cur_ntab.tab.tab2x2[ix][iy] / cur_ntab.N)));
     }
 
     // Method to get the margin from p-table margins:
@@ -158,21 +164,36 @@ class RiskCollection {
         const reftab_m1 = JSON.stringify(this.mtab1);
         const reftab_m2 = JSON.stringify(this.mtab2);
 
-        // TODO: Test by creating stringified objects of all tables!
+        console.log("~~~ ATTEMPT TO COMPLETE THE TABLE ~~~");
+        this.print();
 
         // Try the different completion functions:
+        // console.log("Get N");
         this.ntab.get_N();
+        // this.print();
+
+        // console.log("Complete the margins");
         this.ntab.complete_margins();
         this.ptab.complete_margins();  // calculate margin sums.
+        // this.print();
+
+        // console.log("Get n from p and vice versa");
         this.n_from_p();  // get numbers from probabilities.
         this.p_from_n();  // get probabilities from numbers.
-        this.get_margintabs();  // Try to complete the margin tables.
+        // this.print();
 
+        console.log("use the margin tables");
+        this.get_margintabs();  // Try to complete the margin tables.
+        this.print();
         this.get_tab_from_margins("ntab"); // Get elements from margin tables.
         // TODO: make method to get anything from margins?
+        // Here an issue occurs!
+        this.print();
+
 
         this.ntab.complete_table();  // try to complete the table.
         this.ptab.complete_table();
+        // this.print();
 
         // console.log("n changes: " + nchange);
         //
@@ -227,21 +248,22 @@ class RiskCollection {
 
     // Get n from margin tables:
     get_tab_from_margins(tabtype) {
-        // console.log("Calculate from margins:");
-        // console.log(JSON.stringify(this[tabtype].tab.tab2x2));
-        // console.log(JSON.stringify(this.mtab1));
-        // console.log(JSON.stringify(this.mtab2));
+        // console.log("+++ Calculate from margins: +++");
+        // this.print();
 
         // Exemplary for mtab2:
         const curmsums = this[tabtype].msums2;
         // can be done analogously for msums 2!
+        console.log(curmsums);
 
-        const tab_from_margins = transpose(this.mtab2.tab)
+        console.log(transpose(this.mtab2.tab));
+
+        const tab_from_margins = transpose(this.mtab2.tab
             .map((x, ix) => x
-                .map(y => Math.round(y * curmsums[ix])));
+                .map(y => Math.round(y * curmsums[ix]))));
 
         // console.log("Table from margins:");
-        // console.log(tab_from_margins);
+        // console.log(JSON.stringify(tab_from_margins));
         // Note: Must be transposed for margins 2.
 
         this[tabtype].tab.tab2x2 = this[tabtype].tab.tab2x2
@@ -340,11 +362,13 @@ class Basetable {
         // console.log("Getting N");
         // console.log(N_tab);
 
-        // If not caclulable get from margins:
+        // If not calculable get from margins:
         if (isNaN(N_tab)) {
 
             N_tab = compare_vals(this.msums1.flat().reduce((d, i) => d + i),
                 this.msums2.flat().reduce((d, i) => d + i));
+            console.log("Table from margins");
+            console.log(N_tab);
         }
 
         this.N = compare_vals(this.N, N_tab);

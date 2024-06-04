@@ -21,12 +21,12 @@ const mtab_mt2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
 function evaluate_entry(curval, cur_q_key) {
     // TODO: Check format!
     let checked_val;
-    let is_error = false;
+    let cur_error = "noerr";
 
     // replace period with nothing:
     checked_val = curval.replace(/\./, "");
     // Replace comma with period:
-    checked_val = curval.replace(/,/, ".");
+    checked_val = checked_val.replace(/,/, ".");
 
     // Test, if it is a number and convert if true:
     const is_num = !isNaN(parseFloat(checked_val));
@@ -39,24 +39,47 @@ function evaluate_entry(curval, cur_q_key) {
         // Check integer entries:
         if (!is_num) {
             alert("KEINE ZAHL!");
-            is_error = true;
+            cur_error = "err_nonum";
         } else if (!Number.isInteger(checked_val)) {
             alert("KEINE GANZE ZAHL!");
-            is_error = true;
+            cur_error = "err_noint";
         }
     } else if (float_keys.includes(cur_q_key)) {
 
         // Check float entries:
         if (!is_num) {
             alert("KEINE ZAHL!");
-            is_error = true;
+            cur_error = "err_nonum";
         }
 
     } else {
         // All other keys (string, boolean etc.)
     }
 
-    return [checked_val, is_error];
+    if (cur_error === "noerr") {
+        // Update percentages:
+        if (perc_keys.includes(cur_q_key)) {
+
+            // Check the percentage
+            if (checked_val < 1) {
+                alert("Prozentzahl kleiner 0; Absicht?");
+            }
+
+            checked_val = checked_val / 100;  // percentage to floating point number.
+
+            // For relative risk reduction revert:
+            if (cur_q_key === "rrr") {
+                checked_val = 1 - checked_val;  // maybe code transformation in dictionary object?
+            }
+        }  // eof. percentage handling.
+    } else {
+
+        checked_val = cur_error;
+
+    }
+
+
+    return checked_val;
 }
 
 
@@ -85,7 +108,6 @@ class Checklist {
     continue_page(ev) {
 
         // 0. Initialize variables: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
         this.is_error = false;
         this.is_reload = false;
         this.missing_entries = [];
@@ -96,10 +118,20 @@ class Checklist {
 
         const curid = this.q_order[this.entry_ix];  // get id of current page.
 
+        console.log(`${"~".repeat(40)} NEXT PAGE ${curid} ${"~".repeat(40)}`);
+
         // 1. Get the inputs on current page: ~~~~~~~~~~~~~~~~~~~~~~~~
         if (!skip_misses) {
             // If it is not a round where inputs should be skipped:
-            this.get_current_input(curid, q_inputs[curid], id_to_num_dict);
+            const inp_test = this.get_current_input(curid, q_inputs[curid], id_to_num_dict);
+            // After trying to get the inputs, try completing the table:
+            this.check_risk.try_completion(0);
+
+            if (this.is_error) {
+                console.error(`An error (${inp_test}) occured when providing input!`);
+            }
+
+
         } else {
             // If misses were skipped:
             this.is_skip = false;
@@ -142,7 +174,7 @@ class Checklist {
             }
 
         } else if (this.is_error) {
-            alert("An error occured!");
+            console.error("An error occured!");
         }
 
 
@@ -264,13 +296,13 @@ class Checklist {
         // First index is condition, second index is treatment!
         // console.log(risk_numbers);
 
-        this.check_risk.ptab.complete_margins();
-        this.check_risk.n_from_p();
-
-        this.check_risk.try_completion();
-        this.check_risk.ntab.complete_margins();
-
-        this.check_risk.ntab.get_N();  // calculate N if not provided.
+        // this.check_risk.ptab.complete_margins();
+        // this.check_risk.n_from_p();
+        //
+        //
+        // this.check_risk.ntab.complete_margins();
+        //
+        // this.check_risk.ntab.get_N();  // calculate N if not provided.
         console.log(`N is ${this.check_risk.ntab.N}`);
 
         console.log("~~~~~~ Final risk object ~~~~~~");
@@ -368,37 +400,24 @@ class Checklist {
             } else {
                 // If the current value is defined and non-empty:
 
-                // Evaluate entry:
-                const cureval = evaluate_entry(curval, cur_q_key);
-                let checked_val = cureval[0];
-                this.is_error = cureval[1];  // log if an error occurred.
+                // Evaluate entry (curval in, checked val out):
+                const checked_val = evaluate_entry(curval, cur_q_key);
+                // this.is_error = cureval !== "noerr";  // log if an error occurred.
+                //
+                // // Save value to table object:
+                // this.check_risk.update_by_arr(number_dict[cur_q_key], checked_val);
 
-                // Update percentages:
-                if (perc_keys.includes(cur_q_key)) {
-
-                    // Check the percentage
-                    if (checked_val < 1) {
-                        alert("Prozentzahl kleiner 0; Absicht?");
-                    }
-
-                    checked_val = checked_val / 100;  // percentage to floating point number.
-
-                    // For relative risk reduction revert:
-                    if (cur_q_key === "rrr") {
-                        checked_val = 1 - checked_val;  // maybe code transformation in dictionary object?
-                    }
-                }  // eof. percentage handling.
-
-                // Save value to table object:
-                this.check_risk.update_by_arr(number_dict[cur_q_key], checked_val);
+                if (!/err_/.test(checked_val.toString())) {
+                    this.check_risk.update_by_arr(number_dict[cur_q_key], checked_val);
+                } else {
+                    this.is_error = true;
+                    return checked_val;
+                }
 
             }
 
 
         }
-
-        // After trying to get the inputs, try completing the table:
-        this.check_risk.try_completion();
 
     }
 
@@ -420,7 +439,7 @@ class Checklist {
         // Retry completion:
         console.log("Risk object after re-calculation");
         console.log(this.check_risk);
-        this.check_risk.try_completion();
+        this.check_risk.try_completion(0);
     }
 
 }
