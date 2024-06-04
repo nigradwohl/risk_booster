@@ -294,6 +294,11 @@ class RiskCollection {
         console.log("Cleared all");
         console.log(this);
     }
+
+    print(){
+        console.log("ntab: " + this.ntab.print() + "\nptab: " + this.ptab.print() +
+            "\nmtab1: " + JSON.stringify(this.mtab1) + "\nmtab2: " + JSON.stringify(this.mtab2));
+    }
 }
 
 function get_expression(arr) {
@@ -427,6 +432,11 @@ class Basetable {
         return !isNaN(repval);
 
 
+    }
+
+    // Printing:
+    print(){
+        return JSON.stringify(this);
     }
 }
 

@@ -59,6 +59,373 @@ function evaluate_entry(curval, cur_q_key) {
     return [checked_val, is_error];
 }
 
+
+/**
+ * Class to create a checklist instance
+ */
+
+class Checklist {
+    constructor(q_order) {
+        this.q_order = q_order;
+        this.entry_ix = 0;
+
+        this.is_skip = false;
+        this.is_error = false;
+        this.is_reload = false;
+
+        this.skip_misses = false;
+        this.missing_entries = [];
+        this.skipped_inputs = [];  // list of inputs that were previously skipped.
+
+        // TODO: Update if input is skipped; also delete inputs that were not skipped a different time!
+        this.check_risk = new RiskCollection(ntab_mt, ptab_mt, mtab_mt1, mtab_mt2);
+    }
+
+    // Method to advance page:
+    continue_page(ev) {
+
+        // 0. Initialize variables: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        this.is_error = false;
+        this.is_reload = false;
+        this.missing_entries = [];
+
+        const skip_misses = ev.currentTarget.id === "skip-missing" || this.is_skip;
+        // skip, if calling event is the "skip-misses" button or if the page is to be skipped.
+        console.log(`Current target ID is ${ev.currentTarget.id}; Skip misses ${skip_misses}`);
+
+        const curid = this.q_order[this.entry_ix];  // get id of current page.
+
+        // 1. Get the inputs on current page: ~~~~~~~~~~~~~~~~~~~~~~~~
+        if (!skip_misses) {
+            // If it is not a round where inputs should be skipped:
+            this.get_current_input(curid, q_inputs[curid], id_to_num_dict);
+        } else {
+            // If misses were skipped:
+            this.is_skip = false;
+        }
+
+        // TODO: Check for errors!
+
+        // 2. Handle missing entries:
+        if (this.missing_entries.length > 0) {
+            // alert("Sie haben nichts eingegeben! Absicht?");
+            // Show popup that can be skipped!
+            this.is_skip = true;
+            handle_missing_input(ev, this.missing_entries);
+
+        }
+
+        // Advance page:
+        if (!this.is_error && this.missing_entries.length === 0) {
+
+            // Pages before results:
+            if (this.entry_ix < q_order.length) {
+                this.increment_or_skip();
+            }
+
+            // Final results page:
+            if (this.entry_ix === this.q_order.length - 1) {
+
+                if (this.is_reload) {
+                    console.log("Handle reload");
+                    this.handle_reloads();
+                } else {
+                    this.is_reload = true;
+                }
+
+                this.handle_final_page();  // handle the final page.
+
+
+                // Hide the continue button:
+                $(".continue-btn").hide();
+            }
+
+        } else if (this.is_error) {
+            alert("An error occured!");
+        }
+
+
+    }
+
+    // Increment page:
+    increment_or_skip() {
+        // Check whether input can be skipped: ~~~~~~~~~~~~
+        console.log("+++ CHECK IF SKIPPABLE +++");
+        const skiplist = ["n-total", "p-treat"];
+        const cur_entry = q_order[this.entry_ix];
+        let next_entry;
+
+        let skip = true;
+
+        /*
+        Do-while loop to increment entry index, check if the to be replaced value exists, if it does --> skip.
+         */
+        do {
+            this.entry_ix++;  // Increment entry index.
+            next_entry = q_order[this.entry_ix];  // get the next entry.
+            skip = false;  // set to false.
+
+            console.log(`Next entry is ${next_entry}`);
+
+            if (skiplist.includes(next_entry)) {
+
+                console.log("Index array");
+                console.log(number_dict[id_to_num_dict[next_entry]]);
+
+                // Get the previous value for the field(s):
+                const prevval = this.check_risk.get_by_arr(number_dict[id_to_num_dict[next_entry]]);
+
+                console.log(`Previous value was ${prevval}`);
+                console.log(prevval);
+
+                // MAY ALSO TEST MULTIPLE INPUTS in loop/map!
+
+                // SKip, if value exists in object:
+                if (!isNaN(prevval)) {
+                    skip = true;  // May be done more sophisticated in the future!
+                }
+
+            }
+
+        } while (skip)
+
+
+        // Show the new question and hide the previous one:
+        $("#" + q_order[this.entry_ix] + "-q").css('display', 'flex');
+        $("#" + cur_entry + "-q").hide();
+
+        // Show back button:
+        if (this.entry_ix > 0) {
+            $(".back-btn").css('display', 'inline-block');
+        }
+
+        console.log("Risk object after entries and calculation");
+        this.check_risk.print();
+    }
+
+    // Method to handle final page:
+    handle_final_page() {
+        console.log("Handling final page");
+        // CALCULATE RISK INFORMATION
+        const risk_info = this.calculate_risks();
+        const cur2x2 = risk_info.cur2x2;
+
+        // ICON ARRAYS:
+        // Get array information for each group:
+        const group_arrs = {
+            "treat": [cur2x2[1][1], cur2x2[1][0]],
+            "control": [cur2x2[0][1], cur2x2[0][0]]
+        }
+
+        let ncol = risk_info.N_scale === 1000 ? 50 : 20;  // determine number of columns.
+        const curwid_px = 250;  // Determine basic width in pixels.
+
+        // Create the icon arrays and assigne them:
+        create_icon_array(
+            group_arrs.treat,  // treatment group.
+            // cur2x2[0][0], cur2x2[0][1],  // control group.
+            'dotdisplay-treat',
+            ncol,
+            ["coral", "lightgrey"]);
+
+        create_icon_array(
+            // [cur2x2[1][0], cur2x2[1][1]],  // treatment group.
+            group_arrs.control,  // control group.
+            'dotdisplay-control',
+            ncol,
+            ["coral", "lightgrey"]);
+
+
+        // Clear the risk object: ~~~~~~~~~~~~~~~~
+        // this.check_risk.clear_entries();  // TODO: Handle properly!
+
+        // Adding functionality: ~~~~~~~~~~~~~~~~~~
+        // Add button for saving the page:
+        buttonPrintOrSaveDocument.addEventListener("click", printOrSave);  // allow saving.
+
+        // Allow zooming into the canvas:
+        $(".canvas-base")
+            .css({
+                width: curwid_px + 'px',
+                height: Math.round(curwid_px / ncol * risk_info.N_scale / ncol) + 'px'
+            })
+            .on("click", function (e) {
+                // const obj = $(this);
+                zoom_canvas(e, group_arrs, $(this));
+            })
+            .show();
+    }
+
+    // METHOD TO CALCULATE RISKS:
+    calculate_risks() {
+
+        console.log("~~~~~~~~~~~~~~~~ Calculate table ~~~~~~~~~~~~~~~~");
+        // First index is condition, second index is treatment!
+        // console.log(risk_numbers);
+
+        this.check_risk.ptab.complete_margins();
+        this.check_risk.n_from_p();
+
+        this.check_risk.try_completion();
+        this.check_risk.ntab.complete_margins();
+
+        this.check_risk.ntab.get_N();  // calculate N if not provided.
+        console.log(`N is ${this.check_risk.ntab.N}`);
+
+        console.log("~~~~~~ Final risk object ~~~~~~");
+        console.log(this.check_risk);
+
+        console.log("~~~~~~ Calculate the risks ~~~~");
+        const group_risks = this.check_risk.ntab.tab.margin2_mean();
+        console.log("Risks in each group:");
+        console.log(group_risks);
+
+        const group_risks_flat = group_risks.flat();
+
+        // Translate to natural frequencies:
+        // const curscale = 1000;  // fixed reference! Should eventually be so that the smallest number is detectable!
+        const curscale = [100, 1000, 2000, 5000, 10000, 50000, 100000]
+            .filter((x) => group_risks_flat.every((r) => (r * x) >= 5))[0];
+        // Get the first reference for which the product is greater 1!
+        // Altering this threshold will lead to larger references (which may differentiate better!)
+        console.log("Curscale is " + curscale);
+        // Flexible scaling for large numbers:
+        let N_scale = curscale;
+        if (curscale > 1000) {  // Determine useful maximum.
+            N_scale = 1000;
+        }
+
+        // Round the group risks
+        const risk_treat = Math.round(group_risks[1][1] * curscale) / curscale;
+        const risk_control = Math.round(group_risks[0][1] * curscale) / curscale;
+        const risk_treat_nh = Math.round(risk_treat * curscale) + " aus " + curscale;
+        const risk_control_nh = Math.round(risk_control * curscale) + " aus " + curscale;
+
+        // Risk reduction:
+        // Absolute change in risk:
+        const arc = group_risks[0][1] - group_risks[1][1];  // risk change in favor of treatment group.
+        const meaning_arc = arc > 0 ? " weniger" : " mehr";
+        console.log(`Absolute change is ${arc}`);
+
+        const arr = Math.sign(arc) * Math.round(arc * curscale) / curscale;
+        const arr_p = // arr > 0.01 ? Math.round(arr * 100) + "%" :
+            (Math.sign(arc) * Math.round(arc * curscale) + " aus " + curscale + meaning_arc);
+
+        // Note: If the risk is negative, it corresponds to an increase!
+        const rrc = Math.abs(arc / group_risks[0][1]); // relative risk change.
+        // How many times higher is the risk in the treatment group?
+
+        const rrr = Math.round(rrc * 1000) / 1000;
+        console.log("RRR is " + rrr);
+        const rr_factor = Math.abs(rrr) >= 2 ? 1 : 100;
+        const rrr_p = Math.round(rrr * rr_factor) +
+            (rr_factor === 100 ? "% " : " mal ") +
+            meaning_arc;
+        // For numbers greater than 2 "x mal mehr" may be more appropriate.
+
+        // Assign the information to the objects in results page:
+        $("#risk-treat").text(risk_treat_nh);
+        $("#risk-control").text(risk_control_nh);
+        $("#abs-change").html(`Absolute${arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe erkranken <span class="risk-info" id="arr">${arr_p}</span>`);
+        $("#rel-change").html(`Relative${arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${rrr_p}</span>`);
+        // Rounding can eventually be improved!
+
+        const cur2x2 = group_risks.map((x) => x.map((y) => Math.round(y * N_scale)));
+        console.log(cur2x2);
+
+        return {"cur2x2": cur2x2, "N_scale": N_scale};
+    }
+
+    get_current_input(curid, input_arr, id_to_num_dict) {
+        // Loop over defined input fields:
+        for (const cur_input of input_arr) {
+
+            const cur_q_key = id_to_num_dict[cur_input];  // get current input field, tied to table.
+
+            let curval;  // initialize current value.
+
+            // console.log("Is this a button with meaning? " + $(this).hasClass("input-btn"))
+
+            // Is the input a button or a text-field?
+            if ($(this).hasClass("input-btn")) {
+                console.log("Button with meaning!");
+                // console.log($(this).val());
+                curval = $(this).val();
+            } else {
+                curval = $("#" + cur_input).val();  // current input value.
+            }
+            console.log("Current value is: " + curval);
+
+            // If misses should not be skipped:
+
+            // If not a missing value is skipped:
+            // Check the value; if appropriate, check the number format, transform and save to object.
+            if ([undefined, "", " "].includes(curval)) {
+                this.missing_entries = this.missing_entries.concat(cur_input);
+                console.warn("Sie haben nichts eingegeben! Absicht?");
+
+            } else {
+                // If the current value is defined and non-empty:
+
+                // Evaluate entry:
+                const cureval = evaluate_entry(curval, cur_q_key);
+                let checked_val = cureval[0];
+                this.is_error = cureval[1];  // log if an error occurred.
+
+                // Update percentages:
+                if (perc_keys.includes(cur_q_key)) {
+
+                    // Check the percentage
+                    if (checked_val < 1) {
+                        alert("Prozentzahl kleiner 0; Absicht?");
+                    }
+
+                    checked_val = checked_val / 100;  // percentage to floating point number.
+
+                    // For relative risk reduction revert:
+                    if (cur_q_key === "rrr") {
+                        checked_val = 1 - checked_val;  // maybe code transformation in dictionary object?
+                    }
+                }  // eof. percentage handling.
+
+                // Save value to table object:
+                this.check_risk.update_by_arr(number_dict[cur_q_key], checked_val);
+
+            }
+
+
+        }
+
+        // After trying to get the inputs, try completing the table:
+        this.check_risk.try_completion();
+
+    }
+
+    handle_reloads() {
+        console.log(`Is reload? ${this.is_reload}`);
+
+        // TODO: ~~~~~~~~~ Loop over all entries and complete (for reloads)! ~~~~~~~~~~~~~
+        // If it is a reload:
+
+        // Loop over defined input fields:
+        for (const curid of q_order.slice(0, q_order.length - 1)) {
+            console.log(`Current inputs for ID ${curid}:`);
+            console.log(q_inputs[curid]);
+
+            this.get_current_input(curid, q_inputs[curid], id_to_num_dict);
+
+        }
+
+        // Retry completion:
+        console.log("Risk object after re-calculation");
+        console.log(this.check_risk);
+        this.check_risk.try_completion();
+    }
+
+}
+
+
 $(document).ready(function () {
 
     let entry_ix = 0;  // index for the current entry.
@@ -66,30 +433,62 @@ $(document).ready(function () {
     let out_arr = [0, false];
 
     // Preparations:
+    const cur_checklist = new Checklist(q_order);  // create a new checklist instance.
     const check_risk = new RiskCollection(ntab_mt, ptab_mt, mtab_mt1, mtab_mt2);
     console.log(check_risk);
 
-    console.log("Handle questions");
-    // Get the JSON file for the topic:
-    // const page_obj = JSON.parse("scripts/");
-    /*
-    Object should contain:
-    - Question and corresponding input object
-    - Order of questions
-     */
+    console.log("+++ Handle questions +++");
 
     // Define order by type (press release, article etc.):
-
     // Show the first element:
-    console.log("#" + q_order[entry_ix] + "-q");
-    $("#" + q_order[entry_ix] + "-q").css('display', 'flex');
+    console.log("#" + cur_checklist.q_order[cur_checklist.entry_ix] + "-q");
+    $("#" + cur_checklist.q_order[cur_checklist.entry_ix] + "-q").css('display', 'flex');
 
+    // ~~~ ADVANCING ~~~
     // Handle button clicks:
     $(".continue-btn").on("click", function (ev) {
-        out_arr = continue_page(ev, entry_ix, check_risk, is_skip);
-        entry_ix = out_arr[0];
-        is_skip = out_arr[1];
+        cur_checklist.continue_page(ev);
+        // out_arr = continue_page(ev, entry_ix, check_risk, is_skip);
+        // entry_ix = out_arr[0];
+        // is_skip = out_arr[1];
     })
+
+    // Continue on keypress:
+    $(window).on("keypress", function (ev) {
+        // console.log(ev);
+        if (ev.key === "Enter") {
+            cur_checklist.continue_page();
+            // out_arr = continue_page(ev, entry_ix, check_risk, is_skip);
+            // entry_ix = out_arr[0];
+            // is_skip = out_arr[1];
+
+            // Removal of higlighting classes:
+            $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
+        }
+
+    })
+
+    // ~~~ GOING BACK ~~~
+    $(".back-btn").on("click", function () {
+        if (cur_checklist.entry_ix > 0) {
+            cur_checklist.entry_ix--;
+            $("#" + q_order[cur_checklist.entry_ix] + "-q").css('display', 'flex');
+            $("#" + q_order[cur_checklist.entry_ix + 1] + "-q").hide();
+            $(".continue-btn").css('display', 'inline-block');
+
+            // TODO: Skip inputs that were previously skipped (use OOP?)
+
+            if (cur_checklist.entry_ix === 0) {
+                $(".back-btn").hide();
+            }
+
+            // Removal of highlighting classes:
+            $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
+        }
+
+    })
+
+    // ~~~ HANDLING OTHER ~~~
 
     // Entry deletion:
     $(".delete-entry").on("click", function () {
@@ -107,42 +506,9 @@ $(document).ready(function () {
 
     })
 
-    // Decide too provide missing input:
+    // Decide to provide missing input:
     $("#input-missing").on("click", function (ev) {
         $("#noentry-popup").hide();
-    })
-
-    // Continue on keypress:
-    $(window).on("keypress", function (ev) {
-        // console.log(ev);
-        if (ev.key === "Enter") {
-            out_arr = continue_page(ev, entry_ix, check_risk, is_skip);
-            entry_ix = out_arr[0];
-            is_skip = out_arr[1];
-
-            // Removal of higlighting classes:
-            $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
-        }
-
-    })
-
-    $(".back-btn").on("click", function () {
-        if (entry_ix > 0) {
-            entry_ix--;
-            $("#" + q_order[entry_ix] + "-q").css('display', 'flex');
-            $("#" + q_order[entry_ix + 1] + "-q").hide();
-            $(".continue-btn").css('display', 'inline-block');
-
-            // TODO: Skip inputs that were previously skipped (use OOP?)
-
-            if (entry_ix === 0) {
-                $(".back-btn").hide();
-            }
-
-            // Removal of higlighting classes:
-            $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
-        }
-
     })
 
 
@@ -162,424 +528,108 @@ $(document).ready(function () {
     // console.log("~~~~~~~~~ eof. test icon array ~~~~~~~~~~~");
 });
 
-function continue_page(ev, entry_ix, check_risk, is_skip) {
-    // Check entry:
-    const curid = q_order[entry_ix];  // id of current page.
-    let missing_entries = [];
-    let is_error = false;
-    let is_reload = false;
 
-    console.log(`Current inputs for ID ${curid}:`);
-    console.log(q_inputs);
-    console.log(q_inputs[curid]);
+// eof. handling after document is loaded
 
-    // console.log("Calling event is");
-    // console.log(ev);
-
-    // Ensure that the continue button and enter allow to skip, too!
-
-    const skip_misses = ev.currentTarget.id === "skip-missing" || is_skip;
-    console.log(`Current target ID is ${ev.currentTarget.id}; Skip misses ${skip_misses}`);
-
-    // Loop over defined input fields:
-    for (const cur_input of q_inputs[curid]) {
-
-        const cur_q_key = id_to_num_dict[cur_input];  // current input field.
-        let curval;
-
-        // console.log("Is this a button with meaning? " + $(this).hasClass("input-btn"))
-
-        if ($(this).hasClass("input-btn")) {
-            console.log("Button with meaning!");
-            // console.log($(this).val());
-            curval = $(this).val();
-        } else {
-            curval = $("#" + cur_input).val();  // current input value.
-        }
-        console.log("Current value is: " + curval);
-
-        if (!skip_misses) {
-            if ([undefined, "", " "].includes(curval)) {
-                missing_entries = missing_entries.concat(cur_input);
-                console.log("Sie haben nichts eingegeben! Absicht?");
-
-            } else {
-                // If the current value is defined and non-empty:
-
-                // Evaluate entry:
-                const cureval = evaluate_entry(curval, cur_q_key);
-                let checked_val = cureval[0];
-                is_error = cureval[1];  // log if an error occurred.
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------------ RESOURCES -------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ */
 
 
-                // Update percentages:
-                if (perc_keys.includes(cur_q_key)) {
-
-                    if (checked_val < 1) {
-                        alert("Prozentzahl kleiner 0; Absicht?");
-                    }
-
-                    checked_val = checked_val / 100;  // percentage to floating point number.
-
-                    // For relative risk reduction revert:
-                    if (cur_q_key === "rrr") {
-                        checked_val = 1 - checked_val;  // maybe code transformation in dictionary object?
-                    }
+// ~~~~~~~~~~~~~~~~~~~~~~~ DICTIONARIES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// TODO
 
 
-                }
-
-                // Save value to table object:
-                check_risk.update_by_arr(number_dict[cur_q_key], checked_val);
-
-            }
+// ~~~~~~~~~~~~~~~~~~~~~~~ CLASSES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-        } else {
-            // If misses were skipped:
-            is_skip = false;
-        }
+// ~~~~~~~~~~~~~~~~~~~~~~~ FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    }
+/**
+ * Handle missing inputs.
+ * @param ev Calling event
+ * @param missing_entries Array of missing entries
+ */
+function handle_missing_input(ev, missing_entries) {
 
-    console.log("Current object after entry");
-    console.log(JSON.stringify(check_risk, undefined, 2));
+    const input_field = $("#" + missing_entries[0]);  // Get input field for reference (may be improved).
+    const thispos = input_field.position();  // get position of current question.
+    console.log(thispos);
 
-    // Try completing the table before advancing:
-    check_risk.try_completion();
+    missing_entries.forEach((id) => $("#" + id).addClass("missing-input").addClass("selected-blur"));
 
-    // TODO: Output conflict!
+    // Change the popup text here:
+    const cur_popup = $("#noentry-popup");
 
-    console.log("Current object after completion attempt");
-    console.log(JSON.stringify(check_risk, undefined, 2));
+    const popup_height = cur_popup.height();
+    const popup_pad = cur_popup.innerHeight() - popup_height;
+    const num_height = input_field.height();
 
-    // Handle missing entries:
-    if (missing_entries.length > 0) {
-        // alert("Sie haben nichts eingegeben! Absicht?");
-        // Show popup that can be skipped!
-
-        is_skip = true;
-        const input_field = $("#" + missing_entries[0]);
-        const thispos = input_field.position();  // get position of current question.
-        console.log(thispos);
-
-        missing_entries.forEach((id) => $("#" + id).addClass("missing-input").addClass("selected-blur"));
-
-        // Change the popup text here:
-        const cur_popup = $("#noentry-popup");
-
-        const popup_height = cur_popup.height();
-        const popup_pad = cur_popup.innerHeight() - popup_height;
-        const num_height = input_field.height();
-
-        cur_popup
-            .css({
-                top: thispos.top - popup_height - num_height - popup_pad * 2,
-                left: thispos.left,
-                position: 'absolute'
-            })
-            .show();
-
-        // Prevent propagation:
-        ev.stopPropagation();
-
-        $(window).on("click", function (e) {
-
-            $("#noentry-popup").hide().removeClass("selected-blur");
-            missing_entries.forEach((id) => $("#" + id).removeClass("selected-blur"));
-            $(window).unbind("click");
+    cur_popup
+        .css({
+            top: thispos.top - popup_height - num_height - popup_pad * 2,
+            left: thispos.left,
+            position: 'absolute'
         })
-
-    }
-
-    console.log("Missing entries:");
-    console.log(missing_entries);
-
-    // Advance page:
-    if (!is_error && missing_entries.length === 0) {
-        if (entry_ix < q_order.length) {
-
-            // Check whether input can be skipped: ~~~~~~~~~~~~
-            console.log("+++ CHECK IF SKIPPABLE +++");
-            const skiplist = ["n-total", "p-treat"];
-            const cur_entry = q_order[entry_ix];
-            let next_entry;
-
-            let skip = true;
-
-            do {
-                entry_ix++;  // Increment entry index.
-                next_entry = q_order[entry_ix];  // get the next entry.
-                skip = false;  // set to false.
-
-                console.log(`Next entry is ${next_entry}`);
-
-                if (skiplist.includes(next_entry)) {
-
-                    console.log("Index array");
-                    console.log(number_dict[id_to_num_dict[next_entry]]);
-
-                    // Get the previous value for the field(s):
-                    const prevval = check_risk.get_by_arr(number_dict[id_to_num_dict[next_entry]]);
-
-                    console.log(`Previous value was ${prevval}`);
-                    console.log(prevval);
-
-                    // MAY ALSO TEST MULTIPLE INPUTS in loop/map!
-
-                    if (!isNaN(prevval)) {
-                        skip = true;  // May be done more sophisticated in the future!
-                    }
-
-                }
-
-            } while (skip)
-
-
-            $("#" + q_order[entry_ix] + "-q").css('display', 'flex');
-            $("#" + cur_entry + "-q").hide();
-
-            // Show back button:
-            if (entry_ix > 0) {
-                $(".back-btn").css('display', 'inline-block');
-            }
-
-            console.log("Risk object after entries and calculation");
-            console.log(check_risk);
-        }
-
-        // Final button:
-        if (entry_ix === q_order.length - 1) {
-
-            console.log(`Is reload? ${is_reload}`);
-
-            // TODO: ~~~~~~~~~ Loop over all entries and complete (for reloads)! ~~~~~~~~~~~~~
-            const skip_misses = ev.currentTarget.id === "skip-missing" || is_skip;
-            console.log(`Current target ID is ${ev.currentTarget.id}; Skip misses ${skip_misses}`);
-
-            // If it is a reload:
-            if (is_reload) {
-                // Loop over defined input fields:
-                for (const curid2 of q_order.slice(0, q_order.length - 1)) {
-                    console.log(`Current inputs for ID ${curid2}:`);
-                    console.log(q_inputs[curid2]);
-
-                    for (const cur_input2 of q_inputs[curid2]) {
-
-                        // Get the key:
-                        const cur_q_key = id_to_num_dict[cur_input2];  // current input field.
-
-                        let curval2;
-                        if ($(this).hasClass("input-btn")) {
-                            console.log("Button with meaning!");
-                            // console.log($(this).val());
-                            curval2 = $(this).val();
-                        } else {
-                            curval2 = $("#" + cur_input2).val();  // current input value.
-                        }
-                        console.log("Current value is: " + curval2);
-
-                        if (!["", " ", undefined].includes(curval2)) {
-                            // Evaluate:
-                            const cureval = evaluate_entry(curval2, cur_q_key);
-                            let is_error2 = cureval[1];  // log if an error occurred.
-
-                            // Save value to table object:
-                            check_risk.update_by_arr(number_dict[cur_q_key], cureval[0]);
-                        } else {
-                            // If undefined set NaN:
-                            check_risk.update_by_arr(number_dict[cur_q_key], NaN);
-                        }
-
-                    }
-                }
-
-                // Retry completion:
-                console.log("Risk object after re-calculation");
-                console.log(check_risk);
-                check_risk.try_completion();
-            } else {
-                is_reload = true;
-            }
-
-
-            // Hide the continue button:
-            $(".continue-btn").hide();
-
-
-            console.log("~~~~~~~~~~~~~~~~ Calculate table ~~~~~~~~~~~~~~~~");
-            // First index is condition, second index is treatment!
-            // console.log(risk_numbers);
-
-
-            // const ntab = new Basetable(
-            //     [
-            //         [risk_numbers.n00, risk_numbers.n01],  // no condition.
-            //         [risk_numbers.n10, risk_numbers.n11]],  // condition.
-            //     [risk_numbers.msum0x, risk_numbers.msum1x],
-            //     [risk_numbers.msumx0, risk_numbers.msumx1],
-            //     risk_numbers.N_tot);
-            // const ptab = new Basetable(
-            //     [
-            //         [risk_numbers.p00, risk_numbers.p01],
-            //         [risk_numbers.p10, risk_numbers.p11]],
-            //     [NaN, NaN], [risk_numbers.mpx0, risk_numbers.mpx1], 1);
-            // // NOTE: Make sure to appropriately distinguish relative risk increase and reduction!
-            // const mtab1 = new Margintable(na_tab, [NaN, 1 - risk_numbers.rrr], [NaN, NaN]);
-            // const mtab2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
-            //
-            //
-            // const check_risk = new RiskCollection(ntab, ptab, mtab1, mtab2);
-            check_risk.ptab.complete_margins();
-            check_risk.n_from_p();
-
-            check_risk.try_completion();
-            check_risk.ntab.complete_margins();
-
-            console.log("~~~~~~ Final risk object ~~~~~~");
-            console.log(check_risk);
-
-            // USe the 2x2 table to calculate outputs:
-            console.log(check_risk.ntab.tab.margin2_mean());
-
-            // Following the current definition this is the risk:
-            const group_risks = check_risk.ntab.tab.margin2_mean();
-            console.log("Risks in each group:");
-            console.log(group_risks);
-
-            const group_risks_flat = group_risks.flat();
-
-            // Translate to natural frequencies:
-            // const curscale = 1000;  // fixed reference! Should eventually be so that the smallest number is detectable!
-            const curscale = [100, 1000, 2000, 5000, 10000, 50000, 100000]
-                .filter((x) => group_risks_flat.every((r) => (r * x) >= 5))[0];
-            // Get the first reference for which the product is greater 1!
-            // Altering this threshhold will lead to larger references (which may differentiate better!)
-            console.log("Curscale is " + curscale);
-
-            // Round the group risks
-
-            const risk_treat = Math.round(group_risks[1][1] * curscale) / curscale;
-            const risk_control = Math.round(group_risks[0][1] * curscale) / curscale;
-            const risk_treat_nh = Math.round(risk_treat * curscale) + " aus " + curscale;
-            const risk_control_nh = Math.round(risk_control * curscale) + " aus " + curscale;
-
-            // Risk reduction:
-            // Absolute change in risk:
-            const arc = group_risks[0][1] - group_risks[1][1];  // risk change in favor of treatment group.
-            const meaning_arc = arc > 0 ? " weniger" : " mehr";
-            console.log(`Absolute change is ${arc}`);
-
-            const arr = Math.sign(arc) * Math.round(arc * curscale) / curscale;
-            const arr_p = // arr > 0.01 ? Math.round(arr * 100) + "%" :
-                (Math.sign(arc) * Math.round(arc * curscale) + " aus " + curscale + meaning_arc);
-
-            // Note: If the risk is negative, it corresponds to an increase!
-            const rrc = Math.abs(arc / group_risks[0][1]); // relative risk change.
-            // How many times higher is the risk in the treatment group?
-
-            const rrr = Math.round(rrc * 1000) / 1000;
-            console.log("RRR is " + rrr);
-            const rr_factor = Math.abs(rrr) >= 2 ? 1 : 100;
-            const rrr_p = Math.round(rrr * rr_factor) +
-                (rr_factor === 100 ? "% " : " mal ") +
-                meaning_arc;
-            // For numbers greater than 2 "x mal mehr" may be more appropriate.
-
-
-            $("#risk-treat").text(risk_treat_nh);
-            $("#risk-control").text(risk_control_nh);
-            $("#abs-change").html(`Absolute${arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe erkranken <span class="risk-info" id="arr">${arr_p}</span>`);
-            $("#rel-change").html(`Relative${arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${rrr_p}</span>`);
-            // Rounding can eventually be improved!
-
-            check_risk.ntab.get_N();  // calculate N if not provided.
-            console.log(`N is ${check_risk.ntab.N}`);
-
-            // Flexible scaling for large numbers:
-            let N_scale = curscale;
-            if (curscale > 1000) {  // Determine useful maximum.
-                N_scale = 1000;
-            }
-
-            // Icon array:
-            // const cur2x2 = check_risk.ntab.tab.tab2x2.map((x) => x.map((y) => Math.round(y / N_scale)));
-            const cur2x2 = group_risks.map((x) => x.map((y) => Math.round(y * N_scale)));
-            console.log(cur2x2);
-
-            const group_arrs = {
-                "treat": [cur2x2[1][1], cur2x2[1][0]],
-                "control": [cur2x2[0][1], cur2x2[0][0]]
-            }
-
-            let ncol = N_scale === 1000 ? 50 : 20;
-
-            const curwid_px = 250;
-
-            // Set dotdisplay size:
-            $(".canvas-base").css({
-                width: curwid_px + 'px',
-                height: Math.round(curwid_px / ncol * N_scale / ncol) + 'px'
-            });
-
-            create_icon_array(
-                group_arrs.treat,  // treatment group.
-                // cur2x2[0][0], cur2x2[0][1],  // control group.
-                'dotdisplay-treat',
-                ncol,
-                ["coral", "lightgrey"]);
-            $("#dotdisplay-treat").show();
-
-            create_icon_array(
-                // [cur2x2[1][0], cur2x2[1][1]],  // treatment group.
-                group_arrs.control,  // control group.
-                'dotdisplay-control',
-                ncol,
-                ["coral", "lightgrey"]);
-            $("#dotdisplay-control").show();
-
-
-            // Add button for saving the page:
-            buttonPrintOrSaveDocument.addEventListener("click", printOrSave);  // allow saving.
-
-            // Clear the risk object:
-            check_risk.clear_entries();
-
-            // Allow zooming into the canvas:
-            $(".canvas-base").on("click", function (e) {
-
-                console.log($(this).attr("id"));
-                $(".zoomed-canvas").hide();
-
-                const cur_type = $(this).attr("id").replace("dotdisplay-", "");
-
-                // $(this).clone().appendTo(".canvas-zoom");
-                create_icon_array(
-                    group_arrs[cur_type],  // control group.
-                    $(this).attr("id") + '-zoom',
-                    undefined,
-                    ["coral", "lightgrey"]);
-
-                const mindim = Math.min(window.innerWidth, window.innerHeight);
-
-                $(".canvas-zoom")
-                    .width(mindim)
-                    .height(mindim)
-                    .css("display", "flex");
-                $("#" + $(this).attr("id") + '-zoom').show();
-
-                // Allow clicking anywhere to close:
-                e.stopPropagation();  // stop event propagation to avoid immediate hiding on click.
-                $(window).on("click", function () {
-                    $(".canvas-zoom").hide();
-                    $(".zoomed-canvas").hide();
-                    // $(this).unbind("click");
-                });
-            })
-        }
-    }
-
-    return [entry_ix, is_skip];
+        .show();
+
+    // Prevent propagation:
+    ev.stopPropagation();
+
+    $(window).on("click", function (e) {
+
+        $("#noentry-popup").hide().removeClass("selected-blur");
+        missing_entries.forEach((id) => $("#" + id).removeClass("selected-blur"));
+        $(window).unbind("click");
+    })
+}
+
+/**
+ * Function to continue page
+ * @param ev Calling event
+ * @param entry_ix Index of current entry
+ * @param check_risk Object
+ * @param is_skip Is the current iteration a skip?
+ * @returns {(*|boolean)[]}
+ */
+
+
+/**
+ *
+ * @param e Calling event
+ * @param info_arr ordered array with icon info
+ * @param obj Calling object
+ */
+function zoom_canvas(e, info_arr, obj) {
+    console.log(obj.attr("id"));
+    $(".zoomed-canvas").hide();
+
+    const cur_type = obj.attr("id").replace("dotdisplay-", "");
+
+    // $(this).clone().appendTo(".canvas-zoom");
+    create_icon_array(
+        info_arr[cur_type],  // control group.
+        obj.attr("id") + '-zoom',
+        undefined,
+        ["coral", "lightgrey"]);
+
+    const mindim = Math.min(window.innerWidth, window.innerHeight);
+
+    $(".canvas-zoom")
+        .width(mindim)
+        .height(mindim)
+        .css("display", "flex");
+    $("#" + obj.attr("id") + '-zoom').show();
+
+    // Allow clicking anywhere to close:
+    e.stopPropagation();  // stop event propagation to avoid immediate hiding on click.
+    $(window).on("click", function () {
+        $(".canvas-zoom").hide();
+        $(".zoomed-canvas").hide();
+        // $(this).unbind("click");
+    });
 }
 
 // ~~~~~~~~~~~~~~~~ DICTIONARIES ~~~~~~~~~~~~~~~~~~~~~~~~~

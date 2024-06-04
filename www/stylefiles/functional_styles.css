@@ -197,7 +197,7 @@
 }
 
 canvas {
-    display: none;
+    /*display: none;*/
     background: white;
     /*width: 250px;*/
     /*height: 250px;*/
@@ -209,6 +209,7 @@ canvas {
 .canvas-base {
     width: 250px;
     height: 125px;
+    /*display: none;*/
 }
 
 .zoomed-canvas {
