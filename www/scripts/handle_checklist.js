@@ -125,7 +125,13 @@ class Checklist {
             // If it is not a round where inputs should be skipped:
             const inp_test = this.get_current_input(curid, q_inputs[curid], id_to_num_dict);
             // After trying to get the inputs, try completing the table:
-            this.check_risk.try_completion(0);
+            try {
+                this.check_risk.try_completion(0);
+            } catch (e) {
+                console.error("Non-matching entries! " + e);
+                $("#incompatible-popup").show().addClass("selected-blur");
+                this.is_error = true;
+            }
 
             if (this.is_error) {
                 console.error(`An error (${inp_test}) occured when providing input!`);
@@ -528,6 +534,11 @@ $(document).ready(function () {
     // Decide to provide missing input:
     $("#input-missing").on("click", function (ev) {
         $("#noentry-popup").hide();
+    })
+
+    // Incompatible entries:
+    $("#acknowledge-incompatible").on("click", function(){
+        $("#incompatible-popup").hide();
     })
 
 

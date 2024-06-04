@@ -600,7 +600,8 @@ function compare_vals(val1, val2, tol) {
             console.error("Provided values do not match. Please check!");
             // no_N = true;
             // TODO: Proper error handling!
-            val1 = NaN;  // set val1 NaN to return NaN.
+            throw "Provided values do not match. Please check!";
+            // val1 = NaN;  // set val1 NaN to return NaN.
         }
     } else if (isNaN(val1)) {
         // If N is NAN use calculated N (results in NaN if it cannot be provided!):
