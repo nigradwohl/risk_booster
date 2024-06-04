@@ -271,6 +271,29 @@ class RiskCollection {
         // console.log("Get expression " + expr);
         return eval(expr);
     }
+
+    clear_entries() {
+
+        this.ntab = new Basetable(na_tab,  // condition.
+            [NaN, NaN],
+            [NaN, NaN],
+            NaN);
+        this.ptab = new Basetable(
+            na_tab,
+            [NaN, NaN], [NaN, NaN], 1);
+
+        this.mtab1 = new Basetable(na_tab,  // condition.
+            [NaN, NaN],
+            [NaN, NaN],
+            NaN);
+
+        this.mtab2 = new Basetable(na_tab,  // condition.
+            [NaN, NaN],
+            [NaN, NaN],
+            NaN);
+        console.log("Cleared all");
+        console.log(this);
+    }
 }
 
 function get_expression(arr) {

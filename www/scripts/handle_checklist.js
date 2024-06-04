@@ -2,6 +2,18 @@
  * Manage the display of a risk checklist.
  */
 
+// Empty tables:
+const ntab_mt = new Basetable(na_tab,  // condition.
+    [NaN, NaN],
+    [NaN, NaN],
+    NaN);
+const ptab_mt = new Basetable(
+    na_tab,
+    [NaN, NaN], [NaN, NaN], 1);
+// NOTE: Make sure to appropriately distinguish relative risk increase and reduction!
+const mtab_mt1 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
+const mtab_mt2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
+
 
 $(document).ready(function () {
 
@@ -10,19 +22,7 @@ $(document).ready(function () {
     let out_arr = [0, false];
 
     // Preparations:
-    const ntab = new Basetable(na_tab,  // condition.
-        [NaN, NaN],
-        [NaN, NaN],
-        NaN);
-    const ptab = new Basetable(
-        na_tab,
-        [NaN, NaN], [NaN, NaN], 1);
-// NOTE: Make sure to appropriately distinguish relative risk increase and reduction!
-    const mtab1 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
-    const mtab2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
-
-
-    const check_risk = new RiskCollection(ntab, ptab, mtab1, mtab2);
+    const check_risk = new RiskCollection(ntab_mt, ptab_mt, mtab_mt1, mtab_mt2);
     console.log(check_risk);
 
     console.log("Handle questions");
@@ -47,16 +47,37 @@ $(document).ready(function () {
         is_skip = out_arr[1];
     })
 
+    // Entry deletion:
+    $(".delete-entry").on("click", function () {
+        const cur_inp = $(this).siblings("input");  // id of current page.
+
+        cur_inp.val("");  // empty input.
+        console.log(`Deleted inputs for ID ${cur_inp.attr("id")}:`);
+
+        // Delete associated table inputs:
+        // const cur_q_key = id_to_num_dict[cur_inp.attr("id")]
+        // console.log(number_dict[cur_q_key]);
+        // check_risk.update_by_arr(number_dict[cur_q_key], NaN);
+        // console.log(check_risk);
+        // Note: This only deletes the entry itself and not derived quantities.
+
+    })
+
+    // Decide too provide missing input:
     $("#input-missing").on("click", function (ev) {
         $("#noentry-popup").hide();
     })
 
+    // Continue on keypress:
     $(window).on("keypress", function (ev) {
         // console.log(ev);
         if (ev.key === "Enter") {
             out_arr = continue_page(ev, entry_ix, check_risk, is_skip);
             entry_ix = out_arr[0];
             is_skip = out_arr[1];
+
+            // Removal of higlighting classes:
+            $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
         }
 
     })
@@ -71,6 +92,9 @@ $(document).ready(function () {
             if (entry_ix === 0) {
                 $(".back-btn").hide();
             }
+
+            // Removal of higlighting classes:
+            $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
         }
 
     })
@@ -133,6 +157,7 @@ function continue_page(ev, entry_ix, check_risk, is_skip) {
                 console.log("Sie haben nichts eingegeben! Absicht?");
 
             } else {
+                // If the current value is defined and non-empty:
 
                 // Evaluate entry:
                 // TODO: Check format!
@@ -245,6 +270,7 @@ function continue_page(ev, entry_ix, check_risk, is_skip) {
         $(window).on("click", function (e) {
 
             $("#noentry-popup").hide().removeClass("selected-blur");
+            missing_entries.forEach((id) => $("#" + id).removeClass("selected-blur"));
             $(window).unbind("click");
         })
 
@@ -425,7 +451,7 @@ function continue_page(ev, entry_ix, check_risk, is_skip) {
             // Set dotdisplay size:
             $(".canvas-base").css({
                 width: curwid_px + 'px',
-                height: Math.round(curwid_px/ncol * N_scale/ncol) + 'px'
+                height: Math.round(curwid_px / ncol * N_scale / ncol) + 'px'
             });
 
             create_icon_array(
@@ -447,6 +473,9 @@ function continue_page(ev, entry_ix, check_risk, is_skip) {
 
             // Add button for saving the page:
             buttonPrintOrSaveDocument.addEventListener("click", printOrSave);  // allow saving.
+
+            // Clear the risk object:
+            check_risk.clear_entries();
 
             // Allow zooming into the canvas:
             $(".canvas-base").on("click", function (e) {

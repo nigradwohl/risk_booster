@@ -87,19 +87,20 @@
                             Ihre Eingaben widersprechen einander.
                             Bitte überprüfen Sie Ihre Eingaben nochmals sorgfältig.
                         </p>
-                        <p>
+                        <p class="instruction-par">
                             Es ist möglich, dass Ihre vorliegenden Informationen widersprüchlich sind.
                             In diesem Fall prüfen Sie bitte, wie die Ergebnisse für
                             <emph>Wirksamkeit (relative Riskikoreduktion)</emph>
                             <strong>mit entweder</strong>
-                            der Anzahl an Fällen <emph>unter den Behandelten</emph>
+                            der Anzahl an Fällen
+                            <emph>unter den Behandelten</emph>
                             <strong>oder</strong>
                             der Anzahl an Fällen
-                            <emph>unter den nicht-Behandelten (Placebo- oder Vergleichsgruppe)</emph>.
+                            <emph>unter den nicht-Behandelten (Placebo- oder Vergleichsgruppe)</emph>
+                            .
                         </p>
                         <button id="acknowledge-incompatible">Zurück zur Eingabe</button>
                     </div>
-
 
 
                     <div class="checklist-question" id="rel-risk-reduction-q">
@@ -121,12 +122,20 @@
                         </span>
                                 </span>
                                 in Prozent an.
-<!--                                [Sinnvoll?]-->
+                                <!--                                [Sinnvoll?]-->
                             </p>
 
                             <p>
-                                <input class="checklist-input" id="rel-risk-reduction" type="text">%
-<!--                                <button class="checklist-button continue-btn">Weiter</button>-->
+                                <input class="checklist-input" id="rel-risk-reduction" type="text">&nbsp;%
+                                <span class="tooltip delete-entry">
+                                <i class="fa fa-trash" aria-hidden="true" id="rel-risk-reduction-del"></i>
+                                <span class="tooltiptext tooltip-checklist">
+                                   Eintrag löschen
+                                </span>
+                                </span>
+
+
+                                <!--                                <button class="checklist-button continue-btn">Weiter</button>-->
                             </p>
 
 
@@ -190,7 +199,7 @@
                         <div class="question-content">
                             <p class="checklist-qtext">Welcher Anteil der Personen wurde geimpft?</p>
 
-<!--                            ACHTUNG: Plausible Ganzzahlen ggf. umformulieren!-->
+                            <!--                            ACHTUNG: Plausible Ganzzahlen ggf. umformulieren!-->
                             <input class="checklist-input" id="p-treat" type="text">
 
                             <br>
@@ -291,8 +300,8 @@
 
                         <button class="button-print-or-save-document checklist-button no-print">Ergebnis drucken
                         </button>
-<!--                        <br>-->
-<!--                        [SPLIT THE ARRAY?]-->
+                        <!--                        <br>-->
+                        <!--                        [SPLIT THE ARRAY?]-->
                     </div>
 
                 </td>
