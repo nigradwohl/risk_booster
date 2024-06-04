@@ -535,6 +535,7 @@ h3 {
 
 .error-prompt {
     z-index: 9999;
+    display: none;
 }
 
 .selected-blur {
