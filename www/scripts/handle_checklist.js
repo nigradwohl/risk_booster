@@ -414,8 +414,8 @@ function continue_page(ev, entry_ix, check_risk, is_skip) {
             console.log(cur2x2);
 
             const group_arrs = {
-                "treat": [cur2x2[1][0], cur2x2[1][1]],
-                "control": [cur2x2[0][0], cur2x2[0][1]]
+                "treat": [cur2x2[1][1], cur2x2[1][0]],
+                "control": [cur2x2[0][1], cur2x2[0][0]]
             }
 
             let ncol = N_scale === 1000 ? 50 : 10;
@@ -424,14 +424,16 @@ function continue_page(ev, entry_ix, check_risk, is_skip) {
                 group_arrs.treat,  // treatment group.
                 // cur2x2[0][0], cur2x2[0][1],  // control group.
                 'dotdisplay-treat',
-                ncol);
+                ncol,
+                ["coral", "lightgrey"]);
             $("#dotdisplay-treat").show();
 
             create_icon_array(
                 // [cur2x2[1][0], cur2x2[1][1]],  // treatment group.
                 group_arrs.control,  // control group.
                 'dotdisplay-control',
-                ncol);
+                ncol,
+                ["coral", "lightgrey"]);
             $("#dotdisplay-control").show();
 
 
@@ -586,7 +588,7 @@ const perc_keys = ["rrr", "mpx1"]
 
 
 // FUNCTIONS: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function create_icon_array(arr_n, id, ncol) {
+function create_icon_array(arr_n, id, ncol, col_arr) {
 
     // Check for non-integer inputs:
     // https://stackoverflow.com/questions/469357/html-text-input-allow-only-numeric-input/469362#469362
@@ -693,7 +695,7 @@ function create_icon_array(arr_n, id, ncol) {
 
                     // Define dot colors:
                     // const col_arr = ["#90f6d7", "#41506b", "#35bcbf", "#263849"];
-                    const col_arr = ["lightgrey", "coral", "green", "purple"];
+                    // const col_arr = ["lightgrey", "coral", "green", "purple"];
                     ctx.fillStyle = col_arr[dot.type - 1];
 
                     // ctx.fillText(((dot.type % 2 === 0) ? "\uf119" : '\uf118'), dot.x, dot.y);  // smile or frown.
