@@ -15,6 +15,50 @@ const mtab_mt1 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
 const mtab_mt2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
 
 
+/**
+ * Evaluate checklist entry.
+ */
+function evaluate_entry(curval, cur_q_key) {
+    // TODO: Check format!
+    let checked_val;
+    let is_error = false;
+
+    // replace period with nothing:
+    checked_val = curval.replace(/\./, "");
+    // Replace comma with period:
+    checked_val = curval.replace(/,/, ".");
+
+    // Test, if it is a number and convert if true:
+    const is_num = !isNaN(parseFloat(checked_val));
+    if (is_num) {
+        // Note: Ignores additional text!
+        checked_val = parseFloat(checked_val);
+    }
+
+    if (int_keys.includes(cur_q_key)) {
+        // Check integer entries:
+        if (!is_num) {
+            alert("KEINE ZAHL!");
+            is_error = true;
+        } else if (!Number.isInteger(checked_val)) {
+            alert("KEINE GANZE ZAHL!");
+            is_error = true;
+        }
+    } else if (float_keys.includes(cur_q_key)) {
+
+        // Check float entries:
+        if (!is_num) {
+            alert("KEINE ZAHL!");
+            is_error = true;
+        }
+
+    } else {
+        // All other keys (string, boolean etc.)
+    }
+
+    return [checked_val, is_error];
+}
+
 $(document).ready(function () {
 
     let entry_ix = 0;  // index for the current entry.
@@ -89,6 +133,8 @@ $(document).ready(function () {
             $("#" + q_order[entry_ix + 1] + "-q").hide();
             $(".continue-btn").css('display', 'inline-block');
 
+            // TODO: Skip inputs that were previously skipped (use OOP?)
+
             if (entry_ix === 0) {
                 $(".back-btn").hide();
             }
@@ -120,7 +166,8 @@ function continue_page(ev, entry_ix, check_risk, is_skip) {
     // Check entry:
     const curid = q_order[entry_ix];  // id of current page.
     let missing_entries = [];
-    let error = false;
+    let is_error = false;
+    let is_reload = false;
 
     console.log(`Current inputs for ID ${curid}:`);
     console.log(q_inputs);
@@ -137,7 +184,7 @@ function continue_page(ev, entry_ix, check_risk, is_skip) {
     // Loop over defined input fields:
     for (const cur_input of q_inputs[curid]) {
 
-        const cur_q_key = id_to_num_dict[cur_input];  // curent input field.
+        const cur_q_key = id_to_num_dict[cur_input];  // current input field.
         let curval;
 
         // console.log("Is this a button with meaning? " + $(this).hasClass("input-btn"))
@@ -160,54 +207,21 @@ function continue_page(ev, entry_ix, check_risk, is_skip) {
                 // If the current value is defined and non-empty:
 
                 // Evaluate entry:
-                // TODO: Check format!
-                let checked_val;
+                const cureval = evaluate_entry(curval, cur_q_key);
+                let checked_val = cureval[0];
+                is_error = cureval[1];  // log if an error occurred.
 
-                // replace period with nothing:
-                checked_val = curval.replace(/\./, "");
-                // Replace comma with period:
-                checked_val = curval.replace(/,/, ".");
-
-                // Test, if it is a number and convert if true:
-                const is_num = !isNaN(parseFloat(checked_val));
-                if (is_num) {
-                    // Note: Ignores additional text!
-                    checked_val = parseFloat(checked_val);
-                }
-
-                if (int_keys.includes(cur_q_key)) {
-                    // Check integer entries:
-                    if (!is_num) {
-                        alert("KEINE ZAHL!");
-                        error = true;
-                    } else if (!Number.isInteger(checked_val)) {
-                        alert("KEINE GANZE ZAHL!");
-                        error = true;
-                    }
-                } else if (float_keys.includes(cur_q_key)) {
-
-                    // Check float entries:
-                    if (!is_num) {
-                        alert("KEINE ZAHL!");
-                        error = true;
-                    }
-
-                } else {
-                    // All other keys (string, boolean etc.)
-                }
-
-                // Save value to dictionary:
-                // risk_numbers[cur_q_key] = checked_val;
 
                 // Update percentages:
                 if (perc_keys.includes(cur_q_key)) {
 
-                    if (curval < 1) {
+                    if (checked_val < 1) {
                         alert("Prozentzahl kleiner 0; Absicht?");
                     }
 
                     checked_val = checked_val / 100;  // percentage to floating point number.
 
+                    // For relative risk reduction revert:
                     if (cur_q_key === "rrr") {
                         checked_val = 1 - checked_val;  // maybe code transformation in dictionary object?
                     }
@@ -233,6 +247,8 @@ function continue_page(ev, entry_ix, check_risk, is_skip) {
 
     // Try completing the table before advancing:
     check_risk.try_completion();
+
+    // TODO: Output conflict!
 
     console.log("Current object after completion attempt");
     console.log(JSON.stringify(check_risk, undefined, 2));
@@ -280,7 +296,7 @@ function continue_page(ev, entry_ix, check_risk, is_skip) {
     console.log(missing_entries);
 
     // Advance page:
-    if (!error && missing_entries.length === 0) {
+    if (!is_error && missing_entries.length === 0) {
         if (entry_ix < q_order.length) {
 
             // Check whether input can be skipped: ~~~~~~~~~~~~
@@ -333,11 +349,63 @@ function continue_page(ev, entry_ix, check_risk, is_skip) {
         }
 
         // Final button:
-        // Calculate the table if possible!
         if (entry_ix === q_order.length - 1) {
+
+            console.log(`Is reload? ${is_reload}`);
+
+            // TODO: ~~~~~~~~~ Loop over all entries and complete (for reloads)! ~~~~~~~~~~~~~
+            const skip_misses = ev.currentTarget.id === "skip-missing" || is_skip;
+            console.log(`Current target ID is ${ev.currentTarget.id}; Skip misses ${skip_misses}`);
+
+            // If it is a reload:
+            if (is_reload) {
+                // Loop over defined input fields:
+                for (const curid2 of q_order.slice(0, q_order.length - 1)) {
+                    console.log(`Current inputs for ID ${curid2}:`);
+                    console.log(q_inputs[curid2]);
+
+                    for (const cur_input2 of q_inputs[curid2]) {
+
+                        // Get the key:
+                        const cur_q_key = id_to_num_dict[cur_input2];  // current input field.
+
+                        let curval2;
+                        if ($(this).hasClass("input-btn")) {
+                            console.log("Button with meaning!");
+                            // console.log($(this).val());
+                            curval2 = $(this).val();
+                        } else {
+                            curval2 = $("#" + cur_input2).val();  // current input value.
+                        }
+                        console.log("Current value is: " + curval2);
+
+                        if (!["", " ", undefined].includes(curval2)) {
+                            // Evaluate:
+                            const cureval = evaluate_entry(curval2, cur_q_key);
+                            let is_error2 = cureval[1];  // log if an error occurred.
+
+                            // Save value to table object:
+                            check_risk.update_by_arr(number_dict[cur_q_key], cureval[0]);
+                        } else {
+                            // If undefined set NaN:
+                            check_risk.update_by_arr(number_dict[cur_q_key], NaN);
+                        }
+
+                    }
+                }
+
+                // Retry completion:
+                console.log("Risk object after re-calculation");
+                console.log(check_risk);
+                check_risk.try_completion();
+            } else {
+                is_reload = true;
+            }
+
 
             // Hide the continue button:
             $(".continue-btn").hide();
+
 
             console.log("~~~~~~~~~~~~~~~~ Calculate table ~~~~~~~~~~~~~~~~");
             // First index is condition, second index is treatment!

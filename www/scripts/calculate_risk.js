@@ -282,12 +282,12 @@ class RiskCollection {
             na_tab,
             [NaN, NaN], [NaN, NaN], 1);
 
-        this.mtab1 = new Basetable(na_tab,  // condition.
+        this.mtab1 = new Margintable(na_tab,  // condition.
             [NaN, NaN],
             [NaN, NaN],
             NaN);
 
-        this.mtab2 = new Basetable(na_tab,  // condition.
+        this.mtab2 = new Margintable(na_tab,  // condition.
             [NaN, NaN],
             [NaN, NaN],
             NaN);
