@@ -130,9 +130,9 @@ class RiskCollection {
     p_from_n() {
         // console.log("p from n");
         //
-        console.log("p margins from n margins:");
-        console.log(this.ptab);
-        console.log(JSON.stringify(this.ptab));
+        // console.log("p margins from n margins:");
+        // console.log(this.ptab);
+        // console.log(JSON.stringify(this.ptab));
 
         // Margin sums:
         this.ptab.msums1 = this.ptab.msums1
@@ -140,7 +140,7 @@ class RiskCollection {
         this.ptab.msums2 = this.ptab.msums2
             .map((val, ix) => isNaN(val) ? this.ntab.msums2[ix] / this.ntab.N : val);
 
-        console.log(JSON.stringify(this.ptab));
+        // console.log(JSON.stringify(this.ptab));
     }
 
     // Method to get the margin from p-table margins:
@@ -228,6 +228,7 @@ class RiskCollection {
     // Get n from margin tables:
     get_tab_from_margins(tabtype) {
         // console.log("Calculate from margins:");
+        // console.log(JSON.stringify(this[tabtype].tab.tab2x2));
         // console.log(JSON.stringify(this.mtab1));
         // console.log(JSON.stringify(this.mtab2));
 
@@ -235,7 +236,7 @@ class RiskCollection {
         const curmsums = this[tabtype].msums2;
         // can be done analogously for msums 2!
 
-        const tab_from_margins = this.mtab2.tab
+        const tab_from_margins = transpose(this.mtab2.tab)
             .map((x, ix) => x
                 .map(y => Math.round(y * curmsums[ix])));
 

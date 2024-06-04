@@ -52,7 +52,7 @@ $(document).ready(function () {
     })
 
     $(window).on("keypress", function (ev) {
-        console.log(ev);
+        // console.log(ev);
         if (ev.key === "Enter") {
             out_arr = continue_page(ev, entry_ix, check_risk, is_skip);
             entry_ix = out_arr[0];
@@ -102,8 +102,8 @@ function continue_page(ev, entry_ix, check_risk, is_skip) {
     console.log(q_inputs);
     console.log(q_inputs[curid]);
 
-    console.log("Calling event is");
-    console.log(ev);
+    // console.log("Calling event is");
+    // console.log(ev);
 
     // Ensure that the continue button and enter allow to skip, too!
 
@@ -302,7 +302,7 @@ function continue_page(ev, entry_ix, check_risk, is_skip) {
                 $(".back-btn").css('display', 'inline-block');
             }
 
-            console.log("Final risk object");
+            console.log("Risk object after entries and calculation");
             console.log(check_risk);
         }
 
@@ -342,14 +342,14 @@ function continue_page(ev, entry_ix, check_risk, is_skip) {
             check_risk.try_completion();
             check_risk.ntab.complete_margins();
 
-            console.log("Final risk object");
+            console.log("~~~~~~ Final risk object ~~~~~~");
             console.log(check_risk);
 
             // USe the 2x2 table to calculate outputs:
-            console.log(check_risk.ntab.tab.margin1_mean());
+            console.log(check_risk.ntab.tab.margin2_mean());
 
             // Following the current definition this is the risk:
-            const group_risks = check_risk.ntab.tab.margin1_mean();
+            const group_risks = check_risk.ntab.tab.margin2_mean();
             console.log("Risks in each group:");
             console.log(group_risks);
 
