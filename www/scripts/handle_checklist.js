@@ -418,7 +418,15 @@ function continue_page(ev, entry_ix, check_risk, is_skip) {
                 "control": [cur2x2[0][1], cur2x2[0][0]]
             }
 
-            let ncol = N_scale === 1000 ? 50 : 10;
+            let ncol = N_scale === 1000 ? 50 : 20;
+
+            const curwid_px = 250;
+
+            // Set dotdisplay size:
+            $(".canvas-base").css({
+                width: curwid_px + 'px',
+                height: Math.round(curwid_px/ncol * N_scale/ncol) + 'px'
+            });
 
             create_icon_array(
                 group_arrs.treat,  // treatment group.
