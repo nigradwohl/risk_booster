@@ -75,12 +75,31 @@
                 <td class="content-cell">
 
                     <div id="noentry-popup" class="error-prompt">
-                        <p>Bitte geben Sie alle zahlen ein, die Ihnen vorliegen.
+                        <p>Bitte geben Sie alle Zahlen ein, die Ihnen vorliegen.
                             Wenn Ihnen die fehlenden Angaben nicht vorliegen, klicken Sie auf "Weiter ohne Eingabe".</p>
                         <button id="input-missing">Zurück zur Eingabe</button>
                         <br>
                         <button id="skip-missing" class="continue-btn">Weiter ohne Eingabe</button>
                     </div>
+
+                    <div id="incompatible-popup" class="error-prompt">
+                        <p>
+                            Ihre Eingaben widersprechen einander.
+                            Bitte überprüfen Sie Ihre Eingaben nochmals sorgfältig.
+                        </p>
+                        <p>
+                            Es ist möglich, dass Ihre vorliegenden Informationen widersprüchlich sind.
+                            In diesem Fall prüfen Sie bitte, wie die Ergebnisse für
+                            <emph>Wirksamkeit (relative Riskikoreduktion)</emph>
+                            <strong>mit entweder</strong>
+                            der Anzahl an Fällen <emph>unter den Behandelten</emph>
+                            <strong>oder</strong>
+                            der Anzahl an Fällen
+                            <emph>unter den nicht-Behandelten (Placebo- oder Vergleichsgruppe)</emph>.
+                        </p>
+                        <button id="acknowledge-incompatible">Zurück zur Eingabe</button>
+                    </div>
+
 
 
                     <div class="checklist-question" id="rel-risk-reduction-q">
