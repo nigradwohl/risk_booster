@@ -459,7 +459,9 @@ function continue_page(ev, entry_ix, check_risk, is_skip) {
                 // $(this).clone().appendTo(".canvas-zoom");
                 create_icon_array(
                     group_arrs[cur_type],  // control group.
-                    $(this).attr("id") + '-zoom');
+                    $(this).attr("id") + '-zoom',
+                    undefined,
+                    ["coral", "lightgrey"]);
 
                 const mindim = Math.min(window.innerWidth, window.innerHeight);
 
