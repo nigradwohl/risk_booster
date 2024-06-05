@@ -558,3 +558,12 @@ h3 {
     padding: 1em;
     margin-bottom: 0.5em;
 }
+
+.grid-row {
+    display: grid;
+    grid-template-columns: minmax(200px, 1fr) minmax(50px, 1fr) minmax(50px, 1fr) minmax(200px, 1fr);
+}
+
+.grid-col {
+
+}

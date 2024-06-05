@@ -276,27 +276,59 @@
 
                         <div class="split-content">
 
-                            <div class="output-col number-output">
-                                <p><strong>Nutzen:</strong></p>
-                                <hr>
-                                <p>In der Behandlungsgruppe erkranken <span class="risk-info" id="risk-treat"></span>
-                                </p>
-                                <p>In der Kontrollgruppe erkranken <span class="risk-info" id="risk-control"></span></p>
+                            <div class="grid-row">
+                            <p><strong>Nutzen:</strong></p>
+                            </div>
+
+
+                            <div class="grid-row">
+
+                                <div class="canvas-container">
+                                    <p>In der Kontrollgruppe erkranken</p>
+                                    <canvas id="dotdisplay-control" class="canvas-base"></canvas>
+                                </div>
+
+                                    <p><span class="risk-info" id="risk-control"></span></p>
+
+
+                                <!--                                Treatment group-->
+
+                                    <p><span class="risk-info" id="risk-treat"></span></p>
+
+
+                                <div class="canvas-container">
+                                    <p>In der Behandlungsgruppe erkranken</p>
+                                    <canvas id="dotdisplay-treat" class="canvas-base"></canvas>
+                                </div>
+
+                            </div>
+
+                            <div class="grid-row">
                                 <p id="abs-change"></p>
                                 <p id="rel-change"></p>
                             </div>
 
+                            <!--                            <div class="output-col number-output">-->
+                            <!--                                <p><strong>Nutzen:</strong></p>-->
+                            <!--                                <hr>-->
+                            <!--                                <p>In der Behandlungsgruppe erkranken <span class="risk-info" id="risk-treat"></span>-->
+                            <!--                                </p>-->
+                            <!--                                <p>In der Kontrollgruppe erkranken <span class="risk-info" id="risk-control"></span></p>-->
+                            <!--                                <p id="abs-change"></p>-->
+                            <!--                                <p id="rel-change"></p>-->
+                            <!--                            </div>-->
+
                             <!--    The results from providing numbers:-->
-                            <div class="output-col figure-output">
+                            <!--                            <div class="output-col figure-output">-->
 
-                                <div class="canvas-container">
-                                    <canvas id="dotdisplay-treat" class="canvas-base"></canvas>
-                                </div>
+                            <!--                                <div class="canvas-container">-->
+                            <!--                                    <canvas id="dotdisplay-treat" class="canvas-base"></canvas>-->
+                            <!--                                </div>-->
 
-                                <div class="canvas-container">
-                                    <canvas id="dotdisplay-control" class="canvas-base"></canvas>
-                                </div>
-                            </div>
+                            <!--                                <div class="canvas-container">-->
+                            <!--                                    <canvas id="dotdisplay-control" class="canvas-base"></canvas>-->
+                            <!--                                </div>-->
+                            <!--                            </div>-->
 
                         </div>
 
