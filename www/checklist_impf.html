@@ -192,16 +192,20 @@
                             <p class="checklist-qtext">Wie viele Personen wurden Geimpft? Wie viele bekamen ein
                                 Placebo?</p>
 
-                            <label>
-                                Anzahl Geimpfte
-                                <input class="checklist-input" id="n-impf" type="text">
-                            </label>
-                            <br>
-                            <label>
-                                Anzahl ungeimpfte (z.B. Placebo)
-                                <input class="checklist-input" id="n-control" type="text">
-                            </label>
-                            <br>
+                            <table>
+                                <tr>
+                                    <td><label>Anzahl Geimpfte</label></td>
+                                    <td><input class="checklist-input" id="n-impf" type="text"></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label>Anzahl ungeimpfte (z.B. Placebo)</label>
+                                    </td>
+                                    <td>
+                                        <input class="checklist-input" id="n-control" type="text">
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
 
                     </div>
@@ -304,97 +308,97 @@
                     <div class="checklist-question checklist-results" id="results-q">
 
                         <!--                        [FAKTENBOX?]-->
-                         <!--Container effectivitiy-->
-                            <div class="grid-container-check">
+                        <!--Container effectivitiy-->
+                        <div class="grid-container-check">
 
-                                <div class="grid-head">
-                                    <p><strong>Nutzen:</strong></p>
-                                    <hr>
-                                </div>
-
-                                <p class="grid-subsubhead1">In der Kontrollgruppe erkranken</p>
-
-                                <div class="canvas-container grid-arr1 content-end">
-                                    <canvas id="dotdisplay-control" class="canvas-base"></canvas>
-                                </div>
-
-                                <p class="grid-note1 content-start"><span class="risk-info" id="risk-control"></span>
-                                </p>
-
-
-                                <!--                                Treatment group-->
-
-                                <p class="grid-note2 content-end"><span class="risk-info" id="risk-treat"></span></p>
-
-                                <p class="grid-subhead2">In der Behandlungsgruppe erkranken</p>
-
-                                <div class="canvas-container grid-arr2 content-start">
-                                    <canvas id="dotdisplay-treat" class="canvas-base"></canvas>
-                                </div>
-
-                                <div class="grid-global-note">
-                                    <p id="abs-change"></p>
-                                    <p id="rel-change"></p>
-                                </div>
-
-
+                            <div class="grid-head">
+                                <p><strong>Nutzen:</strong></p>
+                                <hr>
                             </div>
 
-                            <!--Container effectivitiy-->
-                            <div class="grid-container-check">
+                            <p class="grid-subsubhead1">In der Kontrollgruppe erkranken</p>
 
-                                <div class="grid-head">
-                                    <p><strong>Schaden:</strong></p>
-                                    <hr>
-                                </div>
+                            <div class="canvas-container grid-arr1 content-end">
+                                <canvas id="dotdisplay-control" class="canvas-base"></canvas>
+                            </div>
 
-                                <p class="grid-subsubhead1">In der Kontrollgruppe</p>
-
-                                <div class="canvas-container grid-arr1 content-end">
-                                    <canvas id="dotdisplay-control-side" class="canvas-base"></canvas>
-                                </div>
-
-                                <p class="grid-note1 content-start"><span class="risk-info"
-                                                                          id="risk-control-side"></span></p>
+                            <p class="grid-note1 content-start"><span class="risk-info" id="risk-control"></span>
+                            </p>
 
 
-                                <!--                                Treatment group-->
+                            <!--                                Treatment group-->
 
-                                <p class="grid-note2 content-end"><span class="risk-info" id="risk-treat-side"></span>
-                                </p>
+                            <p class="grid-note2 content-end"><span class="risk-info" id="risk-treat"></span></p>
 
-                                <p class="grid-subhead2">In der Behandlungsgruppe</p>
+                            <p class="grid-subhead2">In der Behandlungsgruppe erkranken</p>
 
-                                <div class="canvas-container grid-arr2 content-start">
-                                    <canvas id="dotdisplay-treat-side" class="canvas-base"></canvas>
-                                </div>
+                            <div class="canvas-container grid-arr2 content-start">
+                                <canvas id="dotdisplay-treat" class="canvas-base"></canvas>
+                            </div>
 
-                                <div class="grid-global-note">
-                                    <p id="abs-change-side"></p>
-                                    <p id="rel-change-side"></p>
-                                </div>
-
-
+                            <div class="grid-global-note">
+                                <p id="abs-change"></p>
+                                <p id="rel-change"></p>
                             </div>
 
 
-                            <button class="button-print-or-save-document checklist-button no-print">
-                                <i class="fa fa-print" aria-hidden="true"></i>
-                                Ergebnis drucken
-                            </button>
-                            <!--                        <br>-->
-                            <!--                        [SPLIT THE ARRAY?]-->
                         </div>
 
+                        <!--Container effectivitiy-->
+                        <div class="grid-container-check">
+
+                            <div class="grid-head">
+                                <p><strong>Schaden:</strong></p>
+                                <hr>
+                            </div>
+
+                            <p class="grid-subsubhead1">In der Kontrollgruppe</p>
+
+                            <div class="canvas-container grid-arr1 content-end">
+                                <canvas id="dotdisplay-control-side" class="canvas-base"></canvas>
+                            </div>
+
+                            <p class="grid-note1 content-start"><span class="risk-info"
+                                                                      id="risk-control-side"></span></p>
+
+
+                            <!--                                Treatment group-->
+
+                            <p class="grid-note2 content-end"><span class="risk-info" id="risk-treat-side"></span>
+                            </p>
+
+                            <p class="grid-subhead2">In der Behandlungsgruppe</p>
+
+                            <div class="canvas-container grid-arr2 content-start">
+                                <canvas id="dotdisplay-treat-side" class="canvas-base"></canvas>
+                            </div>
+
+                            <div class="grid-global-note">
+                                <p id="abs-change-side"></p>
+                                <p id="rel-change-side"></p>
+                            </div>
+
+
+                        </div>
+
+
+                        <button class="button-print-or-save-document checklist-button no-print">
+                            <i class="fa fa-print" aria-hidden="true"></i>
+                            Ergebnis drucken
+                        </button>
+                        <!--                        <br>-->
+                        <!--                        [SPLIT THE ARRAY?]-->
                     </div>
-                </td>
-                <td class="nav-cell no-print">
-                    <div class="checklist-nav">
-                        <i class="fa fa-solid fa-chevron-up continue-btn" style="rotate: 90deg"></i>
-                    </div>
-                </td>
-            </tr>
-        </table>
+
+    </div>
+    </td>
+    <td class="nav-cell no-print">
+        <div class="checklist-nav">
+            <i class="fa fa-solid fa-chevron-up continue-btn" style="rotate: 90deg"></i>
+        </div>
+    </td>
+    </tr>
+    </table>
 
 </div>
 
