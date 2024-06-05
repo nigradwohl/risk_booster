@@ -278,7 +278,7 @@ canvas {
     text-align: center;
     min-width: 5em;
     flex: 20%;
-    background-color: var(---button-primary);
+    background-color: var(---button-secondary);
     border-radius: 5px;
 }
 
