@@ -39,12 +39,12 @@ Features are sorted by importance and are further split by features that should 
 
 ## Checklist
 
-* Create one functional checklist
-    + improve calculations (from relative) 
-    + hide redundant questions 
-* Split the icon arrays 
+* Implement treatment case (wording!) 
+* fix persistent issues (especially: going back; maybe handle by cleaning the object)
 
 ### Nice to have
+
+* Make assumptions in case of missing information
 
 ## Wiki
 
