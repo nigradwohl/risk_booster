@@ -241,6 +241,12 @@ canvas {
     /*background-color: #444444;*/
 }
 
+
+.checklist-results p {
+    font-size: 0.6em;
+    line-height: 1;
+}
+
 .checklist-question {
     margin: 0 auto;
     /*flex: 100%;*/
@@ -255,6 +261,11 @@ canvas {
     height: 400px;
     justify-content: center;
     /*align-items: center;*/
+}
+
+.checklist-question.checklist-results {
+    width: 90%;
+    height: 90%;
 }
 
 .checklist-input {
