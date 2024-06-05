@@ -101,7 +101,7 @@ $(document).ready(function () {
     })
 
     // Incompatible entries:
-    $("#acknowledge-incompatible").on("click", function(){
+    $("#acknowledge-incompatible").on("click", function () {
         $("#incompatible-popup").hide();
     })
 
@@ -156,6 +156,7 @@ class Checklist {
 
         // TODO: Update if input is skipped; also delete inputs that were not skipped a different time!
         this.check_risk = new RiskCollection();
+        this.check_side = new RiskCollection();
     }
 
     // Method to advance page:
@@ -181,6 +182,7 @@ class Checklist {
             // After trying to get the inputs, try completing the table:
             try {
                 this.check_risk.try_completion(0);
+                this.check_side.try_completion(0);
             } catch (e) {
                 console.error("Non-matching entries! " + e);
                 $("#incompatible-popup").show().addClass("selected-blur");
@@ -263,10 +265,19 @@ class Checklist {
             if (skiplist.includes(next_entry)) {
 
                 console.log("Index array");
-                console.log(number_dict[id_to_num_dict[next_entry]]);
+                const ref_ix = id_to_num_dict[next_entry];
+                console.log(ref_ix);
 
                 // Get the previous value for the field(s):
-                const prevval = this.check_risk.get_by_arr(number_dict[id_to_num_dict[next_entry]]);
+                let prevval;
+                if (eff_keys.includes(ref_ix)) {
+                    // Get from effectivity object if not in side-keys:
+                    prevval = this.check_risk.get_by_arr(number_dict[ref_ix]);
+                }
+                if (side_keys.includes(ref_ix)) {
+                    prevval = this.check_side.get_by_arr(number_dict[ref_ix]);
+                }
+
 
                 console.log(`Previous value was ${prevval}`);
                 console.log(prevval);
@@ -294,6 +305,7 @@ class Checklist {
 
         console.log("Risk object after entries and calculation");
         this.check_risk.print();
+        this.check_side.print();
     }
 
     // Method to handle final page:
@@ -301,21 +313,24 @@ class Checklist {
         console.log("Handling final page");
         // CALCULATE RISK INFORMATION
         const risk_info = this.calculate_risks();
-        const cur2x2 = risk_info.cur2x2;
+        console.log(risk_info);
+        const cur2x2_eff = risk_info.cur2x2_eff;
+        const cur2x2_side = risk_info.cur2x2_side;
 
         // ICON ARRAYS:
         // Get array information for each group:
-        const group_arrs = {
-            "treat": [cur2x2[1][1], cur2x2[1][0]],
-            "control": [cur2x2[0][1], cur2x2[0][0]]
+        const group_arrs_eff = {
+            "treat": [cur2x2_eff[1][1], cur2x2_eff[1][0]],
+            "control": [cur2x2_eff[0][1], cur2x2_eff[0][0]]
         }
+
 
         let ncol = risk_info.N_scale === 1000 ? 25 : 10;  // determine number of columns.
         const curwid_px = 180;  // Determine basic width in pixels.
 
         // Create the icon arrays and assigne them:
         create_icon_array(
-            group_arrs.treat,  // treatment group.
+            group_arrs_eff.treat,  // treatment group.
             // cur2x2[0][0], cur2x2[0][1],  // control group.
             'dotdisplay-treat',
             ncol,
@@ -323,8 +338,28 @@ class Checklist {
 
         create_icon_array(
             // [cur2x2[1][0], cur2x2[1][1]],  // treatment group.
-            group_arrs.control,  // control group.
+            group_arrs_eff.control,  // control group.
             'dotdisplay-control',
+            ncol,
+            ["coral", "lightgrey"]);
+
+        // Side effects:
+        const group_arrs_side = {
+            "treat": [cur2x2_side[1][1], cur2x2_side[1][0]],
+            "control": [cur2x2_side[0][1], cur2x2_side[0][0]]
+        }
+
+        create_icon_array(
+            group_arrs_side.treat,  // treatment group.
+            // cur2x2[0][0], cur2x2[0][1],  // control group.
+            'dotdisplay-treat-side',
+            ncol,
+            ["coral", "lightgrey"]);
+
+        create_icon_array(
+            // [cur2x2[1][0], cur2x2[1][1]],  // treatment group.
+            group_arrs_side.control,  // control group.
+            'dotdisplay-control-side',
             ncol,
             ["coral", "lightgrey"]);
 
@@ -344,7 +379,8 @@ class Checklist {
             })
             .on("click", function (e) {
                 // const obj = $(this);
-                zoom_canvas(e, group_arrs, $(this));
+                // Check whether risk or side!
+                zoom_canvas(e, group_arrs_eff, $(this));
             })
             .show();
     }
@@ -363,17 +399,21 @@ class Checklist {
         // this.check_risk.ntab.complete_margins();
         //
         // this.check_risk.ntab.get_N();  // calculate N if not provided.
-        console.log(`N is ${this.check_risk.ntab.N}`);
+        // console.log(`N is ${this.check_risk.ntab.N}`);
 
-        console.log("~~~~~~ Final risk object ~~~~~~");
+        console.log("~~~~~~ Final risk objects ~~~~~~");
         console.log(this.check_risk);
+        console.log(this.check_side);
 
         console.log("~~~~~~ Calculate the risks ~~~~");
-        const group_risks = this.check_risk.ntab.tab.margin2_mean();
-        console.log("Risks in each group:");
-        console.log(group_risks);
+        const eff_group_risks = this.check_risk.ntab.tab.margin2_mean();
+        const side_group_risks = this.check_side.ntab.tab.margin2_mean();
 
-        const group_risks_flat = group_risks.flat();
+        console.log("Risks in each group:");
+        console.log(eff_group_risks);
+        console.log(side_group_risks);
+
+        const group_risks_flat = eff_group_risks.flat().concat(side_group_risks.flat());
 
         // Translate to natural frequencies:
         // const curscale = 1000;  // fixed reference! Should eventually be so that the smallest number is detectable!
@@ -388,45 +428,67 @@ class Checklist {
             N_scale = 1000;
         }
 
-        // Round the group risks
-        const risk_treat = Math.round(group_risks[1][1] * curscale) / curscale;
-        const risk_control = Math.round(group_risks[0][1] * curscale) / curscale;
-        const risk_treat_nh = Math.round(risk_treat * curscale) + " aus " + curscale;
-        const risk_control_nh = Math.round(risk_control * curscale) + " aus " + curscale;
+        function get_risk_set(group_risks) {
+            // Round the group risks
+            const risk_treat = Math.round(group_risks[1][1] * curscale) / curscale;
+            const risk_control = Math.round(group_risks[0][1] * curscale) / curscale;
+            const risk_treat_nh = Math.round(risk_treat * curscale) + " aus " + curscale;
+            const risk_control_nh = Math.round(risk_control * curscale) + " aus " + curscale;
 
-        // Risk reduction:
-        // Absolute change in risk:
-        const arc = group_risks[0][1] - group_risks[1][1];  // risk change in favor of treatment group.
-        const meaning_arc = arc > 0 ? " weniger" : " mehr";
-        console.log(`Absolute change is ${arc}`);
+            // Risk reduction:
+            // Absolute change in risk:
+            const arc = group_risks[0][1] - group_risks[1][1];  // risk change in favor of treatment group.
+            const meaning_arc = arc > 0 ? " weniger" : " mehr";
+            console.log(`Absolute change is ${arc}`);
 
-        const arr = Math.sign(arc) * Math.round(arc * curscale) / curscale;
-        const arr_p = // arr > 0.01 ? Math.round(arr * 100) + "%" :
-            (Math.sign(arc) * Math.round(arc * curscale) + " aus " + curscale + meaning_arc);
+            const arr = Math.sign(arc) * Math.round(arc * curscale) / curscale;
+            const arr_p = // arr > 0.01 ? Math.round(arr * 100) + "%" :
+                (Math.sign(arc) * Math.round(arc * curscale) + " aus " + curscale + meaning_arc);
 
-        // Note: If the risk is negative, it corresponds to an increase!
-        const rrc = Math.abs(arc / group_risks[0][1]); // relative risk change.
-        // How many times higher is the risk in the treatment group?
+            // Note: If the risk is negative, it corresponds to an increase!
+            const rrc = Math.abs(arc / group_risks[0][1]); // relative risk change.
+            // How many times higher is the risk in the treatment group?
 
-        const rrr = Math.round(rrc * 1000) / 1000;
-        console.log("RRR is " + rrr);
-        const rr_factor = Math.abs(rrr) >= 2 ? 1 : 100;
-        const rrr_p = Math.round(rrr * rr_factor) +
-            (rr_factor === 100 ? "% " : " mal ") +
-            meaning_arc;
-        // For numbers greater than 2 "x mal mehr" may be more appropriate.
+            const rrr = Math.round(rrc * 1000) / 1000;
+            console.log("RRR is " + rrr);
+            const rr_factor = Math.abs(rrr) >= 2 ? 1 : 100;
+            const rrr_p = Math.round(rrr * rr_factor) +
+                (rr_factor === 100 ? "% " : " mal ") +
+                meaning_arc;
+            // For numbers greater than 2 "x mal mehr" may be more appropriate.
+
+            return {
+                "risk_treat_nh": risk_treat_nh, "risk_control_nh": risk_control_nh,
+                "arc": arc, "arr_p": arr_p, "rrr_p": rrr_p
+            }
+        }
+
+        const eff_risks = get_risk_set(eff_group_risks);
 
         // Assign the information to the objects in results page:
-        $("#risk-treat").text(risk_treat_nh);
-        $("#risk-control").text(risk_control_nh);
-        $("#abs-change").html(`Absolute${arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe erkranken <span class="risk-info" id="arr">${arr_p}</span>`);
-        $("#rel-change").html(`Relative${arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${rrr_p}</span>`);
+        $("#risk-treat").text(eff_risks.risk_treat_nh);
+        $("#risk-control").text(eff_risks.risk_control_nh);
+        $("#abs-change").html(`Absolute${eff_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe erkranken <span class="risk-info" id="arr">${eff_risks.arr_p}</span>`);
+        $("#rel-change").html(`Relative${eff_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${eff_risks.rrr_p}</span>`);
         // Rounding can eventually be improved!
 
-        const cur2x2 = group_risks.map((x) => x.map((y) => Math.round(y * N_scale)));
-        console.log(cur2x2);
+        const cur2x2_eff = eff_group_risks.map((x) => x.map((y) => Math.round(y * N_scale)));
+        console.log(cur2x2_eff);
 
-        return {"cur2x2": cur2x2, "N_scale": N_scale};
+        // Handle side effects:
+        const side_risks = get_risk_set(side_group_risks);
+        // Assign the information to the objects in results page:
+        $("#risk-treat-side").text(side_risks.risk_treat_nh);
+        $("#risk-control-side").text(side_risks.risk_control_nh);
+        $("#abs-change-side").html(`Absolute${side_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe erkranken <span class="risk-info" id="arr">${side_risks.arr_p}</span>`);
+        $("#rel-change-side").html(`Relative${side_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${side_risks.rrr_p}</span>`);
+
+        const cur2x2_side = side_group_risks.map((x) => x.map((y) => Math.round(y * N_scale)));
+        console.log(cur2x2_side);
+
+
+        // Return value of method:
+        return {"cur2x2_eff": cur2x2_eff, "cur2x2_side": cur2x2_side, "N_scale": N_scale};
     }
 
     get_current_input(curid, input_arr, id_to_num_dict) {
@@ -468,7 +530,20 @@ class Checklist {
                 // this.check_risk.update_by_arr(number_dict[cur_q_key], checked_val);
 
                 if (!/err_/.test(checked_val.toString())) {
-                    this.check_risk.update_by_arr(number_dict[cur_q_key], checked_val);
+
+                    console.log(`Update objects ${cur_q_key}:`);
+                    console.log(number_dict[cur_q_key]);
+
+                    console.log(`Side keys ${side_keys.includes(cur_q_key)} or eff keys? ${eff_keys.includes(cur_q_key)}`)
+
+                    if (side_keys.includes(cur_q_key)) {
+                        this.check_side.update_by_arr(number_dict[cur_q_key], checked_val);
+                    }
+
+                    if (eff_keys.includes(cur_q_key)) {
+                        this.check_risk.update_by_arr(number_dict[cur_q_key], checked_val);
+                    }
+
                 } else {
                     this.is_error = true;
                     return checked_val;
@@ -500,6 +575,7 @@ class Checklist {
         console.log("Risk object after re-calculation");
         console.log(this.check_risk);
         this.check_risk.try_completion(0);
+        this.check_side.try_completion(0);
     }
 
 }
@@ -634,8 +710,27 @@ const id_to_num_dict = {
     "n-case-impf": "n11",
     // careful! Vaccinated are now column 2 (index 1)!
     // cases are second row (index 1)
-    "n-case-control": "n10"  // cases among untreated (cases: 1, treatment: 0)
+    "n-case-control": "n10",  // cases among untreated (cases: 1, treatment: 0)
+    "n-side-impf": "n11s",
+    "n-side-control": "n10s"
 }
+
+const eff_keys = ["N_tot",
+    "n00", "n01", "n10", "n11",
+    "msumx0", "msumx1",
+    "msum0x", "msum1x", "rrr",
+    "p00", "p01", "p10", "p11",
+    "mpx0"
+]
+
+const side_keys = ["N_tot",
+    "n00s", "n01s", "n10s", "n11s",
+    "msum00s", "msumx0",
+    "msum10s", "msumx1", "rrrs",
+    "p00s", "p01s", "p10s", "p11s",
+    "mpx0s"
+]
+
 
 // Create empty object with keys:
 /**
@@ -662,14 +757,19 @@ const number_dict = {
     "n01": ["ntab", "tab", "tab2x2", 0, 1],
     "n10": ["ntab", "tab", "tab2x2", 1, 0],
     "n11": ["ntab", "tab", "tab2x2", 1, 1],
-    "msum0x": ["ntab", "msums1", 0], "msum1x": ["ntab", "msums1", 1],
-    "msumx0": ["ntab", "msums2", 0], "msumx1": ["ntab", "msums2", 1],
+    "msum0x": ["ntab", "msums1", 0],
+    "msum1x": ["ntab", "msums1", 1],
+    "msumx0": ["ntab", "msums2", 0],
+    "msumx1": ["ntab", "msums2", 1],
     "p00": ["ptab", "tab", "tab2x2", 0, 0],
     "p01": ["ptab", "tab", "tab2x2", 0, 1],
     "p10": ["ptab", "tab", "tab2x2", 1, 0],
     "p11": ["ptab", "tab", "tab2x2", 1, 1],
     "mpx0": [],
     "mpx1": ["ptab", "msums2", 1],
+    // Side-effect info:
+    "n10s": ["ntab", "tab", "tab2x2", 1, 0],
+    "n11s": ["ntab", "tab", "tab2x2", 1, 1],
     // Non-numeric info:
     "any_control": []
 }
@@ -698,6 +798,7 @@ const number_dict = {
  */
 const int_keys = ["N_tot",
     "n00", "n01", "n10", "n11",
+    "n00s", "n01s", "n10s", "n11s",
     "msum00", "msum01",
     "msum10", "msum11"];
 const float_keys = ["rrr",

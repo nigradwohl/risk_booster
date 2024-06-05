@@ -197,13 +197,13 @@ class RiskCollection {
         this.p_from_n();  // get probabilities from numbers.
         // this.print();
 
-        console.log("use the margin tables");
+        // console.log("use the margin tables");
         this.get_margintabs();  // Try to complete the margin tables.
-        this.print();
+        // this.print();
         this.get_tab_from_margins("ntab"); // Get elements from margin tables.
         // TODO: make method to get anything from margins?
         // Here an issue occurs!
-        this.print();
+        // this.print();
 
 
         this.ntab.complete_table();  // try to complete the table.
@@ -269,9 +269,9 @@ class RiskCollection {
         // Exemplary for mtab2:
         const curmsums = this[tabtype].msums2;
         // can be done analogously for msums 2!
-        console.log(curmsums);
+        // console.log(curmsums);
 
-        console.log(transpose(this.mtab2.tab));
+        // console.log(transpose(this.mtab2.tab));
 
         const tab_from_margins = transpose(this.mtab2.tab
             .map((x, ix) => x
@@ -292,7 +292,10 @@ class RiskCollection {
     // Update by array index:
     update_by_arr(arr, val) {
 
+        // console.log(arr);
+
         if (arr !== undefined) {
+            console.log(arr);
             const expr = "this" + get_expression(arr) + ` = ${val}`;  // add target value.
             // console.log(expr);
 
@@ -344,18 +347,16 @@ function get_expression(arr) {
 
     // Skip, if no aray was provided:
     let expr = "";
-    if (!arr === undefined) {
-        // Create a string expression:
+    // Create a string expression:
 
 
-        for (const curkey of arr) {
-            // Ensure that ALL keys are quoted (seems to work for arrays, too!)
-            let strkey = String(curkey);
-            strkey = (!["\"", "\'"].includes(strkey[0]) ? "\"" : "") +
-                strkey +
-                (!["\"", "\'"].includes(strkey[strkey.length]) ? "\"" : "");
-            expr += `[${strkey}]`
-        }
+    for (const curkey of arr) {
+        // Ensure that ALL keys are quoted (seems to work for arrays, too!)
+        let strkey = String(curkey);
+        strkey = (!["\"", "\'"].includes(strkey[0]) ? "\"" : "") +
+            strkey +
+            (!["\"", "\'"].includes(strkey[strkey.length]) ? "\"" : "");
+        expr += `[${strkey}]`
     }
 
     return expr;
