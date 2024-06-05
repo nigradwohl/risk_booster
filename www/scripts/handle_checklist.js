@@ -228,7 +228,14 @@ class Checklist {
                     this.is_reload = true;
                 }
 
-                this.handle_final_page();  // handle the final page.
+                try{
+                    this.handle_final_page();  // handle the final page.
+                } catch (error){
+                    console.warn(error);
+                    $("#results-q").html("<div><p>Leider konnten wir aus den angegebenen Zahlen keine transparente Risikoinformation berechnen.</p>" +
+                        "<p>Bitte prüfen Sie die Angaben. Möglicherweise erlauben diese keine Transparente Risikodarstellung.</p></div>");
+                }
+
 
 
                 // Hide the continue button:
@@ -1014,8 +1021,9 @@ function create_icon_array(arr_n, id, ncol, col_arr) {
 
         })();
     } catch (err) {
-        alert("Bitte geben Sie eine ganze Zahl ein!");
+        // alert("Bitte geben Sie eine ganze Zahl ein!");
         console.log(err);
+        throw "Error! Calculation not possible!";
     }
 }
 
