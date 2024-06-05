@@ -257,16 +257,47 @@
                         </div>
                     </div>
 
-                    <div class="checklist-question" id="n-side-q">
+                    <div class="checklist-question" id="side-q">
                         <div class="question-content">
                             <p class="checklist-qtext">Für wie viele Personen wurden Nebenwirkungen berichtet?</p>
                             <p>
-                                Ask for both groups if there was a control group?
-                                Ask, which side effects were reported?!
+                                [Rather ask, which Side effects were reported? Let people update as dynamic list?]
                             </p>
-                            <input class="checklist-input" id="n-side" type="text">
+                            <input class="checklist-input" id="side" type="text">
                             <br>
                             <button class="checklist-button continue-btn">Weiter</button>
+                        </div>
+                    </div>
+
+                    <div class="checklist-question" id="n-side-q">
+                        <div class="question-content">
+                            <p class="checklist-qtext">
+                                Für wie viele Personen wurden in der Impfgruppe und
+                                der Kontrollgruppe jeweils Nebenwirkungen beobachtet?
+                            </p>
+                            <!--                        TODO: Eventually translate to grid layout?-->
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label for="n-side-impf">
+                                            Nebenwirkungen unter den Geimpften
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <input class="checklist-input" id="n-side-impf" name="n-side-impf" type="text">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="n-side-control">
+                                        Nebenwirkungen in der Kontrollgruppe (Placebogruppe/Ungeimpfte)
+                                    </label></td>
+                                    <td>
+                                        <input class="checklist-input" id="n-side-control" name="n-side-control"
+                                               type="text">
+                                    </td>
+                                </tr>
+                            </table>
+
                         </div>
                     </div>
 

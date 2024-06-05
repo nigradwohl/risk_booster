@@ -605,7 +605,8 @@ const q_order = [
     "n-total", "p-treat",
     "n-case",
     // "or-case",
-    // "n-side",
+    // "side",
+    "n-side",
     "results"
 ];
 // ORDER WILL BE FLEXIBLE!
@@ -617,6 +618,7 @@ const q_order = [
 const q_inputs = Object.fromEntries(q_order.map((x) => [x, [x]]));
 q_inputs["n-case"] = ["n-case-impf", "n-case-control"];
 q_inputs["n-treat-control"] = ["n-impf", "n-control"];
+q_inputs["n-side"] = ["n-side-impf", "n-side-control"];
 console.log(q_inputs);
 
 /**

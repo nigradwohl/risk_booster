@@ -125,7 +125,6 @@ class RiskCollection {
         }
 
 
-
     }
 
     // Method to combine information in ntab and ptab:
@@ -293,13 +292,15 @@ class RiskCollection {
     // Update by array index:
     update_by_arr(arr, val) {
 
-        const expr = "this" + get_expression(arr) + ` = ${val}`;  // add target value.
-        // console.log(expr);
+        if (arr !== undefined) {
+            const expr = "this" + get_expression(arr) + ` = ${val}`;  // add target value.
+            // console.log(expr);
 
-        try {
-            eval(expr);
-        } catch (e) {
-            console.error(`Assignment of ${expr} failed`);
+            try {
+                eval(expr);
+            } catch (e) {
+                console.error(`Assignment of ${expr} failed`);
+            }
         }
 
     }
@@ -340,19 +341,25 @@ class RiskCollection {
 }
 
 function get_expression(arr) {
-    // Create a string expression:
-    let expr = "";
 
-    for (const curkey of arr) {
-        // Ensure that ALL keys are quoted (seems to work for arrays, too!)
-        let strkey = String(curkey);
-        strkey = (!["\"", "\'"].includes(strkey[0]) ? "\"" : "") +
-            strkey +
-            (!["\"", "\'"].includes(strkey[strkey.length]) ? "\"" : "");
-        expr += `[${strkey}]`
+    // Skip, if no aray was provided:
+    let expr = "";
+    if (!arr === undefined) {
+        // Create a string expression:
+
+
+        for (const curkey of arr) {
+            // Ensure that ALL keys are quoted (seems to work for arrays, too!)
+            let strkey = String(curkey);
+            strkey = (!["\"", "\'"].includes(strkey[0]) ? "\"" : "") +
+                strkey +
+                (!["\"", "\'"].includes(strkey[strkey.length]) ? "\"" : "");
+            expr += `[${strkey}]`
+        }
     }
 
     return expr;
+
 }
 
 
