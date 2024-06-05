@@ -334,6 +334,7 @@ class Checklist {
 
         let ncol = risk_info.N_scale === 1000 ? 25 : 10;  // determine number of columns.
         const curwid_px = 180;  // Determine basic width in pixels.
+        const expansion = risk_info.N_scale === 1000 ? 25 : 40;  // expansion factor for area.
 
         // Create the icon arrays and assigne them:
         create_icon_array(
@@ -341,14 +342,16 @@ class Checklist {
             // cur2x2[0][0], cur2x2[0][1],  // control group.
             'dotdisplay-treat',
             ncol,
-            ["coral", "lightgrey"]);
+            ["coral", "lightgrey"],
+            expansion);
 
         create_icon_array(
             // [cur2x2[1][0], cur2x2[1][1]],  // treatment group.
             group_arrs_eff.control,  // control group.
             'dotdisplay-control',
             ncol,
-            ["coral", "lightgrey"]);
+            ["coral", "lightgrey"],
+            expansion);
 
         // Side effects:
         const group_arrs_side = {
@@ -361,14 +364,16 @@ class Checklist {
             // cur2x2[0][0], cur2x2[0][1],  // control group.
             'dotdisplay-treat-side',
             ncol,
-            ["steelblue", "lightgrey"]);
+            ["steelblue", "lightgrey"],
+            expansion);
 
         create_icon_array(
             // [cur2x2[1][0], cur2x2[1][1]],  // treatment group.
             group_arrs_side.control,  // control group.
             'dotdisplay-control-side',
             ncol,
-            ["steelblue", "lightgrey"]);
+            ["steelblue", "lightgrey"],
+            expansion);
 
 
         // Clear the risk object: ~~~~~~~~~~~~~~~~
@@ -890,11 +895,18 @@ function evaluate_entry(curval, cur_q_key) {
  * @param id ID of the HTML element
  * @param ncol Number of columns in icon array
  * @param col_arr Array of colors for each icon type
+ * @param exf Expansion factor for the canvas area (makes icons appear smaller).
  */
-function create_icon_array(arr_n, id, ncol, col_arr) {
+function create_icon_array(arr_n, id, ncol, col_arr, exf) {
 
     // Check for non-integer inputs:
     // https://stackoverflow.com/questions/469357/html-text-input-allow-only-numeric-input/469362#469362
+
+    const block = [10, -1];
+
+    if(exf === undefined){
+        exf = 40;
+    }
 
     // Create an ordered array:
     try {
@@ -914,7 +926,10 @@ function create_icon_array(arr_n, id, ncol, col_arr) {
             ncols = ncol;   // Math.floor(n_dots / 10);  // n_dots % 10;  // remainder.
         }
 
-        const nrows = Math.ceil(n_dots / ncols);
+        let nrows = Math.ceil(n_dots / ncols);
+        nrows = nrows + (block[0] > 0 ? Math.floor(nrows/block[0]) : 0);
+
+        ncols = ncols + (block[1] > 0 ? Math.floor(ncols/block[1]) : 0);
 
 
         console.log(n_dots + " dots, " + nrows + " rows and " + ncols + " columns");
@@ -927,7 +942,7 @@ function create_icon_array(arr_n, id, ncol, col_arr) {
         // Determine fontsize:
         const fsize = "40px";
         const maxdim = Math.max(ncols, nrows);
-        const wh = maxdim * 40;  // controls the area, the larger the smaller the icons appear.
+        const wh = maxdim * exf;  // controls the area, the larger the smaller the icons appear.
         // Increasing wh above the icons size creates a (relative) margin for each.
 
         // Pad any missing elements with empty elements?
@@ -958,6 +973,8 @@ function create_icon_array(arr_n, id, ncol, col_arr) {
             for (let i = 0; i < total; i++) {
 
                 if (i % ncols === 0) {
+
+                    if(irow % (block[0] +1) === 0 && block[0] > 0){irow++;}
                     irow++;
                     icol = 0;
                 }
@@ -972,6 +989,7 @@ function create_icon_array(arr_n, id, ncol, col_arr) {
                 })
 
                 icol++;  // Increment column.
+                if(icol % block[1] === 0 && block[1] > 0){icol++;}
 
 
             }
