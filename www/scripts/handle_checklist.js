@@ -256,8 +256,8 @@ class Checklist {
             "control": [cur2x2[0][1], cur2x2[0][0]]
         }
 
-        let ncol = risk_info.N_scale === 1000 ? 50 : 20;  // determine number of columns.
-        const curwid_px = 250;  // Determine basic width in pixels.
+        let ncol = risk_info.N_scale === 1000 ? 25 : 10;  // determine number of columns.
+        const curwid_px = 180;  // Determine basic width in pixels.
 
         // Create the icon arrays and assigne them:
         create_icon_array(
@@ -482,7 +482,7 @@ $(document).ready(function () {
     $(window).on("keypress", function (ev) {
         // console.log(ev);
         if (ev.key === "Enter") {
-            cur_checklist.continue_page();
+            cur_checklist.continue_page(ev);
             // out_arr = continue_page(ev, entry_ix, check_risk, is_skip);
             // entry_ix = out_arr[0];
             // is_skip = out_arr[1];
@@ -785,10 +785,6 @@ function create_icon_array(arr_n, id, ncol, col_arr) {
         // Check for integers (numbers( using "try" for now.
         // Update in time!
         // TODO: Proper input checking!
-        // const n1 = risk_numbers.n00;  // parseInt($("#n1").val());
-        // const n2 = risk_numbers.n01;
-        // const n3 = risk_numbers.n10;
-        // const n4 = risk_numbers.n11;
         const n_dots = arr_n.reduce((d, i) => d + i);
 
         // Create an array of types:
@@ -831,7 +827,7 @@ function create_icon_array(arr_n, id, ncol, col_arr) {
             var ctx = c.getContext('2d');
             // NOTE: THESE CONTROL THE SIZE OF THE DOTS!
             var w = c.width = wh;  // window.innerWidth;
-            var h = c.height = wh / Math.round(ncols / nrows);  // window.innerHeight;
+            var h = c.height = wh / (ncols / nrows);  // window.innerHeight;
             // Fixed values ensure equal height and width of points.
             // current dots
             var balls = [];
