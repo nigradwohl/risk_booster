@@ -354,14 +354,14 @@ class Checklist {
             // cur2x2[0][0], cur2x2[0][1],  // control group.
             'dotdisplay-treat-side',
             ncol,
-            ["coral", "lightgrey"]);
+            ["steelblue", "lightgrey"]);
 
         create_icon_array(
             // [cur2x2[1][0], cur2x2[1][1]],  // treatment group.
             group_arrs_side.control,  // control group.
             'dotdisplay-control-side',
             ncol,
-            ["coral", "lightgrey"]);
+            ["steelblue", "lightgrey"]);
 
 
         // Clear the risk object: ~~~~~~~~~~~~~~~~
@@ -480,7 +480,7 @@ class Checklist {
         // Assign the information to the objects in results page:
         $("#risk-treat-side").text(side_risks.risk_treat_nh);
         $("#risk-control-side").text(side_risks.risk_control_nh);
-        $("#abs-change-side").html(`Absolute${side_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe erkranken <span class="risk-info" id="arr">${side_risks.arr_p}</span>`);
+        $("#abs-change-side").html(`Absolute${side_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe erleiden <span class="risk-info" id="arr">${side_risks.arr_p}</span> Nebenwirkungen`);
         $("#rel-change-side").html(`Relative${side_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${side_risks.rrr_p}</span>`);
 
         const cur2x2_side = side_group_risks.map((x) => x.map((y) => Math.round(y * N_scale)));
@@ -718,15 +718,17 @@ const id_to_num_dict = {
 const eff_keys = ["N_tot",
     "n00", "n01", "n10", "n11",
     "msumx0", "msumx1",
-    "msum0x", "msum1x", "rrr",
+    "msum0x", "msum1x",
+    "rrr",
     "p00", "p01", "p10", "p11",
     "mpx0"
 ]
 
 const side_keys = ["N_tot",
     "n00s", "n01s", "n10s", "n11s",
-    "msum00s", "msumx0",
-    "msum10s", "msumx1", "rrrs",
+    "msumx0", "msumx1",
+    "msum0xs", "msum1xs",
+    "rrrs",
     "p00s", "p01s", "p10s", "p11s",
     "mpx0s"
 ]
