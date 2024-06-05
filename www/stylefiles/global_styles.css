@@ -561,7 +561,7 @@ h3 {
 .grid-container-check {
     display: grid;
     grid-template-columns: minmax(200px, 2fr) minmax(80px, 1fr) 20px minmax(80px, 1fr) minmax(200px, 2fr);
-    grid-template-rows: 1em 1.8em 40px 120px 50px;
+    grid-template-rows: 1em 1.8em 40px auto 50px;
     grid-template-areas:
             "header header header header header"
             "subhead1 subhead1 . subhead2 subhead2"

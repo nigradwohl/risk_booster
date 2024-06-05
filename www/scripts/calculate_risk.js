@@ -106,10 +106,26 @@ function arrayEquals(a, b) {
 // Collection of tables:
 class RiskCollection {
     constructor(ntab, ptab, mtab1, mtab2) {
-        this.ntab = ntab;
-        this.ptab = ptab;
-        this.mtab1 = mtab1;
-        this.mtab2 = mtab2;
+
+        console.log(arguments);
+
+        if (arguments.length === 0) {
+            this.reset_entries()
+        } else {
+            console.log("Show inputs");
+            console.log(ntab);
+            console.log(ptab);
+            console.log(mtab1);
+            console.log(mtab2);
+
+            this.ntab = ntab;
+            this.ptab = ptab;
+            this.mtab1 = mtab1;
+            this.mtab2 = mtab2;
+        }
+
+
+
     }
 
     // Method to combine information in ntab and ptab:
@@ -294,7 +310,7 @@ class RiskCollection {
         return eval(expr);
     }
 
-    clear_entries() {
+    reset_entries() {
 
         this.ntab = new Basetable(na_tab,  // condition.
             [NaN, NaN],
@@ -317,7 +333,7 @@ class RiskCollection {
         console.log(this);
     }
 
-    print(){
+    print() {
         console.log("ntab: " + this.ntab.print() + "\nptab: " + this.ptab.print() +
             "\nmtab1: " + JSON.stringify(this.mtab1) + "\nmtab2: " + JSON.stringify(this.mtab2));
     }
@@ -460,7 +476,7 @@ class Basetable {
     }
 
     // Printing:
-    print(){
+    print() {
         return JSON.stringify(this);
     }
 }
@@ -595,7 +611,7 @@ function transpose(matrix) {
 // Function to compare two values and take the one that is not missing (if any):
 function compare_vals(val1, val2, tol) {
     if (!isNaN(val1) && !isNaN(val2)) {
-    console.warn(`${val1}, ${val2} (${Math.abs(val1 - val2)}) with tolerance ${tol}`);
+        console.warn(`${val1}, ${val2} (${Math.abs(val1 - val2)}) with tolerance ${tol}`);
         if (Math.abs(val1 - val2) > tol) {
             console.error("Provided values do not match. Please check!");
             // no_N = true;

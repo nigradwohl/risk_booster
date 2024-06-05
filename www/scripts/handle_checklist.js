@@ -3,86 +3,140 @@
  */
 
 // Empty tables:
-const ntab_mt = new Basetable(na_tab,  // condition.
-    [NaN, NaN],
-    [NaN, NaN],
-    NaN);
-const ptab_mt = new Basetable(
-    na_tab,
-    [NaN, NaN], [NaN, NaN], 1);
-// NOTE: Make sure to appropriately distinguish relative risk increase and reduction!
-const mtab_mt1 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
-const mtab_mt2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
+// const ntab_mt = new Basetable(na_tab,  // condition.
+//     [NaN, NaN],
+//     [NaN, NaN],
+//     NaN);
+// const ptab_mt = new Basetable(
+//     na_tab,
+//     [NaN, NaN], [NaN, NaN], 1);
+// // NOTE: Make sure to appropriately distinguish relative risk increase and reduction!
+// const mtab_mt1 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
+// const mtab_mt2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
 
 
-/**
- * Evaluate checklist entry.
+$(document).ready(function () {
+
+    // let entry_ix = 0;  // index for the current entry.
+    // let is_skip = false;
+    // let out_arr = [0, false];
+
+    // Preparations:
+    const cur_checklist = new Checklist(q_order);  // create a new checklist instance.
+    // const check_risk = new RiskCollection();
+    // console.log(check_risk);
+
+    console.log("+++ Handle questions +++");
+
+    // Define order by type (press release, article etc.):
+    // Show the first element:
+    console.log("#" + cur_checklist.q_order[cur_checklist.entry_ix] + "-q");
+    $("#" + cur_checklist.q_order[cur_checklist.entry_ix] + "-q").css('display', 'flex');
+
+    // ~~~ ADVANCING ~~~
+    // Handle button clicks:
+    $(".continue-btn").on("click", function (ev) {
+        cur_checklist.continue_page(ev);
+        // out_arr = continue_page(ev, entry_ix, check_risk, is_skip);
+        // entry_ix = out_arr[0];
+        // is_skip = out_arr[1];
+    })
+
+    // Continue on keypress:
+    $(window).on("keypress", function (ev) {
+        // console.log(ev);
+        if (ev.key === "Enter") {
+            cur_checklist.continue_page(ev);
+            // out_arr = continue_page(ev, entry_ix, check_risk, is_skip);
+            // entry_ix = out_arr[0];
+            // is_skip = out_arr[1];
+
+            // Removal of higlighting classes:
+            $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
+        }
+
+    })
+
+    // ~~~ GOING BACK ~~~
+    $(".back-btn").on("click", function () {
+        if (cur_checklist.entry_ix > 0) {
+            cur_checklist.entry_ix--;
+            $("#" + q_order[cur_checklist.entry_ix] + "-q").css('display', 'flex');
+            $("#" + q_order[cur_checklist.entry_ix + 1] + "-q").hide();
+            $(".continue-btn").css('display', 'inline-block');
+
+            // TODO: Skip inputs that were previously skipped (use OOP?)
+
+            if (cur_checklist.entry_ix === 0) {
+                $(".back-btn").hide();
+            }
+
+            // Removal of highlighting classes:
+            $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
+        }
+
+    })
+
+    // ~~~ HANDLING OTHER ~~~
+
+    // Entry deletion:
+    $(".delete-entry").on("click", function () {
+        const cur_inp = $(this).siblings("input");  // id of current page.
+
+        cur_inp.val("");  // empty input.
+        console.log(`Deleted inputs for ID ${cur_inp.attr("id")}:`);
+
+        // Delete associated table inputs:
+        // const cur_q_key = id_to_num_dict[cur_inp.attr("id")]
+        // console.log(number_dict[cur_q_key]);
+        // check_risk.update_by_arr(number_dict[cur_q_key], NaN);
+        // console.log(check_risk);
+        // Note: This only deletes the entry itself and not derived quantities.
+
+    })
+
+    // Decide to provide missing input:
+    $("#input-missing").on("click", function (ev) {
+        $("#noentry-popup").hide();
+    })
+
+    // Incompatible entries:
+    $("#acknowledge-incompatible").on("click", function(){
+        $("#incompatible-popup").hide();
+    })
+
+
+    // console.log("~~~~~~~~~ Test icon array ~~~~~~~~~~~");
+    // let tst2x2 = [[9700, 9850], [300, 150]];
+    //
+    // // Rescale:
+    // tst2x2 = tst2x2.map((x) => x.map((y) => Math.round(y / 20)));
+    // console.log(tst2x2);
+    //
+    // create_icon_array(
+    //     tst2x2[0][1], tst2x2[1][0],
+    //     tst2x2[1][0], tst2x2[1][1],
+    //     'dotdisplay2');
+    // $("#dotdisplay2").show();
+    //
+    // console.log("~~~~~~~~~ eof. test icon array ~~~~~~~~~~~");
+});
+
+
+// eof. handling after document is loaded
+
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------------ RESOURCES -------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
-function evaluate_entry(curval, cur_q_key) {
-    // TODO: Check format!
-    let checked_val;
-    let cur_error = "noerr";
-
-    // replace period with nothing:
-    checked_val = curval.replace(/\./, "");
-    // Replace comma with period:
-    checked_val = checked_val.replace(/,/, ".");
-
-    // Test, if it is a number and convert if true:
-    const is_num = !isNaN(parseFloat(checked_val));
-    if (is_num) {
-        // Note: Ignores additional text!
-        checked_val = parseFloat(checked_val);
-    }
-
-    if (int_keys.includes(cur_q_key)) {
-        // Check integer entries:
-        if (!is_num) {
-            alert("KEINE ZAHL!");
-            cur_error = "err_nonum";
-        } else if (!Number.isInteger(checked_val)) {
-            alert("KEINE GANZE ZAHL!");
-            cur_error = "err_noint";
-        }
-    } else if (float_keys.includes(cur_q_key)) {
-
-        // Check float entries:
-        if (!is_num) {
-            alert("KEINE ZAHL!");
-            cur_error = "err_nonum";
-        }
-
-    } else {
-        // All other keys (string, boolean etc.)
-    }
-
-    if (cur_error === "noerr") {
-        // Update percentages:
-        if (perc_keys.includes(cur_q_key)) {
-
-            // Check the percentage
-            if (checked_val < 1) {
-                alert("Prozentzahl kleiner 0; Absicht?");
-            }
-
-            checked_val = checked_val / 100;  // percentage to floating point number.
-
-            // For relative risk reduction revert:
-            if (cur_q_key === "rrr") {
-                checked_val = 1 - checked_val;  // maybe code transformation in dictionary object?
-            }
-        }  // eof. percentage handling.
-    } else {
-
-        checked_val = cur_error;
-
-    }
 
 
-    return checked_val;
-}
+// ~~~~~~~~~~~~~~~~~~~~~~~ DICTIONARIES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// TODO
 
 
+// ~~~~~~~~~~~~~~~~~~~~~~~ CLASSES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /**
  * Class to create a checklist instance
  */
@@ -101,7 +155,7 @@ class Checklist {
         this.skipped_inputs = [];  // list of inputs that were previously skipped.
 
         // TODO: Update if input is skipped; also delete inputs that were not skipped a different time!
-        this.check_risk = new RiskCollection(ntab_mt, ptab_mt, mtab_mt1, mtab_mt2);
+        this.check_risk = new RiskCollection();
     }
 
     // Method to advance page:
@@ -451,130 +505,6 @@ class Checklist {
 }
 
 
-$(document).ready(function () {
-
-    let entry_ix = 0;  // index for the current entry.
-    let is_skip = false;
-    let out_arr = [0, false];
-
-    // Preparations:
-    const cur_checklist = new Checklist(q_order);  // create a new checklist instance.
-    const check_risk = new RiskCollection(ntab_mt, ptab_mt, mtab_mt1, mtab_mt2);
-    console.log(check_risk);
-
-    console.log("+++ Handle questions +++");
-
-    // Define order by type (press release, article etc.):
-    // Show the first element:
-    console.log("#" + cur_checklist.q_order[cur_checklist.entry_ix] + "-q");
-    $("#" + cur_checklist.q_order[cur_checklist.entry_ix] + "-q").css('display', 'flex');
-
-    // ~~~ ADVANCING ~~~
-    // Handle button clicks:
-    $(".continue-btn").on("click", function (ev) {
-        cur_checklist.continue_page(ev);
-        // out_arr = continue_page(ev, entry_ix, check_risk, is_skip);
-        // entry_ix = out_arr[0];
-        // is_skip = out_arr[1];
-    })
-
-    // Continue on keypress:
-    $(window).on("keypress", function (ev) {
-        // console.log(ev);
-        if (ev.key === "Enter") {
-            cur_checklist.continue_page(ev);
-            // out_arr = continue_page(ev, entry_ix, check_risk, is_skip);
-            // entry_ix = out_arr[0];
-            // is_skip = out_arr[1];
-
-            // Removal of higlighting classes:
-            $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
-        }
-
-    })
-
-    // ~~~ GOING BACK ~~~
-    $(".back-btn").on("click", function () {
-        if (cur_checklist.entry_ix > 0) {
-            cur_checklist.entry_ix--;
-            $("#" + q_order[cur_checklist.entry_ix] + "-q").css('display', 'flex');
-            $("#" + q_order[cur_checklist.entry_ix + 1] + "-q").hide();
-            $(".continue-btn").css('display', 'inline-block');
-
-            // TODO: Skip inputs that were previously skipped (use OOP?)
-
-            if (cur_checklist.entry_ix === 0) {
-                $(".back-btn").hide();
-            }
-
-            // Removal of highlighting classes:
-            $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
-        }
-
-    })
-
-    // ~~~ HANDLING OTHER ~~~
-
-    // Entry deletion:
-    $(".delete-entry").on("click", function () {
-        const cur_inp = $(this).siblings("input");  // id of current page.
-
-        cur_inp.val("");  // empty input.
-        console.log(`Deleted inputs for ID ${cur_inp.attr("id")}:`);
-
-        // Delete associated table inputs:
-        // const cur_q_key = id_to_num_dict[cur_inp.attr("id")]
-        // console.log(number_dict[cur_q_key]);
-        // check_risk.update_by_arr(number_dict[cur_q_key], NaN);
-        // console.log(check_risk);
-        // Note: This only deletes the entry itself and not derived quantities.
-
-    })
-
-    // Decide to provide missing input:
-    $("#input-missing").on("click", function (ev) {
-        $("#noentry-popup").hide();
-    })
-
-    // Incompatible entries:
-    $("#acknowledge-incompatible").on("click", function(){
-        $("#incompatible-popup").hide();
-    })
-
-
-    // console.log("~~~~~~~~~ Test icon array ~~~~~~~~~~~");
-    // let tst2x2 = [[9700, 9850], [300, 150]];
-    //
-    // // Rescale:
-    // tst2x2 = tst2x2.map((x) => x.map((y) => Math.round(y / 20)));
-    // console.log(tst2x2);
-    //
-    // create_icon_array(
-    //     tst2x2[0][1], tst2x2[1][0],
-    //     tst2x2[1][0], tst2x2[1][1],
-    //     'dotdisplay2');
-    // $("#dotdisplay2").show();
-    //
-    // console.log("~~~~~~~~~ eof. test icon array ~~~~~~~~~~~");
-});
-
-
-// eof. handling after document is loaded
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
------------------------------- RESOURCES -------------------------------
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
-
-
-// ~~~~~~~~~~~~~~~~~~~~~~~ DICTIONARIES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// TODO
-
-
-// ~~~~~~~~~~~~~~~~~~~~~~~ CLASSES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
 // ~~~~~~~~~~~~~~~~~~~~~~~ FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /**
@@ -775,6 +705,80 @@ const perc_keys = ["rrr", "mpx1"]
 
 
 // FUNCTIONS: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/**
+ * Evaluate checklist entry.
+ */
+function evaluate_entry(curval, cur_q_key) {
+    // TODO: Check format!
+    let checked_val;
+    let cur_error = "noerr";
+
+    // replace period with nothing:
+    checked_val = curval.replace(/\./, "");
+    // Replace comma with period:
+    checked_val = checked_val.replace(/,/, ".");
+
+    // Test, if it is a number and convert if true:
+    const is_num = !isNaN(parseFloat(checked_val));
+    if (is_num) {
+        // Note: Ignores additional text!
+        checked_val = parseFloat(checked_val);
+    }
+
+    if (int_keys.includes(cur_q_key)) {
+        // Check integer entries:
+        if (!is_num) {
+            alert("KEINE ZAHL!");
+            cur_error = "err_nonum";
+        } else if (!Number.isInteger(checked_val)) {
+            alert("KEINE GANZE ZAHL!");
+            cur_error = "err_noint";
+        }
+    } else if (float_keys.includes(cur_q_key)) {
+
+        // Check float entries:
+        if (!is_num) {
+            alert("KEINE ZAHL!");
+            cur_error = "err_nonum";
+        }
+
+    } else {
+        // All other keys (string, boolean etc.)
+    }
+
+    if (cur_error === "noerr") {
+        // Update percentages:
+        if (perc_keys.includes(cur_q_key)) {
+
+            // Check the percentage
+            if (checked_val < 1) {
+                alert("Prozentzahl kleiner 0; Absicht?");
+            }
+
+            checked_val = checked_val / 100;  // percentage to floating point number.
+
+            // For relative risk reduction revert:
+            if (cur_q_key === "rrr") {
+                checked_val = 1 - checked_val;  // maybe code transformation in dictionary object?
+            }
+        }  // eof. percentage handling.
+    } else {
+
+        checked_val = cur_error;
+
+    }
+
+
+    return checked_val;
+}
+
+/**
+ * Function to create an icon array.
+ * @param arr_n An array of icon types
+ * @param id ID of the HTML element
+ * @param ncol Number of columns in icon array
+ * @param col_arr Array of colors for each icon type
+ */
 function create_icon_array(arr_n, id, ncol, col_arr) {
 
     // Check for non-integer inputs:
