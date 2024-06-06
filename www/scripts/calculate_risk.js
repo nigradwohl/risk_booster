@@ -130,15 +130,30 @@ class RiskCollection {
     // Method to combine information in ntab and ptab:
     n_from_p() {
         // console.log("n from p");
+        const nsums1 = this.ntab.msums1;
+        const psums1 = this.ptab.msums1;
+        const nsums2 = this.ntab.msums2;
+        const psums2 = this.ptab.msums2;
 
-        this.ntab.msums1 = this.ntab.msums1
-            .map((val, ix) => isNaN(val) ? Math.round(this.ptab.msums1[ix] * this.ntab.N) : val);
-        this.ntab.msums2 = this.ntab.msums2
-            .map((val, ix) => isNaN(val) ? Math.round(this.ptab.msums2[ix] * this.ntab.N) : val);
+        console.log("Input n from p:");
+        this.print();
 
-        // console.log("Output n from p:");
+
+        this.ntab.msums1 = nsums1
+            .map((val, ix) => compare_vals(Math.round(psums1[ix] * this.ntab.N), val, 1));
+        this.ntab.msums2 = nsums2
+            .map((val, ix) => compare_vals(Math.round(psums2[ix] * this.ntab.N), val, 1));
+
+        console.log("Output n from p:");
         // console.log(JSON.stringify(this.ntab.msums1));
         // console.log(JSON.stringify(this.ntab.msums2));
+        this.print();
+
+        // Second approach:
+        this.ntab.msums1 = nsums1
+            .map((val, ix) => compare_vals(Math.round(nsums1[1 - ix] * psums1[ix]/psums1[1 - ix]), val, 1));
+        this.ntab.msums2 = nsums2
+            .map((val, ix) => compare_vals(Math.round(nsums2[1 - ix] * psums2[ix]/psums2[1 - ix]), val, 1));
 
     }
 
