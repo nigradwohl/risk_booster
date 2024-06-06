@@ -356,7 +356,9 @@ class Checklist {
 
         } catch (error) {
             console.warn(error);
+            $("#results-1-error ~ *").hide();
             $("#results-1-error").show();
+
         }
 
 
@@ -380,6 +382,7 @@ class Checklist {
 
         } catch (error) {
             console.warn(error);
+            $("#results-2-error ~ *").hide();
             $("#results-2-error").show();
         }
 
