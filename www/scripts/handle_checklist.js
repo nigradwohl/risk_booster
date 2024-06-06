@@ -444,7 +444,7 @@ class Checklist {
         console.log(eff_group_risks);
         console.log(side_group_risks);
 
-        const group_risks_flat = eff_group_risks.flat().concat(side_group_risks.flat());
+        const group_risks_flat = eff_group_risks.flat().concat(side_group_risks.flat()).filter(x => x && !isNaN(x));
 
         // Translate to natural frequencies:
         // const curscale = 1000;  // fixed reference! Should eventually be so that the smallest number is detectable!
