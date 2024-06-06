@@ -228,14 +228,7 @@ class Checklist {
                     this.is_reload = true;
                 }
 
-                try{
-                    this.handle_final_page();  // handle the final page.
-                } catch (error){
-                    console.warn(error);
-                    $("#results-q").html("<div><p>Leider konnten wir aus den angegebenen Zahlen keine transparente Risikoinformation berechnen.</p>" +
-                        "<p>Bitte prüfen Sie die Angaben. Möglicherweise erlauben diese keine Transparente Risikodarstellung.</p></div>");
-                }
-
+                this.handle_final_page();  // handle the final page.
 
 
                 // Hide the continue button:
@@ -324,56 +317,71 @@ class Checklist {
         const cur2x2_eff = risk_info.cur2x2_eff;
         const cur2x2_side = risk_info.cur2x2_side;
 
-        // ICON ARRAYS:
         // Get array information for each group:
         const group_arrs_eff = {
             "treat": [cur2x2_eff[1][1], cur2x2_eff[1][0]],
             "control": [cur2x2_eff[0][1], cur2x2_eff[0][0]]
         }
 
-
-        let ncol = risk_info.N_scale === 1000 ? 25 : 10;  // determine number of columns.
-        const curwid_px = 180;  // Determine basic width in pixels.
-        const expansion = risk_info.N_scale === 1000 ? 25 : 40;  // expansion factor for area.
-
-        // Create the icon arrays and assigne them:
-        create_icon_array(
-            group_arrs_eff.treat,  // treatment group.
-            // cur2x2[0][0], cur2x2[0][1],  // control group.
-            'dotdisplay-treat',
-            ncol,
-            ["coral", "lightgrey"],
-            expansion);
-
-        create_icon_array(
-            // [cur2x2[1][0], cur2x2[1][1]],  // treatment group.
-            group_arrs_eff.control,  // control group.
-            'dotdisplay-control',
-            ncol,
-            ["coral", "lightgrey"],
-            expansion);
-
-        // Side effects:
         const group_arrs_side = {
             "treat": [cur2x2_side[1][1], cur2x2_side[1][0]],
             "control": [cur2x2_side[0][1], cur2x2_side[0][0]]
         }
 
-        create_icon_array(
-            group_arrs_side.treat,  // treatment group.
-            // cur2x2[0][0], cur2x2[0][1],  // control group.
-            'dotdisplay-treat-side',
-            ncol,
-            ["steelblue", "lightgrey"],
-            expansion);
+        // ICON ARRAYS:
+        let ncol = risk_info.N_scale === 1000 ? 25 : 10;  // determine number of columns.
+        const curwid_px = 180;  // Determine basic width in pixels.
+        const expansion = risk_info.N_scale === 1000 ? 25 : 40;  // expansion factor for area.
 
-        create_icon_array(
-            // [cur2x2[1][0], cur2x2[1][1]],  // treatment group.
-            group_arrs_side.control,  // control group.
-            'dotdisplay-control-side',
-            ncol,
-            ["steelblue", "lightgrey"],
-            expansion);
+        // Effectivity:
+        try {
+
+
+            // Create the icon arrays and assigne them:
+            create_icon_array(
+                group_arrs_eff.treat,  // treatment group.
+                // cur2x2[0][0], cur2x2[0][1],  // control group.
+                'dotdisplay-treat',
+                ncol,
+                ["coral", "lightgrey"],
+                expansion);
+
+            create_icon_array(
+                // [cur2x2[1][0], cur2x2[1][1]],  // treatment group.
+                group_arrs_eff.control,  // control group.
+                'dotdisplay-control',
+                ncol,
+                ["coral", "lightgrey"],
+                expansion);
+
+        } catch (error) {
+            console.warn(error);
+            $("#results-1-error").show();
+        }
+
+
+        // Side effects:
+        try {
+            create_icon_array(
+                group_arrs_side.treat,  // treatment group.
+                // cur2x2[0][0], cur2x2[0][1],  // control group.
+                'dotdisplay-treat-side',
+                ncol,
+                ["steelblue", "lightgrey"],
+                expansion);
+
+            create_icon_array(
+                // [cur2x2[1][0], cur2x2[1][1]],  // treatment group.
+                group_arrs_side.control,  // control group.
+                'dotdisplay-control-side',
+                ncol,
+                ["steelblue", "lightgrey"],
+                expansion);
+
+        } catch (error) {
+            console.warn(error);
+            $("#results-2-error").show();
+        }
 
 
         // Clear the risk object: ~~~~~~~~~~~~~~~~
@@ -391,8 +399,16 @@ class Checklist {
             })
             .on("click", function (e) {
                 // const obj = $(this);
+                console.log(e);
                 // Check whether risk or side!
-                zoom_canvas(e, group_arrs_eff, $(this));
+                const clickid = e.currentTarget.id;
+                const is_side = /-side/.test(clickid);
+                const group_arrs = is_side ? group_arrs_side : group_arrs_eff;
+                const col_arr = is_side ? ["steelblue", "lightgrey"] : ["coral", "lightgrey"];
+                const curgrp = clickid.match(/control|treat/)[0];
+                console.log(group_arrs)
+
+                zoom_canvas(e, group_arrs[curgrp], "dotdisplay-zoom", col_arr);
             })
             .show();
     }
@@ -648,20 +664,21 @@ function handle_missing_input(ev, missing_entries) {
  *
  * @param e Calling event
  * @param info_arr ordered array with icon info
- * @param obj Calling object
+ * @param curid Current ID for replacement
  */
-function zoom_canvas(e, info_arr, obj) {
-    console.log(obj.attr("id"));
+function zoom_canvas(e, info_arr, curid, col_arr) {
+    // console.log(obj.attr("id"));
     $(".zoomed-canvas").hide();
 
-    const cur_type = obj.attr("id").replace("dotdisplay-", "");
+    // const cur_type = obj.attr("id").replace("dotdisplay-", "");
 
     // $(this).clone().appendTo(".canvas-zoom");
     create_icon_array(
-        info_arr[cur_type],  // control group.
-        obj.attr("id") + '-zoom',
+       info_arr,  // control group.
+        curid,
+        // obj.attr("id") + '-zoom',
         undefined,
-        ["coral", "lightgrey"]);
+        col_arr);
 
     const mindim = Math.min(window.innerWidth, window.innerHeight);
 
@@ -669,7 +686,7 @@ function zoom_canvas(e, info_arr, obj) {
         .width(mindim)
         .height(mindim)
         .css("display", "flex");
-    $("#" + obj.attr("id") + '-zoom').show();
+    $("#" + curid).show();
 
     // Allow clicking anywhere to close:
     e.stopPropagation();  // stop event propagation to avoid immediate hiding on click.
@@ -904,7 +921,7 @@ function create_icon_array(arr_n, id, ncol, col_arr, exf) {
 
     const block = [10, -1];
 
-    if(exf === undefined){
+    if (exf === undefined) {
         exf = 40;
     }
 
@@ -927,9 +944,9 @@ function create_icon_array(arr_n, id, ncol, col_arr, exf) {
         }
 
         let nrows = Math.ceil(n_dots / ncols);
-        nrows = nrows + (block[0] > 0 ? Math.floor(nrows/block[0]) : 0);
+        nrows = nrows + (block[0] > 0 ? Math.floor(nrows / block[0]) : 0);
 
-        ncols = ncols + (block[1] > 0 ? Math.floor(ncols/block[1]) : 0);
+        ncols = ncols + (block[1] > 0 ? Math.floor(ncols / block[1]) : 0);
 
 
         console.log(n_dots + " dots, " + nrows + " rows and " + ncols + " columns");
@@ -974,7 +991,9 @@ function create_icon_array(arr_n, id, ncol, col_arr, exf) {
 
                 if (i % ncols === 0) {
 
-                    if(irow % (block[0] +1) === 0 && block[0] > 0){irow++;}
+                    if (irow % (block[0] + 1) === 0 && block[0] > 0) {
+                        irow++;
+                    }
                     irow++;
                     icol = 0;
                 }
@@ -989,7 +1008,9 @@ function create_icon_array(arr_n, id, ncol, col_arr, exf) {
                 })
 
                 icol++;  // Increment column.
-                if(icol % block[1] === 0 && block[1] > 0){icol++;}
+                if (icol % block[1] === 0 && block[1] > 0) {
+                    icol++;
+                }
 
 
             }
