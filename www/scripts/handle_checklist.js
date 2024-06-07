@@ -1,18 +1,3 @@
-/**
- * Manage the display of a risk checklist.
- */
-
-// Empty tables:
-// const ntab_mt = new Basetable(na_tab,  // condition.
-//     [NaN, NaN],
-//     [NaN, NaN],
-//     NaN);
-// const ptab_mt = new Basetable(
-//     na_tab,
-//     [NaN, NaN], [NaN, NaN], 1);
-// // NOTE: Make sure to appropriately distinguish relative risk increase and reduction!
-// const mtab_mt1 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
-// const mtab_mt2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
 
 
 $(document).ready(function () {
@@ -20,6 +5,24 @@ $(document).ready(function () {
     // let entry_ix = 0;  // index for the current entry.
     // let is_skip = false;
     // let out_arr = [0, false];
+
+    // Get the variation of the page:
+    // Get parameters from URL:
+    const urlParams = new URLSearchParams(window.location.search);
+    const text = urlParams.get('page');
+
+    // console.warn(text);
+
+    // TODO: Here the set of wordings has to be adjusted to the case!
+    // Note: The outcome may be selected on a first page?
+
+    if(text === "treat"){
+        $("#case-test").text("Behandlung");
+    } else if (text === "impf") {
+        $("#case-test").text("Impfung");
+    }
+
+
 
     // Preparations:
     const cur_checklist = new Checklist(q_order);  // create a new checklist instance.

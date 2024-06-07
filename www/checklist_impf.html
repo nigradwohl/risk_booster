@@ -65,6 +65,8 @@
     <p class="no-print">
         Anmerkungen: Aktuelle Reihenfolge anhand von Informationen in Beispiel Pressemitteilung.
         Anpassung auf Abfrage nach Quelle (PM, Studie, Nachrichtenartikel) hin denkbar.
+        [Treatment case on own page? Or make some variables exchangeable?]
+        <span id="case-test"></span>
     </p>
 
     <!--        <div class="canvas-container">-->
@@ -189,17 +191,19 @@
 
                     <div class="checklist-question" id="n-treat-control-q">
                         <div class="question-content">
-                            <p class="checklist-qtext">Wie viele Personen wurden Geimpft? Wie viele bekamen ein
-                                Placebo?</p>
+                            <p class="checklist-qtext">
+                                Wie viele Personen wurden Geimpft [erhielten das Medikament?
+                                Wie viele waren in der Vergleichsgruppe (bekamen ein Placebo, wurden nicht behandelt oä.)?
+                            </p>
 
                             <table>
                                 <tr>
-                                    <td><label>Anzahl Geimpfte</label></td>
+                                    <td><label>Anzahl Geimpfte [Behandelte]</label></td>
                                     <td><input class="checklist-input" id="n-impf" type="text"></td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <label>Anzahl ungeimpfte (z.B. Placebo)</label>
+                                        <label>Anzahl ungeimpfte [Vergleichsgruppe] (z.B. Placebo)</label>
                                     </td>
                                     <td>
                                         <input class="checklist-input" id="n-control" type="text">
@@ -226,6 +230,7 @@
                         <div class="question-content">
                             <p class="checklist-qtext">
                                 Wie viele Personen sind jeweils in der Impfgruppe und der Kontrollgruppe erkrankt?
+                                [Outcome for treatment case: mortality? ask Helge]
                             </p>
                             <!--                        TODO: Eventually translate to grid layout?-->
                             <table>
