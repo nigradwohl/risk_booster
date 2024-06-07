@@ -498,7 +498,27 @@ class Basetable {
 
     // Printing:
     print() {
-        return JSON.stringify(this);
+        // Desired:
+        //         ntab: {
+        //          "tab":{"tab2x2":
+        //              [[null,null],
+        //              [null,null]]},
+        //          "msums1":[null,null],
+        //          "msums2":[null,null],
+        //          "N":null
+        //         }
+        // Raw:
+        // ptab: {"tab":{"tab2x2":[[null,null],[null,null]]},"msums1":[null,null],"msums2":[null,null],"N":1}
+        // mtab1: {"tab":[[null,null],[null,null]],"rel1":[null,null],"rel2":[null,null]}
+        // mtab2: {"tab":[[null,null],[null,null]],"rel1":[null,null],"rel2":[3.0303030303030307,0.32999999999999996]}
+
+        // return JSON.stringify(this);
+        return JSON.stringify(this)
+            .replace("{", "{\n")
+            .replace("},", "},\n")
+            .replace("],", "],\n  ")
+            .replace(":[[", ":\n  [[")
+            .replace("]]", "]]\n");
     }
 }
 
