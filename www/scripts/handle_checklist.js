@@ -560,7 +560,9 @@ class Checklist {
 
             // If misses should not be skipped:
 
+
             // If not a missing value is skipped:
+            // console.log(this.missing_entries.toString());  // check current set of missings.
             // Check the value; if appropriate, check the number format, transform and save to object.
             if ([undefined, "", " "].includes(curval)) {
                 this.missing_entries = this.missing_entries.concat(cur_input);
@@ -602,20 +604,18 @@ class Checklist {
     }
 
     handle_reloads() {
+
+        // ~~~~~~~~~ Loop over all entries and complete (for reloads)! ~~~~~~~~~~~~~
         console.log(`Is reload? ${this.is_reload}`);
-
         this.is_reload = false;  // reset the flag!
-
-        // TODO: ~~~~~~~~~ Loop over all entries and complete (for reloads)! ~~~~~~~~~~~~~
-        // If it is a reload:
         console.log("~~~~ Risk object before re-calculation ~~~");
         this.check_risk.print();
 
-        console.log("Skipped inputs were:");
+        // console.log("Skipped inputs were:");
         this.skipped_inputs = this.skipped_inputs.filter(x => x < this.entry_ix);  // remove future skips!
-        console.log(this.skipped_inputs);
+        // console.log(this.skipped_inputs);
         const skipped_ids = q_order.filter((x, ix) => this.skipped_inputs.includes(ix));
-        console.log(skipped_ids);
+        // console.log(skipped_ids);
 
         // Loop over defined input fields:
         for (const curid of q_order.slice(0, this.entry_ix)) {
@@ -639,6 +639,9 @@ class Checklist {
         this.check_risk.print();
         this.check_risk.try_completion(0);
         this.check_side.try_completion(0);
+
+        // Reset array of missings:
+        this.missing_entries = [];
     }
 
     handle_back() {
@@ -663,7 +666,6 @@ class Checklist {
             $("#" + q_order[this.entry_ix] + "-q").css('display', 'flex');
             $("#" + calling_entry + "-q").hide();
             $(".continue-btn").css('display', 'inline-block');
-
 
             if (this.entry_ix === 0) {
                 $(".back-btn").hide();
