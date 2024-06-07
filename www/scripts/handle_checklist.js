@@ -162,8 +162,16 @@ class Checklist {
 
         // 0. Initialize variables: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         this.is_error = false;
-        this.is_reload = false;
+        // this.is_reload = false;
         this.missing_entries = [];
+
+
+        // Check, if it is a relaod.
+        // If so, fill the table with all entries until now:
+        if (this.is_reload) {
+            this.handle_reloads();
+        }
+
 
         const skip_misses = ev.currentTarget.id === "skip-missing" || this.is_skip;
         // skip, if calling event is the "skip-misses" button or if the page is to be skipped.
@@ -568,10 +576,10 @@ class Checklist {
 
                 if (!/err_/.test(checked_val.toString())) {
 
-                    // console.log(`Update objects ${cur_q_key}:`);
-                    // console.log(number_dict[cur_q_key]);
-                    //
-                    // console.log(`Side keys ${side_keys.includes(cur_q_key)} or eff keys? ${eff_keys.includes(cur_q_key)}`)
+                    console.log(`Update objects ${cur_q_key}:`);
+                    console.log(number_dict[cur_q_key]);
+
+                    console.log(`Side keys ${side_keys.includes(cur_q_key)} or eff keys? ${eff_keys.includes(cur_q_key)}`)
 
                     if (side_keys.includes(cur_q_key)) {
                         this.check_side.update_by_arr(number_dict[cur_q_key], checked_val);
@@ -594,22 +602,27 @@ class Checklist {
     handle_reloads() {
         console.log(`Is reload? ${this.is_reload}`);
 
+        this.is_reload = false;  // reset the flag!
+
         // TODO: ~~~~~~~~~ Loop over all entries and complete (for reloads)! ~~~~~~~~~~~~~
         // If it is a reload:
-        console.log("Risk object before re-calculation");
+        console.log("~~~~ Risk object before re-calculation ~~~");
         this.check_risk.print();
 
         // Loop over defined input fields:
-        for (const curid of q_order.slice(0, q_order.length - 1)) {
+        for (const curid of q_order.slice(0, this.entry_ix)) {
             console.log(`Current inputs for ID ${curid}:`);
             console.log(q_inputs[curid]);
 
             this.get_current_input(curid, q_inputs[curid], id_to_num_dict);
 
+            console.log("Risk object after re-evaluating inputs until then");
+            this.check_risk.print();
+
         }
 
         // Retry completion:
-        console.log("Risk object after re-calculation");
+        console.log("~~~~ Risk object after re-calculation ~~~~");
         this.check_risk.print();
         this.check_risk.try_completion(0);
         this.check_side.try_completion(0);
