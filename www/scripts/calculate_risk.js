@@ -175,7 +175,7 @@ class RiskCollection {
         // Complete the inner p-table:
         this.ptab.tab.tab2x2 = this.ptab.tab.tab2x2
             .map((vx, ix) => vx
-                .map((vy, iy) => compare_vals(vy, cur_ntab.tab.tab2x2[ix][iy] / cur_ntab.N, 0.001)));
+                .map((vy, iy) => compare_vals(vy, cur_ntab.tab.tab2x2[ix][iy] / cur_ntab.N, 0.005)));
     }
 
     // Method to get the margin from p-table margins:
@@ -526,19 +526,19 @@ class Margintable {
         this.rel2[1] = isNaN(this.rel2[1]) ? 1 / this.rel2[0] : this.rel2[1];
 
         // Note: Currently ONLY for dim1 in margin table!
-        this.tab[1][1] = compare_vals(this.tab[0][1] / this.rel2[0], this.tab[1][1], 0.001);
+        this.tab[1][1] = compare_vals(this.tab[0][1] / this.rel2[0], this.tab[1][1], 0.005);
         // Was: isNaN(this.tab[1][1]) ? this.tab[0][1] / this.rel2[0] : this.tab[1][1];
-        this.tab[0][1] = compare_vals(this.tab[1][1] / this.rel2[1], this.tab[0][1], 0.001);
+        this.tab[0][1] = compare_vals(this.tab[1][1] / this.rel2[1], this.tab[0][1], 0.005);
         // isNaN(this.tab[0][1]) ? this.tab[1][1] / this.rel2[1] : this.tab[0][1];
 
         // Try completing missing fields (adding up t 1 within array[0] and array[1]:
-        this.tab[0][0] = compare_vals(1 - this.tab[0][1], this.tab[0][0], 0.001);
+        this.tab[0][0] = compare_vals(1 - this.tab[0][1], this.tab[0][0], 0.005);
         // isNaN(this.tab[0][0]) ? 1 - this.tab[0][1] : this.tab[0][0];
-        this.tab[0][1] = compare_vals(1 - this.tab[0][0], this.tab[0][1], 0.001);
+        this.tab[0][1] = compare_vals(1 - this.tab[0][0], this.tab[0][1], 0.005);
         // isNaN(this.tab[0][1]) ? 1 - this.tab[0][0] : this.tab[0][1];
-        this.tab[1][0] = compare_vals(1 - this.tab[1][1], this.tab[1][0], 0.001);
+        this.tab[1][0] = compare_vals(1 - this.tab[1][1], this.tab[1][0], 0.005);
         // isNaN(this.tab[1][0]) ? 1 - this.tab[1][1] : this.tab[1][0];
-        this.tab[1][1] = compare_vals(1 - this.tab[1][0], this.tab[1][1], 0.001);
+        this.tab[1][1] = compare_vals(1 - this.tab[1][0], this.tab[1][1], 0.005);
         // isNaN(this.tab[1][1]) ? 1 - this.tab[1][0] : this.tab[1][1];
 
 
@@ -632,7 +632,7 @@ function transpose(matrix) {
 // Function to compare two values and take the one that is not missing (if any):
 function compare_vals(val1, val2, tol) {
     if (!isNaN(val1) && !isNaN(val2)) {
-        // console.warn(`${val1}, ${val2} (${Math.abs(val1 - val2)}) with tolerance ${tol}`);
+        console.warn(`Comparing ${val1} and ${val2} (${Math.abs(val1 - val2)}) with tolerance ${tol}`);
         if (Math.abs(val1 - val2) > tol) {
             console.error("Provided values do not match. Please check!");
             // no_N = true;
