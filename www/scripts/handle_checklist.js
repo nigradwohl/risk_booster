@@ -50,9 +50,6 @@ $(document).ready(function () {
             // out_arr = continue_page(ev, entry_ix, check_risk, is_skip);
             // entry_ix = out_arr[0];
             // is_skip = out_arr[1];
-
-            // Removal of higlighting classes:
-            $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
         }
 
     })
@@ -173,7 +170,7 @@ class Checklist {
 
         const curid = this.q_order[this.entry_ix];  // get id of current page.
 
-        console.log(`${"~".repeat(40)} NEXT PAGE ${curid} ${"~".repeat(40)}`);
+        console.log(`${"~".repeat(30)} NEXT PAGE ${curid} ${"~".repeat(30)}`);
 
         // 1. Get the inputs on current page: ~~~~~~~~~~~~~~~~~~~~~~~~
         if (!skip_misses) {
@@ -221,12 +218,12 @@ class Checklist {
             // Final results page:
             if (this.entry_ix === this.q_order.length - 1) {
 
-                if (this.is_reload) {
-                    console.log("Handle reload");
-                    this.handle_reloads();
-                } else {
-                    this.is_reload = true;
-                }
+                // if (this.is_reload) {
+                //     console.log("Handle reload");
+                //     this.handle_reloads();
+                // } else {
+                //     this.is_reload = true;
+                // }
 
                 this.handle_final_page();  // handle the final page.
 
@@ -298,19 +295,26 @@ class Checklist {
         $("#" + q_order[this.entry_ix] + "-q").css('display', 'flex');
         $("#" + cur_entry + "-q").hide();
 
+        // Removal of higlighting classes:
+        $("#noentry-popup").hide();
+        $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
+
         // Show back button:
         if (this.entry_ix > 0) {
             $(".back-btn").css('display', 'inline-block');
         }
 
-        console.log("Risk object after entries and calculation");
-        this.check_risk.print();
-        this.check_side.print();
+        // console.log("Risk object after entries and calculation");
+        // this.check_risk.print();
+        // this.check_side.print();
     }
 
     // Method to handle final page:
     handle_final_page() {
-        console.log("Handling final page");
+        console.log("+++ Handling final page +++");
+
+        this.handle_reloads();
+
         // CALCULATE RISK INFORMATION
         const risk_info = this.calculate_risks();
         console.log(risk_info);
@@ -388,7 +392,8 @@ class Checklist {
 
 
         // Clear the risk object: ~~~~~~~~~~~~~~~~
-        // this.check_risk.clear_entries();  // TODO: Handle properly!
+        this.check_risk.reset_entries();  // TODO: Handle properly!
+        this.check_side.reset_entries();
 
         // Adding functionality: ~~~~~~~~~~~~~~~~~~
         // Add button for saving the page:
@@ -562,10 +567,10 @@ class Checklist {
 
                 if (!/err_/.test(checked_val.toString())) {
 
-                    console.log(`Update objects ${cur_q_key}:`);
-                    console.log(number_dict[cur_q_key]);
-
-                    console.log(`Side keys ${side_keys.includes(cur_q_key)} or eff keys? ${eff_keys.includes(cur_q_key)}`)
+                    // console.log(`Update objects ${cur_q_key}:`);
+                    // console.log(number_dict[cur_q_key]);
+                    //
+                    // console.log(`Side keys ${side_keys.includes(cur_q_key)} or eff keys? ${eff_keys.includes(cur_q_key)}`)
 
                     if (side_keys.includes(cur_q_key)) {
                         this.check_side.update_by_arr(number_dict[cur_q_key], checked_val);
@@ -581,8 +586,6 @@ class Checklist {
                 }
 
             }
-
-
         }
 
     }
@@ -592,6 +595,8 @@ class Checklist {
 
         // TODO: ~~~~~~~~~ Loop over all entries and complete (for reloads)! ~~~~~~~~~~~~~
         // If it is a reload:
+        console.log("Risk object before re-calculation");
+        this.check_risk.print();
 
         // Loop over defined input fields:
         for (const curid of q_order.slice(0, q_order.length - 1)) {
@@ -677,7 +682,7 @@ function zoom_canvas(e, info_arr, curid, col_arr) {
 
     // $(this).clone().appendTo(".canvas-zoom");
     create_icon_array(
-       info_arr,  // control group.
+        info_arr,  // control group.
         curid,
         // obj.attr("id") + '-zoom',
         undefined,
@@ -1022,8 +1027,8 @@ function create_icon_array(arr_n, id, ncol, col_arr, exf) {
             function draw() {
                 ctx.clearRect(0, 0, w, h);
                 let j, dot;
-                console.log("The ball object:");
-                console.log(balls);
+                // console.log("The ball object:");
+                // console.log(balls);
                 for (j = 0; j < total; j++) {
                     dot = balls[j];  // get the ball.
                     // ctx.beginPath();

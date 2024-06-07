@@ -60,17 +60,17 @@ $(document).ready(function () {
     // console.log(simple_risk);
 
     // How far are we with out testcase?
-    console.log("+++ Main testcase +++");
-    console.log(JSON.stringify(testcase));
+    // console.log("+++ Main testcase +++");
+    // console.log(JSON.stringify(testcase));
     // testcase.ptab.complete_margins();
     // testcase.n_from_p();
     // testcase.ntab.complete_table();
     testcase.try_completion(0);
     // testcase.try_completion();
-    console.log(testcase);
-    console.log(testcase.ntab.tab.tab2x2);
+    // console.log(testcase);
+    // console.log(testcase.ntab.tab.tab2x2);
 
-    console.log("+++ eof. Main testcase +++");
+    // console.log("+++ eof. Main testcase +++");
 
 
 })
@@ -107,7 +107,7 @@ function arrayEquals(a, b) {
 class RiskCollection {
     constructor(ntab, ptab, mtab1, mtab2) {
 
-        console.log(arguments);
+        // console.log(arguments);
 
         if (arguments.length === 0) {
             this.reset_entries()
@@ -135,16 +135,15 @@ class RiskCollection {
         const nsums2 = this.ntab.msums2;
         const psums2 = this.ptab.msums2;
 
-        console.log("Input n from p:");
-        this.print();
-
+        // console.log("Input n from p:");
+        // this.print();
 
         this.ntab.msums1 = nsums1
             .map((val, ix) => compare_vals(Math.round(psums1[ix] * this.ntab.N), val, 1));
         this.ntab.msums2 = nsums2
             .map((val, ix) => compare_vals(Math.round(psums2[ix] * this.ntab.N), val, 1));
 
-        console.log("Output n from p:");
+        // console.log("Output n from p:");
         // console.log(JSON.stringify(this.ntab.msums1));
         // console.log(JSON.stringify(this.ntab.msums2));
         this.print();
@@ -310,7 +309,6 @@ class RiskCollection {
         // console.log(arr);
 
         if (arr !== undefined) {
-            console.log(arr);
             const expr = "this" + get_expression(arr) + ` = ${val}`;  // add target value.
             // console.log(expr);
 
@@ -407,8 +405,8 @@ class Basetable {
             N_tab = compare_vals(this.msums1.flat().reduce((d, i) => d + i),
                 this.msums2.flat().reduce((d, i) => d + i),
                 1);
-            console.log("Table from margins");
-            console.log(N_tab);
+            // console.log("Table from margins");
+            // console.log(N_tab);
         }
 
         this.N = compare_vals(this.N, N_tab, 1);
@@ -634,7 +632,7 @@ function transpose(matrix) {
 // Function to compare two values and take the one that is not missing (if any):
 function compare_vals(val1, val2, tol) {
     if (!isNaN(val1) && !isNaN(val2)) {
-        console.warn(`${val1}, ${val2} (${Math.abs(val1 - val2)}) with tolerance ${tol}`);
+        // console.warn(`${val1}, ${val2} (${Math.abs(val1 - val2)}) with tolerance ${tol}`);
         if (Math.abs(val1 - val2) > tol) {
             console.error("Provided values do not match. Please check!");
             // no_N = true;
