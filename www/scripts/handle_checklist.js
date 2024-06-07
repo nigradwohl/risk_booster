@@ -653,9 +653,15 @@ class Checklist {
             // TODO: Skip inputs that were previously skipped
             // Get previously seen input (or skip, if q_order[this.entry_ix] in skiplist?)
             // Note: Also must ensure that elements from the skiplist are removed when they are passed upon a back-button click!
-            this.entry_ix--;
+            const calling_entry = q_order[this.entry_ix];
+
+            // Decrement, while previous input has been skipped:
+            do {
+                this.entry_ix--;
+            } while (this.skipped_inputs.includes(this.entry_ix))
+
             $("#" + q_order[this.entry_ix] + "-q").css('display', 'flex');
-            $("#" + q_order[this.entry_ix + 1] + "-q").hide();
+            $("#" + calling_entry + "-q").hide();
             $(".continue-btn").css('display', 'inline-block');
 
 
