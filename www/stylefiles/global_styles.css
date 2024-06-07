@@ -571,10 +571,10 @@ h3 {
 .grid-container-check {
     display: grid;
     grid-template-columns: minmax(200px, 2fr) minmax(80px, 1fr) 20px minmax(80px, 1fr) minmax(200px, 2fr);
-    grid-template-rows: 1em 1.8em 40px auto 50px;
+    grid-template-rows: 1em 1.5em 60px auto 50px;
     grid-template-areas:
             "header header header header header"
-            "subhead1 subhead1 . subhead2 subhead2"
+            "subhead1 . . . subhead2"
             "arr1 arrnote1 . arrnote2 arr2"
             "arr1 midnote midnote midnote arr2";
     /*justify-items: center;*/
@@ -590,13 +590,13 @@ h3 {
 .grid-subhead1 {
     /*grid-row: 2;*/
     grid-area: subhead1;
-    justify-self: start;
+    justify-self: center;
 }
 
 .grid-subhead2 {
     /*grid-row: 2;*/
     grid-area: subhead2;
-    justify-self: end;
+    justify-self: center;
 }
 
 .grid-arr1 {
@@ -612,19 +612,24 @@ h3 {
 .grid-note1 {
     grid-area: arrnote1;
     justify-self: start;
+    text-align: left;
     align-self: center;
+    padding: 0 0.2em;
 }
 
 .grid-note2 {
     grid-area: arrnote2;
     justify-self: end;
+    text-align: right;
     align-self: center;
+    padding: 0 0.2em;
 }
 
 .grid-global-note {
     /*grid-row: 4;*/
     grid-area: midnote;
     justify-self: center;
+    padding: 1em 0.2em;
 }
 
 .content-start {
