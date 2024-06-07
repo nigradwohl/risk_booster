@@ -297,6 +297,7 @@ class Checklist {
                 // SKip, if value exists in object:
                 if (!prevvals.includes(NaN)) {
                     skip = true;  // May be done more sophisticated in the future!
+                    this.skipped_inputs = this.skipped_inputs.concat(this.entry_ix);
                 }
 
             }
@@ -610,15 +611,26 @@ class Checklist {
         console.log("~~~~ Risk object before re-calculation ~~~");
         this.check_risk.print();
 
+        console.log("Skipped inputs were:");
+        this.skipped_inputs = this.skipped_inputs.filter(x => x < this.entry_ix);  // remove future skips!
+        console.log(this.skipped_inputs);
+        const skipped_ids = q_order.filter((x, ix) => this.skipped_inputs.includes(ix));
+        console.log(skipped_ids);
+
         // Loop over defined input fields:
         for (const curid of q_order.slice(0, this.entry_ix)) {
-            console.log(`Current inputs for ID ${curid}:`);
-            console.log(q_inputs[curid]);
 
-            this.get_current_input(curid, q_inputs[curid], id_to_num_dict);
+            // Skip input fields that have been skipped previously!
+            if (!skipped_ids.includes(curid)) {
+                console.log(`Current inputs for ID ${curid}:`);
+                console.log(q_inputs[curid]);
 
-            console.log("Risk object after re-evaluating inputs until then");
-            this.check_risk.print();
+                this.get_current_input(curid, q_inputs[curid], id_to_num_dict);
+
+                console.log("Risk object after re-evaluating inputs until then");
+                this.check_risk.print();
+            }
+
 
         }
 

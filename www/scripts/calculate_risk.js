@@ -316,12 +316,15 @@ class RiskCollection {
 
         // console.log(arr);
 
+        console.log(JSON.stringify(this));
+
         if (arr !== undefined) {
             const expr = "this" + get_expression(arr) + ` = ${val}`;  // add target value.
             console.log(expr);
 
             try {
                 eval(expr);
+                console.log(JSON.stringify(this));
             } catch (e) {
                 console.error(`Assignment of ${expr} failed`);
             }
