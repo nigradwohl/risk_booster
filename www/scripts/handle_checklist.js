@@ -18,8 +18,10 @@ $(document).ready(function () {
 
     if(text === "treat"){
         $("#case-test").text("Behandlung");
+        $("#cur-topic").text("Behandlung");
     } else if (text === "impf") {
         $("#case-test").text("Impfung");
+        $("#cur-topic").text("Impfung");
     }
 
 
@@ -777,6 +779,7 @@ function zoom_canvas(e, info_arr, curid, col_arr) {
  * @type {string[]}
  */
 const q_order = [
+    "start",
     "rel-risk-reduction",
     // "any-control",
     "n-treat-control",
