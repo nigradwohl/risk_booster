@@ -56,21 +56,22 @@ $(document).ready(function () {
 
     // ~~~ GOING BACK ~~~
     $(".back-btn").on("click", function () {
-        if (cur_checklist.entry_ix > 0) {
-            cur_checklist.entry_ix--;
-            $("#" + q_order[cur_checklist.entry_ix] + "-q").css('display', 'flex');
-            $("#" + q_order[cur_checklist.entry_ix + 1] + "-q").hide();
-            $(".continue-btn").css('display', 'inline-block');
-
-            // TODO: Skip inputs that were previously skipped (use OOP?)
-
-            if (cur_checklist.entry_ix === 0) {
-                $(".back-btn").hide();
-            }
-
-            // Removal of highlighting classes:
-            $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
-        }
+        // if (cur_checklist.entry_ix > 0) {
+        //     cur_checklist.entry_ix--;
+        //     $("#" + q_order[cur_checklist.entry_ix] + "-q").css('display', 'flex');
+        //     $("#" + q_order[cur_checklist.entry_ix + 1] + "-q").hide();
+        //     $(".continue-btn").css('display', 'inline-block');
+        //
+        //     // TODO: Skip inputs that were previously skipped (use OOP?)
+        //
+        //     if (cur_checklist.entry_ix === 0) {
+        //         $(".back-btn").hide();
+        //     }
+        //
+        //     // Removal of highlighting classes:
+        //     $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
+        // }
+        cur_checklist.handle_back();
 
     })
 
@@ -313,7 +314,7 @@ class Checklist {
     handle_final_page() {
         console.log("+++ Handling final page +++");
 
-        this.handle_reloads();
+        // this.handle_reloads();
 
         // CALCULATE RISK INFORMATION
         const risk_info = this.calculate_risks();
@@ -609,9 +610,36 @@ class Checklist {
 
         // Retry completion:
         console.log("Risk object after re-calculation");
-        console.log(this.check_risk);
+        this.check_risk.print();
         this.check_risk.try_completion(0);
         this.check_side.try_completion(0);
+    }
+
+    handle_back() {
+        if (this.entry_ix > 0) {
+
+            // When going back, reset the object to be filled again:
+            this.check_risk.reset_entries();
+            this.check_side.reset_entries();
+            this.is_reload = true;  // set reload flag to true.
+
+            // Decrementing the page:
+            // TODO: Skip inputs that were previously skipped
+            // Get previously seen input (or skip, if q_order[this.entry_ix] in skiplist?)
+            // Note: Also must ensure that elements from the skiplist are removed when they are passed upon a back-button click!
+            this.entry_ix--;
+            $("#" + q_order[this.entry_ix] + "-q").css('display', 'flex');
+            $("#" + q_order[this.entry_ix + 1] + "-q").hide();
+            $(".continue-btn").css('display', 'inline-block');
+
+
+            if (this.entry_ix === 0) {
+                $(".back-btn").hide();
+            }
+
+            // Removal of highlighting classes:
+            $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
+        }
     }
 
 }
