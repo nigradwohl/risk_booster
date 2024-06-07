@@ -150,9 +150,9 @@ class RiskCollection {
 
         // Second approach:
         this.ntab.msums1 = nsums1
-            .map((val, ix) => compare_vals(Math.round(nsums1[1 - ix] * psums1[ix]/psums1[1 - ix]), val, 1));
+            .map((val, ix) => compare_vals(Math.round(nsums1[1 - ix] * psums1[ix] / psums1[1 - ix]), val, 1));
         this.ntab.msums2 = nsums2
-            .map((val, ix) => compare_vals(Math.round(nsums2[1 - ix] * psums2[ix]/psums2[1 - ix]), val, 1));
+            .map((val, ix) => compare_vals(Math.round(nsums2[1 - ix] * psums2[ix] / psums2[1 - ix]), val, 1));
 
     }
 
@@ -257,13 +257,21 @@ class RiskCollection {
         // Ensure that margins are completed beforehand!
         this.ntab.complete_margins();
 
+        console.log("Input margin tables");
+        console.log(JSON.stringify(this.mtab1));
+        console.log(JSON.stringify(this.mtab2));
+
         // Get the margin tables:
-        this.mtab1.tab = this.ntab.tab.tab2x2
+        this.mtab1.tab.tab2x2 = this.ntab.tab.tab2x2
             .map((x, ix) => x
-                .map(y => y / this.ntab.msums1[ix]));
-        this.mtab2.tab = transpose(this.ntab.tab.tab2x2)
+                .map((y, iy) => compare_vals(this.mtab1.tab.tab2x2[ix][iy], y / this.ntab.msums1[ix], 0.005)));
+        this.mtab2.tab.tab2x2 = transpose(this.ntab.tab.tab2x2)
             .map((x, ix) => x
-                .map(y => y / this.ntab.msums2[ix]));
+                .map((y, iy) => compare_vals(this.mtab2.tab.tab2x2[ix][iy], y / this.ntab.msums2[ix], 0.005)));
+
+        console.log("Intermediate margin tables");
+        console.log(JSON.stringify(this.mtab1));
+        console.log(JSON.stringify(this.mtab2));
 
         // Try to complete the margin tables:
         this.mtab1.get_from_rel();
@@ -287,7 +295,7 @@ class RiskCollection {
 
         // console.log(transpose(this.mtab2.tab));
 
-        const tab_from_margins = transpose(this.mtab2.tab
+        const tab_from_margins = transpose(this.mtab2.tab.tab2x2
             .map((x, ix) => x
                 .map(y => Math.round(y * curmsums[ix]))));
 
@@ -310,7 +318,7 @@ class RiskCollection {
 
         if (arr !== undefined) {
             const expr = "this" + get_expression(arr) + ` = ${val}`;  // add target value.
-            // console.log(expr);
+            console.log(expr);
 
             try {
                 eval(expr);
@@ -339,13 +347,11 @@ class RiskCollection {
 
         this.mtab1 = new Margintable(na_tab,  // condition.
             [NaN, NaN],
-            [NaN, NaN],
-            NaN);
+            [NaN, NaN]);
 
         this.mtab2 = new Margintable(na_tab,  // condition.
             [NaN, NaN],
-            [NaN, NaN],
-            NaN);
+            [NaN, NaN]);
         console.log("Cleared all");
         console.log(this);
     }
@@ -538,6 +544,8 @@ class Margintable {
 
         // Potentially make more concise?
         // Add other dimensions?
+        console.log("Margintable before:");
+        console.log(JSON.stringify(this));
 
         // Margins should be designed so that the arrays add up to 1.
 
@@ -545,25 +553,29 @@ class Margintable {
         this.rel2[0] = isNaN(this.rel2[0]) ? 1 / this.rel2[1] : this.rel2[0];
         this.rel2[1] = isNaN(this.rel2[1]) ? 1 / this.rel2[0] : this.rel2[1];
 
+        const curtab = this.tab.tab2x2;
+
+
         // Note: Currently ONLY for dim1 in margin table!
-        this.tab[1][1] = compare_vals(this.tab[0][1] / this.rel2[0], this.tab[1][1], 0.005);
+        curtab[1][1] = compare_vals(curtab[1][1], curtab[0][1] / this.rel2[0], 0.005);
         // Was: isNaN(this.tab[1][1]) ? this.tab[0][1] / this.rel2[0] : this.tab[1][1];
-        this.tab[0][1] = compare_vals(this.tab[1][1] / this.rel2[1], this.tab[0][1], 0.005);
+        curtab[0][1] = compare_vals(curtab[0][1], curtab[1][1] / this.rel2[1], 0.005);
         // isNaN(this.tab[0][1]) ? this.tab[1][1] / this.rel2[1] : this.tab[0][1];
 
+
         // Try completing missing fields (adding up t 1 within array[0] and array[1]:
-        this.tab[0][0] = compare_vals(1 - this.tab[0][1], this.tab[0][0], 0.005);
+        curtab[0][0] = compare_vals(1 - curtab[0][1], curtab[0][0], 0.005);
         // isNaN(this.tab[0][0]) ? 1 - this.tab[0][1] : this.tab[0][0];
-        this.tab[0][1] = compare_vals(1 - this.tab[0][0], this.tab[0][1], 0.005);
+        curtab[0][1] = compare_vals(1 - curtab[0][0], curtab[0][1], 0.005);
         // isNaN(this.tab[0][1]) ? 1 - this.tab[0][0] : this.tab[0][1];
-        this.tab[1][0] = compare_vals(1 - this.tab[1][1], this.tab[1][0], 0.005);
+        curtab[1][0] = compare_vals(1 - curtab[1][1], curtab[1][0], 0.005);
         // isNaN(this.tab[1][0]) ? 1 - this.tab[1][1] : this.tab[1][0];
-        this.tab[1][1] = compare_vals(1 - this.tab[1][0], this.tab[1][1], 0.005);
+        curtab[1][1] = compare_vals(1 - curtab[1][0], curtab[1][1], 0.005);
         // isNaN(this.tab[1][1]) ? 1 - this.tab[1][0] : this.tab[1][1];
 
 
-        // console.log("Margintable:");
-        // console.log(this);
+        console.log("Margintable after:");
+        console.log(JSON.stringify(this));
     }
 
 

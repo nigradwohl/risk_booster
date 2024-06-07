@@ -252,7 +252,7 @@ class Checklist {
     increment_or_skip() {
         // Check whether input can be skipped: ~~~~~~~~~~~~
         console.log("+++ CHECK IF SKIPPABLE +++");
-        const skiplist = ["n-total", "p-treat"];
+        const skiplist = ["n-total", "p-treat", "p-side"];  // Make p-side or n-side skippable, if both were provided!
         const cur_entry = q_order[this.entry_ix];
         let next_entry;
 
@@ -270,28 +270,32 @@ class Checklist {
 
             if (skiplist.includes(next_entry)) {
 
-                console.log("Index array");
-                const ref_ix = id_to_num_dict[next_entry];
-                console.log(ref_ix);
-
                 // Get the previous value for the field(s):
-                let prevval;
-                if (eff_keys.includes(ref_ix)) {
-                    // Get from effectivity object if not in side-keys:
-                    prevval = this.check_risk.get_by_arr(number_dict[ref_ix]);
-                }
-                if (side_keys.includes(ref_ix)) {
-                    prevval = this.check_side.get_by_arr(number_dict[ref_ix]);
+                let prevvals = [];
+
+                for (const inp of q_inputs[next_entry]) {
+
+                    console.log("Index array");
+                    const ref_ix = id_to_num_dict[inp];
+                    console.log(ref_ix);
+
+                    if (eff_keys.includes(ref_ix)) {
+                        // Get from effectivity object if not in side-keys:
+                        prevvals = prevvals.concat(this.check_risk.get_by_arr(number_dict[ref_ix]));
+                    }
+                    if (side_keys.includes(ref_ix)) {
+                        prevvals = prevvals.concat(this.check_side.get_by_arr(number_dict[ref_ix]));
+                    }
                 }
 
 
-                console.log(`Previous value was ${prevval}`);
-                console.log(prevval);
+                console.log(`Previous value was ${prevvals}`);
+                console.log(prevvals);
 
                 // MAY ALSO TEST MULTIPLE INPUTS in loop/map!
 
                 // SKip, if value exists in object:
-                if (!isNaN(prevval)) {
+                if (!prevvals.includes(NaN)) {
                     skip = true;  // May be done more sophisticated in the future!
                 }
 
@@ -399,11 +403,6 @@ class Checklist {
             $("#results-2-error").show();
         }
 
-
-        // Clear the risk object: ~~~~~~~~~~~~~~~~
-        this.check_risk.reset_entries();  // TODO: Handle properly!
-        this.check_side.reset_entries();
-
         // Adding functionality: ~~~~~~~~~~~~~~~~~~
         // Add button for saving the page:
         buttonPrintOrSaveDocument.addEventListener("click", printOrSave);  // allow saving.
@@ -447,7 +446,9 @@ class Checklist {
         // console.log(`N is ${this.check_risk.ntab.N}`);
 
         console.log("~~~~~~ Final risk objects ~~~~~~");
+        console.log("Effectivity:");
         console.log(this.check_risk);
+        console.log("Side effects:");
         console.log(this.check_side);
 
         console.log("~~~~~~ Calculate the risks ~~~~");
@@ -761,6 +762,7 @@ const q_order = [
     // "or-case",
     // "side",
     "n-side",
+    "p-side",
     "results"
 ];
 // ORDER WILL BE FLEXIBLE!
@@ -773,6 +775,7 @@ const q_inputs = Object.fromEntries(q_order.map((x) => [x, [x]]));
 q_inputs["n-case"] = ["n-case-impf", "n-case-control"];
 q_inputs["n-treat-control"] = ["n-impf", "n-control"];
 q_inputs["n-side"] = ["n-side-impf", "n-side-control"];
+q_inputs["p-side"] = ["p-side-impf", "p-side-control"];
 console.log(q_inputs);
 
 /**
@@ -790,7 +793,9 @@ const id_to_num_dict = {
     // cases are second row (index 1)
     "n-case-control": "n10",  // cases among untreated (cases: 1, treatment: 0)
     "n-side-impf": "n11s",
-    "n-side-control": "n10s"
+    "n-side-control": "n10s",
+    "p-side-impf": "mtx1s",
+    "p-side-control": "mtx0s"
 }
 
 const eff_keys = ["N_tot",
@@ -808,7 +813,8 @@ const side_keys = ["N_tot",
     "msum0xs", "msum1xs",
     "rrrs",
     "p00s", "p01s", "p10s", "p11s",
-    "mpx0s", "mpx1s"
+    "mpx0s", "mpx1s",
+    "mtx0s", "mtx1s"
 ]
 
 
@@ -850,6 +856,8 @@ const number_dict = {
     // Side-effect info:
     "n10s": ["ntab", "tab", "tab2x2", 1, 0],
     "n11s": ["ntab", "tab", "tab2x2", 1, 1],
+    "mtx0s": ["mtab2", "tab", "tab2x2", 0, 1],
+    "mtx1s": ["mtab2", "tab", "tab2x2", 1, 1],
     // Non-numeric info:
     "any_control": []
 }
@@ -883,8 +891,9 @@ const int_keys = ["N_tot",
     "msum10", "msum11"];
 const float_keys = ["rrr",
     "p00", "p01", "p10", "p11",
-    "mpx0"]
-const perc_keys = ["rrr", "mpx1"]
+    "mpx0",
+    "mtx0s", "mtx1s"]
+const perc_keys = ["rrr", "mpx1", "mtx0s", "mtx1s"]
 
 
 // FUNCTIONS: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
