@@ -581,14 +581,14 @@ class Checklist {
                     console.log(`Update objects ${cur_q_key}:`);
                     console.log(number_dict[cur_q_key]);
 
-                    console.log(`Side keys ${side_keys.includes(cur_q_key)} or eff keys? ${eff_keys.includes(cur_q_key)}`)
-
-                    if (side_keys.includes(cur_q_key)) {
-                        this.check_side.update_by_arr(number_dict[cur_q_key], checked_val);
-                    }
+                    console.log(`Side keys: ${side_keys.includes(cur_q_key)}, eff keys: ${eff_keys.includes(cur_q_key)}`)
 
                     if (eff_keys.includes(cur_q_key)) {
                         this.check_risk.update_by_arr(number_dict[cur_q_key], checked_val);
+                    }
+
+                    if (side_keys.includes(cur_q_key)) {
+                        this.check_side.update_by_arr(number_dict[cur_q_key], checked_val);
                     }
 
                 } else {

@@ -257,9 +257,9 @@ class RiskCollection {
         // Ensure that margins are completed beforehand!
         this.ntab.complete_margins();
 
-        console.log("Input margin tables");
-        console.log(JSON.stringify(this.mtab1));
-        console.log(JSON.stringify(this.mtab2));
+        // console.log("Input margin tables");
+        // console.log(JSON.stringify(this.mtab1));
+        // console.log(JSON.stringify(this.mtab2));
 
         // Get the margin tables:
         this.mtab1.tab.tab2x2 = this.ntab.tab.tab2x2
@@ -269,9 +269,9 @@ class RiskCollection {
             .map((x, ix) => x
                 .map((y, iy) => compare_vals(this.mtab2.tab.tab2x2[ix][iy], y / this.ntab.msums2[ix], 0.005)));
 
-        console.log("Intermediate margin tables");
-        console.log(JSON.stringify(this.mtab1));
-        console.log(JSON.stringify(this.mtab2));
+        // console.log("Intermediate margin tables");
+        // console.log(JSON.stringify(this.mtab1));
+        // console.log(JSON.stringify(this.mtab2));
 
         // Try to complete the margin tables:
         this.mtab1.get_from_rel();
@@ -314,8 +314,7 @@ class RiskCollection {
     // Update by array index:
     update_by_arr(arr, val) {
 
-        // console.log(arr);
-
+        console.log(arr);
         console.log(JSON.stringify(this));
 
         if (arr !== undefined) {
@@ -340,19 +339,19 @@ class RiskCollection {
 
     reset_entries() {
 
-        this.ntab = new Basetable(na_tab,  // condition.
+        this.ntab = new Basetable([[NaN, NaN], [NaN, NaN]],  // condition.
             [NaN, NaN],
             [NaN, NaN],
             NaN);
         this.ptab = new Basetable(
-            na_tab,
+            [[NaN, NaN], [NaN, NaN]],
             [NaN, NaN], [NaN, NaN], 1);
 
-        this.mtab1 = new Margintable(na_tab,  // condition.
+        this.mtab1 = new Margintable([[NaN, NaN], [NaN, NaN]],  // condition.
             [NaN, NaN],
             [NaN, NaN]);
 
-        this.mtab2 = new Margintable(na_tab,  // condition.
+        this.mtab2 = new Margintable([[NaN, NaN], [NaN, NaN]],  // condition.
             [NaN, NaN],
             [NaN, NaN]);
         console.log("Cleared all");
