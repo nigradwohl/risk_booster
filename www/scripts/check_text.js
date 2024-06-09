@@ -364,6 +364,8 @@ $(document).ready(function () {
                         "freq_ncase_contr_eff": "Anzahl Fälle Vergleichsgruppe",
                         "freq_ntot_treat_eff": "Anzahl Behandelte",
                         "freq_ntot_contr_eff": "Anzahl Vergleichsgruppe",
+                        "freq_ncase_treat_side": "Anzahl Nebenwirkungen Behandelte",
+                        "freq_ncase_contr_side": "Anzahl Nebenwirkungen Vergleichsgruppe",
                         // Oddities (that may be fixed eventually):
                         "freq_ntot_unknown_unknown": "Gesamtzahl Personen",  // if the subgroup cannot  be identified it may be something else.
                         "freq_ntot_all_unknown": "Gesamtzahl Personen",  // Likewise if it apples to all.
@@ -1142,7 +1144,7 @@ const numtype_keyset = {
             [RegExp("Fälle|Verläufe"), RegExp("insgesamt|nach|Studie")],
             [RegExp("[Ee]rkrankt|[Bb]etroffen")],
             [RegExp("Todesfälle")],
-            [RegExp("verst[aeo]rben"), RegExp("Personen|Teilnehm|[Gg]ruppe")],
+            [RegExp("verst[aeo]rben"), RegExp("Person|Teilnehm|[Gg]ruppe")],
             // Reporting certain effects in study:
             [RegExp("berichte(te)?n|entwickel|beobacht"), RegExp("Unwohlsein|Nebenwirkungen")],
             [RegExp("berichte(te)?n"), RegExp("wohl"), RegExp("fühlen")]
@@ -1151,9 +1153,12 @@ const numtype_keyset = {
     "ntot": {
         "number_unit": ["freq"],
         "keyset": [
-            [RegExp("Proband|[Tt]eilnehme|[Pp]ersonen|Menschen|Frauen|Männer|Kinder"),
+            [RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder"),
                 RegExp(collapse_regex_or(["insgesamt", "nahmen",
-                    "Studie", "Untersuchung", "umfass(t|en)", "erh(a|ie)lten", "jeweils"]))]
+                    "Studie", "Untersuchung", "erh(a|ie)lten", "jeweils"]))],
+            [RegExp("Studie"),
+                RegExp(collapse_regex_or(["umfass(t|en)"])),
+            RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder")]
         ]
     }
 }
