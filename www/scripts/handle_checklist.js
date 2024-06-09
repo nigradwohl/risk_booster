@@ -1,5 +1,3 @@
-
-
 $(document).ready(function () {
 
     // let entry_ix = 0;  // index for the current entry.
@@ -15,16 +13,39 @@ $(document).ready(function () {
 
     // TODO: Here the set of wordings has to be adjusted to the case!
     // Note: The outcome may be selected on a first page?
+    let typeword = "Einflussgröße";
+    let typeverb = "behandelt";
+    let addinfo_rrr = "";
 
-    if(text === "treat"){
-        $("#case-test").text("Behandlung");
-        $("#cur-topic").text("Behandlung");
+    let info_treat = "haben die Behandlung (z.B. das Medikament) erhalten";
+    let info_treat2 = "Behandelt";
+    let info_contr = "waren in der Vergleichsgruppe (z.B., Placebo)";
+    let info_contr2 = "Vergleichsgruppe";
+
+    if (text === "treat") {
+        typeword = "Behandlung";
     } else if (text === "impf") {
-        $("#case-test").text("Impfung");
-        $("#cur-topic").text("Impfung");
+        typeword = "Impfung";
+        typeverb = "geimpft";
+        addinfo_rrr = "Manchmal wird diese Zahl auch als \"Impfschutz\" bezeichnet." +
+            "<br>" +
+            "Unter dem Begriff der Impfstoffwirksamkeit versteht man in der Regel,\n" +
+            "wie viele Prozent weniger in der Gruppe der Geimpften erkranken."
+        info_treat = "wurden geimpft";
+        info_treat2 = "Geimpft";
+        info_contr2 = "Ungeimpft";
     }
 
+    $("#case-test").text(typeword);
+    $("#cur-topic").text(typeword);
+    $(".typeword").text(typeword);  // Set wordings
+    $(".typeverb").text(typeverb);  // Set wordings
+    $(".addinfo-rrr").html(addinfo_rrr);
 
+    $(".info-treat").text(info_treat);
+    $(".info-treat2").text(info_treat2);
+    $(".info-control").text(info_contr);
+    $(".info-control2").text(info_contr2);
 
     // Preparations:
     const cur_checklist = new Checklist(q_order);  // create a new checklist instance.

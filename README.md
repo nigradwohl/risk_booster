@@ -39,6 +39,7 @@ Features are sorted by importance and are further split by features that should 
 
 ## Checklist
 
+* look for articles and press releases
 * Implement treatment case (wording!)
 * Implement additional questions as needed (e.g., AR or ARR for side effects)
 * Calculation from AR in 1 group (+ rel) possible?

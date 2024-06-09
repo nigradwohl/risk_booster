@@ -115,7 +115,8 @@
                         <button id="acknowledge-incompatible">Zurück zur Eingabe</button>
                     </div>
 
-<!--                    Start of questions:-->
+                    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+                    <!-- Start of questions:-->
                     <div class="checklist-question" id="start-q">
 
                         <div class="question-content">
@@ -123,14 +124,23 @@
                                 <span id="cur-topic"></span>
                             </p>
                             <p>
-                                Prüfen Sie, ob die Ihnen vorliegenden Risikoinformationen eine transparente Darstellung erlauben.
-                                Geben Sie auf den folgenden Seiten die risiko Informationen ein, die Sie zur Verfügung haben.
-
-                                Wenn Ihnen Informationen fehlen, lassen Sie sie aus (Sie werden gefragt, ob Sie ein Feld absichtlich frei gelassen haben).
-
-                                Mit den Pfeilen links und rechts können Sie navigieren.
-                                <!--                                <button class="checklist-button continue-btn">Weiter</button>-->
+                                Prüfen Sie, ob die Ihnen vorliegenden Risikoinformationen eine transparente Darstellung
+                                erlauben.
+                                Geben Sie dazu auf den folgenden Seiten die Risikoinformationen ein, die Sie zur
+                                Verfügung haben.
                             </p>
+
+                            <p>
+                                Wenn Ihnen Informationen fehlen, lassen Sie sie aus (Sie werden gefragt, ob Sie ein Feld
+                                absichtlich frei gelassen haben).
+                            </p>
+
+
+                            <p>
+                                Mit den Pfeilen links und rechts können Sie navigieren.
+                            </p>
+
+                            <!--                                <button class="checklist-button continue-btn">Weiter</button>-->
 
 
                             <!--                            <p>-->
@@ -152,7 +162,9 @@
                     <div class="checklist-question" id="rel-risk-reduction-q">
 
                         <div class="question-content">
-                            <p class="checklist-qtext">Welche Wirksamkeit oder Effektivität wurde angegeben? (Englisch:
+                            <p class="checklist-qtext">Welche Wirksamkeit oder Effektivität
+                                der <span class="typeword"></span>
+                                wurde angegeben? (Englisch:
                                 Effectivity)</p>
                             <p>
                                 Bitte geben Sie die
@@ -160,11 +172,8 @@
                                     Wirksamkeit
                                     <span class="tooltiptext tooltip-checklist">
                                         <i class="fa fa-exclamation-triangle"></i>
-                                Manchmal wird diese Zahl auch als "Impfschutz" bezeichnet.
-                                        <!--                                <strong>Weitere Begriffe?</strong>-->
-                                        <br>
-                                        Unter dem Begriff der Impfstoffwirksamkeit versteht man in der Regel,
-                                wie viele Prozent weniger in der Gruppe der Geimpften erkranken.
+                                        Ist häufig eine <a href="risk_wiki.html#wiki-rel">relative Risikoreduktion</a>
+                                <span class="addinfo-rrr"></span>
                         </span>
                                 </span>
                                 in Prozent an.
@@ -225,18 +234,18 @@
                     <div class="checklist-question" id="n-treat-control-q">
                         <div class="question-content">
                             <p class="checklist-qtext">
-                                Wie viele Personen wurden Geimpft [erhielten das Medikament?
-                                Wie viele waren in der Vergleichsgruppe (bekamen ein Placebo, wurden nicht behandelt oä.)?
+                                Wie viele Personen <span class="info-treat"></span>?
+                                Wie viele <span class="info-control"></span>?
                             </p>
 
                             <table>
                                 <tr>
-                                    <td><label>Anzahl Geimpfte [Behandelte]</label></td>
+                                    <td><label>Anzahl <span class="info-treat2"></span></label></td>
                                     <td><input class="checklist-input" id="n-impf" type="text"></td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <label>Anzahl ungeimpfte [Vergleichsgruppe] (z.B. Placebo)</label>
+                                        <label>Anzahl <span class="info-control2"></span></label>
                                     </td>
                                     <td>
                                         <input class="checklist-input" id="n-control" type="text">
@@ -249,20 +258,24 @@
 
                     <div class="checklist-question" id="p-treat-q">
                         <div class="question-content">
-                            <p class="checklist-qtext">Welcher Anteil der Personen wurde geimpft?</p>
+                            <p class="checklist-qtext">
+                                Welcher Anteil der Personen wurde <span class="typeverb"></span>?
+                            </p>
 
                             <!--                            ACHTUNG: Plausible Ganzzahlen ggf. umformulieren!-->
                             <input class="checklist-input" id="p-treat" type="text">
 
-                            <br>
-                            <button class="checklist-button continue-btn">Weiter</button>
+<!--                            <br>-->
+<!--                            <button class="checklist-button continue-btn">Weiter</button>-->
                         </div>
                     </div>
 
                     <div class="checklist-question" id="n-case-q">
                         <div class="question-content">
                             <p class="checklist-qtext">
-                                Wie viele Personen sind jeweils in der Impfgruppe und der Kontrollgruppe erkrankt?
+                                Wie viele Personen sind jeweils unter den
+                                <span class="info-treat2"></span>en
+                                und in der Vergleichsgruppe (Kontrollgruppe) erkrankt?
                                 [Outcome for treatment case: mortality? ask Helge]
                             </p>
                             <!--                        TODO: Eventually translate to grid layout?-->
@@ -270,7 +283,8 @@
                                 <tr>
                                     <td>
                                         <label for="n-case-impf">
-                                            Erkrankungen unter den Geimpften</label>
+                                            Erkrankungen unter den <span class="info-treat2"></span>en
+                                        </label>
                                     </td>
                                     <td>
                                         <input class="checklist-input" id="n-case-impf" name="n-case-impf" type="text">
@@ -278,7 +292,7 @@
                                 </tr>
                                 <tr>
                                     <td><label for="n-case-control">
-                                        Erkrankungen in der Kontrollgruppe (Placebogruppe/Ungeimpfte)
+                                        Erkrankungen in der Vergleichsgruppe (Placebogruppe/<span class="info-control2"></span>)
                                     </label></td>
                                     <td>
                                         <input class="checklist-input" id="n-case-control" name="n-case-control"
@@ -314,15 +328,15 @@
                     <div class="checklist-question" id="n-side-q">
                         <div class="question-content">
                             <p class="checklist-qtext">
-                                Für wie viele Personen wurden in der Impfgruppe und
-                                der Kontrollgruppe jeweils Nebenwirkungen beobachtet?
+                                Für wie viele Personen wurden unter den <span class="info-treat2"></span>en und in
+                                der <span class="info-control"></span> jeweils Nebenwirkungen beobachtet?
                             </p>
                             <!--                        TODO: Eventually translate to grid layout?-->
                             <table>
                                 <tr>
                                     <td>
                                         <label for="n-side-impf">
-                                            Nebenwirkungen unter den Geimpften
+                                            Nebenwirkungen unter den <span class="info-treat2"></span>en
                                         </label>
                                     </td>
                                     <td>
@@ -331,7 +345,7 @@
                                 </tr>
                                 <tr>
                                     <td><label for="n-side-control">
-                                        Nebenwirkungen in der Kontrollgruppe (Placebogruppe/Ungeimpfte)
+                                        Nebenwirkungen in der Vergleichsgruppe (Placebogruppe/<span class="info-control2"></span>)
                                     </label></td>
                                     <td>
                                         <input class="checklist-input" id="n-side-control" name="n-side-control"
@@ -346,8 +360,8 @@
                     <div class="checklist-question" id="p-side-q">
                         <div class="question-content">
                             <p class="checklist-qtext">
-                                Für welchen Anteil der Personen wurden in der Impfgruppe und
-                                der Kontrollgruppe jeweils Nebenwirkungen beobachtet?
+                                Für welchen Anteil der Personen wurden unter den <span class="info-treat2"></span>en und
+                                den <span class="info-control2"></span>en jeweils Nebenwirkungen beobachtet?
                             </p>
                             <p>
                                 Bitte geben Sie die Anteile in Prozent (d.h., Zahlen zwischen 0 und 100 an).
@@ -356,7 +370,7 @@
                                 <tr>
                                     <td>
                                         <label for="p-side-impf">
-                                            Nebenwirkungen unter den Geimpften
+                                            Nebenwirkungen unter den <span class="info-treat2"></span>en
                                         </label>
                                     </td>
                                     <td>
@@ -365,7 +379,7 @@
                                 </tr>
                                 <tr>
                                     <td><label for="p-side-control">
-                                        Nebenwirkungen in der Kontrollgruppe (Placebogruppe/Ungeimpfte)
+                                        Nebenwirkungen in der Vergleichsgruppe (Placebogruppe/<span class="info-control2"></span>)
                                     </label></td>
                                     <td>
                                         <input class="checklist-input" id="p-side-control" name="p-side-control"
