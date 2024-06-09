@@ -39,12 +39,9 @@ Features are sorted by importance and are further split by features that should 
 
 ## Checklist
 
-* look for articles and press releases
-* Implement treatment case (wording!)
+* look for articles and press releases to process
 * Implement additional questions as needed (e.g., AR or ARR for side effects)
 * Calculation from AR in 1 group (+ rel) possible?
-* Handling contradictory entries
-* fix persistent issues (especially: going back; maybe handle by cleaning the object)
 
 ### Nice to have
 
