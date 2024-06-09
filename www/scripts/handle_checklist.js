@@ -19,11 +19,16 @@ $(document).ready(function () {
 
     let info_treat = "haben die Behandlung (z.B. das Medikament) erhalten";
     let info_treat2 = "Behandelt";
-    let info_contr = "waren in der Vergleichsgruppe (z.B., Placebo)";
+    let info_contr = "Vergleichsgruppe (z.B., Placebo)";
     let info_contr2 = "Vergleichsgruppe";
+
+    let outcome = {};
 
     if (text === "treat") {
         typeword = "Behandlung";
+
+        outcome = {"verb": ["versterben", "sind verstorben"], "noun": "Todsfälle"};
+
     } else if (text === "impf") {
         typeword = "Impfung";
         typeverb = "geimpft";
@@ -34,6 +39,8 @@ $(document).ready(function () {
         info_treat = "wurden geimpft";
         info_treat2 = "Geimpft";
         info_contr2 = "Ungeimpft";
+
+        outcome = {"verb": ["erkranken", "erkrankt"], "noun": "Erkrankungen"};
     }
 
     $("#case-test").text(typeword);
@@ -47,8 +54,11 @@ $(document).ready(function () {
     $(".info-control").text(info_contr);
     $(".info-control2").text(info_contr2);
 
+    $(".outcome-noun").text(outcome.noun);
+    $(".outcome-verb").text(outcome.verb[1]);
+
     // Preparations:
-    const cur_checklist = new Checklist(q_order);  // create a new checklist instance.
+    const cur_checklist = new Checklist(q_order, outcome);  // create a new checklist instance.
     // const check_risk = new RiskCollection();
     // console.log(check_risk);
 
@@ -166,8 +176,10 @@ $(document).ready(function () {
  */
 
 class Checklist {
-    constructor(q_order) {
+    constructor(q_order, outcome) {
         this.q_order = q_order;
+        this.outcome = outcome;
+
         this.entry_ix = 0;
 
         this.is_skip = false;
@@ -539,9 +551,9 @@ class Checklist {
         const eff_risks = get_risk_set(eff_group_risks);
 
         // Assign the information to the objects in results page:
-        $("#risk-treat").text(eff_risks.risk_treat_nh);
-        $("#risk-control").text(eff_risks.risk_control_nh);
-        $("#abs-change").html(`Absolute${eff_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe erkranken <span class="risk-info" id="arr">${eff_risks.arr_p}</span>`);
+        $("#risk-treat").text(this.outcome.verb[0] + " " + eff_risks.risk_treat_nh);
+        $("#risk-control").text(this.outcome.verb[0] + " " + eff_risks.risk_control_nh);
+        $("#abs-change").html(`Absolute${eff_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe ${this.outcome.verb[0]} <span class="risk-info" id="arr">${eff_risks.arr_p}</span>`);
         $("#rel-change").html(`Relative${eff_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${eff_risks.rrr_p}</span>`);
         // Rounding can eventually be improved!
 

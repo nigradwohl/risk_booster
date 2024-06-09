@@ -235,7 +235,7 @@
                         <div class="question-content">
                             <p class="checklist-qtext">
                                 Wie viele Personen <span class="info-treat"></span>?
-                                Wie viele <span class="info-control"></span>?
+                                Wie viele waren in der <span class="info-control"></span>?
                             </p>
 
                             <table>
@@ -275,15 +275,15 @@
                             <p class="checklist-qtext">
                                 Wie viele Personen sind jeweils unter den
                                 <span class="info-treat2"></span>en
-                                und in der Vergleichsgruppe (Kontrollgruppe) erkrankt?
-                                [Outcome for treatment case: mortality? ask Helge]
+                                und in der Vergleichsgruppe (Kontrollgruppe) <span class="outcome-verb">erkrankt</span>?
+                                [Outcome for treatment case: mortality? symptoms? ask Helge]
                             </p>
                             <!--                        TODO: Eventually translate to grid layout?-->
                             <table>
                                 <tr>
                                     <td>
                                         <label for="n-case-impf">
-                                            Erkrankungen unter den <span class="info-treat2"></span>en
+                                            <span class="outcome-noun">Erkrankungen</span> unter den <span class="info-treat2"></span>en
                                         </label>
                                     </td>
                                     <td>
@@ -292,7 +292,7 @@
                                 </tr>
                                 <tr>
                                     <td><label for="n-case-control">
-                                        Erkrankungen in der Vergleichsgruppe (Placebogruppe/<span class="info-control2"></span>)
+                                        <span class="outcome-noun">Erkrankungen</span> in der Vergleichsgruppe (Placebogruppe/<span class="info-control2"></span>)
                                     </label></td>
                                     <td>
                                         <input class="checklist-input" id="n-case-control" name="n-case-control"
@@ -361,7 +361,7 @@
                         <div class="question-content">
                             <p class="checklist-qtext">
                                 Für welchen Anteil der Personen wurden unter den <span class="info-treat2"></span>en und
-                                den <span class="info-control2"></span>en jeweils Nebenwirkungen beobachtet?
+                                der <span class="info-control2"></span> jeweils Nebenwirkungen beobachtet?
                             </p>
                             <p>
                                 Bitte geben Sie die Anteile in Prozent (d.h., Zahlen zwischen 0 und 100 an).
@@ -421,14 +421,14 @@
                                 <canvas id="dotdisplay-control" class="canvas-base"></canvas>
                             </div>
 
-                            <p class="grid-note1 content-start">erkranken<span class="risk-info"
+                            <p class="grid-note1 content-start"><span class="risk-info"
                                                                                id="risk-control"></span>
                             </p>
 
 
                             <!--                                Treatment group-->
 
-                            <p class="grid-note2 content-end">erkranken<span class="risk-info" id="risk-treat"></span>
+                            <p class="grid-note2 content-end"><span class="risk-info" id="risk-treat"></span>
                             </p>
 
                             <p class="grid-subhead2">In der Behandlungsgruppe</p>
