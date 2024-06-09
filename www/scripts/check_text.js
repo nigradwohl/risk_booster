@@ -1074,13 +1074,16 @@ const check_numbers_dict = {
     "year": {
         "regex": /(?<year>Jahr (18|19|20)\d{2})/dg
     },
+    "year2": {
+        "regex": /(?<year>(18|19|20)?\d{2}er)/dg
+    },
     "monyear": {
         "regex": RegExp("(?<year>(" + collapse_regex_or(["Januar", "Februar", "März", "April", "Mai", "Juni",
                   "Juli", "August", "September", "Oktober", "November",
-                  "Dezember"]) + ") (18|19|20)\\d{2})", "dg")
+                  "Dezember"]) + ") (18|19|20)?\\d{2})", "dg")
     },
     "yearrange": {
-        "regex": /(?<year>(zwischen|von) (18|19|20)\d{2} (und|bis) (18|19|20)\d{2})/dg
+        "regex": /(?<year>(zwischen|von) (18|19|20)\d{2} (und|bis) (18|19|20)?\d{2})/dg
     },
     "dur": {
         "regex": /(?<dur>[0-9]+(-stündig|-tägig| Minuten?| Stunden?| Tagen?| Wochen?| Monate?))/dg
