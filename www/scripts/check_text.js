@@ -158,7 +158,8 @@ $(document).ready(function () {
         token_dat.add_column(regex_matches.match_id, "match");
         token_dat.add_column(regex_matches.match_type.map((x) => x !== -1 ? x.toString() : x), "unit");  // get unit info from regex matches.
         token_dat.add_number_info();  // add info about numbers.
-        token_dat.detect_unit();  // get unti info from token data.
+        token_dat.add_column(token_dat.token.map((x, ix) => (RegExp(collapse_regex_or(numwords), "dg").test(x) && token_dat.unit[ix] !== -1)), "is_nw");  // is it a number word?
+        token_dat.detect_unit();  // get additional unit info from token data.
 
         // Detect topis:
         token_dat.detect_topic("impf", ["(?<!(gl|sch))[Ii]mpf"]);  // must be preceded
@@ -195,7 +196,9 @@ $(document).ready(function () {
 
         // Get rid of non-numbers (tokens that still contain incorrect patterns):
         const nonumpat = RegExp("\w*-?" + pat_num, "dg");
-        token_dat.is_num = token_dat.is_num.map((x, ix) => x && !token_dat.token[ix].search(nonumpat));
+        console.log("Before context detection:");
+        token_dat.print();
+        token_dat.is_num = token_dat.is_num.map((x, ix) => x && !nonumpat.test(token_dat.token[ix]));  // was: !token_dat.token[ix].search(nonumpat)
 
         // Detect missing units:
         // console.log(" +++ detecting missing units +++");
@@ -283,8 +286,14 @@ $(document).ready(function () {
         token_dat.add_column(token_dat.numtype.map((x) => !["incr", "decr", -1].includes(x) ? "abs" : x), "relabs");
 
         // Column for percentages <1%:
+        // Translate number words:
+        const num_arr = Array.from(Array(12).keys());
+        token_dat.add_column(token_dat.token
+            .map((x, ix) => token_dat.is_num[ix] && token_dat.is_nw[ix] ? 1 + num_arr[num_arr
+                .filter((ix) => RegExp(numwords[ix], "dg").test(x))].toString() : x), "trnum");
+
         token_dat.add_column(token_dat.unit.map((x, ix) => x === "perc" && token_dat.is_num[ix] ?
-            token_dat.token[ix].match(regex_num)[0].replace(",", ".") < 1 : -1), "smperc");
+            token_dat.trnum[ix].match(regex_num)[0].replace(",", ".") < 1 : -1), "smperc");
 
         for (const ix of n_change_ix) {
 
@@ -1020,10 +1029,16 @@ Other formats to detect: Odds ratio, ARR/RRR, NNT...
 
 // Constants:
 const pat_num = "(?:(?<![\\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,:][0-9]+)?))(?!\\\.[0-9A-Za-zÄÖÜäöüß]|[a-zA-Z0-9ÄÖÜäöüß])"
+const numwords = ["[Ee]ine?r?", "[Zz]wei(?!fe)", "[Dd]rei", "[Vv]ier", "[Ff]ünf", "[Ss]echs",
+    "[Ss]ieben", "[Aa]cht(?!e)", "[Nn]eun(?!k)", "[Zz]ehn", "[Ee]lf", "[Zz]wölf"]
+
+// TODO: DIctionary to translate:
+const numword_dict = {};
 
 const regex_num = new RegExp("(?<unknown>" + pat_num + ")", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
+const regex_numwords = new RegExp("(?<unknown>(" + collapse_regex_or(numwords) + ") (Person(en)?|F[aä]lle?))", "dg");
 const regex_perc = new RegExp("(?<perc>" + pat_num + " ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.?!])" + ")", "dg");
-const regex_nh = new RegExp("(?<nh>" + pat_num + " (\\w+ )?(von|aus|in) (\\w+ )?" + pat_num + ")", "dg");
+const regex_nh = new RegExp("(?<nh>" + pat_num + " (\\w+ )?(von|aus|in) (\\w+ )?" + pat_num + ")", "dg");  // TODO: Handle numberwords here.
 const regex_mult = new RegExp("(?<mult>" + pat_num + "[ \\-]?([Mm]al|[Ff]ach) (so )?( ?viele|gr[oö]ß|hoch|niedrig|besser|erhöht|höher)(?=[\\s.?!])" + ")", "dg");
 // Note: in regex_nh we may also try to get the denominator as a group or as its own entity.
 // nh must also be identified from tokens (e.g., In der Gruppe von 1000[case] Leuten sterben 4[num/case].
@@ -1044,6 +1059,12 @@ const check_numbers_dict = {
         "regex": regex_perc,
         // "tooltip": "Ich bin eine Prozentzahl und möchte gerne eine Referenz",
         // "note": "Sie haben eine Prozentzahl verwendet. Stellen Sie sicher, dass eine Referenz vorhanden ist [mögliche Referenz ggf. ausflaggen!]. klicken Sie [HIER] um mehr zu erfahren."
+    },
+    "perc_word": {
+        "regex": RegExp("(?<perc>(" + collapse_regex_or(numwords) + ") ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.?!])" + ")", "dg")
+    },
+    "freq_word": {
+        "regex": regex_numwords
     },
     "nh": {
         "regex": regex_nh,
@@ -1413,7 +1434,10 @@ class TokenData {
 
     // Functions to add specific information:
     add_number_info() {
-        this.add_column(this.token.map((x) => regex_num.test(x)), "is_num");
+        // console.log("Adding info what is a number:");
+        // console.log(this.token.map((x, ix) => regex_num.test(x) || (RegExp(collapse_regex_or(numwords), "dg").test(x) && this.unit[ix] !== -1)));
+        // this.add_column(this.token.map((x, ix) => regex_num.test(x)), "is_num");
+        this.add_column(this.token.map((x, ix) => regex_num.test(x) || (RegExp(collapse_regex_or(numwords), "dg").test(x) && this.unit[ix] !== -1)), "is_num");
     }
 
     // Method to detect and add units to detected numbers:
@@ -1424,7 +1448,6 @@ class TokenData {
         } else {
             this.add_column(detect_unit(this), "unit");
         }
-
     }
 
     // Method to detect topic information:
@@ -1894,8 +1917,8 @@ function investigate_context(token_data, index_arr, keyset) {
     // For each number query:
     for (const token_ix of index_arr) {
 
-        // console.log("-------- NEW TOKEN --------");
-        // console.log(`+++ Token number ${token_ix}: ${token_data.token[token_ix]} +++`);
+        console.log("-------- NEW TOKEN --------");
+        console.log(`+++ Token number ${token_ix}: ${token_data.token[token_ix]} +++`);
 
         // PREPARE THE WINDOW: ~~~~~~~~~~~~~~
         let testcounter = 0;  // testcounter to avoid infinite loops!
