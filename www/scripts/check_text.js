@@ -660,7 +660,7 @@ $(document).ready(function () {
                 feature_str = "<i class=\"fa fa-thumbs-down in-text-icon error\"></i>" + feature_str;
                 feature_str += " werden weder Informationen zu " +
                     value.fset.map((key) => feature_dict[key]).join(" noch " + value.zumzur) + " berichtet."
-                    // "<br>NOTE: In Wiki mention the reasons and that one should mention if the evidence is not based on a group comparison";
+                // "<br>NOTE: In Wiki mention the reasons and that one should mention if the evidence is not based on a group comparison";
             }
 
 
@@ -1378,11 +1378,10 @@ class TokenData {
                 const highlight = "font-weight: bold; color: red; font-style: italic; background-color: yellow";
                 // const normal = "font-weight: normal";
                 // console.log("A string with a %cbold%c word", bold, normal);
-                 console.log("%c" + rowstr, highlight);
+                console.log("%c" + rowstr, highlight);
             } else {
-                 console.log(rowstr);
+                console.log(rowstr);
             }
-
 
 
         }
@@ -1484,8 +1483,6 @@ function get_token_data(text) {
     for (let i = 0; i < text_tokens.length; i++) {
 
         token_i = text_tokens[i];
-
-        // TODO: Handle abbreviations and quotes!
 
         // Regex for token to ensure exact matching:
         if (["\\n\\*", ".", ":", ";", ",", "?", "!", "(", ")", "\"", "'", "/"].includes(token_i)) {
@@ -2390,7 +2387,11 @@ function detect_regex_match(txt, token_dat, check_dict) {
 function word_tokenizer(txt) {
 
     // console.log(txt);
+    // Define abbreviations and replace the point temporarily:
+    const abbrevs = ["mind", "z.B", "etc", "oä"];
+    txt = txt.replaceAll(RegExp("(?<=" + collapse_regex_or(abbrevs) + ")(\\.)", "gm"), "xABBREVx");
 
+    // Split the text into its tokens:
     const split = txt
         .replace(/([.,;?!:)])(?=\s)/g, ' $1')  // Ensure that punctuations becomes their own by adding a space before.
         .replace(/([.,;?!:])(?=$)/g, ' $1')
@@ -2398,6 +2399,8 @@ function word_tokenizer(txt) {
         .replace(/((?<=\s)[("'])/g, '$1 ')  // space after opening parentheses or quote.
         .replace(/(["'](?=\s))/g, ' $1')  // space before quotes.
         .split(/[\s\u2022]/g);
+
+    const out = split.map((x) => x.replace("xABBREVx", "."));  // re-replace the point.
 
     // console.log("Token split");
     // console.log(split);
@@ -2407,7 +2410,7 @@ function word_tokenizer(txt) {
     // Remove punctuation that is not within words.
     // Punctuation list: !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
     // return split.filter(x => !/(?<!\w)[.,/#!$%^&*;:{}=_`~()](?!\w)/g.test(x));
-    return split.filter(x => x);
+    return out.filter(x => x);
 }
 
 
