@@ -22,6 +22,16 @@ Features are sorted by importance and are further split by features that should 
 
 ## Text-checking tool 
 
+* If no treatment and control group: note that this might not be an experiment
+  (no causal statments possible)
+* handle the unhandled numbers 
+* years without classifier: 2000, 1900
+* life-expectancy: in wiki; at least social engineering
+* Comparison of different years/timeframes: can we identify and handle these?
+* instructions on which risk information we can handle (not years -- longer living etc.)
+* Handle the non-identified numbers (headings) 
+
+
 * Improve global feedback by restructuring it and making it perceptually easier
     + also add links to wiki 
 * Increase the number of test-texts that are successfully handled
@@ -39,7 +49,8 @@ Features are sorted by importance and are further split by features that should 
 
 ## Checklist
 
-* look for articles and press releases to process
+* look for articles and press releases to process (SciMedia center; JAMA network open!; BMJ, JAMA, Lancet, Annals of internal medicine, NEJM; Tim, get endpoints and superordinate terms; Cochrane?)
+* Superordinate statement: "Das uns interessierende **Ereignis**"
 * Implement additional questions as needed (e.g., AR or ARR for side effects)
 * Calculation from AR in 1 group (+ rel) possible?
 
