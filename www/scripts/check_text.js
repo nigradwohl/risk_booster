@@ -1022,7 +1022,7 @@ const regex_mult = new RegExp("(?<mult>" + pat_num + "[ \\-]?([Mm]al|[Ff]ach) (s
 // nh must also be identified from tokens (e.g., In der Gruppe von 1000[case] Leuten sterben 4[num/case].
 
 // Define units to not consider further:
-const units_exc = ["age", "currency", "time", "date", "year", "dur", "legal", "misc"];
+const units_exc = ["age", "currency", "time", "date", "year", "dur", "legal", "medical", "misc"];
 
 /*
 Tests for simple units:
@@ -1091,7 +1091,13 @@ const check_numbers_dict = {
         "regex": /(?<dur>[0-9]+(-stündig|-tägig| Minuten?| Stunden?| Tagen?| Wochen?| Monate?))/dg
     },
     "legal": {
-        "regex": /(?<legal>(Artikel|§|Absatz) ?\d+)/dg
+        "regex": /(?<legal>(Artikel|§|Absatz|Paragra(ph|f)) ?\d+)/dg
+    },
+    "medical": {
+        "regex": RegExp("(?<medical>(BMI|Diabetes Typ) ?" + pat_num + ")", "dg")
+    },
+    "medical_post": {
+        "regex": RegExp("(?<medical>" + pat_num + " (Gene))", "dg")
     },
     // Carry-forward match:
     "carry_forward_pre": {
@@ -1781,7 +1787,9 @@ const window_keys = {
     },
     "units": {
         "freq": ["Proband", "Teilnehm", "Infektion"],
-        "death": ["(ge|ver)st[aeo]rben"]
+        "death": ["(ge|ver)st[aeo]rben"],
+        // Units for exclusion:
+        "medical": ["BMI"]
     },
     "rel": {
         "rel": ["Wirksamkeit", "Impfschutz", "Schutzwirkung"]
