@@ -1020,11 +1020,14 @@ Other formats to detect: Odds ratio, ARR/RRR, NNT...
 
 // Constants:
 const pat_num = "(?:(?<![\\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,:][0-9]+)?))(?!\\\.[0-9A-Za-zÄÖÜäöüß]|[a-zA-Z0-9ÄÖÜäöüß])"
+const numwords = ["[Ee]in(er?)", "[Zz]wei(?!fe)", "[Dd]rei", "[Vv]ier", "[Ff]ünf", "[Ss]echs", "[Ss]ieben", "[Aa]cht(?!e)",
+    "[Nn]eun(?!k)", "[Zz]ehn", "[Ee]lf", "[Zz]wölf"]
 
 const regex_num = new RegExp("(?<unknown>" + pat_num + ")", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
 const regex_perc = new RegExp("(?<perc>" + pat_num + " ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.?!])" + ")", "dg");
-const regex_nh = new RegExp("(?<nh>" + pat_num + " (\\w+ )?(von|aus|in) (\\w+ )?" + pat_num + ")", "dg");
-const regex_mult = new RegExp("(?<mult>" + pat_num + "[ \\-]?([Mm]al|[Ff]ach) (so )?( ?viele|gr[oö]ß|hoch|niedrig|besser|erhöht|höher)(?=[\\s.?!])" + ")", "dg");
+// const regex_freq = new RegExp("(?<freq>(" + pat_num + "|" + collapse_regex_or(numwords) + ") (F[aä]lle?|Person(en)?)\\\w*(?=[\\s.?!])" + ")", "dg");
+const regex_nh = new RegExp("(?<nh>(" + pat_num + "|" + collapse_regex_or(numwords) + ") (\\w+ )?(von|aus|in) (\\w+ )?" + pat_num + ")", "dg");
+const regex_mult = new RegExp("(?<mult>(" + pat_num + "|" + collapse_regex_or(numwords) + ")[ \\-]?([Mm]al|[Ff]ach) (so )?( ?viele|gr[oö]ß|hoch|niedrig|besser|erhöht|höher)(?=[\\s.?!])" + ")", "dg");
 // Note: in regex_nh we may also try to get the denominator as a group or as its own entity.
 // nh must also be identified from tokens (e.g., In der Gruppe von 1000[case] Leuten sterben 4[num/case].
 
@@ -1045,6 +1048,16 @@ const check_numbers_dict = {
         // "tooltip": "Ich bin eine Prozentzahl und möchte gerne eine Referenz",
         // "note": "Sie haben eine Prozentzahl verwendet. Stellen Sie sicher, dass eine Referenz vorhanden ist [mögliche Referenz ggf. ausflaggen!]. klicken Sie [HIER] um mehr zu erfahren."
     },
+    "perc_word": {
+        "regex": regex_perc,
+        // "tooltip": "Ich bin eine Prozentzahl und möchte gerne eine Referenz",
+        // "note": "Sie haben eine Prozentzahl verwendet. Stellen Sie sicher, dass eine Referenz vorhanden ist [mögliche Referenz ggf. ausflaggen!]. klicken Sie [HIER] um mehr zu erfahren."
+    },
+    // "freq": {
+    //     "regex": regex_freq,
+    //     // "tooltip": "Ich bin eine Prozentzahl und möchte gerne eine Referenz",
+    //     // "note": "Sie haben eine Prozentzahl verwendet. Stellen Sie sicher, dass eine Referenz vorhanden ist [mögliche Referenz ggf. ausflaggen!]. klicken Sie [HIER] um mehr zu erfahren."
+    // },
     "nh": {
         "regex": regex_nh,
         // "tooltip": "Ich bin eine \"natürliche\" Häufigkeit",
