@@ -309,7 +309,7 @@ $(document).ready(function () {
         console.log("Updated token data:");
         console.log(token_dat);
         console.log(`${token_dat.nrow} rows and ${token_dat.ncol} columns`);
-        token_dat.print();  // print data from object.
+        token_dat.print(allnum_ix);  // print data from object.
 
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -510,7 +510,8 @@ $(document).ready(function () {
 
         // Notes about features (presence of effectivity and harm; reporting of comparison group):
         const feature_dict = {
-            "eff": "<a href='risk_wiki.html#wiki-effside'>Nutzen</a>", "side": "<a href='risk_wiki.html#wiki-effside'>Schaden</a>",
+            "eff": "<a href='risk_wiki.html#wiki-effside'>Nutzen</a>",
+            "side": "<a href='risk_wiki.html#wiki-effside'>Schaden</a>",
             "treat": "<a href='risk_wiki.html#wiki-treat'>Behandlungsgruppe</a>",
             "contr": "<a href='risk_wiki.html#wiki-control'>Kontrollgruppe</a>"
         };
@@ -1081,8 +1082,8 @@ const check_numbers_dict = {
     },
     "monyear": {
         "regex": RegExp("(?<year>(" + collapse_regex_or(["Januar", "Februar", "März", "April", "Mai", "Juni",
-                  "Juli", "August", "September", "Oktober", "November",
-                  "Dezember"]) + ") (18|19|20)?\\d{2})", "dg")
+            "Juli", "August", "September", "Oktober", "November",
+            "Dezember"]) + ") (18|19|20)?\\d{2})", "dg")
     },
     "yearrange": {
         "regex": /(?<year>(zwischen|von) (18|19|20)\d{2} (und|bis) (18|19|20)?\d{2})/dg
@@ -1164,7 +1165,7 @@ const numtype_keyset = {
                     "Studie", "Untersuchung", "erh(a|ie)lten", "jeweils"]))],
             [RegExp("Studie"),
                 RegExp(collapse_regex_or(["umfass(t|en)"])),
-            RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder")]
+                RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder")]
         ]
     }
 }
@@ -1241,7 +1242,7 @@ const unit_note_dict = {
         },
         "note": function (type_arr) {
             return "Der Text enthält <a href='risk_wiki.html#wiki-freq'>Anzahlen von Fällen</a>. "
-                // "Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
+            // "Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
         }
     },
     "mult": {
@@ -1320,9 +1321,12 @@ class TokenData {
     }
 
     // Function to output all:
-    print() {
+    print(highlight_rows) {
 
         // console.log(Object.keys(this));
+        if (highlight_rows === undefined) {
+            highlight_rows = [];
+        }
 
         // Determine column widths:
         let colwidths = [];
@@ -1357,7 +1361,16 @@ class TokenData {
             }
 
             // Output row:
-            console.log(rowstr);
+            if (highlight_rows.includes(ix_token)) {
+                const highlight = "font-weight: bold; color: red; font-style: italic; background-color: yellow";
+                // const normal = "font-weight: normal";
+                // console.log("A string with a %cbold%c word", bold, normal);
+                 console.log("%c" + rowstr, highlight);
+            } else {
+                 console.log(rowstr);
+            }
+
+
 
         }
     }
