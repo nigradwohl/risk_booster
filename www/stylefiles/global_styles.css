@@ -342,7 +342,8 @@ body {
 .text-output {
     /*flex: 55%;*/
     padding: 2em;
-    max-height: 20em;
+    min-height: 20em;
+    max-height: 50em;
     overflow-y: scroll;
     line-height: 1.6;
 }

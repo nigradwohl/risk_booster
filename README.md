@@ -24,10 +24,11 @@ Features are sorted by importance and are further split by features that should 
 
 * If no treatment and control group: note that this might not be an experiment
   (no causal statments possible)
+  * Comparison of different years/timeframes: can we identify and handle these?
 * handle the unhandled numbers 
 * years without classifier: 2000, 1900
 * life-expectancy: in wiki; at least social engineering
-* Comparison of different years/timeframes: can we identify and handle these?
+* Feedback button
 * instructions on which risk information we can handle (not years -- longer living etc.)
 * Handle the non-identified numbers (headings) 
 
@@ -51,6 +52,7 @@ Features are sorted by importance and are further split by features that should 
 
 * look for articles and press releases to process (SciMedia center; JAMA network open!; BMJ, JAMA, Lancet, Annals of internal medicine, NEJM; Tim, get endpoints and superordinate terms; Cochrane?)
 * Superordinate statement: "Das uns interessierende **Ereignis**"
+* allow to show only 1 icon array
 * Implement additional questions as needed (e.g., AR or ARR for side effects)
 * Calculation from AR in 1 group (+ rel) possible?
 

@@ -354,11 +354,13 @@ $(document).ready(function () {
                         match_len++;
                     }
 
+                    // TODO: Adjust co-occurrence patterns and go from more specific (freq_ncase_contr_eff) to less specific (freq_ntot)?
 
                     const tooltip_dict = {
                         "freq_ntot": "Gesamtzahl Personen",
                         "freq_ntot_all_all": "Gesamtzahl Personen",
-                        "freq_ncase_all": "Anzahl Fälle gesamt",
+                        "freq_ntot_unknown_all": "Gesamtzahl Todesfälle",
+                        "freq_ncase_all": "Anzahl Fälle gesamt",  // exchange "Fälle" for the more general "(verhinderte) Ereignisse"?
                         "freq_ncase_all_eff": "Anzahl Erkrankungen",  // oder: andere Fälle!
                         "freq_ncase_treat_eff": "Anzahl Fälle Behandelte",
                         "freq_ncase_contr_eff": "Anzahl Fälle Vergleichsgruppe",
@@ -777,7 +779,7 @@ $(document).ready(function () {
             }
 
             // Add the list entries:
-            notes_html += "<ul><li>Verwendete Zahlenformate [HIER AUCH RELATIVE FORMATE AUSFLAGGEN]:</li><ul>" + str_li + "</ul></ul>";
+            notes_html += "<ul><li>Verwendete Zahlenformate:</li><ul>" + str_li + "</ul></ul>";
 
         }
 
@@ -1142,8 +1144,8 @@ const numtype_keyset = {
         "number_unit": ["perc", "mult"],  // add in other types eventually! 30-fach etc.
         "keyset": [
             // A first entry to a domain-general keyset for risk:
-            [RegExp(collapse_regex_or(["[Rr]isiko", "[Ww]ahrscheinlich", "Inzidenz", "Todesfälle"])),
-                RegExp(collapse_regex_or(["reduziert", "niedriger", "(ge|ver)ringert?"]))]
+            [RegExp(collapse_regex_or(["[Rr]isiko", "Gefahr", "[Ww]ahrscheinlich", "Inzidenz", "Todesfälle", "Erkrank"])),
+                RegExp(collapse_regex_or(["[Rr]eduzier", "minimier", "niedriger", "(ge|ver)ringert?", "s[ae]nk"]))]
         ]
     },
     // Total nuber of cases/incidents:
@@ -1463,6 +1465,8 @@ class TokenData {
  */
 function get_token_data(text) {
 
+    text = text.replaceAll('"', "\"");
+
     const text_tokens = word_tokenizer(text);  // Define the text as word and punctuation tokens.
     // console.log(text_tokens);  // for testing.
 
@@ -1481,14 +1485,18 @@ function get_token_data(text) {
 
         token_i = text_tokens[i];
 
+        // TODO: Handle abbreviations and quotes!
+
         // Regex for token to ensure exact matching:
-        if (["\\n\\*", ".", ":", ";", ",", "?", "!", "(", ")", "/"].includes(token_i)) {
+        if (["\\n\\*", ".", ":", ";", ",", "?", "!", "(", ")", "\"", "'", "/"].includes(token_i)) {
             // Punctuation follows somewhat different rules.
             // NOTE: Overlaps with other entities, likely because of the lack of spaces.
 
             // Escape and add lookahead or behind.
             if (["("].includes(token_i)) {
                 token_pat = "(?<=\\s|\\n|^)" + token_i.replace(/([.?()/])/dgm, "\\$1");
+            } else if (["\"", "'"].includes(token_i)) {
+                token_pat = token_i;  // no requirement to escape?
             } else {
                 token_pat = token_i.replace(/([.?()/])/dgm, "\\$1") + "(?=\\s|\\n|$|\\.|,)";
             }
@@ -1786,7 +1794,8 @@ const window_keys = {
     "effside": {
         "eff": ["(?<![Nn]eben)[Ww]irk", "Impfschutz",
             "Schutz", "geschützt",
-            "(reduziert|verringert)\\w*Risiko", "Risiko\\w*(reduziert|verringert)",
+            "(reduziert|verringert|minimiert)\\w*(Risiko|Gefahr)", "(Risiko|Gefahr)\\w*(reduziert|verringert|minimiert)",
+            "Reduzierung",
             "(mindert|reduziert)\\w*Symptome",
             // The following may only apply to vaccination? (But likely also to treatment!)
             "Infektion", "[Ee]rkrank", "Verl[aä]uf"],
@@ -2386,7 +2395,8 @@ function word_tokenizer(txt) {
         .replace(/([.,;?!:)])(?=\s)/g, ' $1')  // Ensure that punctuations becomes their own by adding a space before.
         .replace(/([.,;?!:])(?=$)/g, ' $1')
         .replace(/([)])/g, ' $1')  // space before any parenthesis.
-        .replace(/((?<=\s)[(])/g, '$1 ')  // space after opening parentheses.
+        .replace(/((?<=\s)[("'])/g, '$1 ')  // space after opening parentheses or quote.
+        .replace(/(["'](?=\s))/g, ' $1')  // space before quotes.
         .split(/[\s\u2022]/g);
 
     // console.log("Token split");
