@@ -493,17 +493,19 @@ $(document).ready(function () {
         const n_topics = key_topics.length;
         let norisk = false;
 
-        if (n_topics === 1) {
-            key_topics_str += "Dieser Text behandelt das Thema " + key_topic_dict[key_topics[0]];
-        } else if (n_topics > 1) {
+        // if (n_topics === 1) {
+        //     key_topics_str += "Dieser Text behandelt das Thema " + key_topic_dict[key_topics[0]];
+        // } else if (n_topics > 1) {
+        //
+        //     key_topics_str += "Dieser Text behandelt die Themen "
+        //     key_topics_str += combine_str_arr(key_topics.map((x) => key_topic_dict[x]));
+        //
+        // } else {
+        //     key_topics_str = "Das Thema dieses Textes konnte keinem Thema der Risikokommunikation zugeordnet werden.";
+        //     norisk = true;
+        // }
 
-            key_topics_str += "Dieser Text behandelt die Themen "
-            key_topics_str += combine_str_arr(key_topics.map((x) => key_topic_dict[x]));
-
-        } else {
-            key_topics_str = "Das Thema dieses Textes konnte keinem Thema der Risikokommunikation zugeordnet werden.";
-            norisk = true;
-        }
+        key_topics_str += "Berichtet der Text belastbare Informationen?";
 
 
         // ~~~~~~~~~~ FEATURES ~~~~~~~~~~~~~~~~
@@ -531,7 +533,7 @@ $(document).ready(function () {
 
         // Get numbers related to risk communication for 2. and 3.:
         const risknum_ix = token_dat.id
-            .filter((x) => ["perc", "freq", "nh", "mult"].includes(token_dat.unit[x]) && token_dat.is_num[x]);
+            .filter((x) => ["perc", "freq", "nh", "mult"].includes(token_dat.unit[x].toString()) && token_dat.is_num[x]);
         console.log("Risknum indices:");
         console.log(risknum_ix);
 
@@ -604,6 +606,8 @@ $(document).ready(function () {
             .map(([key, value]) => value ? key : false)
             .filter(x => x);
 
+        console.log("Feature array:");
+        console.log(risknum_rows);
         console.log(feature_arr);
 
 
@@ -653,8 +657,8 @@ $(document).ready(function () {
             } else {
                 feature_str = "<i class=\"fa fa-thumbs-down in-text-icon error\"></i>" + feature_str;
                 feature_str += " werden weder Informationen zu " +
-                    value.fset.map((key) => feature_dict[key]).join(" noch " + value.zumzur) + " berichtet." +
-                    "<br>NOTE: In Wiki mention the reasons and that one should mention if the envidence is not based on a group comparison";
+                    value.fset.map((key) => feature_dict[key]).join(" noch " + value.zumzur) + " berichtet."
+                    // "<br>NOTE: In Wiki mention the reasons and that one should mention if the evidence is not based on a group comparison";
             }
 
 
@@ -663,7 +667,7 @@ $(document).ready(function () {
         }
 
         // Flag out the use of numbers: ~~~~~~~~~~~~~~~~~~~~~~~
-        let feature_num = "<li>";
+        let feature_num = "</ul><p>Welche Zahleninformation wird berichtet?</p><ul><li>";
         const any_risk_num = ["perc", "freq", "nh", "mult"].filter((x) => token_dat.unit.includes(x));
         // console.log("Any risk num:");
         // console.log(token_dat.unit);
@@ -690,7 +694,7 @@ $(document).ready(function () {
                     " angegeben."
             } else {
                 feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> " +
-                    "Die Zahlen scheinen sich leider weder auf Nutzen naoch auf Schaden zu beziehen."
+                    "Die Zahlen scheinen sich leider weder auf Nutzen noch auf Schaden zu beziehen."
             }
 
 
@@ -703,7 +707,7 @@ $(document).ready(function () {
 
 
             feature_num += arr_eff_both[0] + " Der Nutzen wird " + arr_eff_both[1] + "mit Zahlen für Behandlungs- und Kontrollgruppe belegt</li><li>";
-            feature_num += arr_side_both[0] + " Die Schadenwirkung wird " + arr_side_both[1] + "für Behandlungs- und Kontrollgruppe angegeben";
+            feature_num += arr_side_both[0] + " Die Schadenwirkung wird " + arr_side_both[1] + "mit Zahlen für Behandlungs- und Kontrollgruppe belegt</li>";
             // Rather "Nur für" oä.
 
         } else {
@@ -716,7 +720,7 @@ $(document).ready(function () {
 
         // Only talks about numbers if the text talks about risK:
         if (!norisk) {
-            feature_list += feature_num + "</li>";
+            feature_list += feature_num;
         }
 
 
@@ -773,7 +777,7 @@ $(document).ready(function () {
             }
 
             // Add the list entries:
-            notes_html += "<p>Zahleninformation:</p><ul>" + str_li + "</ul>";
+            notes_html += "<ul><li>Verwendete Zahlenformate [HIER AUCH RELATIVE FORMATE AUSFLAGGEN]:</li><ul>" + str_li + "</ul></ul>";
 
         }
 
@@ -1185,7 +1189,8 @@ const keyset_impf = [[RegExp(collapse_regex_or(["([Ww]irk(sam|t))", "[Ee]ffektiv
 const unit_note_dict = {
     "perc": {
         "tooltip": {
-            "ABS": "absolute Prozentzahl",
+            "abs": "absolute Prozentzahl",
+            "rel": "relative Prozentzahl",
             "incr": "Veränderung",
             "decr": "Veränderung",
             "other": "andere Prozentzahl"
@@ -1211,8 +1216,14 @@ const unit_note_dict = {
                     txt_out += types + ". ";
                 }
 
-                txt_out += "Achten Sie darauf, dass Sie auch die <strong>absoluten Wahrscheinlichkeiten in den Gruppen berichten</strong> -- " +
-                    "am besten als <a href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> (d.h., 3 aus 1000 oä.).";
+                txt_out = txt_out.replace(/(relative Prozentzahl(en)?)/g,
+                    "<div id=\"relnote\" class=\"highlight-num highlight-warning tooltip\">$1<span class=\"tooltiptext\">" +
+                    "Achten Sie darauf, dass Sie auch die <strong>absoluten Wahrscheinlichkeiten in den Gruppen berichten</strong> -- " +
+                    "am besten als <a href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> (d.h., 3 aus 1000 oä.).</span></div>");
+
+
+                // txt_out += "Achten Sie darauf, dass Sie auch die <strong>absoluten Wahrscheinlichkeiten in den Gruppen berichten</strong> -- " +
+                //     "am besten als <a href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> (d.h., 3 aus 1000 oä.).";
 
             } else {
                 txt_out += `${types}. Achten Sie darauf, dass klar ist auf welche Größe sich die <a href=\"risk_wiki.html#wiki-prozent\">Prozentangabe</a> bezieht.`

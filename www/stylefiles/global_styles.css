@@ -282,6 +282,8 @@ body {
 .output-col {
     background-color: var(---colum-bg-tertiary) te;
     padding: 20px;
+    height: 100%;
+    /*overflow: visible;*/
 }
 
 .number-input {
@@ -333,8 +335,8 @@ body {
 
 .text-notes {
     flex: 45%;
-    height: 20em;
-    overflow-y: scroll;
+    /*height: 20em;*/
+    /*overflow-y: scroll;*/
 }
 
 .text-output {
@@ -347,6 +349,7 @@ body {
 
 .text-input > textarea {
     flex: 1;
+    min-height: 15em;
 }
 
 
@@ -389,7 +392,8 @@ body {
     }
 
     .text-input {
-        flex: 20em;
+        flex: 30em;
+        /*100%;*/
     }
 
     #tooltip-popup {
