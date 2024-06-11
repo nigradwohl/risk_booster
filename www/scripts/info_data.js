@@ -133,12 +133,12 @@ const info_data = {
         "aliases": [""],  // list of other names.
         "annotation": "",  // internal annotations; should be eventually ""
         "overview": ["Die Anzahl der Personen die in einer Untersuchung oder Studie beobachtet wurden",
-        "Auf der Grundlage von größeren Stichproben können zuverlässigere Aussagen getroffen werden",
-        "Die Stichprobengröße sollte möglichst immer angegeben werden, da so Rückschlüsse auf die Verlässlichkeit der Ergebnisse gezogen werden können."],  // array of list items overview of most important points, displayed in wiki and text checker.
+            "Auf der Grundlage von größeren Stichproben können zuverlässigere Aussagen getroffen werden",
+            "Die Stichprobengröße sollte möglichst immer angegeben werden, da so Rückschlüsse auf die Verlässlichkeit der Ergebnisse gezogen werden können."],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": ["10.000 Studienteilnehmende", "1000 Probanden", "insgesamt 5000 Versuchsteilnehmer"],  // array of list items with examples.
         "popup": [
             "<p>Hilfreiche Angabe. Die Stichprobengröße hilft, die Zuverlässigkeit der Daten zu beurteilen und kann als Referenz dienen.</p>" +
-        "<p></p>"],
+            "<p></p>"],
         "maintext": "<p></p>" +
             "<p>Die Größe einer Stichprobe ist aber oft von den verfügbaren Ressourcen geleitet. " +
             "Kleine Stichproben liefern nicht zwingend " +
@@ -217,8 +217,11 @@ const info_data = {
         "overview": ["<a href='risk_wiki.html#wiki-cprob'>Bedingte Wahrscheinlichkeit</a> diese oder extremere Daten in einer Stichprobe zu beobachten",
             "Der p-Wert wird häufig missverstanden und sollte nicht verwendet werden"],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": [],  // array of list items with examples.
-        "popup": [],
+        "popup": ["<p>Der p-Wert wird in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +
+        "<p>Typischerweise wird ein p-Wert kleiner als 0.05 als \"statistisch signifikant\" bezeichtnet, was eine akzeptable Unischerheit ausdrückt.</p>" +
+        "<p>Da der p-Wert auch von Expert*innen häufig missverstanden wird, sollte er in journalistische Publikationen eher nicht verwendet werden.</p>"],
         "maintext": "<p>Der p-Wert wird in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +
+            "<p>Typischerweise wird ein p-Wert kleiner als 0.05 als \"statistisch signifikant\" bezeichtnet, was eine akzeptable Unischerheit ausdrückt.</p>" +
             "<p>Der p-Wert ist die <a href='wiki-cprob'>bedingte Wahrscheinlichkeit</a> diese oder extremere Daten in einer Stichprobe zu beobachten, " +
             "wenn es in der Population eigentlich <emph>keinen</emph> Unterschied gibt.</p>" +
             "<p>Nehmen wir an, dass in einer fiktiven Untersuchung eines neune Medikamentes unter den Behandelten 2 aus 1000 erkranken, " +
@@ -234,7 +237,7 @@ const info_data = {
         "aliases": [""],  // list of other names.
         "annotation": "",  // internal annotations; should be eventually ""
         "overview": ["Die Wahrscheinlichkeit eines Ereignisses, wenn eine Bedingung wahr ist (z.B., dass jemand zur Gruppe der Erkrankten gehört)",
-        "Bedingte Wahrscheinlcihkeiten sollten bevorzugt als <a href='#wiki-nh'>natürliche Häufigkeiten</a> ausgedrückt werden."],  // array of list items overview of most important points, displayed in wiki and text checker.
+            "Bedingte Wahrscheinlcihkeiten sollten bevorzugt als <a href='#wiki-nh'>natürliche Häufigkeiten</a> ausgedrückt werden."],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": ["Unter den Erkrankten erhalten 90 aus 100 ein positives Testergebnis",
             "Unter den Geimpften erkranken 6 aus 1000",
             "Die Sensitivität des Tests beträgt 99%"],  // array of list items with examples.

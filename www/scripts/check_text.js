@@ -195,10 +195,12 @@ $(document).ready(function () {
         // Context detection: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         // Get rid of non-numbers (tokens that still contain incorrect patterns):
-        const nonumpat = RegExp("\w*-?" + pat_num, "dg");
+        const nonumpat = RegExp("\w+-?" + pat_num, "dg");
         console.log("Before context detection:");
         token_dat.print();
         token_dat.is_num = token_dat.is_num.map((x, ix) => x && !nonumpat.test(token_dat.token[ix]));  // was: !token_dat.token[ix].search(nonumpat)
+        console.log(token_dat.token);
+        console.log(token_dat.is_num);
 
         // Detect missing units:
         // console.log(" +++ detecting missing units +++");
@@ -364,10 +366,12 @@ $(document).ready(function () {
                     }
 
                     // TODO: Adjust co-occurrence patterns and go from more specific (freq_ncase_contr_eff) to less specific (freq_ntot)?
+                    // Split by unit
 
                     const tooltip_dict = {
                         "freq_ntot": "Gesamtzahl Personen",
                         "freq_ntot_all_all": "Gesamtzahl Personen",
+                        "freq_ntot_unknown_eff,unknown": "Gesamtzahl Personen",
                         "freq_ntot_unknown_all": "Gesamtzahl Todesfälle",
                         "freq_ncase_all": "Anzahl Fälle gesamt",  // exchange "Fälle" for the more general "(verhinderte) Ereignisse"?
                         "freq_ncase_all_eff": "Anzahl Erkrankungen",  // oder: andere Fälle!
@@ -421,7 +425,10 @@ $(document).ready(function () {
                     console.log(cur_sign);
 
 
-                    let cur_tooltip = "Konnte nicht identifiziert werden";
+                    let cur_tooltip = {
+                        "perc": "Prozentzahl", "freq": "Anzahl", "nh": "Natürliche Häufigkeit", "pval": "p-Wert",
+                        "undefined": "Konnte nicht identifiziert werde"
+                    }[cur_unit];
                     if (Object.keys(tooltip_dict).includes(cur_sign)) {
                         cur_tooltip = tooltip_dict[cur_sign];
                     }
@@ -867,15 +874,52 @@ $(document).ready(function () {
             // const infokey = [curunit, numtype].join("_");
             console.log(`Current info key: ${infokey}`);
 
-            // Transfer to more central place!
-            // const txt_snips = {
-            //     "change": ["Relative ",
-            //         {"perc": "Prozentzahl"},
-            //         "Achtung vor <a href='risk_wiki.html#wiki-rel'>relativen Angaben</a>!<br>" +
-            //         "Relative Angaben sollten niemals alleine verwendet werden. " +
-            //         "Es müssen immer die absoluten Risiken in den Gruppen berichtet werden. " +
-            //         "[SCHEINT DAS HIER DER FALL ZU SEIN? Differenziert für Effektivität und NW ausweisen!]"]
-            // };
+            // Draft for overarching dictionary:
+            // Important: have a default for each unit to avoid non-identification
+            // const note_dict = {
+            //     "perc": {
+            //         "default": "Prozentzahl"
+            //     },
+            //     "freq": {
+            //         "ntot": {"death": "Todesfälle", "default": "Personen/Beobachtungen"},
+            //         "default": "Anzahl"
+            //     },
+            //     "nh": {
+            //         "default": "Natürliche Häufigkeit"
+            //     }
+            // }
+
+
+            // const tooltip_dict = {
+            //             "freq_ntot": "Gesamtzahl Personen",
+            //             "freq_ntot_all_all": "Gesamtzahl Personen",
+            //             "freq_ntot_unknown_eff,unknown": "Gesamtzahl Personen",
+            //             "freq_ntot_unknown_all": "Gesamtzahl Todesfälle",
+            //             "freq_ncase_all": "Anzahl Fälle gesamt",  // exchange "Fälle" for the more general "(verhinderte) Ereignisse"?
+            //             "freq_ncase_all_eff": "Anzahl Erkrankungen",  // oder: andere Fälle!
+            //             "freq_ncase_treat_eff": "Anzahl Fälle Behandelte",
+            //             "freq_ncase_contr_eff": "Anzahl Fälle Vergleichsgruppe",
+            //             "freq_ntot_treat_eff": "Anzahl Behandelte",
+            //             "freq_ntot_contr_eff": "Anzahl Vergleichsgruppe",
+            //             "freq_ncase_treat_side": "Anzahl Nebenwirkungen Behandelte",
+            //             "freq_ncase_contr_side": "Anzahl Nebenwirkungen Vergleichsgruppe",
+            //             // Oddities (that may be fixed eventually):
+            //             "freq_ntot_unknown_unknown": "Gesamtzahl Personen",  // if the subgroup cannot  be identified it may be something else.
+            //             "freq_ntot_all_unknown": "Gesamtzahl Personen",  // Likewise if it apples to all.
+            //             // Percentages:
+            //             "perc_incr_rel": "Relative Risikoreduktion",
+            //             "perc_decr_rel": "Relative Risikoreduktion",
+            //             "perc_decr_eff_rel": "Relative Risikoreduktion",
+            //             "perc_other_side_abs": "Wahrscheinlichkeit Nebenwirkungen",
+            //             "perc_other_sample_abs": "Prozentzahl Stichprobenbeschreibung",
+            //             "perc_other_eff_abs": "Absolute Prozentangabe",
+            //             // Natural frequencies:
+            //             "nh_ncase_eff": "Natürliche Häufigkeit",
+            //             "nh_ncase_side": "Natürliche Häufigkeit",
+            //             // Multiples:
+            //             "mult_other_eff": "Relative Angabe"
+            //         }
+
 
             // Reference to the wiki object:
             const wiki_ref = {
@@ -943,7 +987,7 @@ $(document).ready(function () {
 
             // Note: Eventuall improve positioning; seemingly, the issue occurs only on the first click!
 
-            console.log(`Popup height (pad): ${popup_height} (${popup_pad}), Num heihgt: ${num_height}, 
+            console.log(`Popup height (pad): ${popup_height} (${popup_pad}), Num height: ${num_height}, 
             num pos (top, bottom) ${thispos.top}, ${thispos.left}`);
 
             cur_popup
@@ -1792,7 +1836,7 @@ function detect_number_type(token_data, txt, numtype_dict) {
  */
 const window_keys = {
     "grouptype": {
-        "total": ["insgesamt", "alle_", "Basis"],
+        "total": ["insgesamt", "alle_", "Basis", "umfass(t|en)"],
         "sub": ["[Ii]n_", "[Uu]nter_", "[Dd]avon_",
             "der\\w*[Tt]eilnehmer", "entfielen\w*auf"]
     },
@@ -1835,11 +1879,12 @@ const window_keys = {
     },
     "conditions": {
         // Verbs:
-        "ill": ["erkrank(t|en)", "Verl[äa]uf", "[Ii]nfiziert", "entwickeln"],
-        "death": ["st[eao]rben", "Todesfälle", "Todesfall(!?e)"]
+        "pers": ["Krankenakt"],  // numbers of persons.
+        "ill": ["erkrank(t|en)", "Verl[äa]uf", "[Ii]nfiziert", "entwickeln"],  // ill individuals.
+        "death": ["st[eao]rben", "Todesfälle", "Todesfall(!?e)"]  // death cases.
     },
     "units": {
-        "freq": ["Proband", "Teilnehm", "Infektion"],
+        "freq": ["Proband", "Teilnehm", "Infektion", "Krankenakt"],
         "death": ["(ge|ver)st[aeo]rben"],
         // Units for exclusion:
         "medical": ["BMI"]
