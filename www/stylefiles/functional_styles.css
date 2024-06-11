@@ -26,6 +26,7 @@
 .highlight-num {
     opacity: 60%;
     border-radius: 2px;
+    cursor: pointer;
 }
 
 .highlight-base {
