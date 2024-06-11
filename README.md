@@ -25,8 +25,7 @@ Features are sorted by importance and are further split by features that should 
 * If no treatment and control group: note that this might not be an experiment
   (no causal statments possible)
   * Comparison of different years/timeframes: can we identify and handle these?
-* handle the unhandled numbers 
-* years without classifier: 2000, 1900
+* handle the unhandled numbers
 * life-expectancy: in wiki; at least social engineering
 * Feedback button
 * instructions on which risk information we can handle (not years -- longer living etc.)

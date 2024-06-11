@@ -117,6 +117,10 @@ $(document).ready(function () {
         // console.log("Check my text");
         const rawText = $("#text-query").val(); // Get raw input text:
 
+        $("#mail-feedback").attr("href", 'mailto:risk.booster@gmail.com?subject=Fehlerhafter Text im ScienceXMedia Riskbooster&body=' +
+            "Fehler im folgenden Text:<br><br>" + rawText.replaceAll("\n", "  "));
+
+
         // Pre-process input:
         console.log("Raw text:");
         console.log(JSON.stringify(rawText));
