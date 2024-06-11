@@ -1040,6 +1040,7 @@ const regex_numwords = new RegExp("(?<unknown>(" + collapse_regex_or(numwords) +
 const regex_perc = new RegExp("(?<perc>" + pat_num + " ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.?!])" + ")", "dg");
 const regex_nh = new RegExp("(?<nh>" + pat_num + " (\\w+ )?(von|aus|in) (\\w+ )?" + pat_num + ")", "dg");  // TODO: Handle numberwords here.
 const regex_mult = new RegExp("(?<mult>" + pat_num + "[ \\-]?([Mm]al|[Ff]ach) (so )?( ?viele|gr[oö]ß|hoch|niedrig|besser|erhöht|höher)(?=[\\s.?!])" + ")", "dg");
+const regex_dur2 = /(?<dur>\d+([,.]\d+)?-?\d*([,.]\d+)?(Minuten?| Stunden?| Tagen?| Wochen?))/dg;
 // Note: in regex_nh we may also try to get the denominator as a group or as its own entity.
 // nh must also be identified from tokens (e.g., In der Gruppe von 1000[case] Leuten sterben 4[num/case].
 
@@ -1104,9 +1105,6 @@ const check_numbers_dict = {
     "year": {
         "regex": /(?<year>Jahr (18|19|20)\d{2})/dg
     },
-    "year2": {
-        "regex": /(?<year>(18|19|20)?\d{2}er)/dg
-    },
     "monyear": {
         "regex": RegExp("(?<year>(" + collapse_regex_or(["Januar", "Februar", "März", "April", "Mai", "Juni",
             "Juli", "August", "September", "Oktober", "November",
@@ -1117,6 +1115,9 @@ const check_numbers_dict = {
     },
     "dur": {
         "regex": /(?<dur>[0-9]+(-stündig|-tägig| Minuten?| Stunden?| Tagen?| Wochen?| Monate?))/dg
+    },
+    "dur2": { 
+        "regex": regex_dur2 
     },
     "legal": {
         "regex": /(?<legal>(Artikel|§|Absatz|Paragra(ph|f)) ?\d+)/dg
