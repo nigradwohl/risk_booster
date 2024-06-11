@@ -1,269 +1,142 @@
-/**
- * Manage the display of a risk checklist.
- */
-
 $(document).ready(function () {
 
-    console.log("Handle questions");
+    // let entry_ix = 0;  // index for the current entry.
+    // let is_skip = false;
+    // let out_arr = [0, false];
 
+    // Get the variation of the page:
+    // Get parameters from URL:
+    const urlParams = new URLSearchParams(window.location.search);
+    const text = urlParams.get('page');
 
-    // Get the JSON file for the topic:
-    // const page_obj = JSON.parse("scripts/");
-    /*
-    Object should contain:
-    - Question and corresponding input object
-    - Order of questions
-     */
+    // console.warn(text);
+
+    // TODO: Here the set of wordings has to be adjusted to the case!
+    // Note: The outcome may be selected on a first page?
+    let typeword = "Einflussgröße";
+    let typeverb = "behandelt";
+    let addinfo_rrr = "";
+
+    let info_treat = "haben die Behandlung (z.B. das Medikament) erhalten";
+    let info_treat2 = "Behandelt";
+    let info_contr = "Vergleichsgruppe (z.B., Placebo)";
+    let info_contr2 = "Vergleichsgruppe";
+
+    let outcome = {};
+
+    if (text === "treat") {
+        typeword = "Behandlung";
+
+        outcome = {"verb": ["versterben", "sind verstorben"], "noun": "Todsfälle"};
+
+    } else if (text === "impf") {
+        typeword = "Impfung";
+        typeverb = "geimpft";
+        addinfo_rrr = "Manchmal wird diese Zahl auch als \"Impfschutz\" bezeichnet." +
+            "<br>" +
+            "Unter dem Begriff der Impfstoffwirksamkeit versteht man in der Regel,\n" +
+            "wie viele Prozent weniger in der Gruppe der Geimpften erkranken."
+        info_treat = "wurden geimpft";
+        info_treat2 = "Geimpft";
+        info_contr2 = "Ungeimpft";
+
+        outcome = {"verb": ["erkranken", "erkrankt"], "noun": "Erkrankungen"};
+    }
+
+    $("#case-test").text(typeword);
+    $("#cur-topic").text(typeword);
+    $(".typeword").text(typeword);  // Set wordings
+    $(".typeverb").text(typeverb);  // Set wordings
+    $(".addinfo-rrr").html(addinfo_rrr);
+
+    $(".info-treat").text(info_treat);
+    $(".info-treat2").text(info_treat2);
+    $(".info-control").text(info_contr);
+    $(".info-control2").text(info_contr2);
+
+    $(".outcome-noun").text(outcome.noun);
+    $(".outcome-verb").text(outcome.verb[1]);
+
+    // Preparations:
+    const cur_checklist = new Checklist(q_order, outcome);  // create a new checklist instance.
+    // const check_risk = new RiskCollection();
+    // console.log(check_risk);
+
+    console.log("+++ Handle questions +++");
 
     // Define order by type (press release, article etc.):
-
-    let entry_ix = 0;  // index for the current entry.
-
     // Show the first element:
-    console.log("#" + q_order[entry_ix] + "-q");
-    $("#" + q_order[entry_ix] + "-q").css('display', 'flex');
+    console.log("#" + cur_checklist.q_order[cur_checklist.entry_ix] + "-q");
+    $("#" + cur_checklist.q_order[cur_checklist.entry_ix] + "-q").css('display', 'flex');
 
+    // ~~~ ADVANCING ~~~
     // Handle button clicks:
-    $(".continue-btn").on("click", function () {
+    $(".continue-btn").on("click", function (ev) {
+        cur_checklist.continue_page(ev);
+        // out_arr = continue_page(ev, entry_ix, check_risk, is_skip);
+        // entry_ix = out_arr[0];
+        // is_skip = out_arr[1];
+    })
 
-        // Check entry:
-        const curid = q_order[entry_ix];  // id of current page.
-        let error = false;
-
-        console.log(`Current inputs for ID ${curid}:`);
-        console.log(q_inputs);
-        console.log(q_inputs[curid]);
-
-        // Loop over defined input fields:
-        for (const cur_input of q_inputs[curid]) {
-
-            const cur_q_key = id_to_num_dict[cur_input];  // curent input field.
-            let curval;
-
-            // console.log("Is this a button with meaning? " + $(this).hasClass("input-btn"))
-
-            if ($(this).hasClass("input-btn")) {
-                console.log("Button with meaning!");
-                // console.log($(this).val());
-                curval = $(this).val();
-            } else {
-                curval = $("#" + cur_input).val();  // current input value.
-            }
-            console.log("Current value is: " + curval);
-
-            if ([undefined, "", " "].includes(curval)) {
-                alert("Sie haben nichts eingegeben! Absicht?");
-                // Show popup that can be skipped!
-            } else {
-
-                // Evaluate entry:
-                // TODO: Check format!
-                let checked_val;
-
-                // Replace comma with period:
-                checked_val = curval.replace(/,/, ".");
-
-                // Test, if it is a number and convert if true:
-                const is_num = !isNaN(parseFloat(checked_val));
-                if (is_num) {
-                    // Note: Ignores additional text!
-                    checked_val = parseFloat(checked_val);
-                }
-
-                if (int_keys.includes(cur_q_key)) {
-                    // Check integer entries:
-                    if (!is_num) {
-                        alert("KEINE ZAHL!");
-                        error = true;
-                    } else if (!Number.isInteger(checked_val)) {
-                        alert("KEINE GANZE ZAHL!");
-                        error = true;
-                    }
-                } else if (float_keys.includes(cur_q_key)) {
-
-                    // Check float entries:
-                    if (!is_num) {
-                        alert("KEINE ZAHL!");
-                        error = true;
-                    }
-
-                } else {
-                    // All other keys (string, boolean etc.)
-                }
-
-                // Save value to dictionary:
-                risk_numbers[cur_q_key] = checked_val;
-
-
-            }
-
+    // Continue on keypress:
+    $(window).on("keypress", function (ev) {
+        // console.log(ev);
+        if (ev.key === "Enter") {
+            cur_checklist.continue_page(ev);
+            // out_arr = continue_page(ev, entry_ix, check_risk, is_skip);
+            // entry_ix = out_arr[0];
+            // is_skip = out_arr[1];
         }
-
-        // Advance page:
-        if (!error) {
-            if (entry_ix < q_order.length) {
-                entry_ix++;
-                $("#" + q_order[entry_ix] + "-q").css('display', 'flex');
-                $("#" + q_order[entry_ix - 1] + "-q").hide();
-
-                // Show back button:
-                if (entry_ix > 0) {
-                    $(".back-btn").css('display', 'inline-block');
-                }
-            }
-
-            // Final button:
-            // Calculate the table if possible!
-            if (entry_ix === q_order.length - 1) {
-
-                // Hide the continue button:
-                $(".continue-btn").hide();
-
-                console.log("~~~~~~~~~~~~~~~~ Calculate table ~~~~~~~~~~~~~~~~");
-                // First index is condition, second index is treatment!
-                console.log(risk_numbers);
-
-                const ntab = new Basetable(
-                    [
-                        [risk_numbers.n00, risk_numbers.n01],  // no condition.
-                        [risk_numbers.n10, risk_numbers.n11]],  // condition.
-                    [risk_numbers.msum0x, risk_numbers.msum1x],
-                    [risk_numbers.msumx0, risk_numbers.msumx1],
-                    risk_numbers.N_tot);
-                const ptab = new Basetable(
-                    [
-                        [risk_numbers.p00, risk_numbers.p01],
-                        [risk_numbers.p10, risk_numbers.p11]],
-                    [NaN, NaN], [risk_numbers.mpx0, risk_numbers.mpx1], 1);
-                // NOTE: Make sure to appropriately distinguish relative risk increase and reduction!
-                const mtab1 = new Margintable(na_tab, [NaN, 1 - risk_numbers.rrr], [NaN, NaN]);
-                const mtab2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
-
-
-                const check_risk = new RiskCollection(ntab, ptab, mtab1, mtab2);
-                check_risk.ptab.complete_margins();
-                check_risk.n_from_p();
-
-                check_risk.try_completion();
-                check_risk.ntab.complete_margins();
-                console.log(check_risk);
-
-                // USe the 2x2 table to calculate outputs:
-                console.log(check_risk.ntab.tab.margin1_mean());
-
-                // Following the current definition this is the risk:
-                const group_risks = check_risk.ntab.tab.margin2_mean();
-                console.log("Risks in each group:");
-                console.log(group_risks);
-
-                const group_risks_flat = group_risks.flat();
-
-                // Translate to natural frequencies:
-                // const curscale = 1000;  // fixed reference! Should eventually be so that the smallest number is detectable!
-                const curscale = [100, 1000, 2000, 5000, 10000, 50000, 100000]
-                    .filter((x) => group_risks_flat.every((r) => (r * x) >= 5))[0];
-                // Get the first reference for which the product is greater 1!
-                // Altering this threshhold will lead to larger references (which may differentiate better!)
-                console.log("Curscale is " + curscale);
-
-                // Round the group risks
-
-                const risk_treat = Math.round(group_risks[1][1] * curscale) / curscale;
-                const risk_control = Math.round(group_risks[0][1] * curscale) / curscale;
-                const risk_treat_nh = Math.round(risk_treat * curscale) + " aus " + curscale;
-                const risk_control_nh = Math.round(risk_control * curscale) + " aus " + curscale;
-
-                // Risk reduction:
-                // Absolute change in risk:
-                const arc = group_risks[0][1] - group_risks[1][1];  // risk change in favor of treatment group.
-                const meaning_arc = arc > 0 ? " weniger" : " mehr";
-
-                const arr = Math.sign(arc) * Math.round(arc * curscale) / curscale;
-                const arr_p = // arr > 0.01 ? Math.round(arr * 100) + "%" :
-                    (Math.sign(arc) * Math.round(arc * curscale) + " aus " + curscale + meaning_arc);
-
-                // Note: If the risk is negative, it corresponds to an increase!
-                const rrc = group_risks[1][1] / group_risks[0][1]; // relative risk change.
-                // How many times higher is the risk in the treatment group?
-
-                const rrr = Math.round((1 - rrc) * 1000) / 1000;
-                console.log("RRR is " + rrr);
-                const rr_factor = Math.abs(rrr) >= 2 ? 1 : 100;
-                const rrr_p = Math.round(Math.sign(arc) * rrr * rr_factor) +
-                    (rr_factor === 100 ? "% " : " mal ") +
-                    meaning_arc;
-                // For numbers greater than 2 "x mal mehr" may be more appropriate.
-
-
-                $("#risk-treat").text(risk_treat_nh);
-                $("#risk-control").text(risk_control_nh);
-                $("#arr").text(arr_p);
-                $("#rrr").text(rrr_p);
-                // Rounding can eventually be improved!
-
-                check_risk.ntab.get_N();  // calculate N if not provided.
-                console.log(`N is ${check_risk.ntab.N}`);
-
-                // Flexible scaling for large numbers:
-                let N_scale = curscale;
-                if (curscale > 1000) {  // Determine useful maximum.
-                    N_scale = 1000;
-                }
-
-                // Icon array:
-                // const cur2x2 = check_risk.ntab.tab.tab2x2.map((x) => x.map((y) => Math.round(y / N_scale)));
-                const cur2x2 = group_risks.map((x) => x.map((y) => Math.round(y * N_scale)));
-                console.log(cur2x2);
-
-                create_icon_array(
-                    cur2x2[1][0], cur2x2[1][1],  // treatment group.
-                    cur2x2[0][0], cur2x2[0][1],  // control group.
-                    'dotdisplay');
-                $("#dotdisplay").show();
-                buttonPrintOrSaveDocument.addEventListener("click", printOrSave);  // allow saving.
-
-                // Allow zooming into the canvas:
-                $("canvas").on("click", function (e) {
-                    // $(this).clone().appendTo(".canvas-zoom");
-                    create_icon_array(
-                        cur2x2[1][0], cur2x2[1][1],  // treatment group.
-                        cur2x2[0][0], cur2x2[0][1],  // control group.
-                        'dotdisplay-zoom');
-
-                    const mindim = Math.min(window.innerWidth, window.innerHeight);
-
-                    $(".canvas-zoom")
-                        .width(mindim)
-                        .height(mindim)
-                        .css("display", "flex");
-                    $("#dotdisplay-zoom").show();
-
-                    // Allow clicking anywhere to close:
-                    e.stopPropagation();  // stop event propagation to avoid immediate hiding on click.
-                    $(window).on("click", function () {
-                        $(".canvas-zoom").hide();
-                        // $(this).unbind("click");
-                    });
-                })
-            }
-        }
-
 
     })
 
-
+    // ~~~ GOING BACK ~~~
     $(".back-btn").on("click", function () {
-        if (entry_ix > 0) {
-            entry_ix--;
-            $("#" + q_order[entry_ix] + "-q").css('display', 'flex');
-            $("#" + q_order[entry_ix + 1] + "-q").hide();
-            $(".continue-btn").css('display', 'inline-block');
+        // if (cur_checklist.entry_ix > 0) {
+        //     cur_checklist.entry_ix--;
+        //     $("#" + q_order[cur_checklist.entry_ix] + "-q").css('display', 'flex');
+        //     $("#" + q_order[cur_checklist.entry_ix + 1] + "-q").hide();
+        //     $(".continue-btn").css('display', 'inline-block');
+        //
+        //     // TODO: Skip inputs that were previously skipped (use OOP?)
+        //
+        //     if (cur_checklist.entry_ix === 0) {
+        //         $(".back-btn").hide();
+        //     }
+        //
+        //     // Removal of highlighting classes:
+        //     $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
+        // }
+        cur_checklist.handle_back();
 
-            if (entry_ix === 0) {
-                $(".back-btn").hide();
-            }
-        }
+    })
 
+    // ~~~ HANDLING OTHER ~~~
+
+    // Entry deletion:
+    $(".delete-entry").on("click", function () {
+        const cur_inp = $(this).siblings("input");  // id of current page.
+
+        cur_inp.val("");  // empty input.
+        console.log(`Deleted inputs for ID ${cur_inp.attr("id")}:`);
+
+        // Delete associated table inputs:
+        // const cur_q_key = id_to_num_dict[cur_inp.attr("id")]
+        // console.log(number_dict[cur_q_key]);
+        // check_risk.update_by_arr(number_dict[cur_q_key], NaN);
+        // console.log(check_risk);
+        // Note: This only deletes the entry itself and not derived quantities.
+
+    })
+
+    // Decide to provide missing input:
+    $("#input-missing").on("click", function (ev) {
+        $("#noentry-popup").hide();
+    })
+
+    // Incompatible entries:
+    $("#acknowledge-incompatible").on("click", function () {
+        $("#incompatible-popup").hide();
     })
 
 
@@ -283,6 +156,655 @@ $(document).ready(function () {
     // console.log("~~~~~~~~~ eof. test icon array ~~~~~~~~~~~");
 });
 
+
+// eof. handling after document is loaded
+
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------------ RESOURCES -------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ */
+
+
+// ~~~~~~~~~~~~~~~~~~~~~~~ DICTIONARIES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// TODO
+
+
+// ~~~~~~~~~~~~~~~~~~~~~~~ CLASSES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/**
+ * Class to create a checklist instance
+ */
+
+class Checklist {
+    constructor(q_order, outcome) {
+        this.q_order = q_order;
+        this.outcome = outcome;
+
+        this.entry_ix = 0;
+
+        this.is_skip = false;
+        this.is_error = false;
+        this.is_reload = false;
+
+        this.skip_misses = false;
+        this.missing_entries = [];
+        this.skipped_inputs = [];  // list of inputs that were previously skipped.
+
+        // TODO: Update if input is skipped; also delete inputs that were not skipped a different time!
+        this.check_risk = new RiskCollection();
+        this.check_side = new RiskCollection();
+    }
+
+    // Method to advance page:
+    continue_page(ev) {
+
+        // 0. Initialize variables: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        this.is_error = false;
+        // this.is_reload = false;
+        this.missing_entries = [];
+
+
+        // Check, if it is a relaod.
+        // If so, fill the table with all entries until now:
+        if (this.is_reload) {
+            this.handle_reloads();
+        }
+
+
+        const skip_misses = ev.currentTarget.id === "skip-missing" || this.is_skip;
+        // skip, if calling event is the "skip-misses" button or if the page is to be skipped.
+        console.log(`Current target ID is ${ev.currentTarget.id}; Skip misses ${skip_misses}`);
+
+        const curid = this.q_order[this.entry_ix];  // get id of current page.
+
+        console.log(`${"~".repeat(30)} NEXT PAGE ${curid} ${"~".repeat(30)}`);
+
+        // 1. Get the inputs on current page: ~~~~~~~~~~~~~~~~~~~~~~~~
+        if (!skip_misses) {
+            // If it is not a round where inputs should be skipped:
+            const inp_test = this.get_current_input(curid, q_inputs[curid], id_to_num_dict);
+            // After trying to get the inputs, try completing the table:
+            try {
+                this.check_risk.try_completion(0);
+                this.check_side.try_completion(0);
+            } catch (e) {
+                console.error("Non-matching entries! " + e);
+                $("#incompatible-popup").show().addClass("selected-blur");
+                this.is_error = true;
+            }
+
+            if (this.is_error) {
+                console.error(`An error (${inp_test}) occured when providing input!`);
+            }
+
+
+        } else {
+            // If misses were skipped:
+            this.is_skip = false;
+        }
+
+        // TODO: Check for errors!
+
+        // 2. Handle missing entries:
+        if (this.missing_entries.length > 0) {
+            // alert("Sie haben nichts eingegeben! Absicht?");
+            // Show popup that can be skipped!
+            this.is_skip = true;
+            handle_missing_input(ev, this.missing_entries);
+
+        }
+
+        // Advance page:
+        if (!this.is_error && this.missing_entries.length === 0) {
+
+            // Pages before results:
+            if (this.entry_ix < q_order.length) {
+                this.increment_or_skip();
+            }
+
+            // Final results page:
+            if (this.entry_ix === this.q_order.length - 1) {
+
+                // if (this.is_reload) {
+                //     console.log("Handle reload");
+                //     this.handle_reloads();
+                // } else {
+                //     this.is_reload = true;
+                // }
+
+                this.handle_final_page();  // handle the final page.
+
+
+                // Hide the continue button:
+                $(".continue-btn").hide();
+            }
+
+        } else if (this.is_error) {
+            console.error("An error occured!");
+        }
+
+
+    }
+
+    // Increment page:
+    increment_or_skip() {
+        // Check whether input can be skipped: ~~~~~~~~~~~~
+        console.log("+++ CHECK IF SKIPPABLE +++");
+        const skiplist = ["n-total", "p-treat", "p-side"];  // Make p-side or n-side skippable, if both were provided!
+        const cur_entry = q_order[this.entry_ix];
+        let next_entry;
+
+        let skip = true;
+
+        /*
+        Do-while loop to increment entry index, check if the to be replaced value exists, if it does --> skip.
+         */
+        do {
+            this.entry_ix++;  // Increment entry index.
+            next_entry = q_order[this.entry_ix];  // get the next entry.
+            skip = false;  // set to false.
+
+            console.log(`Next entry is ${next_entry}`);
+
+            if (skiplist.includes(next_entry)) {
+
+                // Get the previous value for the field(s):
+                let prevvals = [];
+
+                for (const inp of q_inputs[next_entry]) {
+
+                    console.log("Index array");
+                    const ref_ix = id_to_num_dict[inp];
+                    console.log(ref_ix);
+
+                    if (eff_keys.includes(ref_ix)) {
+                        // Get from effectivity object if not in side-keys:
+                        prevvals = prevvals.concat(this.check_risk.get_by_arr(number_dict[ref_ix]));
+                    }
+                    if (side_keys.includes(ref_ix)) {
+                        prevvals = prevvals.concat(this.check_side.get_by_arr(number_dict[ref_ix]));
+                    }
+                }
+
+
+                console.log(`Previous value was ${prevvals}`);
+                console.log(prevvals);
+
+                // MAY ALSO TEST MULTIPLE INPUTS in loop/map!
+
+                // SKip, if value exists in object:
+                if (!prevvals.includes(NaN)) {
+                    skip = true;  // May be done more sophisticated in the future!
+                    this.skipped_inputs = this.skipped_inputs.concat(this.entry_ix);
+                }
+
+            }
+
+        } while (skip)
+
+
+        // Show the new question and hide the previous one:
+        $("#" + q_order[this.entry_ix] + "-q").css('display', 'flex');
+        $("#" + cur_entry + "-q").hide();
+
+        // Removal of higlighting classes:
+        $("#noentry-popup").hide();
+        $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
+
+        // Show back button:
+        if (this.entry_ix > 0) {
+            $(".back-btn").css('display', 'inline-block');
+        }
+
+        // console.log("Risk object after entries and calculation");
+        // this.check_risk.print();
+        // this.check_side.print();
+    }
+
+    // Method to handle final page:
+    handle_final_page() {
+        console.log("+++ Handling final page +++");
+
+        // this.handle_reloads();
+
+        // CALCULATE RISK INFORMATION
+        const risk_info = this.calculate_risks();
+        console.log(risk_info);
+        const cur2x2_eff = risk_info.cur2x2_eff;
+        const cur2x2_side = risk_info.cur2x2_side;
+
+        // Get array information for each group:
+        const group_arrs_eff = {
+            "treat": [cur2x2_eff[1][1], cur2x2_eff[1][0]],
+            "control": [cur2x2_eff[0][1], cur2x2_eff[0][0]]
+        }
+
+        const group_arrs_side = {
+            "treat": [cur2x2_side[1][1], cur2x2_side[1][0]],
+            "control": [cur2x2_side[0][1], cur2x2_side[0][0]]
+        }
+
+        // ICON ARRAYS:
+        let ncol = risk_info.N_scale === 1000 ? 25 : 10;  // determine number of columns.
+        const curwid_px = 180;  // Determine basic width in pixels.
+        const expansion = risk_info.N_scale === 1000 ? 25 : 40;  // expansion factor for area.
+
+        // Effectivity:
+        try {
+
+
+            // Create the icon arrays and assigne them:
+            create_icon_array(
+                group_arrs_eff.treat,  // treatment group.
+                // cur2x2[0][0], cur2x2[0][1],  // control group.
+                'dotdisplay-treat',
+                ncol,
+                ["coral", "lightgrey"],
+                expansion);
+
+            create_icon_array(
+                // [cur2x2[1][0], cur2x2[1][1]],  // treatment group.
+                group_arrs_eff.control,  // control group.
+                'dotdisplay-control',
+                ncol,
+                ["coral", "lightgrey"],
+                expansion);
+
+        } catch (error) {
+            console.warn(error);
+            $("#results-1-error ~ *").hide();
+            $("#results-1-error").show();
+
+        }
+
+
+        // Side effects:
+        try {
+            create_icon_array(
+                group_arrs_side.treat,  // treatment group.
+                // cur2x2[0][0], cur2x2[0][1],  // control group.
+                'dotdisplay-treat-side',
+                ncol,
+                ["steelblue", "lightgrey"],
+                expansion);
+
+            create_icon_array(
+                // [cur2x2[1][0], cur2x2[1][1]],  // treatment group.
+                group_arrs_side.control,  // control group.
+                'dotdisplay-control-side',
+                ncol,
+                ["steelblue", "lightgrey"],
+                expansion);
+
+        } catch (error) {
+            console.warn(error);
+            $("#results-2-error ~ *").hide();
+            $("#results-2-error").show();
+        }
+
+        // Adding functionality: ~~~~~~~~~~~~~~~~~~
+        // Add button for saving the page:
+        buttonPrintOrSaveDocument.addEventListener("click", printOrSave);  // allow saving.
+
+        // Allow zooming into the canvas:
+        $(".canvas-base")
+            .css({
+                width: curwid_px + 'px',
+                height: Math.round(curwid_px / ncol * risk_info.N_scale / ncol) + 'px'
+            })
+            .on("click", function (e) {
+                // const obj = $(this);
+                console.log(e);
+                // Check whether risk or side!
+                const clickid = e.currentTarget.id;
+                const is_side = /-side/.test(clickid);
+                const group_arrs = is_side ? group_arrs_side : group_arrs_eff;
+                const col_arr = is_side ? ["steelblue", "lightgrey"] : ["coral", "lightgrey"];
+                const curgrp = clickid.match(/control|treat/)[0];
+                console.log(group_arrs)
+
+                zoom_canvas(e, group_arrs[curgrp], "dotdisplay-zoom", col_arr);
+            })
+            .show();
+    }
+
+    // METHOD TO CALCULATE RISKS:
+    calculate_risks() {
+
+        console.log("~~~~~~~~~~~~~~~~ Calculate table ~~~~~~~~~~~~~~~~");
+        // First index is condition, second index is treatment!
+        // console.log(risk_numbers);
+
+        // this.check_risk.ptab.complete_margins();
+        // this.check_risk.n_from_p();
+        //
+        //
+        // this.check_risk.ntab.complete_margins();
+        //
+        // this.check_risk.ntab.get_N();  // calculate N if not provided.
+        // console.log(`N is ${this.check_risk.ntab.N}`);
+
+        console.log("~~~~~~ Final risk objects ~~~~~~");
+        console.log("Effectivity:");
+        console.log(this.check_risk);
+        console.log("Side effects:");
+        console.log(this.check_side);
+
+        console.log("~~~~~~ Calculate the risks ~~~~");
+        const eff_group_risks = this.check_risk.ntab.tab.margin2_mean();
+        const side_group_risks = this.check_side.ntab.tab.margin2_mean();
+
+        console.log("Risks in each group:");
+        console.log(eff_group_risks);
+        console.log(side_group_risks);
+
+        const group_risks_flat = eff_group_risks.flat().concat(side_group_risks.flat()).filter(x => x && !isNaN(x));
+
+        // Translate to natural frequencies:
+        // const curscale = 1000;  // fixed reference! Should eventually be so that the smallest number is detectable!
+        const curscale = [100, 1000, 2000, 5000, 10000, 50000, 100000]
+            .filter((x) => group_risks_flat.every((r) => (r * x) >= 5))[0];
+        // Get the first reference for which the product is greater 1!
+        // Altering this threshold will lead to larger references (which may differentiate better!)
+        console.log("Curscale is " + curscale);
+        // Flexible scaling for large numbers:
+        let N_scale = curscale;
+        if (curscale > 1000) {  // Determine useful maximum.
+            N_scale = 1000;
+        }
+
+        function get_risk_set(group_risks) {
+            // Round the group risks
+            const risk_treat = Math.round(group_risks[1][1] * curscale) / curscale;
+            const risk_control = Math.round(group_risks[0][1] * curscale) / curscale;
+            const risk_treat_nh = Math.round(risk_treat * curscale) + " aus " + curscale;
+            const risk_control_nh = Math.round(risk_control * curscale) + " aus " + curscale;
+
+            // Risk reduction:
+            // Absolute change in risk:
+            const arc = group_risks[0][1] - group_risks[1][1];  // risk change in favor of treatment group.
+            const meaning_arc = arc > 0 ? " weniger" : " mehr";
+            console.log(`Absolute change is ${arc}`);
+
+            const arr = Math.sign(arc) * Math.round(arc * curscale) / curscale;
+            const arr_p = // arr > 0.01 ? Math.round(arr * 100) + "%" :
+                (Math.sign(arc) * Math.round(arc * curscale) + " aus " + curscale + meaning_arc);
+
+            // Note: If the risk is negative, it corresponds to an increase!
+            const rrc = Math.abs(arc / group_risks[0][1]); // relative risk change.
+            // How many times higher is the risk in the treatment group?
+
+            const rrr = Math.round(rrc * 1000) / 1000;
+            console.log("RRR is " + rrr);
+            const rr_factor = Math.abs(rrr) >= 2 ? 1 : 100;
+            const rrr_p = Math.round(rrr * rr_factor) +
+                (rr_factor === 100 ? "% " : " mal ") +
+                meaning_arc;
+            // For numbers greater than 2 "x mal mehr" may be more appropriate.
+
+            return {
+                "risk_treat_nh": risk_treat_nh, "risk_control_nh": risk_control_nh,
+                "arc": arc, "arr_p": arr_p, "rrr_p": rrr_p
+            }
+        }
+
+        const eff_risks = get_risk_set(eff_group_risks);
+
+        // Assign the information to the objects in results page:
+        $("#risk-treat").text(this.outcome.verb[0] + " " + eff_risks.risk_treat_nh);
+        $("#risk-control").text(this.outcome.verb[0] + " " + eff_risks.risk_control_nh);
+        $("#abs-change").html(`Absolute${eff_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe ${this.outcome.verb[0]} <span class="risk-info" id="arr">${eff_risks.arr_p}</span>`);
+        $("#rel-change").html(`Relative${eff_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${eff_risks.rrr_p}</span>`);
+        // Rounding can eventually be improved!
+
+        const cur2x2_eff = eff_group_risks.map((x) => x.map((y) => Math.round(y * N_scale)));
+        console.log(cur2x2_eff);
+
+        // Handle side effects:
+        const side_risks = get_risk_set(side_group_risks);
+        // Assign the information to the objects in results page:
+        $("#risk-treat-side").text(side_risks.risk_treat_nh);
+        $("#risk-control-side").text(side_risks.risk_control_nh);
+        $("#abs-change-side").html(`Absolute${side_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe erleiden <span class="risk-info" id="arr">${side_risks.arr_p}</span> Nebenwirkungen`);
+        $("#rel-change-side").html(`Relative${side_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${side_risks.rrr_p}</span>`);
+
+        const cur2x2_side = side_group_risks.map((x) => x.map((y) => Math.round(y * N_scale)));
+        console.log(cur2x2_side);
+
+
+        // Return value of method:
+        return {"cur2x2_eff": cur2x2_eff, "cur2x2_side": cur2x2_side, "N_scale": N_scale};
+    }
+
+    get_current_input(curid, input_arr, id_to_num_dict) {
+        // Loop over defined input fields:
+        for (const cur_input of input_arr) {
+
+            const cur_q_key = id_to_num_dict[cur_input];  // get current input field, tied to table.
+
+            let curval;  // initialize current value.
+
+            // console.log("Is this a button with meaning? " + $(this).hasClass("input-btn"))
+
+            // Is the input a button or a text-field?
+            if ($(this).hasClass("input-btn")) {
+                console.log("Button with meaning!");
+                // console.log($(this).val());
+                curval = $(this).val();
+            } else {
+                curval = $("#" + cur_input).val();  // current input value.
+            }
+            console.log("Current value is: " + curval);
+
+            // If misses should not be skipped:
+
+
+            // If not a missing value is skipped:
+            // console.log(this.missing_entries.toString());  // check current set of missings.
+            // Check the value; if appropriate, check the number format, transform and save to object.
+            if ([undefined, "", " "].includes(curval)) {
+                this.missing_entries = this.missing_entries.concat(cur_input);
+                console.warn("Sie haben nichts eingegeben! Absicht?");
+
+            } else {
+                // If the current value is defined and non-empty:
+
+                // Evaluate entry (curval in, checked val out):
+                const checked_val = evaluate_entry(curval, cur_q_key);
+                // this.is_error = cureval !== "noerr";  // log if an error occurred.
+                //
+                // // Save value to table object:
+                // this.check_risk.update_by_arr(number_dict[cur_q_key], checked_val);
+
+                if (!/err_/.test(checked_val.toString())) {
+
+                    console.log(`Update objects ${cur_q_key}:`);
+                    console.log(number_dict[cur_q_key]);
+
+                    console.log(`Side keys: ${side_keys.includes(cur_q_key)}, eff keys: ${eff_keys.includes(cur_q_key)}`)
+
+                    if (eff_keys.includes(cur_q_key)) {
+                        this.check_risk.update_by_arr(number_dict[cur_q_key], checked_val);
+                    }
+
+                    if (side_keys.includes(cur_q_key)) {
+                        this.check_side.update_by_arr(number_dict[cur_q_key], checked_val);
+                    }
+
+                } else {
+                    this.is_error = true;
+                    return checked_val;
+                }
+
+            }
+        }
+
+    }
+
+    handle_reloads() {
+
+        // ~~~~~~~~~ Loop over all entries and complete (for reloads)! ~~~~~~~~~~~~~
+        console.log(`Is reload? ${this.is_reload}`);
+        this.is_reload = false;  // reset the flag!
+        console.log("~~~~ Risk object before re-calculation ~~~");
+        this.check_risk.print();
+
+        // console.log("Skipped inputs were:");
+        this.skipped_inputs = this.skipped_inputs.filter(x => x < this.entry_ix);  // remove future skips!
+        // console.log(this.skipped_inputs);
+        const skipped_ids = q_order.filter((x, ix) => this.skipped_inputs.includes(ix));
+        // console.log(skipped_ids);
+
+        // Loop over defined input fields:
+        for (const curid of q_order.slice(0, this.entry_ix)) {
+
+            // Skip input fields that have been skipped previously!
+            if (!skipped_ids.includes(curid)) {
+                console.log(`Current inputs for ID ${curid}:`);
+                console.log(q_inputs[curid]);
+
+                this.get_current_input(curid, q_inputs[curid], id_to_num_dict);
+
+                console.log("Risk object after re-evaluating inputs until then");
+                this.check_risk.print();
+            }
+
+
+        }
+
+        // Retry completion:
+        console.log("~~~~ Risk object after re-calculation ~~~~");
+        this.check_risk.print();
+        this.check_risk.try_completion(0);
+        this.check_side.try_completion(0);
+
+        // Reset array of missings:
+        this.missing_entries = [];
+    }
+
+    handle_back() {
+        if (this.entry_ix > 0) {
+
+            // When going back, reset the object to be filled again:
+            this.check_risk.reset_entries();
+            this.check_side.reset_entries();
+            this.is_reload = true;  // set reload flag to true.
+
+            // Decrementing the page:
+            // TODO: Skip inputs that were previously skipped
+            // Get previously seen input (or skip, if q_order[this.entry_ix] in skiplist?)
+            // Note: Also must ensure that elements from the skiplist are removed when they are passed upon a back-button click!
+            const calling_entry = q_order[this.entry_ix];
+
+            // Decrement, while previous input has been skipped:
+            do {
+                this.entry_ix--;
+            } while (this.skipped_inputs.includes(this.entry_ix))
+
+            $("#" + q_order[this.entry_ix] + "-q").css('display', 'flex');
+            $("#" + calling_entry + "-q").hide();
+            $(".continue-btn").css('display', 'inline-block');
+
+            if (this.entry_ix === 0) {
+                $(".back-btn").hide();
+            }
+
+            // Removal of highlighting classes:
+            $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
+        }
+    }
+
+}
+
+
+// ~~~~~~~~~~~~~~~~~~~~~~~ FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+/**
+ * Handle missing inputs.
+ * @param ev Calling event
+ * @param missing_entries Array of missing entries
+ */
+function handle_missing_input(ev, missing_entries) {
+
+    const input_field = $("#" + missing_entries[0]);  // Get input field for reference (may be improved).
+    const thispos = input_field.position();  // get position of current question.
+    console.log(thispos);
+
+    missing_entries.forEach((id) => $("#" + id).addClass("missing-input").addClass("selected-blur"));
+
+    // Change the popup text here:
+    const cur_popup = $("#noentry-popup");
+
+    const popup_height = cur_popup.height();
+    const popup_pad = cur_popup.innerHeight() - popup_height;
+    const num_height = input_field.height();
+
+    cur_popup
+        .css({
+            top: thispos.top - popup_height - num_height - popup_pad * 2,
+            left: thispos.left,
+            position: 'absolute'
+        })
+        .show();
+
+    // Prevent propagation:
+    ev.stopPropagation();
+
+    $(window).on("click", function (e) {
+
+        $("#noentry-popup").hide().removeClass("selected-blur");
+        missing_entries.forEach((id) => $("#" + id).removeClass("selected-blur"));
+        $(window).unbind("click");
+    })
+}
+
+/**
+ * Function to continue page
+ * @param ev Calling event
+ * @param entry_ix Index of current entry
+ * @param check_risk Object
+ * @param is_skip Is the current iteration a skip?
+ * @returns {(*|boolean)[]}
+ */
+
+
+/**
+ *
+ * @param e Calling event
+ * @param info_arr ordered array with icon info
+ * @param curid Current ID for replacement
+ */
+function zoom_canvas(e, info_arr, curid, col_arr) {
+    // console.log(obj.attr("id"));
+    $(".zoomed-canvas").hide();
+
+    // const cur_type = obj.attr("id").replace("dotdisplay-", "");
+
+    // $(this).clone().appendTo(".canvas-zoom");
+    create_icon_array(
+        info_arr,  // control group.
+        curid,
+        // obj.attr("id") + '-zoom',
+        undefined,
+        col_arr);
+
+    const mindim = Math.min(window.innerWidth, window.innerHeight);
+
+    $(".canvas-zoom")
+        .width(mindim)
+        .height(mindim)
+        .css("display", "flex");
+    $("#" + curid).show();
+
+    // Allow clicking anywhere to close:
+    e.stopPropagation();  // stop event propagation to avoid immediate hiding on click.
+    $(window).on("click", function () {
+        $(".canvas-zoom").hide();
+        $(".zoomed-canvas").hide();
+        // $(this).unbind("click");
+    });
+}
+
 // ~~~~~~~~~~~~~~~~ DICTIONARIES ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /**
@@ -290,13 +812,16 @@ $(document).ready(function () {
  * @type {string[]}
  */
 const q_order = [
+    "start",
     "rel-risk-reduction",
     // "any-control",
     "n-treat-control",
     "n-total", "p-treat",
     "n-case",
     // "or-case",
-    // "n-side",
+    // "side",
+    "n-side",
+    "p-side",
     "results"
 ];
 // ORDER WILL BE FLEXIBLE!
@@ -308,6 +833,8 @@ const q_order = [
 const q_inputs = Object.fromEntries(q_order.map((x) => [x, [x]]));
 q_inputs["n-case"] = ["n-case-impf", "n-case-control"];
 q_inputs["n-treat-control"] = ["n-impf", "n-control"];
+q_inputs["n-side"] = ["n-side-impf", "n-side-control"];
+q_inputs["p-side"] = ["p-side-impf", "p-side-control"];
 console.log(q_inputs);
 
 /**
@@ -323,24 +850,93 @@ const id_to_num_dict = {
     "n-case-impf": "n11",
     // careful! Vaccinated are now column 2 (index 1)!
     // cases are second row (index 1)
-    "n-case-control": "n10"  // cases among untreated (cases: 1, treatment: 0)
+    "n-case-control": "n10",  // cases among untreated (cases: 1, treatment: 0)
+    "n-side-impf": "n11s",
+    "n-side-control": "n10s",
+    "p-side-impf": "mtx1s",
+    "p-side-control": "mtx0s"
 }
+
+const eff_keys = ["N_tot",
+    "n00", "n01", "n10", "n11",
+    "msumx0", "msumx1",
+    "msum0x", "msum1x",
+    "rrr",
+    "p00", "p01", "p10", "p11",
+    "mpx0", "mpx1"
+]
+
+const side_keys = ["N_tot",
+    "n00s", "n01s", "n10s", "n11s",
+    "msumx0", "msumx1",
+    "msum0xs", "msum1xs",
+    "rrrs",
+    "p00s", "p01s", "p10s", "p11s",
+    "mpx0s", "mpx1s",
+    "mtx0s", "mtx1s"
+]
+
 
 // Create empty object with keys:
 /**
  * Keys for each input, to be mapped onto 2x2 table.
  * @type {string[]}
  */
-const entry_keys = [
-    "rrr", "N_tot",
-    "n00", "n01", "n10", "n11",
-    "msum0x", "msum1x", "msum0x", "msum1x",
-    "p00", "p01", "p10", "p11",
-    "mpx0",
+// const entry_keys = [
+//     "rrr", "N_tot",
+//     "n00", "n01", "n10", "n11",
+//     "msum0x", "msum1x", "msum0x", "msum1x",
+//     "p00", "p01", "p10", "p11",
+//     "mpx0",
+//     // Non-numeric info:
+//     "any_control"
+// ]
+// const risk_numbers = Object.fromEntries(entry_keys.map((x) => [x, NaN]));
+
+// Pass the position in table object instead? e.g., as
+// "rrr": ["mtab", "rel1", 1]
+const number_dict = {
+    "rrr": ["mtab2", "rel2", 1],
+    "N_tot": ["ntab", "N"],
+    "n00": ["ntab", "tab", "tab2x2", 0, 0],
+    "n01": ["ntab", "tab", "tab2x2", 0, 1],
+    "n10": ["ntab", "tab", "tab2x2", 1, 0],
+    "n11": ["ntab", "tab", "tab2x2", 1, 1],
+    "msum0x": ["ntab", "msums1", 0],
+    "msum1x": ["ntab", "msums1", 1],
+    "msumx0": ["ntab", "msums2", 0],
+    "msumx1": ["ntab", "msums2", 1],
+    "p00": ["ptab", "tab", "tab2x2", 0, 0],
+    "p01": ["ptab", "tab", "tab2x2", 0, 1],
+    "p10": ["ptab", "tab", "tab2x2", 1, 0],
+    "p11": ["ptab", "tab", "tab2x2", 1, 1],
+    "mpx0": [],
+    "mpx1": ["ptab", "msums2", 1],
+    // Side-effect info:
+    "n10s": ["ntab", "tab", "tab2x2", 1, 0],
+    "n11s": ["ntab", "tab", "tab2x2", 1, 1],
+    "mtx0s": ["mtab2", "tab", "tab2x2", 0, 1],
+    "mtx1s": ["mtab2", "tab", "tab2x2", 1, 1],
     // Non-numeric info:
-    "any_control"
-]
-const risk_numbers = Object.fromEntries(entry_keys.map((x) => [x, NaN]));
+    "any_control": []
+}
+
+// // For reference:
+// const ntab = new Basetable(
+//     [
+//         [risk_numbers.n00, risk_numbers.n01],  // no condition.
+//         [risk_numbers.n10, risk_numbers.n11]],  // condition.
+//     [risk_numbers.msum0x, risk_numbers.msum1x],
+//     [risk_numbers.msumx0, risk_numbers.msumx1],
+//     risk_numbers.N_tot);
+// const ptab = new Basetable(
+//     [
+//         [risk_numbers.p00, risk_numbers.p01],
+//         [risk_numbers.p10, risk_numbers.p11]],
+//     [NaN, NaN], [risk_numbers.mpx0, risk_numbers.mpx1], 1);
+// // NOTE: Make sure to appropriately distinguish relative risk increase and reduction!
+// const mtab1 = new Margintable(na_tab, [NaN, 1 - risk_numbers.rrr], [NaN, NaN]);
+// const mtab2 = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
 
 // Lists of formats:
 /**
@@ -349,47 +945,138 @@ const risk_numbers = Object.fromEntries(entry_keys.map((x) => [x, NaN]));
  */
 const int_keys = ["N_tot",
     "n00", "n01", "n10", "n11",
+    "n00s", "n01s", "n10s", "n11s",
     "msum00", "msum01",
     "msum10", "msum11"];
 const float_keys = ["rrr",
     "p00", "p01", "p10", "p11",
-    "mpx0"]
+    "mpx0",
+    "mtx0s", "mtx1s"]
+const perc_keys = ["rrr", "mpx1", "mtx0s", "mtx1s"]
 
 
 // FUNCTIONS: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function create_icon_array(n1, n2, n3, n4, id) {
+/**
+ * Evaluate checklist entry.
+ */
+function evaluate_entry(curval, cur_q_key) {
+    // TODO: Check format!
+    let checked_val;
+    let cur_error = "noerr";
+
+    // replace period with nothing:
+    checked_val = curval.replace(/\./, "");
+    // Replace comma with period:
+    checked_val = checked_val.replace(/,/, ".");
+
+    // Test, if it is a number and convert if true:
+    const is_num = !isNaN(parseFloat(checked_val));
+    if (is_num) {
+        // Note: Ignores additional text!
+        checked_val = parseFloat(checked_val);
+    }
+
+    if (int_keys.includes(cur_q_key)) {
+        // Check integer entries:
+        if (!is_num) {
+            alert("KEINE ZAHL!");
+            cur_error = "err_nonum";
+        } else if (!Number.isInteger(checked_val)) {
+            alert("KEINE GANZE ZAHL!");
+            cur_error = "err_noint";
+        }
+    } else if (float_keys.includes(cur_q_key)) {
+
+        // Check float entries:
+        if (!is_num) {
+            alert("KEINE ZAHL!");
+            cur_error = "err_nonum";
+        }
+
+    } else {
+        // All other keys (string, boolean etc.)
+    }
+
+    if (cur_error === "noerr") {
+        // Update percentages:
+        if (perc_keys.includes(cur_q_key)) {
+
+            // Check the percentage
+            if (checked_val < 1) {
+                alert("Prozentzahl kleiner 0; Absicht?");
+            }
+
+            checked_val = checked_val / 100;  // percentage to floating point number.
+
+            // For relative risk reduction revert:
+            if (cur_q_key === "rrr") {
+                checked_val = 1 - checked_val;  // maybe code transformation in dictionary object?
+            }
+        }  // eof. percentage handling.
+    } else {
+
+        checked_val = cur_error;
+
+    }
+
+
+    return checked_val;
+}
+
+/**
+ * Function to create an icon array.
+ * @param arr_n An array of icon types
+ * @param id ID of the HTML element
+ * @param ncol Number of columns in icon array
+ * @param col_arr Array of colors for each icon type
+ * @param exf Expansion factor for the canvas area (makes icons appear smaller).
+ */
+function create_icon_array(arr_n, id, ncol, col_arr, exf) {
 
     // Check for non-integer inputs:
     // https://stackoverflow.com/questions/469357/html-text-input-allow-only-numeric-input/469362#469362
+
+    const block = [10, -1];
+
+    if (exf === undefined) {
+        exf = 40;
+    }
 
     // Create an ordered array:
     try {
         // Check for integers (numbers( using "try" for now.
         // Update in time!
         // TODO: Proper input checking!
-        // const n1 = risk_numbers.n00;  // parseInt($("#n1").val());
-        // const n2 = risk_numbers.n01;
-        // const n3 = risk_numbers.n10;
-        // const n4 = risk_numbers.n11;
-        const n_dots = n1 + n2 + n3 + n4;
+        const n_dots = arr_n.reduce((d, i) => d + i);
 
         // Create an array of types:
         // Determine number of rows:
-        const ncols = Math.floor(Math.sqrt(n_dots));   // Math.floor(n_dots / 10);  // n_dots % 10;  // remainder.
-        const remainder = n_dots % ncols;
-        const nrows = Math.ceil(n_dots / ncols);
+        let ncols;
+        if (ncol === undefined) {
+            // Square default:
+            ncols = Math.floor(Math.sqrt(n_dots));   // Math.floor(n_dots / 10);  // n_dots % 10;  // remainder.
+
+        } else {
+            ncols = ncol;   // Math.floor(n_dots / 10);  // n_dots % 10;  // remainder.
+        }
+
+        let nrows = Math.ceil(n_dots / ncols);
+        nrows = nrows + (block[0] > 0 ? Math.floor(nrows / block[0]) : 0);
+
+        ncols = ncols + (block[1] > 0 ? Math.floor(ncols / block[1]) : 0);
+
 
         console.log(n_dots + " dots, " + nrows + " rows and " + ncols + " columns");
 
         // Create a vector of dot types:
-        const type_vec = Array(n1).fill(1).concat(Array(n2).fill(2), Array(n3).fill(3), Array(n4).fill(4));
+        const type_vec = arr_n.map((x, i) => Array(x).fill(i + 1)).flat();
         console.log("Type vec:");
         console.log(type_vec);
 
         // Determine fontsize:
         const fsize = "40px";
         const maxdim = Math.max(ncols, nrows);
-        const wh = maxdim * 50;  // controls the area, the larger the smaller the icons appear.
+        const wh = maxdim * exf;  // controls the area, the larger the smaller the icons appear.
         // Increasing wh above the icons size creates a (relative) margin for each.
 
         // Pad any missing elements with empty elements?
@@ -405,7 +1092,7 @@ function create_icon_array(n1, n2, n3, n4, id) {
             var ctx = c.getContext('2d');
             // NOTE: THESE CONTROL THE SIZE OF THE DOTS!
             var w = c.width = wh;  // window.innerWidth;
-            var h = c.height = wh;  // window.innerHeight;
+            var h = c.height = wh / (ncols / nrows);  // window.innerHeight;
             // Fixed values ensure equal height and width of points.
             // current dots
             var balls = [];
@@ -420,6 +1107,10 @@ function create_icon_array(n1, n2, n3, n4, id) {
             for (let i = 0; i < total; i++) {
 
                 if (i % ncols === 0) {
+
+                    if (irow % (block[0] + 1) === 0 && block[0] > 0) {
+                        irow++;
+                    }
                     irow++;
                     icol = 0;
                 }
@@ -434,6 +1125,9 @@ function create_icon_array(n1, n2, n3, n4, id) {
                 })
 
                 icol++;  // Increment column.
+                if (icol % block[1] === 0 && block[1] > 0) {
+                    icol++;
+                }
 
 
             }
@@ -442,8 +1136,8 @@ function create_icon_array(n1, n2, n3, n4, id) {
             function draw() {
                 ctx.clearRect(0, 0, w, h);
                 let j, dot;
-                console.log("The ball object:");
-                console.log(balls);
+                // console.log("The ball object:");
+                // console.log(balls);
                 for (j = 0; j < total; j++) {
                     dot = balls[j];  // get the ball.
                     // ctx.beginPath();
@@ -453,15 +1147,15 @@ function create_icon_array(n1, n2, n3, n4, id) {
 
                     // ctx.clearRect(0, 0, c.width, c.height);
                     ctx.font = '900 ' + fsize + ' FontAwesome';  // For font awesome 5+: '900 48px "Font Awesome 5 Free"';
-                    // ctx.fillText('\uF007', dot.x, dot.y);  // use user icon.
-                    // https://stackoverflow.com/questions/63601531/draw-font-awesome-icons-to-canvas-based-on-class-names
 
                     // Define dot colors:
                     // const col_arr = ["#90f6d7", "#41506b", "#35bcbf", "#263849"];
-                    const col_arr = ["blue", "red", "green", "purple"];
+                    // const col_arr = ["lightgrey", "coral", "green", "purple"];
                     ctx.fillStyle = col_arr[dot.type - 1];
 
-                    ctx.fillText(((dot.type % 2 === 0) ? "\uf119" : '\uf118'), dot.x, dot.y);  // smile or frown.
+                    // ctx.fillText(((dot.type % 2 === 0) ? "\uf119" : '\uf118'), dot.x, dot.y);  // smile or frown.
+                    ctx.fillText('\uF007', dot.x, dot.y);  // use user icon.
+                    // https://stackoverflow.com/questions/63601531/draw-font-awesome-icons-to-canvas-based-on-class-names
                     // (dot.type % 2 === 0) ? ctx.stroke() : '';
 
 
@@ -483,8 +1177,9 @@ function create_icon_array(n1, n2, n3, n4, id) {
 
         })();
     } catch (err) {
-        alert("Bitte geben Sie eine ganze Zahl ein!");
+        // alert("Bitte geben Sie eine ganze Zahl ein!");
         console.log(err);
+        throw "Error! Calculation not possible!";
     }
 }
 

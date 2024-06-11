@@ -18,11 +18,23 @@
     color: #1abc9c;
 }
 
+.annote-text-icon {
+    font-size: 0.2em;
+}
+
 
 .highlight-num {
-    background-color: #1abc9c;
     opacity: 60%;
     border-radius: 2px;
+    cursor: pointer;
+}
+
+.highlight-base {
+    background-color: lightsteelblue;
+}
+
+.highlight-warning {
+    background-color: palegoldenrod;
 }
 
 /* Tooltip container */
@@ -52,7 +64,7 @@
 
     /* Position the tooltip text */
     position: absolute;
-    z-index: 100;
+    z-index: 9999;
     bottom: 125%;
     left: 50%;
     margin-left: -70px;
@@ -79,6 +91,14 @@
 .tooltip:hover .tooltiptext {
     visibility: visible;
     opacity: 1;
+}
+
+.tooltip-popup > ul {
+    padding-left: 1.8rem;
+}
+
+#btn-print {
+    display: none;
 }
 
 
@@ -159,6 +179,7 @@
     background-color: whitesmoke;
     border: 1px darkgrey solid;
 }
+
 /*#quit-zoom{*/
 /*    cursor: pointer;*/
 /*    text-align: right;*/
@@ -166,7 +187,7 @@
 
 /*}*/
 
-.canvas-container{
+.canvas-container {
     cursor: pointer;
 }
 
@@ -177,13 +198,24 @@
 }
 
 canvas {
-    display: none;
+    /*display: none;*/
     background: white;
-    width: 250px;
-    height: 250px;
+    /*width: 250px;*/
+    /*height: 250px;*/
     /*border-radius: 50%;*/
     margin: 0 auto;
     /*border: 1px solid black;*/
+}
+
+.canvas-base {
+    width: 250px;
+    height: 125px;
+    /*display: none;*/
+}
+
+.zoomed-canvas {
+    width: 95%;
+    height: 95%;
 }
 
 .split-content {
@@ -198,6 +230,8 @@ canvas {
     color: darkgrey;
     text-align: center;
     height: 100%;
+    /*display: flex;*/
+    align-content: center;
 }
 
 
@@ -206,6 +240,12 @@ canvas {
     cursor: pointer;
     text-shadow: 2px 2px 5px var(---checklist-shadow);
     /*background-color: #444444;*/
+}
+
+
+.checklist-results p {
+    font-size: 0.8em;
+    line-height: 1;
 }
 
 .checklist-question {
@@ -239,13 +279,17 @@ canvas {
     text-align: center;
     min-width: 5em;
     flex: 20%;
-    background-color: var(---button-primary);
+    background-color: var(---button-secondary);
     border-radius: 5px;
 }
 
 .checklist-content {
     margin: 1em auto;
     width: 800px;
+}
+
+.error-note {
+    display: none;
 }
 
 @media screen and (max-width: 700px) {
@@ -255,8 +299,14 @@ canvas {
     }
 
     .checklist-question {
-        width: 100%;
+        width: 80%;
     }
+}
+
+.checklist-question.checklist-results {
+    width: 100%;
+    height: 100%;
+    padding: 1em;
 }
 
 .question-content {
@@ -269,6 +319,7 @@ canvas {
 
 .content-cell {
     width: 80%;
+    position: relative;
 }
 
 .risk-info {
@@ -279,4 +330,24 @@ canvas {
 
 .fa.back-btn {
     display: none;
+}
+
+#noentry-popup {
+
+}
+
+#incompatible-popup {
+
+}
+
+.error-prompt {
+    position: absolute;
+    border: 1px solid darkred;
+    background-color: #f1f1f1;
+    padding: 1em;
+    margin: 1em;
+}
+
+.missing-input {
+    border: 2px solid darkred;
 }

@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="stylefiles/global_styles.css">
+    <link rel="stylesheet" href="stylefiles/functional_styles.css">
+
+    <script src="jquery/jquery-3.7.1.min.js"></script>
+
+    <!-- Add icon library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!--    Check whether to download the icon libarary or the icons-->
+
+    <script src="global_scripts.js"></script>
+    <title>Risiko-Checkliste</title>
+
+    <style media="print">
+        @media print {
+            @page {
+                /*size: A4 landscape;*/
+                size: A4 portrait;
+            }
+
+            .no-print, .zoomed-canvas, .canvas-zoom {
+                display: none;
+            }
+
+            body {
+                margin: 0;
+                background-color: #1abc9c;
+                /*width: 90vw;*/
+                /*height: 100%;*/
+                /*writing-mode: tb-rl;*/
+            }
+
+            .checklist-content {
+                margin: 0;
+                background-color: #1abc9c;
+            }
+
+            .checklist-question.checklist-results {
+                box-shadow: none;
+                border: none;
+                margin: 0;
+                display: block;
+                background-color: #1abc9c;
+                /*position: relative;*/
+            }
+        }
+
+
+    </style>
+
+</head>
+<body>
+
+<!--Header filled in via JS-->
+<div id="header-section" class="no-print">
+</div>
+
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ MAIN CONTENT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<div class="row current-theme">
+
+    <p class="no-print">
+        Anmerkungen: Aktuelle Reihenfolge anhand von Informationen in Beispiel Pressemitteilung.
+        Anpassung auf Abfrage nach Quelle (PM, Studie, Nachrichtenartikel) hin denkbar.
+        [Treatment case on own page? Or make some variables exchangeable?]
+        <span id="case-test"></span>
+    </p>
+
+    <!--        <div class="canvas-container">-->
+    <!--            <canvas id="dotdisplay2"></canvas>-->
+    <!--        </div>-->
+    <!--    <i class="fa fa-solid fa-user"></i>-->
+</div>
+
+<div class="row current-theme">
+    <div class="checklist-content">
+        <!--    Entry 1-->
+        <table>
+            <tr>
+                <td class="nav-cell no-print">
+                    <div class="checklist-nav">
+                        <i class="fa fa-solid fa-chevron-up back-btn" style="rotate: -90deg"></i>
+                    </div>
+                </td>
+                <td class="content-cell">
+
+                    <div id="noentry-popup" class="error-prompt">
+                        <p>Bitte geben Sie alle Zahlen ein, die Ihnen vorliegen.
+                            Wenn Ihnen die fehlenden Angaben nicht vorliegen, klicken Sie auf "Weiter ohne Eingabe".</p>
+                        <button id="input-missing">Zurück zur Eingabe</button>
+                        <br>
+                        <button id="skip-missing" class="continue-btn">Weiter ohne Eingabe</button>
+                    </div>
+
+                    <div id="incompatible-popup" class="error-prompt">
+                        <p>
+                            Ihre Eingaben widersprechen einander.
+                            Bitte überprüfen Sie Ihre Eingaben nochmals sorgfältig.
+                        </p>
+                        <p class="instruction-par">
+                            Es ist möglich, dass Ihre vorliegenden Informationen widersprüchlich sind.
+                            In diesem Fall prüfen Sie bitte, wie die Ergebnisse für
+                            <emph>Wirksamkeit (relative Riskikoreduktion)</emph>
+                            <strong>mit entweder</strong>
+                            der Anzahl an Fällen
+                            <emph>unter den Behandelten</emph>
+                            <strong>oder</strong>
+                            der Anzahl an Fällen
+                            <emph>unter den nicht-Behandelten (Placebo- oder Vergleichsgruppe)</emph>
+                            .
+                        </p>
+                        <button id="acknowledge-incompatible">Zurück zur Eingabe</button>
+                    </div>
+
+                    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+                    <!-- Start of questions:-->
+                    <div class="checklist-question" id="start-q">
+
+                        <div class="question-content">
+                            <p class="checklist-qtext">
+                                <span id="cur-topic"></span>
+                            </p>
+                            <p>
+                                Prüfen Sie, ob die Ihnen vorliegenden Risikoinformationen eine transparente Darstellung
+                                erlauben.
+                                Geben Sie dazu auf den folgenden Seiten die Risikoinformationen ein, die Sie zur
+                                Verfügung haben.
+                            </p>
+
+                            <p>
+                                Wenn Ihnen Informationen fehlen, lassen Sie sie aus (Sie werden gefragt, ob Sie ein Feld
+                                absichtlich frei gelassen haben).
+                            </p>
+
+
+                            <p>
+                                Mit den Pfeilen links und rechts können Sie navigieren.
+                            </p>
+
+                            <!--                                <button class="checklist-button continue-btn">Weiter</button>-->
+
+
+                            <!--                            <p>-->
+                            <!--                                [Als tooltip!]-->
+                            <!--                                <i class="fa fa-exclamation-triangle"></i>-->
+                            <!--                                Manchmal wird diese Zahl auch als "Impfschutz" bezeichnet.-->
+                            <!--                                <strong>Weitere Begriffe?</strong>-->
+                            <!--                            </p>-->
+
+                            <!--                            <p>Unter dem Begriff der Impfstoffwirksamkeit versteht man in der Regel,-->
+                            <!--                                wie viele Prozent weniger in der Gruppe der Geimpften erkranken.</p>-->
+
+                            <!--                            <p>Anmerkung: Wenn die Information fehlt, wird nachgefragt.</p>-->
+                        </div>
+
+
+                    </div>
+
+                    <div class="checklist-question" id="rel-risk-reduction-q">
+
+                        <div class="question-content">
+                            <p class="checklist-qtext">Welche Wirksamkeit oder Effektivität
+                                der <span class="typeword"></span>
+                                wurde angegeben? (Englisch:
+                                <a href="https://www.who.int/news-room/feature-stories/detail/vaccine-efficacy-effectiveness-and-protection">
+                                    <span class="highlight-num tooltip">
+                                    efficacy
+                                    <span class="tooltiptext tooltip-checklist">
+                                        <i class="fa fa-exclamation-triangle"></i>
+                                        Relative Risikoreduktion in einem Medikamententrial.
+                        </span>
+                                    </span>
+                                    oder
+                                    <span class="highlight-num tooltip">
+                                    effectivness
+                                    <span class="tooltiptext tooltip-checklist">
+                                        <i class="fa fa-exclamation-triangle"></i>
+                                        Relative Risikoreduktion in epidemiologischen Daten.
+                        </span>
+                                    </span>
+                                </a>)</p>
+                            <p>
+                                Bitte geben Sie die
+                                <span class="highlight-num tooltip">
+                                    Wirksamkeit
+                                    <span class="tooltiptext tooltip-checklist">
+                                        <i class="fa fa-exclamation-triangle"></i>
+                                        Ist häufig eine <a href="risk_wiki.html#wiki-rel">relative Risikoreduktion</a>
+                                <span class="addinfo-rrr"></span>
+                        </span>
+                                </span>
+                                in Prozent an.
+                                <!--                                [Sinnvoll?]-->
+                            </p>
+
+                            <p>
+                                <input class="checklist-input" id="rel-risk-reduction" type="text">&nbsp;%
+                                <span class="tooltip delete-entry">
+                                <i class="fa fa-trash" aria-hidden="true" id="rel-risk-reduction-del"></i>
+                                <span class="tooltiptext tooltip-checklist">
+                                   Eintrag löschen
+                                </span>
+                                </span>
+
+
+                                <!--                                <button class="checklist-button continue-btn">Weiter</button>-->
+                            </p>
+
+
+                            <!--                            <p>-->
+                            <!--                                [Als tooltip!]-->
+                            <!--                                <i class="fa fa-exclamation-triangle"></i>-->
+                            <!--                                Manchmal wird diese Zahl auch als "Impfschutz" bezeichnet.-->
+                            <!--                                <strong>Weitere Begriffe?</strong>-->
+                            <!--                            </p>-->
+
+                            <!--                            <p>Unter dem Begriff der Impfstoffwirksamkeit versteht man in der Regel,-->
+                            <!--                                wie viele Prozent weniger in der Gruppe der Geimpften erkranken.</p>-->
+
+                            <!--                            <p>Anmerkung: Wenn die Information fehlt, wird nachgefragt.</p>-->
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="checklist-question" id="n-total-q">
+                        <div class="question-content">
+                            <p class="checklist-qtext">
+                                Wie viele Personen haben insgesamt an der Studie teilgenommen?
+                            </p>
+                            <input class="checklist-input" id="n-total" type="text">
+                            <br>
+                            <button class="checklist-button continue-btn">Weiter</button>
+                        </div>
+                    </div>
+
+                    <div class="checklist-question" id="any-control-q">
+                        <p>Gab es eine Kontrollgruppe?</p>
+
+                        <button class="checklist-button continue-btn input-btn" value="1">Ja</button>
+                        <button class="checklist-button continue-btn input-btn" value="0">Nein</button>
+                        <button class="checklist-button continue-btn input-btn" value="-1">Weiß nicht</button>
+
+                    </div>
+
+                    <div class="checklist-question" id="n-treat-control-q">
+                        <div class="question-content">
+                            <p class="checklist-qtext">
+                                Wie viele Personen <span class="info-treat"></span>?
+                                Wie viele waren in der <span class="info-control"></span>?
+                            </p>
+
+                            <table>
+                                <tr>
+                                    <td><label>Anzahl <span class="info-treat2"></span></label></td>
+                                    <td><input class="checklist-input" id="n-impf" type="text"></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label>Anzahl <span class="info-control2"></span></label>
+                                    </td>
+                                    <td>
+                                        <input class="checklist-input" id="n-control" type="text">
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                    </div>
+
+                    <div class="checklist-question" id="p-treat-q">
+                        <div class="question-content">
+                            <p class="checklist-qtext">
+                                Welcher Anteil der Personen wurde <span class="typeverb"></span>?
+                            </p>
+
+                            <!--                            ACHTUNG: Plausible Ganzzahlen ggf. umformulieren!-->
+                            <input class="checklist-input" id="p-treat" type="text">
+
+                            <!--                            <br>-->
+                            <!--                            <button class="checklist-button continue-btn">Weiter</button>-->
+                        </div>
+                    </div>
+
+                    <div class="checklist-question" id="n-case-q">
+                        <div class="question-content">
+                            <p class="checklist-qtext">
+                                Wie viele Personen sind jeweils unter den
+                                <span class="info-treat2"></span>en
+                                und in der Vergleichsgruppe (Kontrollgruppe) <span class="outcome-verb">erkrankt</span>?
+                                [Outcome for treatment case: mortality? symptoms? ask Helge]
+                            </p>
+                            <!--                        TODO: Eventually translate to grid layout?-->
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label for="n-case-impf">
+                                            <span class="outcome-noun">Erkrankungen</span> unter den <span
+                                                class="info-treat2"></span>en
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <input class="checklist-input" id="n-case-impf" name="n-case-impf" type="text">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="n-case-control">
+                                        <span class="outcome-noun">Erkrankungen</span> in der Vergleichsgruppe
+                                        (Placebogruppe/<span class="info-control2"></span>)
+                                    </label></td>
+                                    <td>
+                                        <input class="checklist-input" id="n-case-control" name="n-case-control"
+                                               type="text">
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </div>
+                    </div>
+
+                    <div class="checklist-question" id="or-case-q">
+                        <div class="question-content">
+                            <p class="checklist-qtext">QUESTION ABOUT ODDS RATIOS FOR ARTICLES?</p>
+                            <input class="checklist-input" id="or-case" type="text">
+                            <!--                        <br>-->
+                            <!--                        <button class="checklist-button continue-btn">Weiter</button>-->
+                        </div>
+                    </div>
+
+                    <div class="checklist-question" id="side-q">
+                        <div class="question-content">
+                            <p class="checklist-qtext">Für wie viele Personen wurden Nebenwirkungen berichtet?</p>
+                            <p>
+                                [Rather ask, which Side effects were reported? Let people update as dynamic list?]
+                            </p>
+                            <input class="checklist-input" id="side" type="text">
+                            <br>
+                            <button class="checklist-button continue-btn">Weiter</button>
+                        </div>
+                    </div>
+
+                    <div class="checklist-question" id="n-side-q">
+                        <div class="question-content">
+                            <p class="checklist-qtext">
+                                Für wie viele Personen wurden unter den <span class="info-treat2"></span>en und in
+                                der <span class="info-control"></span> jeweils Nebenwirkungen beobachtet?
+                            </p>
+                            <!--                        TODO: Eventually translate to grid layout?-->
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label for="n-side-impf">
+                                            Nebenwirkungen unter den <span class="info-treat2"></span>en
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <input class="checklist-input" id="n-side-impf" name="n-side-impf" type="text">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="n-side-control">
+                                        Nebenwirkungen in der Vergleichsgruppe (Placebogruppe/<span
+                                            class="info-control2"></span>)
+                                    </label></td>
+                                    <td>
+                                        <input class="checklist-input" id="n-side-control" name="n-side-control"
+                                               type="text">
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </div>
+                    </div>
+
+                    <div class="checklist-question" id="p-side-q">
+                        <div class="question-content">
+                            <p class="checklist-qtext">
+                                Für welchen Anteil der Personen wurden unter den <span class="info-treat2"></span>en und
+                                der <span class="info-control2"></span> jeweils Nebenwirkungen beobachtet?
+                            </p>
+                            <p>
+                                Bitte geben Sie die Anteile in Prozent (d.h., Zahlen zwischen 0 und 100 an).
+                            </p>
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label for="p-side-impf">
+                                            Nebenwirkungen unter den <span class="info-treat2"></span>en
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <input class="checklist-input" id="p-side-impf" name="p-side-impf" type="text">&nbsp;%
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="p-side-control">
+                                        Nebenwirkungen in der Vergleichsgruppe (Placebogruppe/<span
+                                            class="info-control2"></span>)
+                                    </label></td>
+                                    <td>
+                                        <input class="checklist-input" id="p-side-control" name="p-side-control"
+                                               type="text">&nbsp;%
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </div>
+                    </div>
+
+
+                    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+                    <!-- ~~~~~~~~~~~~~~~~~~~~~~~ RESULTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+                    <div class="checklist-question checklist-results" id="results-q">
+
+                        <!--                        [FAKTENBOX?]-->
+
+                        <!--Container effectivitiy-->
+                        <div class="grid-container-check" id="results-1">
+
+                            <!--                            ERROR 1-->
+                            <div class="grid-global-note error-note" id="results-1-error">
+                                <p>Leider konnten wir aus den angegebenen Zahlen keine transparente Risikoinformation
+                                    berechnen.</p>
+                                <p>Bitte prüfen Sie die Angaben. Möglicherweise erlauben diese keine Transparente
+                                    Risikodarstellung.</p>
+                            </div>
+
+                            <!--                            CONTENT-->
+                            <div class="grid-head">
+                                <p><strong>Nutzen:</strong></p>
+                                <hr>
+                            </div>
+
+                            <p class="grid-subhead1">In der Kontrollgruppe</p>
+
+                            <div class="canvas-container grid-arr1 content-end">
+                                <canvas id="dotdisplay-control" class="canvas-base"></canvas>
+                            </div>
+
+                            <p class="grid-note1 content-start"><span class="risk-info"
+                                                                      id="risk-control"></span>
+                            </p>
+
+
+                            <!--                                Treatment group-->
+
+                            <p class="grid-note2 content-end"><span class="risk-info" id="risk-treat"></span>
+                            </p>
+
+                            <p class="grid-subhead2">In der Behandlungsgruppe</p>
+
+                            <div class="canvas-container grid-arr2 content-start">
+                                <canvas id="dotdisplay-treat" class="canvas-base"></canvas>
+                            </div>
+
+                            <div class="grid-global-note">
+                                <p id="abs-change"></p>
+                                <p id="rel-change"></p>
+                            </div>
+
+
+                        </div>
+
+                        <!--Container effectivitiy-->
+                        <div class="grid-container-check" id="results-2">
+
+                            <!--                            ERROR 2-->
+                            <div class="grid-global-note error-note" id="results-2-error">
+                                <p>Leider konnten wir aus den angegebenen Zahlen keine transparente Risikoinformation
+                                    berechnen.</p>
+                                <p>Bitte prüfen Sie die Angaben. Möglicherweise erlauben diese keine Transparente
+                                    Risikodarstellung.</p>
+                            </div>
+
+                            <!--                            CONTENT 2-->
+
+                            <div class="grid-head">
+                                <p><strong>Schaden:</strong></p>
+                                <hr>
+                            </div>
+
+                            <p class="grid-subhead1">In der Kontrollgruppe</p>
+
+                            <div class="canvas-container grid-arr1 content-end">
+                                <canvas id="dotdisplay-control-side" class="canvas-base"></canvas>
+                            </div>
+
+                            <p class="grid-note1 content-start">
+                                erleiden
+                                <span class="risk-info" id="risk-control-side"></span>
+                                Nebenwirkungen
+                            </p>
+
+
+                            <!--                                Treatment group-->
+
+                            <p class="grid-note2 content-end">
+                                erleiden
+                                <span class="risk-info" id="risk-treat-side"></span>
+                                Nebenwirkungen
+                            </p>
+
+                            <p class="grid-subhead2">In der Behandlungsgruppe</p>
+
+                            <div class="canvas-container grid-arr2 content-start">
+                                <canvas id="dotdisplay-treat-side" class="canvas-base"></canvas>
+                            </div>
+
+                            <div class="grid-global-note">
+                                <p id="abs-change-side"></p>
+                                <p id="rel-change-side"></p>
+                            </div>
+
+
+                        </div>
+
+
+                        <button class="button-print-or-save-document checklist-button no-print">
+                            <i class="fa fa-print" aria-hidden="true"></i>
+                            Ergebnis drucken
+                        </button>
+                        <!--                        <br>-->
+                        <!--                        [SPLIT THE ARRAY?]-->
+                    </div>
+                </td>
+                <td class="nav-cell no-print">
+                    <div class="checklist-nav">
+                        <i class="fa fa-solid fa-chevron-up continue-btn" style="rotate: 90deg"></i>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+    </div>
+
+    <div class="canvas-zoom no-print">
+        <!--        <span id="quit-zoom">X</span>-->
+        <canvas id="dotdisplay-zoom" class="zoomed-canvas"></canvas>
+        <!--        <canvas id="dotdisplay-control-zoom" class="zoomed-canvas"></canvas>-->
+    </div>
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ EOF MAIN CONTENT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+    <!-- Footer -->
+    <div class="footer no-print"></div>
+
+
+    <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+    <!--Space for scripts-->
+    <script src="scripts/calculate_risk.js"></script>
+    <script src="scripts/handle_checklist.js"></script>
+
+
+</body>
