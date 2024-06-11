@@ -42,7 +42,7 @@
     position: relative;
     overflow: visible;
     opacity: 0.9;
-    display: inline;
+    display: inline-block; /* vorher: inline */  
     border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
 }
 
@@ -55,7 +55,7 @@
 /* Tooltip text */
 .tooltip .tooltiptext {
     visibility: hidden;
-    width: 10em;
+    width: 8.5em; /* von 10em auf 8.5em */
     background-color: #555;
     color: #fff;
     text-align: center;
