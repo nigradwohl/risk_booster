@@ -195,7 +195,7 @@ $(document).ready(function () {
         // Context detection: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         // Get rid of non-numbers (tokens that still contain incorrect patterns):
-        const nonumpat = RegExp("\w+-?" + pat_num, "dg");
+        const nonumpat = RegExp("[A-Za-zÄäÖöÜüß]+-?\\d", "dg");
         console.log("Before context detection:");
         token_dat.print();
         token_dat.is_num = token_dat.is_num.map((x, ix) => x && !nonumpat.test(token_dat.token[ix]));  // was: !token_dat.token[ix].search(nonumpat)
