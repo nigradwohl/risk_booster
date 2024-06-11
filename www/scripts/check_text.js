@@ -117,6 +117,10 @@ $(document).ready(function () {
         // console.log("Check my text");
         const rawText = $("#text-query").val(); // Get raw input text:
 
+        $("#mail-feedback").attr("href", 'mailto:risk.booster@gmail.com?subject=Fehlerhafter Text im ScienceXMedia Riskbooster&body=' +
+            "Fehler im folgenden Text:<br><br>" + rawText.replaceAll("\n", "  "));
+
+
         // Pre-process input:
         console.log("Raw text:");
         console.log(JSON.stringify(rawText));
@@ -195,12 +199,12 @@ $(document).ready(function () {
         // Context detection: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         // Get rid of non-numbers (tokens that still contain incorrect patterns):
-        const nonumpat = RegExp("\w+-?" + pat_num, "dg");
-        console.log("Before context detection:");
-        token_dat.print();
+        const nonumpat = RegExp("[A-Za-zÄäÖöÜüß]+[\-.]?\\d", "dg");
+        // console.log("Before context detection:");
+        // token_dat.print();
         token_dat.is_num = token_dat.is_num.map((x, ix) => x && !nonumpat.test(token_dat.token[ix]));  // was: !token_dat.token[ix].search(nonumpat)
-        console.log(token_dat.token);
-        console.log(token_dat.is_num);
+        // console.log(token_dat.token);
+        // console.log(token_dat.is_num);
 
         // Detect missing units:
         // console.log(" +++ detecting missing units +++");
@@ -219,6 +223,8 @@ $(document).ready(function () {
         }
 
         // Detect number words:
+        // Case to handle:
+        // "Davon wurden 9 in der Placebogruppe und **einer** in der BNT162b2-Gruppe beobachtet."
         // ++++ HERE NOW +++
         // python: https://github.com/IBM/wort-to-number
         // const pat_numwords = RegExp(collapse_regex_or(
@@ -307,7 +313,8 @@ $(document).ready(function () {
 
                 // For small percentages assume absolute:
                 // console.log("Get relative percentages and percentages <1%!");
-                const numpart = token_dat.token[ix].match(regex_num)[0].replace(",", ".");
+                // const numpart = token_dat.token[ix].match(regex_num)[0].replace(",", ".");
+                const numpart = token_dat.trnum[ix].match(regex_num)[0].replace(",", ".");  // use trransformed number instead.
                 // console.log(numpart);
                 out = numpart < 10 ? "abs" : "rel";
             }
@@ -427,8 +434,9 @@ $(document).ready(function () {
 
                     let cur_tooltip = {
                         "perc": "Prozentzahl", "freq": "Anzahl", "nh": "Natürliche Häufigkeit", "pval": "p-Wert",
-                        "undefined": "Konnte nicht identifiziert werde"
+                        "undefined": "Konnte nicht identifiziert werden"
                     }[cur_unit];
+                    cur_tooltip = cur_tooltip === undefined ? "Konnte nicht identifiziert werden" : cur_tooltip;
                     if (Object.keys(tooltip_dict).includes(cur_sign)) {
                         cur_tooltip = tooltip_dict[cur_sign];
                     }
@@ -1088,7 +1096,7 @@ const regex_mult = new RegExp("(?<mult>" + pat_num + "[ \\-]?([Mm]al|[Ff]ach) (s
 // nh must also be identified from tokens (e.g., In der Gruppe von 1000[case] Leuten sterben 4[num/case].
 
 // Define units to not consider further:
-const units_exc = ["age", "currency", "time", "date", "year", "dur", "legal", "medical", "misc"];
+const units_exc = ["age", "currency", "time", "date", "year", "dur", "legal", "medical", "enum", "misc"];
 
 /*
 Tests for simple units:
@@ -1125,10 +1133,15 @@ const check_numbers_dict = {
     "pval": {
         "regex": RegExp("(?<pval>p ?[\\<\\=] ?" + pat_num + ")", "dg")
     },
+    "yearnum": {
+        "regex": /(?<nyear>\d+([.|,]\d+)( Jahr[a-z]*))/dg  // require comma or pouint separator!
+        // "regex": /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
+    },
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Simple matches:
     "age": {
-        "regex": /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
+        "regex": /(?<age>(?<![,.])(\d+-? bis )*\d+-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
+        // "regex": /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
     },
     // "age2": {
     //     "regex": RegExp("(?<age>" + pat_num + "( Jahre|\-jährig)" + ")", "dg")
@@ -1143,13 +1156,16 @@ const check_numbers_dict = {
         "regex": /(?<time>(\d{1,2}(\.\d{2})? Uhr)|(\d{1,2}:\d{2}))/dg
     },
     "date": {
-        "regex": /(?<date>\d{1,2}\.\d{1,2}\.(18|19|20)\d{2})/dg
+        "regex": /(?<date>\d{1,2}\.\d{1,2}\.(18|19|20)\d{2}(?![|.\w]))/dg
     },
     "year": {
-        "regex": /(?<year>Jahr (18|19|20)\d{2})/dg
+        "regex": /(?<year>(Jahr|Anfang|Ende|Mitte|Nach) \d{4}(?![|.\w]))/dg
     },
     "year2": {
         "regex": /(?<year>(18|19|20)?\d{2}er)/dg
+    },
+    "year3": {
+        "regex": /(?<year>(?<!(,|\.|Jahr |Anfang |Ende |Mitte |Nach ))(19|20)\d{2}(?![|.\w]))/dg  // 20th and 21st century.
     },
     "monyear": {
         "regex": RegExp("(?<year>(" + collapse_regex_or(["Januar", "Februar", "März", "April", "Mai", "Juni",
@@ -1157,7 +1173,7 @@ const check_numbers_dict = {
             "Dezember"]) + ") (18|19|20)?\\d{2})", "dg")
     },
     "yearrange": {
-        "regex": /(?<year>(zwischen|von) (18|19|20)\d{2} (und|bis) (18|19|20)?\d{2})/dg
+        "regex": /(?<year>(zwischen|von) (18|19|20)\d{2}(?![|.\w]) (und|bis) (18|19|20)?\d{2}(?![|.\w]))/dg
     },
     "dur": {
         "regex": /(?<dur>[0-9]+(-stündig|-tägig| Minuten?| Stunden?| Tagen?| Wochen?| Monate?))/dg
@@ -1182,6 +1198,11 @@ const check_numbers_dict = {
     "misc": {
         // MIscellaneous numbers to be excluded!
         "regex": RegExp("(?<misc>" + pat_num + "\\.? Grad)", "dg")
+    },
+    // Enumeration:
+    "enum": {
+        // MIscellaneous numbers to be excluded!
+        "regex": /(?<enum>\(\d{1,2}\))/dg
     },
     // "within_nums": {
     //   "regex": RegExp("(?<misc>" +"\w*-?" + pat_num + ")", "dg")
@@ -1231,9 +1252,9 @@ const numtype_keyset = {
     "ntot": {
         "number_unit": ["freq"],
         "keyset": [
-            [RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder"),
+            [RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder|Erwachsene"),
                 RegExp(collapse_regex_or(["insgesamt", "nahmen",
-                    "Studie", "Untersuchung", "erh(a|ie)lten", "jeweils"]))],
+                    "Studie", "Untersuchung", "erh(a|ie)lten", "jeweils", "befragt"]))],
             [RegExp("Studie"),
                 RegExp(collapse_regex_or(["umfass(t|en)"])),
                 RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder")]
@@ -1552,17 +1573,17 @@ function get_token_data(text) {
         token_i = text_tokens[i];
 
         // Regex for token to ensure exact matching:
-        if (["\\n\\*", ".", ":", ";", ",", "?", "!", "(", ")", "\"", "'", "/"].includes(token_i)) {
+        if (["\\n\\*", ".", ":", ";", ",", "?", "!", "(", ")", "\"", "'", "/", "\u2018", "\u2019", "\u201c", "\u201d"].includes(token_i)) {
             // Punctuation follows somewhat different rules.
             // NOTE: Overlaps with other entities, likely because of the lack of spaces.
 
             // Escape and add lookahead or behind.
             if (["("].includes(token_i)) {
                 token_pat = "(?<=\\s|\\n|^)" + token_i.replace(/([.?()/])/dgm, "\\$1");
-            } else if (["\"", "'"].includes(token_i)) {
+            } else if (["\"", "'", "\u2018", "\u2019", "\u201c", "\u201d"].includes(token_i)) {
                 token_pat = token_i;  // no requirement to escape?
             } else {
-                token_pat = token_i.replace(/([.?()/])/dgm, "\\$1") + "(?=\\s|\\n|$|\\.|,)";
+                token_pat = token_i.replace(/([.?()/])/dgm, "\\$1") + "(?=\\s|\\n|$|\\.|,|[\"'\u2018\u2019\u201c\u201d])";
             }
 
         } else {
@@ -1844,7 +1865,8 @@ const window_keys = {
         // Types of subgroups:
         "contr": ["Kontroll-?\\w*[Gg]ruppe", "Placebo-?\\w*[Gg]ruppe",
             "Vergleichs-?\\w*[Gg]ruppe",
-            "Prävention\\w*wenigsten\\w*befolgte"],
+            "Prävention\\w*wenigsten\\w*befolgte",
+            "kein\w*Medika"],
         "treat": ["[Gg]eimpfte?n?", "Impf-?\\w*[Gg]ruppe",
             "Behandlungsgruppe", "Behandelte",
             "([Tt]eilnehmer|Probanden).*Impfung",
@@ -1862,8 +1884,9 @@ const window_keys = {
             "Reduzierung",
             "(mindert|reduziert)\\w*Symptome",
             // The following may only apply to vaccination? (But likely also to treatment!)
-            "Infektion", "[Ee]rkrank", "Verl[aä]uf"],
-        "side": ["Nebenwirk", "Komplikation"],  // more keywords?
+            "Infektion", "[Ee]rkrank", "Verl[aä]uf",
+            "Verbesserung"],
+        "side": ["Nebenwirk", "Komplikation", "unerwünschte\\w*Effekt"],  // more keywords?
         "all": ["jeweils", "beiden\\w*Gruppen"],
         // Other types (age etc.):
         "sample": ["im.*Alter"]  // sample description.
@@ -2346,7 +2369,8 @@ function detect_regex_match(txt, token_dat, check_dict) {
                 match_id = [i];
                 cur_type = match.type;
 
-            } else if (match.type[0] !== "unknown") {
+                // } else if (match.type[0] !== "unknown") {
+            } else if (!["unknown", "ucarryforward"].includes(match.type[0])) {  // now exclude both.
 
                 // console.log("Match type");
                 // console.log(match.type);
@@ -2461,17 +2485,18 @@ function word_tokenizer(txt) {
 
     // Split the text into its tokens:
     const split = txt
-        .replace(/([.,;?!:)])(?=\s)/g, ' $1')  // Ensure that punctuations becomes their own by adding a space before.
-        .replace(/([.,;?!:])(?=$)/g, ' $1')
-        .replace(/([)])/g, ' $1')  // space before any parenthesis.
-        .replace(/((?<=\s)[("'])/g, '$1 ')  // space after opening parentheses or quote.
-        .replace(/(["'](?=\s))/g, ' $1')  // space before quotes.
-        .split(/[\s\u2022]/g);
+        .replace(/([.,;?!:)])(?=[\s"'\u2018\u2019\u201c\u201d?])/g, ' $1 ')  // Ensure that punctuations becomes their own by adding a space before.
+        .replace(/([.,;?!:])(?=$)/g, ' $1 ')
+        .replace(/([)])/g, ' $1 ')  // space before any parenthesis.
+        .replace(/([("'\u2018\u2019\u201c\u201d])/g, ' $1 ')  // space after opening parentheses or quote.
+        // .replace(/((?<=\s)[("'\u2018\u2019\u201c\u201d])/g, ' $1 ')  // space after opening parentheses or quote.
+        // .replace(/(["'\u2018\u2019\u201c\u201d](?=\s))/g, ' $1')  // space before quotes.
+        .split(/[\s\u2022]/g);  // split on spaces and bullets.
 
     const out = split.map((x) => x.replace("xABBREVx", "."));  // re-replace the point.
 
-    // console.log("Token split");
-    // console.log(split);
+    console.log("Token split");
+    console.log(split);
 
     // Remove empty tokens and punctuation:
     // const clean_split = split.replace(/(?<!\W)[.,/#!$%^&*;:{}=_`~()](?!\W)/g,"");
