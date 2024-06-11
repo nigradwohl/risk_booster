@@ -196,11 +196,11 @@ $(document).ready(function () {
 
         // Get rid of non-numbers (tokens that still contain incorrect patterns):
         const nonumpat = RegExp("[A-Za-zÄäÖöÜüß]+-?\\d", "dg");
-        console.log("Before context detection:");
-        token_dat.print();
+        // console.log("Before context detection:");
+        // token_dat.print();
         token_dat.is_num = token_dat.is_num.map((x, ix) => x && !nonumpat.test(token_dat.token[ix]));  // was: !token_dat.token[ix].search(nonumpat)
-        console.log(token_dat.token);
-        console.log(token_dat.is_num);
+        // console.log(token_dat.token);
+        // console.log(token_dat.is_num);
 
         // Detect missing units:
         // console.log(" +++ detecting missing units +++");
@@ -219,6 +219,8 @@ $(document).ready(function () {
         }
 
         // Detect number words:
+        // Case to handle:
+        // "Davon wurden 9 in der Placebogruppe und **einer** in der BNT162b2-Gruppe beobachtet."
         // ++++ HERE NOW +++
         // python: https://github.com/IBM/wort-to-number
         // const pat_numwords = RegExp(collapse_regex_or(
@@ -427,8 +429,9 @@ $(document).ready(function () {
 
                     let cur_tooltip = {
                         "perc": "Prozentzahl", "freq": "Anzahl", "nh": "Natürliche Häufigkeit", "pval": "p-Wert",
-                        "undefined": "Konnte nicht identifiziert werde"
+                        "undefined": "Konnte nicht identifiziert werden"
                     }[cur_unit];
+                    cur_tooltip = cur_tooltip === undefined ? "Konnte nicht identifiziert werden" : cur_tooltip;
                     if (Object.keys(tooltip_dict).includes(cur_sign)) {
                         cur_tooltip = tooltip_dict[cur_sign];
                     }
@@ -1562,7 +1565,7 @@ function get_token_data(text) {
             } else if (["\"", "'"].includes(token_i)) {
                 token_pat = token_i;  // no requirement to escape?
             } else {
-                token_pat = token_i.replace(/([.?()/])/dgm, "\\$1") + "(?=\\s|\\n|$|\\.|,)";
+                token_pat = token_i.replace(/([.?()/])/dgm, "\\$1") + "(?=\\s|\\n|$|\\.|,|[\"'\u2018\u2019\u201c\u201d])";
             }
 
         } else {
@@ -1862,8 +1865,9 @@ const window_keys = {
             "Reduzierung",
             "(mindert|reduziert)\\w*Symptome",
             // The following may only apply to vaccination? (But likely also to treatment!)
-            "Infektion", "[Ee]rkrank", "Verl[aä]uf"],
-        "side": ["Nebenwirk", "Komplikation"],  // more keywords?
+            "Infektion", "[Ee]rkrank", "Verl[aä]uf",
+            "Verbesserung"],
+        "side": ["Nebenwirk", "Komplikation", "unerwünschte\\w*Effekt"],  // more keywords?
         "all": ["jeweils", "beiden\\w*Gruppen"],
         // Other types (age etc.):
         "sample": ["im.*Alter"]  // sample description.
@@ -2461,17 +2465,18 @@ function word_tokenizer(txt) {
 
     // Split the text into its tokens:
     const split = txt
-        .replace(/([.,;?!:)])(?=\s)/g, ' $1')  // Ensure that punctuations becomes their own by adding a space before.
-        .replace(/([.,;?!:])(?=$)/g, ' $1')
-        .replace(/([)])/g, ' $1')  // space before any parenthesis.
-        .replace(/((?<=\s)[("'])/g, '$1 ')  // space after opening parentheses or quote.
-        .replace(/(["'](?=\s))/g, ' $1')  // space before quotes.
-        .split(/[\s\u2022]/g);
+        .replace(/([.,;?!:)])(?=[\s"'\u2018\u2019\u201c\u201d?])/g, ' $1 ')  // Ensure that punctuations becomes their own by adding a space before.
+        .replace(/([.,;?!:])(?=$)/g, ' $1 ')
+        .replace(/([)])/g, ' $1 ')  // space before any parenthesis.
+        .replace(/([("'\u2018\u2019\u201c\u201d])/g, ' $1 ')  // space after opening parentheses or quote.
+        // .replace(/((?<=\s)[("'\u2018\u2019\u201c\u201d])/g, ' $1 ')  // space after opening parentheses or quote.
+        // .replace(/(["'\u2018\u2019\u201c\u201d](?=\s))/g, ' $1')  // space before quotes.
+        .split(/[\s\u2022]/g);  // split on spaces and bullets.
 
     const out = split.map((x) => x.replace("xABBREVx", "."));  // re-replace the point.
 
-    // console.log("Token split");
-    // console.log(split);
+    console.log("Token split");
+    console.log(split);
 
     // Remove empty tokens and punctuation:
     // const clean_split = split.replace(/(?<!\W)[.,/#!$%^&*;:{}=_`~()](?!\W)/g,"");
