@@ -28,17 +28,15 @@ Features are sorted by importance and are further split by features that should 
 * handle the unhandled numbers
 * life-expectancy: in wiki; at least social engineering
 * Feedback button
-* instructions on which risk information we can handle (not years -- longer living etc.)
-* Handle the non-identified numbers (headings) 
+* instructions on which risk information we can handle (not years -- longer living etc.) 
 
 
-* Improve global feedback by restructuring it and making it perceptually easier
+* Improve global feedback
     + also add links to wiki 
 * Increase the number of test-texts that are successfully handled
     + also handle number words
     + detect absolute risk reductions (e.g., smaller percentages, percentage points): distinguish from unidentified percentages (and mention if they are likely relative)
-* Identify whether numbers seem to have a reference 
-* Adapt the highlighting color to potentially critical numbers (e.g., relative risk reductions) 
+* Identify whether numbers seem to have a reference  
 * Handle margins for tooltips 
 
 ### Nice to have
