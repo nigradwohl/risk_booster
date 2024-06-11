@@ -330,7 +330,7 @@ body {
     display: flex;
     flex-direction: column;
     flex: 55%;
-    height: 20em;
+    /*height: 20em;*/
 }
 
 .text-notes {
@@ -351,6 +351,7 @@ body {
 .text-input > textarea {
     flex: 1;
     min-height: 15em;
+    /*Removed due to display issues*/
 }
 
 

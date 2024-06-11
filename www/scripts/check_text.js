@@ -222,9 +222,17 @@ $(document).ready(function () {
 
         }
 
-        // Detect number words:
+        // Detect unidentified number words:
         // Case to handle:
         // "Davon wurden 9 in der Placebogruppe und **einer** in der BNT162b2-Gruppe beobachtet."
+
+        const regex_numwords_raw = RegExp(collapse_regex_or(numwords), "dg");
+        const candidate_numwords = token_dat.token.map((x) => regex_numwords_raw.test(x) ? x : -1);
+
+        console.log("+++ Additional candidate number words: +++");
+        console.log(candidate_numwords.filter((x) => x !== -1));
+
+
         // ++++ HERE NOW +++
         // python: https://github.com/IBM/wort-to-number
         // const pat_numwords = RegExp(collapse_regex_or(
