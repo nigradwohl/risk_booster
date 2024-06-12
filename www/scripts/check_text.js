@@ -231,6 +231,7 @@ $(document).ready(function () {
             .map((x) => regex_numwords_raw.test(x) && !token_dat.is_num ? x : -1);
 
         console.log("+++ Additional candidate number words: +++");
+        // Also detect "Drittel" etc.)
         // Loop (map?) over all candidate numwords
         // get up to 1 sentence before and check for a frequency(?) unit
         // Apply the unit and set number to "true" if applicable!
@@ -242,17 +243,18 @@ $(document).ready(function () {
                 //     .filter((ix) => token_dat.sent[ix] >= cursent - 1 && token_dat.sent[ix] <= cursent);
                 // const window_start = token_dat.id
                 //     .filter((ix) => token_dat.sent[ix] >= cursent - 1 && token_dat.sent[ix] <= cursent);
-                const prev_units = token_dat.unit
-                    .filter((x, ix) => token_dat.sent[ix] >= cursent - 1 && ix <= i && x === "freq")
+                const prev_ntypes = token_dat.numtype  // was: token_dat.unit === freq; switched to ncase to avoid FP.
+                    .filter((x, ix) => token_dat.sent[ix] >= cursent - 1 && ix <= i && x === "ncase")
                     .flat();
                 // console.log(token_dat);
                 // console.log("Previous number units");
                 // console.log(token_dat.token[i]);
                 // console.log(prev_units);
-                const ulen = prev_units.length;
+                const ulen = prev_ntypes.length;
                 if (ulen > 0) {
+                    token_dat.unit[i] = "freq";
                     token_dat.is_num[i] = true;
-                    token_dat.unit[i] = prev_units[ulen - 1];
+                    token_dat.numtype[i] = prev_ntypes[ulen - 1];
                 }
 
             }
