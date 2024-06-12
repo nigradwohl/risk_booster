@@ -131,7 +131,7 @@ $(document).ready(function () {
             .replaceAll(/\.\n\./gm, ".\n\n");  // Replace stray changes.
 
 
-        console.log("Pre-processed text text:");
+        console.log("Pre-processed text:");
         console.log(JSON.stringify(inputText));
 
         // Maybe replace missing punctuation here?
@@ -153,8 +153,8 @@ $(document).ready(function () {
 
         // Get regex-based matches:
         const regex_matches = detect_regex_match(inputText, token_dat, check_numbers_dict);
-        console.log("Regex matches");
-        console.log(regex_matches);
+        // console.log("Regex matches");
+        // console.log(regex_matches);
 
 
         // Text-level: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -193,7 +193,7 @@ $(document).ready(function () {
 
         // Detect number types (may eventually need the topics to inform context names!):
         numtype_keyset.ncase.keyset = numtype_keyset.ncase.keyset.concat([[RegExp(collapse_regex_or(targetconds))]]);  // modify qwith targetconds!
-        console.log(numtype_keyset);
+        // console.log(numtype_keyset);
         token_dat.detect_number_type(inputText, numtype_keyset);
 
         // Context detection: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -226,11 +226,37 @@ $(document).ready(function () {
         // Case to handle:
         // "Davon wurden 9 in der Placebogruppe und **einer** in der BNT162b2-Gruppe beobachtet."
 
-        const regex_numwords_raw = RegExp(collapse_regex_or(numwords), "dg");
-        const candidate_numwords = token_dat.token.map((x) => regex_numwords_raw.test(x) ? x : -1);
+        const regex_numwords_raw = RegExp("(?<!\\w)(" + collapse_regex_or(numwords) + ")", "dg");
+        const is = token_dat.token
+            .map((x) => regex_numwords_raw.test(x) && !token_dat.is_num ? x : -1);
 
         console.log("+++ Additional candidate number words: +++");
-        console.log(candidate_numwords.filter((x) => x !== -1));
+        // Loop (map?) over all candidate numwords
+        // get up to 1 sentence before and check for a frequency(?) unit
+        // Apply the unit and set number to "true" if applicable!
+        for (let i = 0; i < token_dat.nrow; i++) {
+            // Is it a candidate?
+            if (regex_numwords_raw.test(token_dat.token[i])) {
+                const cursent = token_dat.sent[i];
+                // const window_start = token_dat.id
+                //     .filter((ix) => token_dat.sent[ix] >= cursent - 1 && token_dat.sent[ix] <= cursent);
+                // const window_start = token_dat.id
+                //     .filter((ix) => token_dat.sent[ix] >= cursent - 1 && token_dat.sent[ix] <= cursent);
+                const prev_units = token_dat.unit
+                    .filter((x, ix) => token_dat.sent[ix] >= cursent - 1 && ix <= i && x === "freq")
+                    .flat();
+                // console.log(token_dat);
+                // console.log("Previous number units");
+                // console.log(token_dat.token[i]);
+                // console.log(prev_units);
+                const ulen = prev_units.length;
+                if (ulen > 0) {
+                    token_dat.is_num[i] = true;
+                    token_dat.unit[i] = prev_units[ulen - 1];
+                }
+
+            }
+        }
 
 
         // ++++ HERE NOW +++
@@ -1187,8 +1213,8 @@ const check_numbers_dict = {
     "dur": {
         "regex": /(?<dur>[0-9]+(-stündig|-tägig| Minuten?| Stunden?| Tagen?| Wochen?| Monate?))/dg
     },
-    "dur2": { 
-        "regex": regex_dur2 
+    "dur2": {
+        "regex": regex_dur2
     },
     "legal": {
         "regex": /(?<legal>(Artikel|§|Absatz|Paragra(ph|f)) ?\d+)/dg
@@ -1652,12 +1678,12 @@ function detect_number_type(token_data, txt, numtype_dict) {
     const sentence_set = new Set(token_data.sent);
     const sentence_counts = count(token_data.sent);
 
-    console.log("Sentence counts");
-    console.log(sentence_counts);
-
-    // Update the keyset:
-    console.log("Current keyset numtype:");
-    console.log(numtype_dict);
+    // console.log("Sentence counts");
+    // console.log(sentence_counts);
+    //
+    // // Update the keyset:
+    // console.log("Current keyset numtype:");
+    // console.log(numtype_dict);
 
     // Include topic-specific keywords:
     if (token_data.topics.includes("impf")) {
@@ -1694,8 +1720,8 @@ function detect_number_type(token_data, txt, numtype_dict) {
 
     const ref_matches = detect_regex_match(txt, token_data, relation_dict);
 
-    console.log("Reference matches");
-    console.log(ref_matches);
+    // console.log("Reference matches");
+    // console.log(ref_matches);
 
     /*
     Overview of the pipeline (tree-like structures?)
@@ -1797,9 +1823,9 @@ function detect_number_type(token_data, txt, numtype_dict) {
 
                         // Check each token:
                         // const key_present = sentence_tokens.filter((x) => keyrex.test(x));
-                        console.log(`Keys from ${key} present in sentence:`);
-                        // console.log(keyset);
-                        console.log(keys_present);
+                        // console.log(`Keys from ${key} present in sentence:`);
+                        // // console.log(keyset);
+                        // console.log(keys_present);
 
                         /*
                          Implement:
@@ -1830,8 +1856,8 @@ function detect_number_type(token_data, txt, numtype_dict) {
                 // Check number if numtype remained other:
                 if (numtype === "other") {
 
-                    console.log("Sentence tokens");
-                    console.log(sentence_tokens);
+                    // console.log("Sentence tokens");
+                    // console.log(sentence_tokens);
 
                     // console.log(`Number match from regex (num = ${num})`);
                     // console.log(ref_matches.match_type[num]);
@@ -2507,8 +2533,8 @@ function word_tokenizer(txt) {
 
     const out = split.map((x) => x.replace("xABBREVx", "."));  // re-replace the point.
 
-    console.log("Token split");
-    console.log(split);
+    // console.log("Token split");
+    // console.log(split);
 
     // Remove empty tokens and punctuation:
     // const clean_split = split.replace(/(?<!\W)[.,/#!$%^&*;:{}=_`~()](?!\W)/g,"");
@@ -2554,7 +2580,7 @@ function get_regex_matches(txt, regexp) {
         // console.log(match);
 
         if (match.groups === undefined) {
-            console.log(match.groups);
+            // console.log(match.groups);
             throw new Error("No group provided. Please provide a regex with a named group using (?<GROUPNAME>REGEX).")
         }
 
