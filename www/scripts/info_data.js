@@ -118,7 +118,7 @@ const info_data = {
         "<li>Wenn es sich nicht um die Gesamtzahl in einer Gruppe handelt, achten Sie darauf diese Gesamtzahl immer (z.B., Anzahl der Geimpften) anzugeben.</li>" +
         "<li>Transparenter für die Kommunkation von Risiken sind <a href=\"risk_wiki.html#wiki-rel\">natürliche Häufigkeiten</a> (z.B., 15 aus 1000).</li>" +
         "</ul>"],
-        "maintext": "<p>Häufigkeiten natürliche Zahlen, die die Anzahl von Personen oder Dingen beschreiben.</p>" +
+        "maintext": "<p>Häufigkeiten sind natürliche Zahlen, die die Anzahl von Personen oder Dingen beschreiben.</p>" +
             "<p>Im Kontext medizinischer Berichterstattung handelt es sich häufig um die Anzahl von Erkrankungsfällen oder " +
             "die Anzahl von Personen mit Nebenwirkungen in einer Studie.</p>" +
             "<p>Auch die Gesamtzahl an untersuchten Personen (in einer Studie) sind eine Häufigkeit.</p>" +
@@ -155,7 +155,7 @@ const info_data = {
         "examples": ["440 von 1000 Personen ohne Auffrischungsimpfung gegen COVID-19 erkranken, während unter den " +
         "Geimpften nur 270 von 1000 erkranken.<br><a href=\"https://www.hardingcenter.de/de/impfungen/mrna-schutzimpfung-gegen-covid-19-fuer-erwachsene-unter-60-jahren\">https://www.hardingcenter.de/de/impfungen/mrna-schutzimpfung-gegen-covid-19-fuer-erwachsene-unter-60-jahren</a>"],
         "popup": ["<p><a href=\"risk_wiki.html#wiki-nh\">Natürliche Häufigkeiten</a> sind sehr transparent, um Risiken auszudrücken. " +
-        "Achten Sie aber darauf, dass die Referenz (d.h., 1 in 1000 oder 1 in 10000) jeweils konstant ist.</p>"],
+        "Achten Sie aber darauf, dass die Referenz (d.h., 1 in 1000 oder 1 in 10000) jeweils für alle Risiken konstant ist.</p>"],
         "maintext": "<p>Im Unterschied zu <a href='#wiki-freq'>Häufigkeiten</a> haben <a href=\"#wiki-nh\">natürliche Häufigkeiten</a> eine Bezugsgruppe(?).</p>"
     },
     "rel": {
@@ -208,6 +208,16 @@ const info_data = {
             "[BEISPIEL!]" +
             "</p>"
     },
+    "reference": {
+        "heading": "Bezugsgröße",  // the heading.
+        "subheading": "",  // placeholder for a potential subheading.
+        "aliases": [""],  // list of other names.
+        "annotation": "",  // internal annotations; should be eventually ""
+        "overview": [""],  // array of list items overview of most important points, displayed in wiki and text checker.
+        "examples": ["In der Gruppe der Geimpften waren 1.000 Personen"],  // array of list items with examples.
+        "popup": [],
+        "maintext": "<p>[TODO]</p>"   // string of main text for wiki.
+    },
     // Other kinds of numbers:
     "pval": {
         "heading": "<i>p</i>-Werte",  // the heading.
@@ -244,6 +254,7 @@ const info_data = {
         "popup": ["TODO: Sensitivität, Spezifität etc.!"],
         "maintext": "[TODO] Stichworte: Sensitivität, Spezifität, PPV, NPV"   // string of main text for wiki.
     },
+
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Non-numeric entries: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     "rct": {
         "heading": "Randomized Controlled Trial",  // the heading.
