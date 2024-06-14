@@ -477,6 +477,31 @@ $(document).ready(function () {
                         cur_tooltip = tooltip_dict[cur_sign];
                     }
 
+                    // This might help: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get?retiredLocale=de
+
+                    const info_tree = {
+                        // Levels:
+                        "treelvs": ["relabs", "unit"],
+                        "tree": {
+                            // relabs tree:
+                            "rel": info_data.rel,  // TODO: Collect info if there is any defined?
+                            // unit tree:
+                            "abs": {
+                                "perc": {
+                                    "smperc": {}  // Note: This is merely an addition; make its own tree or a condition within the perc-tree?
+                                },  // TODO: How to get the names of subnodes?
+                                "nh": "Natürliche Häufigkeit. Transparent! Referenz sollte konstant sein",
+                                "freq": "Häufigkeit",  // TODO: Split into ncase and ntot (do to illustrate simplicity of adding levels)!
+                                "yearnum": "Anzahl an Jahren. Referenz (d.h. bezogen auf wie viele Jahre) sollte klar sein."
+                            }
+                        },
+                        "traverse": function (arr) {
+
+                        }
+                    }
+
+                    cur_tooltip = info_tree.tree[cur_unit];
+
                     // const cur_tooltip = unit_note_dict[cur_unit].tooltip[cur_numtype[0]];  // NOTE: currently first type only.
 
                     // Token information:
@@ -1417,7 +1442,7 @@ const info_tree = {
     "treelvs": ["relabs", "unit"],
     "tree": {
         // relabs tree:
-        "rel": info_data.rel  // TODO: Collect info if there is any defined?
+        "rel": info_data.rel,  // TODO: Collect info if there is any defined?
         // unit tree:
         "abs": {
             "perc": "smperc"  // TODO: How to get the names of subnodes?
