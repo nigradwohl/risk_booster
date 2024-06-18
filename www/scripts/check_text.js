@@ -362,6 +362,8 @@ $(document).ready(function () {
             token_dat.relabs[ix] = out;
         }
 
+        // Fix some issues:
+        token_dat.numtype = token_dat.numtype.map((x, ix) => [-1, "other"].includes(x) && token_dat.gtype[ix] === "sub" ? "ncase" : x);
 
         // Display for testing:
         console.log("Updated token data:");
