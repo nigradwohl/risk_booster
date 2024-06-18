@@ -854,8 +854,7 @@ $(document).ready(function () {
             const curinfo = info_tree.traverse(col_info);
 
             const addinfo_perc = "<p>" +
-                "Diese <a href='risk_wiki.html#wiki-prozent'>Prozentzahl</a> scheint " + (col_info[1] === "rel" ? "relativ" : "absolut") + " zu sein." +
-                (token_dat.smperc[token_id] === true ? "<br>Sie ist < 1. Greifen Sie bitte auf <a href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> " +
+                (token_dat.smperc[token_id] === true ? "<br>Die Prozentzahl ist < 1%. Greifen Sie bitte auf <a href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> " +
                     "(z.B., 1 aus 100 oder 1 aus 1000) zurück." : "") +
                 // Alternativ: Wir konnten
                 "</p>";  // z.B., relative/absolute Prozentzahl.
@@ -1302,23 +1301,35 @@ class OutputNode {
 //     "mult_other": "rel",
 //     "pval_other": "pval"
 
+const popup_perc = function(rel) {
+    return "<p>Diese <a href='risk_wiki.html#wiki-prozent'>Prozentzahl</a> scheint " +
+        (rel === "rel" ? "relativ" : "absolut") + " zu sein.</p>"
+};
+
+const popup_freq = function(sample) {
+    return "<p>Diese Häufigkeit scheint eine " +
+        (sample === "ntot" ? "<a href='risk_wiki.html#wiki-sample'>Stichprobengröße</a>" : "<a href='risk_wiki.html#wiki-freq'>Anzahl von Fällen</a>") + " zu sein.</p>"
+};
+
+// In the future we might try to have more sophisticated methods to allow the passing of specific parameters!
+
 const info_tree = {
     // Levels:
     // "treelvs": ["relabs", "unit"],
     "tree": {
         // unit tree:
         "perc": {
-            "abs": new OutputNode("Absolute Prozentzahl", info_data.prozent.popup),
-            "rel": new OutputNode("Relative Prozentzahl", info_data.rel.popup.concat(info_data.prozent.popup))
+            "abs": new OutputNode("Absolute Prozentzahl", popup_perc("abs") + info_data.prozent.popup),
+            "rel": new OutputNode("Relative Prozentzahl", popup_perc("rel") + info_data.rel.popup.concat(info_data.prozent.popup)),
         },  // Note: This is merely an addition; make its own tree or a condition within the perc-tree?
-        "nh": new OutputNode("Natürliche Häufigkeit.", "nh"),
+        "nh": new OutputNode("Natürliche Häufigkeit.", info_data.nh.popup),
         "freq": {
-            "ncase": new OutputNode("Fallzahl", "freq"),
-            "ntot": new OutputNode("Stichprobengröße", "sample_size"),
+            "ncase": new OutputNode("Fallzahl", popup_freq("ncase") + info_data.freq.popup),
+            "ntot": new OutputNode("Stichprobengröße", popup_freq("ntot") + info_data.sample_size.popup),
             "default": new OutputNode("Anzahl", "Diese Zahl konnte leider nicht näher identifiziert werden")
         },
-        "mult": new OutputNode("Vielfaches", "rel"),
-        "pval": new OutputNode("p-Wert", "pval"),
+        "mult": new OutputNode("Vielfaches", info_data.rel.popup),
+        "pval": new OutputNode("p-Wert", info_data.pval.popup),
         "yearnum": new OutputNode("Anzahl an Jahren.", "Referenz (d.h. bezogen auf wie viele Jahre) sollte klar sein."),
         "default": new OutputNode("Zahl.", "Diese Zahl konnte leider nicht näher identifiziert werden")
     },
