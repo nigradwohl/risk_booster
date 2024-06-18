@@ -29,6 +29,11 @@
     cursor: pointer;
 }
 
+.highlight-other {
+    opacity: 60%;
+    border-radius: 2px;
+}
+
 .highlight-base {
     background-color: lightsteelblue;
 }
@@ -50,6 +55,21 @@
     width: 15em;
     text-align: left;
     padding: 0.5em;
+}
+
+.tooltip .tooltiptext.tooltip-overview {
+    width: 15em;
+    text-align: left;
+    padding: 0.5em;
+    background-color: #fff;
+    color: black;
+    opacity: 1;
+    border: 1px solid #0077be;
+    border-radius: 2px;
+}
+
+.tooltip .tooltiptext.tooltip-overview::after {
+    border-color: #0077be transparent transparent transparent;
 }
 
 /* Tooltip text */

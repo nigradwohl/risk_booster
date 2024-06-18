@@ -533,10 +533,21 @@ $(document).ready(function () {
 
         // Notes about features (presence of effectivity and harm; reporting of comparison group):
         const feature_dict = {
-            "eff": "<a href='risk_wiki.html#wiki-effside'>Nutzen</a>",
-            "side": "<a href='risk_wiki.html#wiki-effside'>Schaden</a>",
-            "treat": "<a href='risk_wiki.html#wiki-treat'>Behandlungsgruppe</a>",
-            "contr": "<a href='risk_wiki.html#wiki-control'>Kontrollgruppe</a>"
+            "eff": "<div id=\"eff-tt\" class=\"tooltip\">" +
+                "<span class=\"tooltiptext tooltip-overview\">Wirksamkeit einer Behandlung oder Impfung" +
+                "(z.B., verhinderte Erkranungen, Genesung, Vermeidung von Todesfällen).<br>" +
+                "Sollte immer mit Zahlen belegt werden.</span>" +
+                "<a href='risk_wiki.html#wiki-effside'>Nutzen</a></div>",
+            "side": "<div id=\"side-tt\" class=\"tooltip\">" +
+                "<span class=\"tooltiptext tooltip-overview\">Schaden (z.B., Nebenwirkungen) einer Behandlung oder Impfung.<br>" +
+                "Sollte immer mit Zahlen belegt werden.</span>" +
+                "<a href='risk_wiki.html#wiki-effside'>Schaden</a></div>",
+            "treat": "<div id=\"treat-tt\" class=\"tooltip\">" +
+                "<span class=\"tooltiptext tooltip-overview\">Gruppe, die die Behandlung erhalten hat oder einem Risiko ausgesetzt war.</span>" +
+                "<a href='risk_wiki.html#wiki-treat'>Behandlungsgruppe</a></div>",
+            "contr": "<div id=\"contr-tt\" class=\"tooltip\">" +
+                "<span class=\"tooltiptext tooltip-overview\">Gruppe, die keine Behandlung erhalten hat oder einem Risiko nicht ausgesetzt war.</span>" +
+                "<a href='risk_wiki.html#wiki-control'>Kontrollgruppe</a></div>",
         };
         // let feature_arr = [];  // initialize array to be filled.
 
@@ -694,7 +705,10 @@ $(document).ready(function () {
         // console.log(token_dat.unit);
         if (any_risk_num.length > 0) {
             feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> Der Text scheint Zahlen zu den genannten " +
-                "<a href='risk_wiki.html#wiki-risk'>Risiken</a> zu berichten. </li><li>";
+                "<div id=\"risk-tt\" class=\"tooltip\">" +
+                "<span class=\"tooltiptext tooltip-overview\">Anders als alltäglicher Risikobegriff gleichbedeutend mit \"Wahrscheinlichkeit\"" +
+                "(etwa Wahrscheinlichkeit zu erkranken oder versterben; aber auch positiv, z.B., Wahrscheinlichkeit länger zu leben).</span>" +
+                "<a href='risk_wiki.html#wiki-risk'>Risiken</a></div> zu berichten. </li><li>";
 
 
             // Differentiate numbers for control and treat group:
@@ -756,7 +770,13 @@ $(document).ready(function () {
         // Add mismatched framing:
         if (mismatched_framing) {
             arr_li.add('Achtung: Sie haben in Behandlungsgruppe relative Zahlen und in der Vergleichsgruppe absolute Zahlen verwendet.' +
-                'Dieses "mismatched framing" sollte vermieden werden, ' +
+                'Dieses "' +
+                '<div id=\\"eff-tt\\" class=\\"tooltip\\">' +
+                '                <span class="tooltiptext tooltip-overview">Beschreibt die Verwendung relativer und absoluter Maße ' +
+                'für Nutzen und Schadenwirkung. Da relative Angaben meist überschätzt werden, ' +
+                'stellt mismatched framing eine intransparente Verzerrung dar und sollte vermieden werden.</span>' +
+                '<a href=\'risk_wiki.html#wiki-mismatch\'>mismatched framing</a></div>' +
+                '" sollte vermieden werden, ' +
                 'da es <a>[LINK]Die Wirksamkeit größer und den Schaden kleiner [ODER ANDERSHERUM!] erscheinen lässt</a>');
         }
 
@@ -1198,8 +1218,12 @@ const unit_note_dict = {
                 }
 
                 txt_out = txt_out.replace(/(relative Prozentzahl(en)?)/g,
-                    "<div id=\"relnote\" class=\"highlight-num highlight-warning tooltip\">$1<span class=\"tooltiptext\">" +
-                    "Achten Sie darauf, dass Sie auch die <strong>absoluten Wahrscheinlichkeiten in den Gruppen berichten</strong> -- " +
+                    "<div id=\"relnote\" class=\"highlight-other highlight-warning tooltip\">" +
+                    "<a href=\"risk_wiki.html#wiki-rel\">$1</a>" +
+                    "<span class=\"tooltiptext tooltip-overview\">" +
+                    "Achten Sie darauf, dass Sie auch die <strong>" +
+                    "absoluten Wahrscheinlichkeiten" +
+                    " in der Behandlungs- und Vergleichsgruppe berichten</strong> &ndash; " +
                     "am besten als <a href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> (d.h., 3 aus 1000 oä.).</span></div>");
 
 
@@ -1248,9 +1272,14 @@ const unit_note_dict = {
     "pval": {
         "tooltip": {"other": "P-Wert"},
         "note": function (type_arr) {
-            return "Der Text enthält <a href='risk_wiki.html#wiki-pval'>p-Werte</a>. Diese sind leicht missverständlich und sollten vermieden werden. " +
-                "Ein besseres Maß für Unsicherheit sind Zahlenspannen (z.B., Credibilitätsintervalle oder Konfidenzintervalle." +
-                "z.B., die Anzahl an vermiedenen Todensfällen unter den Behandelten liegt zwischen 5 und 10)"
+            return "Der Text enthält " +
+                "<div id=\"pval-tt\" class=\"tooltip\">" +
+                "<span class=\"tooltiptext tooltip-overview\">" +
+                "<p>wird in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +
+                "<p>Typischerweise wird ein p-Wert kleiner als 0.05 als \"statistisch signifikant\" bezeichtnet, was eine akzeptable Unischerheit ausdrückt.</p>" +
+                "<p>Ein besseres Maß für Unsicherheit sind Zahlenspannen (z.B., Credibilitätsintervalle oder Konfidenzintervalle." +
+                "z.B., die Anzahl an vermiedenen Todensfällen unter den Behandelten liegt zwischen 5 und 10)</p></span>" +
+                "<a href='risk_wiki.html#wiki-pval'>p-Werte</a></div>. Diese sind leicht missverständlich und sollten vermieden werden. "
         }
     },
     // Unidentified matches:
