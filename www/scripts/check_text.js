@@ -162,9 +162,10 @@ $(document).ready(function () {
         token_dat.add_column(regex_matches.match_id, "match");
         token_dat.add_column(regex_matches.match_type.map((x) => x !== -1 ? x.toString() : x), "unit");  // get unit info from regex matches.
         token_dat.add_number_info();  // add info about numbers.
-        token_dat.add_column(token_dat.token.map((x, ix) => (RegExp(collapse_regex_or(numwords), "dg").test(x) && token_dat.unit[ix] !== -1)), "is_nw");  // is it a number word?
+        token_dat.add_column(token_dat.token.map((x, ix) => (RegExp(collapse_regex_or(numwords), "dg").test(x))), "is_nw");  // is it a number word?
         token_dat.detect_unit();  // get additional unit info from token data.
 
+        // token_dat.is_nw  = token_dat.is_nw.map((x, ix) => x && ![-1, "unknown"].includes(token_dat.unit[ix]));  // keep only numberwords that have known units.
 
 
         // Detect topis:
@@ -339,8 +340,8 @@ $(document).ready(function () {
         // Translate number words:
         const num_arr = Array.from(Array(12).keys());
         token_dat.add_column(token_dat.token
-            .map((x, ix) => token_dat.is_num[ix] && token_dat.is_nw[ix] ? 1 + num_arr[num_arr
-                .filter((ix) => RegExp(numwords[ix], "dg").test(x))].toString() : x), "trnum");
+            .map((x, ix) => token_dat.is_num[ix] && token_dat.is_nw[ix] ? (1 + num_arr[num_arr
+                .filter((ixn) => RegExp(numwords[ixn], "dg").test(x))]).toString() : x), "trnum");
 
         token_dat.add_column(token_dat.unit.map((x, ix) => x === "perc" && token_dat.is_num[ix] ?
             token_dat.trnum[ix].match(regex_num)[0].replace(",", ".") < 1 : -1), "smperc");
