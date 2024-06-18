@@ -517,12 +517,13 @@ h3 {
 
 #tooltip-popup {
     background-color: white;
-    border: 1px solid black;
+    border: 2px solid steelblue;
+    border-radius: 2px;
     display: none;
     z-index: 9999;
     max-width: 30%;
     margin: 1em;
-    padding: 0.4em 0.6em 1em;
+    padding: 0.5em 0.8em 1em;
     /*width: 10em;*/
     /*height: 3em;*/
 }
@@ -531,7 +532,7 @@ h3 {
 @media screen and (max-width: 700px) {
 
     #tooltip-popup {
-        max-width: 40%;
+        max-width: 70%;
     }
 
 }

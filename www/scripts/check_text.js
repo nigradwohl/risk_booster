@@ -849,8 +849,9 @@ $(document).ready(function () {
 
             // Traverse the info tree:
             const col_info = ["unit", "relabs", "numtype"].map(x => currow[token_dat.colnames.indexOf(x)]);
-            const curinfo = info_data[info_tree.traverse(col_info)["popup"]];
+            // const curinfo = info_data[info_tree.traverse(col_info)["popup"]];
             // Directly enter info in info tree? Maybe borrow from info dict?
+            const curinfo = info_tree.traverse(col_info);
 
             const addinfo_perc = "<p>" +
                 "Diese <a href='risk_wiki.html#wiki-prozent'>Prozentzahl</a> scheint " + (col_info[1] === "rel" ? "relativ" : "absolut") + " zu sein." +
@@ -865,18 +866,13 @@ $(document).ready(function () {
             //     "</p>";  // z.B., relative/absolute Prozentzahl.
 
             cur_popup.html(
-                // `<h4>${numtype}</h4>` +
-                // `<p>${unit_note_dict[token_dat.unit[token_id]].note([numtype])}</p>`
-                // `<h4>${txt_snips[numtype][0] + txt_snips[numtype][1][token_dat.unit[token_id]]}</h4>` +
-                // `<p>${txt_snips[numtype][2]}</p>`
-                // `<h4>${curinfo.heading}</h4>` +
+                `<h4>${curinfo.tool}</h4>` +
                 // `<p><strong>Bezug</strong>: ${token_dat.group[token_id]}</p>` +  // Some additional info!
                 `${col_info[0] === "perc" ? addinfo_perc : ""}` +  // additional info.
                 // `${(/_sub/.test(infokey) ? ("<p>Die Zahl bezieht sich auf eine Subgruppe. " +
                 //     "Stellen Sie sicher, das klar ist auf welche übergeordnete Gruppe sie sich bezieht.</p>") : "")}` +
-                // `<p><ul><li>${curinfo.overview.join("</li><li>")}</li></ul></p>` +
                 // `<p><ul><li>${curinfo.popup.join("</li><li>")}</li></ul></p>`  // to process an array as list.
-                `${curinfo === undefined ? "<p>Diese Zahl konnten wir leider nicht näher identifizieren.</p>" : curinfo.popup}`
+                `${!curinfo.popup ? "<p>Diese Zahl konnten wir leider nicht näher identifizieren.</p>" : curinfo.popup}`
 
                 // +++ `<p>[Place to add more info, if needed!]</p>`+++
             );
@@ -1312,8 +1308,8 @@ const info_tree = {
     "tree": {
         // unit tree:
         "perc": {
-            "abs": new OutputNode("Absolute Prozentzahl", "prozent"),
-            "rel": new OutputNode("Relative Prozentzahl", "prozent")
+            "abs": new OutputNode("Absolute Prozentzahl", info_data.prozent.popup),
+            "rel": new OutputNode("Relative Prozentzahl", info_data.rel.popup.concat(info_data.prozent.popup))
         },  // Note: This is merely an addition; make its own tree or a condition within the perc-tree?
         "nh": new OutputNode("Natürliche Häufigkeit.", "nh"),
         "freq": {
