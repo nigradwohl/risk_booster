@@ -84,14 +84,15 @@ const info_data = {
         "subheading": "",  // placeholder for a potential subheading.
         "aliases": [""],  // list of other names.
         "annotation": "",
-        "overview": ["Angabe der Bezugsgröße ist entscheidend, besonders für <a href=\"risk_wiki.html#wiki-rel\">relative Angaben</a>" +
-            " (z.B., eine Erhöhung von 50%, eine Impfstoffwirksamkeit von 90%)",
+        "overview": [
             "Absolute Ereigniswahrscheinlichkeiten sind relativen Angaben vorzuziehen",
+            "Für <a href=\"risk_wiki.html#wiki-rel\">relative Angaben</a>" +
+            " (z.B., eine Erhöhung von 50%, eine Impfstoffwirksamkeit von 90%) sollten unbedingt die Basisrisiken berichtet werden",
             "Prozentzahlen sollten nur für Zahlenwerte größer 1% verwendet werden (ansonsten sind <a href=\"#wiki-nh\">natürliche Häufigkeiten</a> vorzuziehen)."],
         "examples": ["Die Wahrscheinlichkeit zu erkranken, wenn man auf eine infizierte Person getroffen ist liegt bei 2% (absolut).",
             "Das Infektionsrisiko war in der Kontrollgruppe 50% höher (relativ).",
             "52% der Versuchsteilnehmer*innen waren weiblich (absolut)."],
-        "popup": ["Achten Sie auf eine klare <a>[LINK!]Bezugsgröße</a> (d.h., auf welche Gruppe sich der Anteil bezieht)"],
+        "popup": ["<ul><li>Achten Sie darauf anzugeben, auf welche Gruppe sich der Prozentanteil bezieht</li></ul>"],
         "maintext": // "<p>Prozentzahlen sollten nur bei Angaben größer als 1% verwendet werden.</p>" +
             "<p>Besser als <a href=\"\">Prozentzahlen</a> sind typischerweise <a href=\"#wiki-nh\">natürliche Häufigkeiten</a> (z.B., 1 aus 100 oder 1 aus 1000). " +
             "Diese werden häufig besser verstanden, insbesondere, für Prozentzahlen < 1%.</p>" +
@@ -168,7 +169,7 @@ const info_data = {
             "<p><i class=\"fa fa-exclamation-triangle annote-text-icon\"></i>&nbsp;Relative Angaben sind oft intransparent.</p>" +
             "<ul>" +
             // "<li>sie führen häufig zu einer <a href=\"risk_wiki.html#wiki-error-rel\">Überschätzung des Risikos</a></li>" +
-            "<li>Achten Sie darauf, dass die <a href='base-prob'>Basiswahrscheinlichkeit</a> angegeben wurde, auf die sich die Veränderung bezieht.</li>" +
+            "<li>Achten Sie darauf, dass die <a href='base-prob'>Basiswahrscheinlichkeit (bzw. das Basisrisiko)</a> angegeben wurde, auf die sich die Veränderung bezieht.</li>" +
             "</ul>"
         ],
         "maintext": "<h4>Verwendung</h4>" +
@@ -207,10 +208,11 @@ const info_data = {
         "subheading": "",  // placeholder for a potential subheading.
         "aliases": [""],  // list of other names.
         "annotation": "",  // internal annotations; should be eventually ""
-        "overview": [""],  // array of list items overview of most important points, displayed in wiki and text checker.
-        "examples": ["In der Gruppe der Geimpften waren 1.000 Personen"],  // array of list items with examples.
+        "overview": ["Anzahl oder Anteil auf die sich eine Prozentzahl oder eine anteilige Anzahl bezieht."],  // array of list items overview of most important points, displayed in wiki and text checker.
+        "examples": ["In der Gruppe der Geimpften waren <emph>1.000 Personen</emph>, davon erkrankten 9",
+        "Von den <emph>780 untersuchten Personen</emph> waren 50% in der Behandlungsgruppe"],  // array of list items with examples.
         "popup": [],
-        "maintext": "<p>[TODO]</p>"   // string of main text for wiki.
+        "maintext": "<p>Die Bezugsgröße erlaubt einzuschätzen, ob eine Anzahl oder ein relativer Prozentanteil</p>"   // string of main text for wiki.
     },
     // Other kinds of numbers:
     "pval": {
@@ -221,7 +223,7 @@ const info_data = {
         "overview": ["<a href='risk_wiki.html#wiki-cprob'>Bedingte Wahrscheinlichkeit</a> diese oder extremere Daten in einer Stichprobe zu beobachten",
             "Der p-Wert wird häufig missverstanden und sollte nicht verwendet werden"],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": [],  // array of list items with examples.
-        "popup": ["<p>Der p-Wert wird in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +
+        "popup": ["<p>Der <a href='wiki-pval'>p-Wert</a> wird in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +
         "<p>Typischerweise wird ein p-Wert kleiner als 0.05 als \"statistisch signifikant\" bezeichtnet, was eine akzeptable Unischerheit ausdrückt.</p>" +
         "<p>Da der p-Wert auch von Expert*innen häufig missverstanden wird, sollte er in journalistische Publikationen eher nicht verwendet werden.</p>"],
         "maintext": "<p>Der p-Wert wird in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +

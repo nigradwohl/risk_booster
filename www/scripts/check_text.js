@@ -1320,7 +1320,7 @@ const info_tree = {
         // unit tree:
         "perc": {
             "abs": new OutputNode("Absolute Prozentzahl", popup_perc("abs") + info_data.prozent.popup),
-            "rel": new OutputNode("Relative Prozentzahl", popup_perc("rel") + info_data.rel.popup.concat(info_data.prozent.popup)),
+            "rel": new OutputNode("Relative Prozentzahl", popup_perc("rel") + info_data.rel.popup),
         },  // Note: This is merely an addition; make its own tree or a condition within the perc-tree?
         "nh": new OutputNode("Natürliche Häufigkeit.", info_data.nh.popup),
         "freq": {
@@ -1328,9 +1328,9 @@ const info_tree = {
             "ntot": new OutputNode("Stichprobengröße", popup_freq("ntot") + info_data.sample_size.popup),
             "default": new OutputNode("Anzahl", "Diese Zahl konnte leider nicht näher identifiziert werden")
         },
-        "mult": new OutputNode("Vielfaches", info_data.rel.popup),
+        "mult": new OutputNode("Relative Veränderung", info_data.rel.popup),
         "pval": new OutputNode("p-Wert", info_data.pval.popup),
-        "yearnum": new OutputNode("Anzahl an Jahren.", "Referenz (d.h. bezogen auf wie viele Jahre) sollte klar sein."),
+        "nyear": new OutputNode("Anzahl an Jahren.", "Anzahl an Jahren. Kann z.B. zur Veränderung von Lebenserwartung anegeben werden."),
         "default": new OutputNode("Zahl.", "Diese Zahl konnte leider nicht näher identifiziert werden")
     },
     "traverse": function (arr) {
@@ -2069,7 +2069,7 @@ function investigate_context(token_data, index_arr, keyset) {
             const test_str = test_tokens.join("_").replaceAll("-", "_");
             // Issue could be that underscore counts as word character; will exploit this for now!!
             // console.log(test_tokens);
-            console.log("TESTSTRING:\n" + test_str);
+            // console.log("TESTSTRING:\n" + test_str);
 
             // Test the tokens here:
             // Here we should define sets that exclude each other! (e.g., control + treatment)
