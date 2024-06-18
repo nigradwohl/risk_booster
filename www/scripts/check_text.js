@@ -1908,6 +1908,7 @@ const window_keys = {
             "Prävention.*wenigsten.*befolgte",
             "kein.*Medika"],
         "treat": ["[Gg]eimpfte?n?", "Impf-?.*[Gg]ruppe",
+            "(?<!Kontroll|Vergleichs|Placebo).Gruppe",  // negative definition of treatment group.
             "Behandlungsgruppe", "Behandelte",
             "([Tt]eilnehmer|Probanden).*Impfung",
             "erh(a|ie)lten.*(Präparat|Medikament)",
