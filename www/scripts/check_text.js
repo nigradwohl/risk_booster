@@ -290,14 +290,18 @@ $(document).ready(function () {
         // Do not apply the following to total numbers:
         const n_subgroup_ix = token_dat.id.filter((d, ix) => token_dat.is_num[ix] &&
             token_dat.gtype[ix] !== "total" && token_dat.gtype[ix] !== -1);
-        // console.log("---------- Get treatment and control: -----------");
+        console.log("---------- Get treatment and control: -----------");
         token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.treat_contr), "group");
-        // console.log("---------- Get effectivity and side effects: -----------");
+        console.log(token_dat.group.toString());
+
+        console.log("---------- Get effectivity and side effects: -----------");
         window_keys.effside.eff = window_keys.effside.eff.concat(targetconds);
         token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.effside), "effside");
         // Note: Nutzen muss bei Verhaltensrisiken ggf. nicht unbedingt benannt werden (wenn es keinen ersichtlichen gibt)
+        console.log(token_dat.effside.toString());
 
         // Get information about the underlyeing conditions (morbidity, mortality...):
+        console.log("---------- Get information about the underlying conditions (morbidity, mortality...): -----------");
         token_dat.add_column(investigate_context(token_dat, freq_ix, window_keys.conditions), "ftype");
 
         // Update missing information: ~~~~~~~~~~~
@@ -1298,7 +1302,9 @@ const numtype_keyset = {
         "keyset": [
             // A first entry to a domain-general keyset for risk:
             [RegExp(collapse_regex_or(["[Rr]isiko", "Gefahr", "[Ww]ahrscheinlich", "Inzidenz", "Todesfälle", "Erkrank"])),
-                RegExp(collapse_regex_or(["[Rr]eduzier", "minimier", "niedriger", "(ge|ver)ringert?", "s[ae]nk"]))]
+                RegExp(collapse_regex_or(["[Rr]eduzier", "minimier", "niedriger", "(ge|ver)ringert?", "s[ae]nk"]))],
+            [RegExp(collapse_regex_or(["besser"])),
+                RegExp(collapse_regex_or(["geschützt"]))]
         ]
     },
     // Total nuber of cases/incidents:
@@ -1941,46 +1947,48 @@ const window_keys = {
     "grouptype": {
         "total": ["insgesamt", "alle_", "Basis", "umfass(t|en)"],
         "sub": ["[Ii]n_", "[Uu]nter_", "[Dd]avon_",
-            "der\\w*[Tt]eilnehmer", "entfielen\w*auf"]
+            "der.*[Tt]eilnehmer", "entfielen.*auf"]
+        // Note: Switch from \w* to .*, since \w does not capture % etc.
     },
     "treat_contr": {
         // Types of subgroups:
-        "contr": ["Kontroll-?\\w*[Gg]ruppe", "Placebo-?\\w*[Gg]ruppe",
-            "Vergleichs-?\\w*[Gg]ruppe",
-            "Prävention\\w*wenigsten\\w*befolgte",
-            "kein\w*Medika"],
-        "treat": ["[Gg]eimpfte?n?", "Impf-?\\w*[Gg]ruppe",
+        "contr": ["Kontroll-?.*[Gg]ruppe", "Placebo-?.*[Gg]ruppe",
+            "Vergleichs-?.*[Gg]ruppe",
+            "Prävention.*wenigsten.*befolgte",
+            "kein.*Medika"],
+        "treat": ["[Gg]eimpfte?n?", "Impf-?.*[Gg]ruppe",
             "Behandlungsgruppe", "Behandelte",
             "([Tt]eilnehmer|Probanden).*Impfung",
-            "erh(a|ie)lten\\w*(Präparat|Medikament)",
-            "gesündesten\\w*Lebensstil"],
+            "erh(a|ie)lten.*(Präparat|Medikament)",
+            "gesündesten.*Lebensstil"],
         // "all": ["insgesamt.*([Tt]eilnehmer|Probanden)"],
         "all": ["[Tt]eilnehmer|Probanden",
-            "insgesamt\\w*(Fälle|Verläufe)", "(Fälle|Verläufe)\\w*insgesamt",
-            "beiden\\w*Gruppen", "sowohl\\w*[Gg]ruppe"]  // problematic!
+            "insgesamt.*(Fälle|Verläufe)", "(Fälle|Verläufe).*insgesamt",
+            "beiden.*Gruppen", "sowohl.*[Gg]ruppe"]  // problematic!
     },
     "effside": {
         "eff": ["(?<![Nn]eben)[Ww]irk", "Impfschutz",
             "Schutz", "geschützt",
-            "(reduziert|verringert|minimiert)\\w*(Risiko|Gefahr)", "(Risiko|Gefahr)\\w*(reduziert|verringert|minimiert)",
+            "(reduziert|verringert|minimiert).*(Risiko|Gefahr|Wahrscheinlichkeit.*Ansteckung)",
+            "(Risiko|Gefahr|Wahrscheinlichkeit.*Ansteckung).*(reduziert|verringert|minimiert)",
             "Reduzierung",
-            "(mindert|reduziert)\\w*Symptome",
+            "(mindert|reduziert).*Symptome",
             // The following may only apply to vaccination? (But likely also to treatment!)
             "Infektion", "[Ee]rkrank", "Verl[aä]uf",
             "Verbesserung"],
-        "side": ["Nebenwirk", "Komplikation", "unerwünschte\\w*Effekt"],  // more keywords?
-        "all": ["jeweils", "beiden\\w*Gruppen"],
+        "side": ["Nebenwirk", "Komplikation", "unerwünschte.*Effekt"],  // more keywords?
+        "all": ["jeweils", "beiden.*Gruppen"],
         // Other types (age etc.):
         "sample": ["im.*Alter"]  // sample description.
     },
     "incr_decr": {
         "risk_incr": [
-            "(Risiko|Wahrscheinlichkeit)\\w*(erhöht|steigt)",
-            "(erhöht|steigt)\\w*(Risiko|Wahrscheinlichkeit)"],
+            "(Risiko|Wahrscheinlichkeit).*(erhöht|steigt)",
+            "(erhöht|steigt).*(Risiko|Wahrscheinlichkeit)"],
         "risk_decr": [
-            "(Risiko|Wahrscheinlichkeit)\\w*sinkt|verringert",
-            "sinkt|verringert\\w*(Risiko|Wahrscheinlichkeit)",
-            "schütz(en|t)\\w*(Erkrankung|Ansteckung)"]
+            "(Risiko|Wahrscheinlichkeit).*(sinkt|verringert|reduziert)",
+            "(sinkt|verringert|reduziert).*(Risiko|Wahrscheinlichkeit)",
+            "schütz(en|t).*(Erkrankung|Ansteckung)"]
     },
     "conditions": {
         // Verbs:
@@ -2142,7 +2150,7 @@ function investigate_context(token_data, index_arr, keyset) {
             const test_str = test_tokens.join("_").replaceAll("-", "_");
             // Issue could be that underscore counts as word character; will exploit this for now!!
             // console.log(test_tokens);
-            // console.log("TESTSTRING:\n" + test_str);
+            console.log("TESTSTRING:\n" + test_str);
 
             // Test the tokens here:
             // Here we should define sets that exclude each other! (e.g., control + treatment)
