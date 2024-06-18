@@ -424,80 +424,6 @@ $(document).ready(function () {
 
                     // This might help: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get?retiredLocale=de
 
-                    class OutputNode {
-                        constructor(tool, popup) {
-                            this.tool = tool;
-                            this.popup = popup;
-                        }
-                    }
-
-                    // Previous defaults:
-                    // "perc": "Prozentzahl", "freq": "Anzahl", "nh": "Natürliche Häufigkeit", "pval": "p-Wert",
-                    // "undefined": "Konnte nicht identifiziert werden"
-
-                    const info_tree = {
-                        // Levels:
-                        // "treelvs": ["relabs", "unit"],
-                        "tree": {
-                            // unit tree:
-                            "perc": {
-                                "abs": new OutputNode("Absolute Prozentzahl", "Achtung. Lieber NH verwenden!"),
-                                "rel": new OutputNode("Relative Prozentzahl", "Achtung. Lieber NH verwenden!")
-                            },  // Note: This is merely an addition; make its own tree or a condition within the perc-tree?
-                            "nh": new OutputNode("Natürliche Häufigkeit.", "Transparent! Referenz sollte aber konstant sein"),
-                            "freq": {
-                                "ncase": new OutputNode("Fallzahl", "Achtung: Referenzgruppe!"),
-                                "ntot": new OutputNode("Stichprobengröße", "Gute Angabe"),
-                                "default": new OutputNode("Anzahl", "Diese Zahl konnte leider nicht näher identifiziert werden")
-                            },
-                            "mult": new OutputNode("Vielfaches", "Achtung: Referenzgruppe!"),
-                            "pval": new OutputNode("p-Wert", "Achtung. Missverständlich!"),
-                            "yearnum": new OutputNode("Anzahl an Jahren.", "Referenz (d.h. bezogen auf wie viele Jahre) sollte klar sein."),
-                            "default": new OutputNode("Zahl.", "Diese Zahl konnte leider nicht näher identifiziert werden")
-                        },
-                        "traverse": function (arr) {
-
-                            let curtree = this.tree;
-                            let curdefault = this.tree.default;
-
-                            console.log(curtree);
-                            console.log(curdefault);
-
-                            for (const i of arr) {
-                                console.log(i);
-                                const curentry = curtree[i];
-
-                                if (curentry !== undefined) {
-                                    curtree = curentry;
-
-                                    // Log the default for if the tree is undefined!
-                                    curdefault = curtree["default"];
-
-                                    console.log(curtree);
-                                    console.log(curdefault);
-
-                                    // When reaching an output node return:
-                                    if (curtree instanceof OutputNode) {
-                                        break;
-                                    }
-
-                                }
-
-                            }
-
-                            // Replace undefined tree by last encountered default:
-                            if (!(curtree instanceof OutputNode)) {
-                                curtree = curdefault;
-                            }
-
-                            console.log("Final tree:");
-                            console.log(curtree);
-                            console.log(curdefault);
-
-                            return curtree;
-
-                        }
-                    }
 
                     // const colix = ["relabs", "unit", "numtype"].map(x => token_dat.colnames.indexOf(x));
 
@@ -915,122 +841,19 @@ $(document).ready(function () {
 
             // console.log("Clicked token");
             // console.log(token_dat.token[token_id] + ", unit: " + token_dat.unit[token_id] +
-            //     ", numtype: " + token_dat.numtype[token_id]);
 
-            // const numtype = unit_note_dict[token_dat.unit[token_id]].tooltip[token_dat.numtype[token_id]];
-            const numtype = token_dat.numtype[token_id];
-            // console.log(numtype);
-            const curunit = token_dat.unit[token_id].toString();
-            // console.log(curunit);
 
-            // Collapse unit and numtype:
-            // Signature of current number:
+            // Get current row:
             const currow = token_dat.get_row(token_id);
             console.log(currow);
 
-            let col_arr = ["unit", "numtype"];
-            if (curunit === "perc") {
-                col_arr = col_arr.concat(["effside", "relabs"])
-
-                if (currow.includes("rel")) {
-                    // console.log("+++ Remove effside!");
-                    col_arr.splice(col_arr.indexOf("effside"), 1);
-                }
-
-            }
-            if (curunit === "freq") {
-                col_arr = col_arr.concat(["gtype", "group"])
-            }
-            console.log(col_arr);
-
-            const infokey = currow
-                .filter((x, ix) => col_arr.includes(token_dat.colnames[ix]) &&
-                    x !== -1)
-                .join("_");
-
-            // const infokey = [curunit, numtype].join("_");
-            console.log(`Current info key: ${infokey}`);
-
-            // Draft for overarching dictionary:
-            // Important: have a default for each unit to avoid non-identification
-            // const note_dict = {
-            //     "perc": {
-            //         "default": "Prozentzahl"
-            //     },
-            //     "freq": {
-            //         "ntot": {"death": "Todesfälle", "default": "Personen/Beobachtungen"},
-            //         "default": "Anzahl"
-            //     },
-            //     "nh": {
-            //         "default": "Natürliche Häufigkeit"
-            //     }
-            // }
-
-
-            // const tooltip_dict = {
-            //             "freq_ntot": "Gesamtzahl Personen",
-            //             "freq_ntot_all_all": "Gesamtzahl Personen",
-            //             "freq_ntot_unknown_eff,unknown": "Gesamtzahl Personen",
-            //             "freq_ntot_unknown_all": "Gesamtzahl Todesfälle",
-            //             "freq_ncase_all": "Anzahl Fälle gesamt",  // exchange "Fälle" for the more general "(verhinderte) Ereignisse"?
-            //             "freq_ncase_all_eff": "Anzahl Erkrankungen",  // oder: andere Fälle!
-            //             "freq_ncase_treat_eff": "Anzahl Fälle Behandelte",
-            //             "freq_ncase_contr_eff": "Anzahl Fälle Vergleichsgruppe",
-            //             "freq_ntot_treat_eff": "Anzahl Behandelte",
-            //             "freq_ntot_contr_eff": "Anzahl Vergleichsgruppe",
-            //             "freq_ncase_treat_side": "Anzahl Nebenwirkungen Behandelte",
-            //             "freq_ncase_contr_side": "Anzahl Nebenwirkungen Vergleichsgruppe",
-            //             // Oddities (that may be fixed eventually):
-            //             "freq_ntot_unknown_unknown": "Gesamtzahl Personen",  // if the subgroup cannot  be identified it may be something else.
-            //             "freq_ntot_all_unknown": "Gesamtzahl Personen",  // Likewise if it apples to all.
-            //             // Percentages:
-            //             "perc_incr_rel": "Relative Risikoreduktion",
-            //             "perc_decr_rel": "Relative Risikoreduktion",
-            //             "perc_decr_eff_rel": "Relative Risikoreduktion",
-            //             "perc_other_side_abs": "Wahrscheinlichkeit Nebenwirkungen",
-            //             "perc_other_sample_abs": "Prozentzahl Stichprobenbeschreibung",
-            //             "perc_other_eff_abs": "Absolute Prozentangabe",
-            //             // Natural frequencies:
-            //             "nh_ncase_eff": "Natürliche Häufigkeit",
-            //             "nh_ncase_side": "Natürliche Häufigkeit",
-            //             // Multiples:
-            //             "mult_other_eff": "Relative Angabe"
-            //         }
-
-
-            // Reference to the wiki object:
-            const wiki_ref = {
-                "perc_other": "prozent",
-                "perc_other_eff_abs": "prozent",
-                "perc_other_side_abs": "prozent",
-                // Relative percentages:
-                "perc_decr_rel": "rel",
-                "perc_decr_eff_rel": "rel",  // +++ UPDATE! +++
-                "perc_decr_side_rel": "rel",
-                // Types of freqs -- update!
-                "freq_ntot": "sample_size",
-                "freq_ntot_total": "sample_size",
-                "freq_ntot_sub_treat": "sample_size",
-                "freq_ntot_sub_contr": "sample_size",
-                "freq_ncase_total_all": "freq",  // total numbers of cases often not informative!
-                "freq_ncase_sub_treat": "freq",
-                "freq_ncase_sub_contr": "freq",  // here: reference.
-                "freq_treat": "freq",
-                "freq_contr": "freq",
-                "freq_other": "freq",
-                // Natural frequencies:
-                "nh_ncase": "nh",
-                // Other kinds of numbers:
-                "mult_other": "rel",
-                "pval_other": "pval"
-            };
-
-            // Note: Here, we might also allow to exclude certain elements!
-
-            const curinfo = info_data[wiki_ref[infokey]];
+            // Traverse the info tree:
+            const col_info = ["unit", "relabs", "numtype"].map(x => currow[token_dat.colnames.indexOf(x)]);
+            const curinfo = info_data[info_tree.traverse(col_info)["popup"]];
+            // Directly enter info in info tree? Maybe borrow from info dict?
 
             const addinfo_perc = "<p>" +
-                "Diese <a href='risk_wiki.html#wiki-prozent'>Prozentzahl</a> scheint " + (/_abs/.test(infokey) ? "absolut" : "relativ") + " zu sein." +
+                "Diese <a href='risk_wiki.html#wiki-prozent'>Prozentzahl</a> scheint " + (col_info[1] === "rel" ? "relativ" : "absolut") + " zu sein." +
                 (token_dat.smperc[token_id] === true ? "<br>Sie ist < 1. Greifen Sie bitte auf <a href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> " +
                     "(z.B., 1 aus 100 oder 1 aus 1000) zurück." : "") +
                 // Alternativ: Wir konnten
@@ -1048,9 +871,9 @@ $(document).ready(function () {
                 // `<p>${txt_snips[numtype][2]}</p>`
                 // `<h4>${curinfo.heading}</h4>` +
                 // `<p><strong>Bezug</strong>: ${token_dat.group[token_id]}</p>` +  // Some additional info!
-                `${curunit === "perc" ? addinfo_perc : ""}` +  // additional info.
-                `${(/_sub/.test(infokey) ? ("<p>Die Zahl bezieht sich auf eine Subgruppe. " +
-                    "Stellen Sie sicher, das klar ist auf welche übergeordnete Gruppe sie sich bezieht.</p>") : "")}` +
+                `${col_info[0] === "perc" ? addinfo_perc : ""}` +  // additional info.
+                // `${(/_sub/.test(infokey) ? ("<p>Die Zahl bezieht sich auf eine Subgruppe. " +
+                //     "Stellen Sie sicher, das klar ist auf welche übergeordnete Gruppe sie sich bezieht.</p>") : "")}` +
                 // `<p><ul><li>${curinfo.overview.join("</li><li>")}</li></ul></p>` +
                 // `<p><ul><li>${curinfo.popup.join("</li><li>")}</li></ul></p>`  // to process an array as list.
                 `${curinfo === undefined ? "<p>Diese Zahl konnten wir leider nicht näher identifizieren.</p>" : curinfo.popup}`
@@ -1062,7 +885,7 @@ $(document).ready(function () {
             const txt_ele = $("#text-result");  // element for text container
             const correction_left = txt_ele.position().left + txt_ele.width();
 
-            // Note: Eventuall improve positioning; seemingly, the issue occurs only on the first click!
+            // Note: Eventually improve positioning; seemingly, the issue occurs only on the first click!
 
             console.log(`Popup height (pad): ${popup_height} (${popup_pad}), Num height: ${num_height}, 
             num pos (top, bottom) ${thispos.top}, ${thispos.left}`);
@@ -1446,17 +1269,104 @@ const unit_note_dict = {
 
 
 // Info tree:
-// TODO: Go full OOP with a handler for default values at each level!
+// Class to quickly define output nodes:
+class OutputNode {
+    constructor(tool, popup) {
+        this.tool = tool;
+        this.popup = popup;
+    }
+}
+
+// Previous defaults:
+// "perc": "Prozentzahl", "freq": "Anzahl", "nh": "Natürliche Häufigkeit", "pval": "p-Wert",
+// "undefined": "Konnte nicht identifiziert werden"
+
+// Previous wiki reference:
+//     "perc_other": "prozent",
+//     "perc_other_eff_abs": "prozent",
+//     "perc_other_side_abs": "prozent",
+//     // Relative percentages:
+//     "perc_decr_rel": "rel",
+//     "perc_decr_eff_rel": "rel",  // +++ UPDATE! +++
+//     "perc_decr_side_rel": "rel",
+//     // Types of freqs -- update!
+//     "freq_ntot": "sample_size",
+//     "freq_ntot_total": "sample_size",
+//     "freq_ntot_sub_treat": "sample_size",
+//     "freq_ntot_sub_contr": "sample_size",
+//     "freq_ncase_total_all": "freq",  // total numbers of cases often not informative!
+//     "freq_ncase_sub_treat": "freq",
+//     "freq_ncase_sub_contr": "freq",  // here: reference.
+//     "freq_treat": "freq",
+//     "freq_contr": "freq",
+//     "freq_other": "freq",
+//     // Natural frequencies:
+//     "nh_ncase": "nh",
+//     // Other kinds of numbers:
+//     "mult_other": "rel",
+//     "pval_other": "pval"
+
 const info_tree = {
     // Levels:
-    "treelvs": ["relabs", "unit"],
+    // "treelvs": ["relabs", "unit"],
     "tree": {
-        // relabs tree:
-        "rel": info_data.rel,  // TODO: Collect info if there is any defined?
         // unit tree:
-        "abs": {
-            "perc": "smperc"  // TODO: How to get the names of subnodes?
+        "perc": {
+            "abs": new OutputNode("Absolute Prozentzahl", "prozent"),
+            "rel": new OutputNode("Relative Prozentzahl", "prozent")
+        },  // Note: This is merely an addition; make its own tree or a condition within the perc-tree?
+        "nh": new OutputNode("Natürliche Häufigkeit.", "nh"),
+        "freq": {
+            "ncase": new OutputNode("Fallzahl", "freq"),
+            "ntot": new OutputNode("Stichprobengröße", "sample_size"),
+            "default": new OutputNode("Anzahl", "Diese Zahl konnte leider nicht näher identifiziert werden")
+        },
+        "mult": new OutputNode("Vielfaches", "rel"),
+        "pval": new OutputNode("p-Wert", "pval"),
+        "yearnum": new OutputNode("Anzahl an Jahren.", "Referenz (d.h. bezogen auf wie viele Jahre) sollte klar sein."),
+        "default": new OutputNode("Zahl.", "Diese Zahl konnte leider nicht näher identifiziert werden")
+    },
+    "traverse": function (arr) {
+
+        let curtree = this.tree;
+        let curdefault = this.tree.default;
+
+        console.log(curtree);
+        console.log(curdefault);
+
+        for (const i of arr) {
+            console.log(i);
+            const curentry = curtree[i];
+
+            if (curentry !== undefined) {
+                curtree = curentry;
+
+                // Log the default for if the tree is undefined!
+                curdefault = curtree["default"];
+
+                console.log(curtree);
+                console.log(curdefault);
+
+                // When reaching an output node return:
+                if (curtree instanceof OutputNode) {
+                    break;
+                }
+
+            }
+
         }
+
+        // Replace undefined tree by last encountered default:
+        if (!(curtree instanceof OutputNode)) {
+            curtree = curdefault;
+        }
+
+        console.log("Final tree:");
+        console.log(curtree);
+        console.log(curdefault);
+
+        return curtree;
+
     }
 }
 
