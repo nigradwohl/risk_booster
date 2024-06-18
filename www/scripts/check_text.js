@@ -408,38 +408,6 @@ $(document).ready(function () {
                         match_len++;
                     }
 
-                    // TODO: Adjust co-occurrence patterns and go from more specific (freq_ncase_contr_eff) to less specific (freq_ntot)?
-                    // Split by unit
-
-                    const tooltip_dict = {
-                        "freq_ntot": "Gesamtzahl Personen",
-                        "freq_ntot_all_all": "Gesamtzahl Personen",
-                        "freq_ntot_unknown_eff,unknown": "Gesamtzahl Personen",
-                        "freq_ntot_unknown_all": "Gesamtzahl Todesfälle",
-                        "freq_ncase_all": "Anzahl Fälle gesamt",  // exchange "Fälle" for the more general "(verhinderte) Ereignisse"?
-                        "freq_ncase_all_eff": "Anzahl Erkrankungen",  // oder: andere Fälle!
-                        "freq_ncase_treat_eff": "Anzahl Fälle Behandelte",
-                        "freq_ncase_contr_eff": "Anzahl Fälle Vergleichsgruppe",
-                        "freq_ntot_treat_eff": "Anzahl Behandelte",
-                        "freq_ntot_contr_eff": "Anzahl Vergleichsgruppe",
-                        "freq_ncase_treat_side": "Anzahl Nebenwirkungen Behandelte",
-                        "freq_ncase_contr_side": "Anzahl Nebenwirkungen Vergleichsgruppe",
-                        // Oddities (that may be fixed eventually):
-                        "freq_ntot_unknown_unknown": "Gesamtzahl Personen",  // if the subgroup cannot  be identified it may be something else.
-                        "freq_ntot_all_unknown": "Gesamtzahl Personen",  // Likewise if it apples to all.
-                        // Percentages:
-                        "perc_incr_rel": "Relative Risikoreduktion",
-                        "perc_decr_rel": "Relative Risikoreduktion",
-                        "perc_decr_eff_rel": "Relative Risikoreduktion",
-                        "perc_other_side_abs": "Wahrscheinlichkeit Nebenwirkungen",
-                        "perc_other_sample_abs": "Prozentzahl Stichprobenbeschreibung",
-                        "perc_other_eff_abs": "Absolute Prozentangabe",
-                        // Natural frequencies:
-                        "nh_ncase_eff": "Natürliche Häufigkeit",
-                        "nh_ncase_side": "Natürliche Häufigkeit",
-                        // Multiples:
-                        "mult_other_eff": "Relative Angabe"
-                    }
 
                     // Get types for each tooltip from dictionary:
                     let cur_numtype = token_dat.numtype.slice(i, i + match_len).filter((x) => x !== -1);
@@ -448,59 +416,93 @@ $(document).ready(function () {
                     // ignature of current number:
                     const currow = token_dat.get_row(i);
 
-                    let col_arr = ["unit", "numtype", "effside"];
-                    if (cur_unit === "perc") {
-                        col_arr = col_arr.concat(["relabs"]);
+                    // This might help: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get?retiredLocale=de
 
-                        if (currow.includes("rel")) {
-                            // console.log("+++ Remove effside!");
-                            col_arr.splice(col_arr.indexOf("effside"), 1);
+                    class OutputNode {
+                        constructor(tool, popup) {
+                            this.tool = tool;
+                            this.popup = popup;
                         }
                     }
-                    if (cur_unit === "freq") {
-                        col_arr = col_arr.concat("group", "effside");
-                    }
 
-                    const cur_sign = currow
-                        .filter((x, ix) => col_arr.includes(token_dat.colnames[ix]) &&
-                            x !== -1)
-                        .join("_");
-                    console.log(cur_sign);
-
-
-                    let cur_tooltip = {
-                        "perc": "Prozentzahl", "freq": "Anzahl", "nh": "Natürliche Häufigkeit", "pval": "p-Wert",
-                        "undefined": "Konnte nicht identifiziert werden"
-                    }[cur_unit];
-                    cur_tooltip = cur_tooltip === undefined ? "Konnte nicht identifiziert werden" : cur_tooltip;
-                    if (Object.keys(tooltip_dict).includes(cur_sign)) {
-                        cur_tooltip = tooltip_dict[cur_sign];
-                    }
-
-                    // This might help: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get?retiredLocale=de
+                    // Previous defaults:
+                    // "perc": "Prozentzahl", "freq": "Anzahl", "nh": "Natürliche Häufigkeit", "pval": "p-Wert",
+                    // "undefined": "Konnte nicht identifiziert werden"
 
                     const info_tree = {
                         // Levels:
-                        "treelvs": ["relabs", "unit"],
+                        // "treelvs": ["relabs", "unit"],
                         "tree": {
-                            // relabs tree:
-                            "rel": info_data.rel,  // TODO: Collect info if there is any defined?
                             // unit tree:
-                            "abs": {
-                                "perc": {
-                                    "smperc": {}  // Note: This is merely an addition; make its own tree or a condition within the perc-tree?
-                                },  // TODO: How to get the names of subnodes?
-                                "nh": "Natürliche Häufigkeit. Transparent! Referenz sollte konstant sein",
-                                "freq": "Häufigkeit",  // TODO: Split into ncase and ntot (do to illustrate simplicity of adding levels)!
-                                "yearnum": "Anzahl an Jahren. Referenz (d.h. bezogen auf wie viele Jahre) sollte klar sein."
-                            }
+                            "perc": {
+                                "abs": new OutputNode("Absolute Prozentzahl", "Achtung. Lieber NH verwenden!"),
+                                "rel": new OutputNode("Relative Prozentzahl", "Achtung. Lieber NH verwenden!")
+                            },  // Note: This is merely an addition; make its own tree or a condition within the perc-tree?
+                            "nh": new OutputNode("Natürliche Häufigkeit.", "Transparent! Referenz sollte aber konstant sein"),
+                            "freq": {
+                                "ncase": new OutputNode("Fallzahl", "Achtung: Referenzgruppe!"),
+                                "ntot": new OutputNode("Stichprobengröße", "Gute Angabe"),
+                                "default": new OutputNode("Anzahl", "Diese Zahl konnte leider nicht näher identifiziert werden")
+                            },
+                            "mult": new OutputNode("Vielfaches", "Achtung: Referenzgruppe!"),
+                            "pval": new OutputNode("p-Wert", "Achtung. Missverständlich!"),
+                            "yearnum": new OutputNode("Anzahl an Jahren.", "Referenz (d.h. bezogen auf wie viele Jahre) sollte klar sein."),
+                            "default": new OutputNode("Zahl.", "Diese Zahl konnte leider nicht näher identifiziert werden")
                         },
                         "traverse": function (arr) {
+
+                            let curtree = this.tree;
+                            let curdefault = this.tree.default;
+
+                            console.log(curtree);
+                            console.log(curdefault);
+
+                            for (const i of arr) {
+                                console.log(i);
+                                const curentry = curtree[i];
+
+                                if (curentry !== undefined) {
+                                    curtree = curentry;
+
+                                    // Log the default for if the tree is undefined!
+                                    curdefault = curtree["default"];
+
+                                    console.log(curtree);
+                                    console.log(curdefault);
+
+                                    // When reaching an output node return:
+                                    if (curtree instanceof OutputNode) {
+                                        break;
+                                    }
+
+                                }
+
+                            }
+
+                            // Replace undefined tree by last encountered default:
+                            if (!(curtree instanceof OutputNode)) {
+                                curtree = curdefault;
+                            }
+
+                            console.log("Final tree:");
+                            console.log(curtree);
+                            console.log(curdefault);
+
+                            return curtree;
 
                         }
                     }
 
-                    cur_tooltip = info_tree.tree[cur_unit];
+                    // const colix = ["relabs", "unit", "numtype"].map(x => token_dat.colnames.indexOf(x));
+
+                    const col_info = ["unit", "relabs", "numtype"].map(x => currow[token_dat.colnames.indexOf(x)]);
+
+                    console.log(`~~~~~ Traverse tree for ${token_dat.token[i]}: ~~~~~~`);
+                    console.log(col_info);
+                    // console.log(info_tree.traverse(col_info)["tool"]);
+
+                    const cur_tooltip = info_tree.traverse(col_info)["tool"];
+
 
                     // const cur_tooltip = unit_note_dict[cur_unit].tooltip[cur_numtype[0]];  // NOTE: currently first type only.
 
