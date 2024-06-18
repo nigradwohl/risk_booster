@@ -165,6 +165,8 @@ $(document).ready(function () {
         token_dat.add_column(token_dat.token.map((x, ix) => (RegExp(collapse_regex_or(numwords), "dg").test(x) && token_dat.unit[ix] !== -1)), "is_nw");  // is it a number word?
         token_dat.detect_unit();  // get additional unit info from token data.
 
+
+
         // Detect topis:
         token_dat.detect_topic("impf", ["(?<!(gl|sch))[Ii]mpf"]);  // must be preceded
         token_dat.detect_topic("mask", ["Maske|FFP"]);  // must be preceded
@@ -1048,7 +1050,7 @@ const check_numbers_dict = {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Simple matches:
     "age": {
-        "regex": /(?<age>(?<![,.])(\d+-? bis )*\d+-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
+        "regex": /(?<age>(?<![,.])(\d+-? bis )?\d+-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
         // "regex": /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
     },
     // "age2": {
@@ -2363,8 +2365,9 @@ function detect_regex_match(txt, token_dat, check_dict) {
     }
 
     // Clean up the matches from all for redundancy:
-    // console.log("Match objects:");
-    // console.log(arr_match);
+    console.log("Match objects:");
+    console.log(arr_match);
+    console.log(token_dat);
     // If a match is fully included in another, the match can be removed.
     // There is also some hierarchy (undefined numbers should only be output when
 
@@ -2387,8 +2390,11 @@ function detect_regex_match(txt, token_dat, check_dict) {
         //
         // console.log("Match start and end: " + match_start + ", " + match_end);
         // console.log(match);
+        // console.log(match.type);
+        // console.log(["unknown", "ucarryforward"].includes(match.type[0]));
+        // console.log(match_type);  // already found matches.
 
-        // If one of the idices can be found:
+        // If one of the indices can be found:
         if (match_start !== -1 || match_end !== -1) {
             let match_id = -1;
             let cur_type = -1;
@@ -2403,15 +2409,21 @@ function detect_regex_match(txt, token_dat, check_dict) {
 
             const n_ele = match_end - match_start + 1;
 
-            if (token_match[match_start] === -1 && token_match[match_end] === -1) {
+            // Check if the match has been defined already:
+            // console.log("Match start and end: " + match_start + ", " + match_end);
+            // console.log(token_match);
+            // console.log(match_type.toString());
+            if (match_type[match_start] === -1 && match_type[match_end] === -1) {
+
+                console.log("Establish new match");
                 match_id = [i];
                 cur_type = match.type;
 
                 // } else if (match.type[0] !== "unknown") {
             } else if (!["unknown", "ucarryforward"].includes(match.type[0])) {  // now exclude both.
 
-                // console.log("Match type");
-                // console.log(match.type);
+                console.log("Match type");
+                console.log(match.type);
                 // Note: If we can establish a clear hierarchical structure, we could drop the match here:
                 // arr_match.splice(i);
                 droplist = droplist.concat(i);
@@ -2427,6 +2439,7 @@ function detect_regex_match(txt, token_dat, check_dict) {
 
 
             } else {
+                console.log(`Drop match ${match.type}`);
                 droplist = droplist.concat(i);
             }
 
@@ -2488,19 +2501,22 @@ function detect_regex_match(txt, token_dat, check_dict) {
 
     }
 
-    // console.log("Match data (raw):");
-    // console.log(arr_match);
+    console.log("Match data (raw):");
+    console.log(token_match);
+    console.log(match_type);
+    console.log(droplist);
 
     // Remove the indices that have to be dropped:
     arr_match = arr_match.filter((ele, index) => !droplist.includes(index));
+    console.log(arr_match);
 
     // Sort the array by the starting position of each match:
     arr_match = arr_match.sort((a, b) => a.start_end[0] - b.start_end[0]);
 
-    // console.log("Match data (cleaned):");
-    // console.log(arr_match);
-    // console.log(token_match);
-    // console.log(match_type);
+    console.log("Match data (cleaned):");
+    console.log(arr_match);
+    console.log(token_match);
+    console.log(match_type);
 
     // Is it more efficient to check for the matches or the tokens?
     // Likely the matches, because there are fewer by design!
