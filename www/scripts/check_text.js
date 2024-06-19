@@ -1164,7 +1164,7 @@ const numtype_keyset = {
             [RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder|Erwachsene"),
                 RegExp(collapse_regex_or(["insgesamt", "nahmen", "erh(a|ie)lten", "befragt", "ausgewählt", "umfass(t|en)"])),
                 RegExp(collapse_regex_or(["Studie", "Untersuchung", "Erhebung"]))],
-            [RegExp("Daten", "[Bb]efragt"),
+            [RegExp(["Daten", "[Bb]efragt"]),
                 RegExp(collapse_regex_or(["von", "über"])),
                 RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder")],
             // 2nd set:
@@ -1609,7 +1609,9 @@ function get_token_data(text) {
         token_i = text_tokens[i];
 
         // Regex for token to ensure exact matching:
-        if (["\\n\\*", ".", ":", ";", ",", "?", "!", "(", ")", "\"", "'", "/", "\u2018", "\u2019", "\u201c", "\u201d"].includes(token_i)) {
+        if (["\\n\\*", ".", ":", ";", ",", "?", "!", "(", ")", "\"", "'", "/", "\u2018", "\u2019", "\u201c", "\u201d"].includes(token_i) ||
+            /\++/g.test(token_i)  // also test plus signs (and potentially other quantifiers)
+        ) {
             // Punctuation follows somewhat different rules.
             // NOTE: Overlaps with other entities, likely because of the lack of spaces.
 
@@ -1619,7 +1621,7 @@ function get_token_data(text) {
             } else if (["\"", "'", "\u2018", "\u2019", "\u201c", "\u201d"].includes(token_i)) {
                 token_pat = token_i;  // no requirement to escape?
             } else {
-                token_pat = token_i.replace(/([.?()/])/dgm, "\\$1") + "(?=\\s|\\n|$|\\.|,|[\"'\u2018\u2019\u201c\u201d])";
+                token_pat = token_i.replace(/([.?()/+])/dgm, "\\$1") + "(?=\\s|\\n|$|\\.|,|[\"'\u2018\u2019\u201c\u201d])";
             }
 
         } else {
