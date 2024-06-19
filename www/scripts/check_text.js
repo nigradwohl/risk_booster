@@ -198,6 +198,7 @@ $(document).ready(function () {
         numtype_keyset.ncase.keyset = numtype_keyset.ncase.keyset.concat([[RegExp(collapse_regex_or(targetconds))]]);  // modify qwith targetconds!
         // console.log(numtype_keyset);
         token_dat.detect_number_type(inputText, numtype_keyset);
+        console.log(token_dat.numtype.toString());  // initial number types.
 
         // Context detection: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -263,22 +264,6 @@ $(document).ready(function () {
             }
         }
 
-
-        // ++++ HERE NOW +++
-        // python: https://github.com/IBM/wort-to-number
-        // const pat_numwords = RegExp(collapse_regex_or(
-        //     ["[Ee]in", "[Zz]wei", "[Dd]rei"]), "dg");
-        // const numwords_ix = token_dat.id.filter((x) => pat_numwords.test(token_dat.token[x]));
-        // // Investigate these tokens further!
-        // const numword_arr = investigate_context(token_dat, numwords_ix,
-        //     {"numword_keys": RegExp(collapse_regex_or(["Verl[aä]uf"]))});
-        // console.log("+++ Get numwords +++");
-        // console.log(pat_numwords);
-        // console.log(numwords_ix);
-        // console.log(numword_arr);
-        // Rather do reverse search? Search for "Verläufe", "Erkrankungen" etc.
-
-
         // NOTE: May also be applied to numbers that could not be identified so far!
 
         // For all numbers with non-.excluded units:
@@ -322,8 +307,9 @@ $(document).ready(function () {
         token_dat.gtype = token_dat.gtype
             .map((gtype, ix) => token_dat.numtype[ix] === "ncase" && ["unknown", "all"].includes(token_dat.group[ix]) ? "total" : gtype);
 
-        token_dat.numtype = token_dat.numtype
-            .map((ntype, ix) => token_dat.gtype[ix] === "subgroup" && ["ncase"].includes(ntype.toString()) ? token_dat.group[ix] : ntype);
+        // TODO: WHere do we need this? Why should numtype be = group?
+        // token_dat.numtype = token_dat.numtype
+        //     .map((ntype, ix) => token_dat.gtype[ix] === "sub" && ["ncase"].includes(ntype.toString()) ? token_dat.group[ix] : ntype);
 
 
         // Detect whether a change is relative:
@@ -366,10 +352,14 @@ $(document).ready(function () {
         }
 
         // Fix some issues:
-        token_dat.numtype = token_dat.numtype.map((x, ix) => [-1, "other"].includes(x) && token_dat.gtype[ix] === "sub" ? "ncase" : x);
+        token_dat.numtype = token_dat.numtype
+            .map((x, ix) => token_dat.unit[ix] === "freq" && [-1, "other"].includes(x) && token_dat.gtype[ix] === "sub" ? "ncase" : x);
 
-        // Display for testing:
-        console.log("Updated token data:");
+        // Reference information for absolute percentages:
+        token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.reference), "reference");
+
+        // Display for testing: ~~~~~~~~~~~~~~~~~~
+        console.log("~~~~~ Updated token data: ~~~~~~");
         console.log(token_dat);
         console.log(`${token_dat.nrow} rows and ${token_dat.ncol} columns`);
         token_dat.print(allnum_ix);  // print data from object.
@@ -997,7 +987,7 @@ const numwords = ["[Ee]ine?r?", "[Zz]wei(?!fe)", "[Dd]rei", "[Vv]ier", "[Ff]ünf
 // TODO: DIctionary to translate:
 const numword_dict = {};
 
-const regex_num = new RegExp("(?<unknown>" + pat_num + ")", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
+const regex_num = new RegExp("(?<unknown>" + pat_num + "( Millionen| Milliarden)?)", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
 const regex_numwords = new RegExp("(?<unknown>(" + collapse_regex_or(numwords) + ") (Person(en)?|F[aä]lle?))", "dg");
 const regex_perc = new RegExp("(?<perc>" + pat_num + " ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.?!])" + ")", "dg");
 const regex_nh = new RegExp("(?<nh>" + pat_num + " (\\w+ )?(von|aus|in) (\\w+ )?" + pat_num + ")", "dg");  // TODO: Handle numberwords here.
@@ -1044,6 +1034,9 @@ const check_numbers_dict = {
     "pval": {
         "regex": RegExp("(?<pval>p ?[\\<\\=] ?" + pat_num + ")", "dg")
     },
+    "confint": {
+        "regex": RegExp("(?<confint>" + pat_num + " ?% ?[CK]I:? \\[?" + pat_num + " ?[-\\u2013;,] ?" + pat_num + "\\]?)", "dg")
+    },
     "yearnum": {
         "regex": /(?<nyear>\d+([.|,]\d+)( Jahr[a-z]*))/dg  // require comma or pouint separator!
         // "regex": /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
@@ -1070,7 +1063,7 @@ const check_numbers_dict = {
         "regex": /(?<date>\d{1,2}\.\d{1,2}\.(18|19|20)\d{2}(?![|.\w]))/dg
     },
     "year": {
-        "regex": /(?<year>(Jahr|Anfang|Ende|Mitte|Nach) \d{4}(?![|.\w]))/dg
+        "regex": /(?<year>(Jahr|Anfang|Ende|Mitte|Nach) \d{4})/dg
     },
     "year2": {
         "regex": /(?<year>(18|19|20)?\d{2}er)/dg
@@ -1159,7 +1152,7 @@ const numtype_keyset = {
             [RegExp("Fälle|Verläufe"), RegExp("insgesamt|nach|Studie")],
             [RegExp("[Ee]rkrankt|[Bb]etroffen")],
             [RegExp("Todesfälle")],
-            [RegExp("verst[aeo]rben"), RegExp("Person|Teilnehm|[Gg]ruppe")],
+            [RegExp("(ver)?st[aeo]rben"), RegExp("Person|Teilnehm|[Gg]ruppe")],
             // Reporting certain effects in study:
             [RegExp("berichte(te)?n|entwickel|beobacht"), RegExp("Unwohlsein|Nebenwirkungen")],
             [RegExp("berichte(te)?n"), RegExp("wohl"), RegExp("fühlen")]
@@ -1169,11 +1162,14 @@ const numtype_keyset = {
         "number_unit": ["freq"],
         "keyset": [
             [RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder|Erwachsene"),
-                RegExp(collapse_regex_or(["insgesamt", "nahmen",
-                    "Studie", "Untersuchung", "erh(a|ie)lten", "jeweils", "befragt"]))],
-            [RegExp("Studie"),
-                RegExp(collapse_regex_or(["umfass(t|en)"])),
-                RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder")]
+                RegExp(collapse_regex_or(["insgesamt", "nahmen", "erh(a|ie)lten", "befragt", "ausgewählt", "umfass(t|en)"])),
+                RegExp(collapse_regex_or(["Studie", "Untersuchung", "Erhebung"]))],
+            [RegExp("Daten", "[Bb]efragt"),
+                RegExp(collapse_regex_or(["von", "über"])),
+                RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder")],
+            // 2nd set:
+            [RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder|Erwachsene"),
+                RegExp("Analyse")]
         ]
     }
 }
@@ -1333,12 +1329,12 @@ class OutputNode {
 //     "mult_other": "rel",
 //     "pval_other": "pval"
 
-const popup_perc = function(rel) {
+const popup_perc = function (rel) {
     return "<p>Diese <a href='risk_wiki.html#wiki-prozent'>Prozentzahl</a> scheint " +
         (rel === "rel" ? "relativ" : "absolut") + " zu sein.</p>"
 };
 
-const popup_freq = function(sample) {
+const popup_freq = function (sample) {
     return "<p>Diese Häufigkeit scheint eine " +
         (sample === "ntot" ? "<a href='risk_wiki.html#wiki-sample'>Stichprobengröße</a>" : "<a href='risk_wiki.html#wiki-freq'>Anzahl von Fällen</a>") + " zu sein.</p>"
 };
@@ -1362,6 +1358,7 @@ const info_tree = {
         },
         "mult": new OutputNode("Relative Veränderung", info_data.rel.popup),
         "pval": new OutputNode("p-Wert", info_data.pval.popup),
+        "confint": new OutputNode("Konfidenzintervall", info_data.confint.popup),
         "nyear": new OutputNode("Anzahl an Jahren.", "Anzahl an Jahren. Kann z.B. zur Veränderung von Lebenserwartung anegeben werden."),
         "default": new OutputNode("Zahl.", "Diese Zahl konnte leider nicht näher identifiziert werden")
     },
@@ -1896,7 +1893,7 @@ function detect_number_type(token_data, txt, numtype_dict) {
  */
 const window_keys = {
     "grouptype": {
-        "total": ["insgesamt", "alle_", "Basis", "umfass(t|en)"],
+        "total": ["insgesamt", "alle_", "Basis", "umfass(t|en)", "waren.*jeweils", "etwa.*[Tt]eiln[ae]hme"],
         "sub": ["[Ii]n_", "[Uu]nter_", "[Dd]avon_",
             "der.*[Tt]eilnehmer", "entfielen.*auf"]
         // Note: Switch from \w* to .*, since \w does not capture % etc.
@@ -1912,14 +1909,15 @@ const window_keys = {
             "Behandlungsgruppe", "Behandelte",
             "([Tt]eilnehmer|Probanden).*Impfung",
             "erh(a|ie)lten.*(Präparat|Medikament)",
+            "(Präparat|Medikament|Antidepressiva).*erh(a|ie)lten",
             "gesündesten.*Lebensstil"],
         // "all": ["insgesamt.*([Tt]eilnehmer|Probanden)"],
-        "all": ["[Tt]eilnehmer|Probanden",
+        "all": ["(aller|insgesamt).*[Tt]eilnehmer|Probanden",
             "insgesamt.*(Fälle|Verläufe)", "(Fälle|Verläufe).*insgesamt",
             "beiden.*Gruppen", "sowohl.*[Gg]ruppe"]  // problematic!
     },
     "effside": {
-        "eff": ["(?<![Nn]eben)[Ww]irk", "Impfschutz",
+        "eff": ["(?<![Nn]eben)[Ww]irk(?!lich)", "Impfschutz",
             "Schutz", "geschützt",
             "(reduziert|verringert|minimiert).*(Risiko|Gefahr|Wahrscheinlichkeit.*Ansteckung)",
             "(Risiko|Gefahr|Wahrscheinlichkeit.*Ansteckung).*(reduziert|verringert|minimiert)",
@@ -2102,7 +2100,7 @@ function investigate_context(token_data, index_arr, keyset) {
             const test_str = test_tokens.join("_").replaceAll("-", "_");
             // Issue could be that underscore counts as word character; will exploit this for now!!
             // console.log(test_tokens);
-            // console.log("TESTSTRING:\n" + test_str);
+            console.log("TESTSTRING:\n" + test_str);
 
             // Test the tokens here:
             // Here we should define sets that exclude each other! (e.g., control + treatment)
@@ -2243,7 +2241,7 @@ function detect_unit(token_data) {
     // ALTERNATIVELY use dict etc.?
     const unit_lookup = [
         [/(%|[Pp]rozent\w*)/, "perc"],  // percentages.
-        [/Teilnehm|[Ff][aä]ll|Proband|Person|Mensch|Kind|Mädchen|Junge|Männer|Frauen|Verl[aä]uf/, "freq"]  // frequencies.
+        [/Teilnehm|[Ff][aä]ll|Proband|Person|Mensch|Kind|Mädchen|Junge|Männer|Frauen|Verl[aä]uf|Erwachsen/, "freq"]  // frequencies.
         // natural/relative frequencies.
     ]
     // Note: Percentage signs may also be contained in the number token!
@@ -2367,9 +2365,9 @@ function detect_regex_match(txt, token_dat, check_dict) {
     }
 
     // Clean up the matches from all for redundancy:
-    console.log("Match objects:");
-    console.log(arr_match);
-    console.log(token_dat);
+    // console.log("Match objects:");
+    // console.log(arr_match);
+    // console.log(token_dat);
     // If a match is fully included in another, the match can be removed.
     // There is also some hierarchy (undefined numbers should only be output when
 
@@ -2417,22 +2415,23 @@ function detect_regex_match(txt, token_dat, check_dict) {
             // console.log(match_type.toString());
             if (match_type[match_start] === -1 && match_type[match_end] === -1) {
 
-                console.log("Establish new match");
+                // console.log("Establish new match");
                 match_id = [i];
                 cur_type = match.type;
 
                 // } else if (match.type[0] !== "unknown") {
             } else if (!["unknown", "ucarryforward"].includes(match.type[0])) {  // now exclude both.
 
-                console.log("Match type");
-                console.log(match.type);
+                // console.log("Match type");
+                // console.log(match.type);
                 // Note: If we can establish a clear hierarchical structure, we could drop the match here:
                 // arr_match.splice(i);
                 droplist = droplist.concat(i);
-                const prev_ix = token_match[match_start]
+                let prev_ix = token_match[match_start]
 
                 if (prev_ix !== -1) {
-                    match_id = prev_ix.concat(i)
+                    prev_ix = Array.isArray(prev_ix) ? prev_ix : [prev_ix];
+                    match_id = prev_ix.concat(i);
                     cur_type = match.type;  // might also concat...
 
                     // Also amend the previous match to include the other type?
@@ -2441,7 +2440,7 @@ function detect_regex_match(txt, token_dat, check_dict) {
 
 
             } else {
-                console.log(`Drop match ${match.type}`);
+                // console.log(`Drop match ${match.type}`);
                 droplist = droplist.concat(i);
             }
 
@@ -2456,57 +2455,15 @@ function detect_regex_match(txt, token_dat, check_dict) {
 
         }
 
-
-        // if (match_start !== -1) {
-        //     if (token_match[match_start] === -1) {
-        //         token_match[match_start] = [i];
-        //         match_type[match_start] = match.type;
-        //     } else if (match.type[0] !== "unknown") {
-        //         console.log("Match type");
-        //         console.log(match.type);
-        //         // Note: If we can establish a clear hierarchical structure, we could drop the match here:
-        //         // arr_match.splice(i);
-        //         droplist = droplist.concat(i);
-        //         const prev_ix = token_match[match_start]
-        //
-        //         // Also amend the previous match to include the other type?
-        //         arr_match[prev_ix[0]].type = arr_match[prev_ix[0]].type.concat(match.type);
-        //
-        //         // Add index:
-        //         token_match[match_start] = prev_ix.concat(i);
-        //
-        //     }
-        //
-        // }
-        // if (match_end !== -1) {
-        //
-        //     if (token_match[match_end] === -1) {
-        //         token_match[match_end] = [i];
-        //         match_type[match_end] = match.type;
-        //     } else if (match.type[0] !== "unknown") {
-        //         // Note: If we can establish a clear hierarchical structure, we could drop the match here:
-        //         // arr_match.splice(i);
-        //         droplist = droplist.concat(i);
-        //
-        //         const prev_ix = token_match[match_end]
-        //
-        //         // Also amend the previous match to include the other type?
-        //         arr_match[prev_ix[0]].type = arr_match[prev_ix[0]].type.concat(match.type);
-        //
-        //         // Add index:
-        //         token_match[match_end] = prev_ix.concat(i);
-        //     }
-        // }
-
         // Increment match ID:
         i++;
 
     }
 
-    console.log("Match data (raw):");
-    console.log(token_match);
-    console.log(match_type);
-    console.log(droplist);
+    // console.log("Match data (raw):");
+    // console.log(token_match);
+    // console.log(match_type);
+    // console.log(droplist);
 
     // Remove the indices that have to be dropped:
     arr_match = arr_match.filter((ele, index) => !droplist.includes(index));
@@ -2515,10 +2472,10 @@ function detect_regex_match(txt, token_dat, check_dict) {
     // Sort the array by the starting position of each match:
     arr_match = arr_match.sort((a, b) => a.start_end[0] - b.start_end[0]);
 
-    console.log("Match data (cleaned):");
-    console.log(arr_match);
-    console.log(token_match);
-    console.log(match_type);
+    // console.log("Match data (cleaned):");
+    // console.log(arr_match);
+    // console.log(token_match);
+    // console.log(match_type);
 
     // Is it more efficient to check for the matches or the tokens?
     // Likely the matches, because there are fewer by design!

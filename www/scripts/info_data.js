@@ -237,6 +237,18 @@ const info_data = {
             "<p>Da der p-Wert auch von Expert*innen häufig missverstanden wird, sollte er in journalistische Publikationen eher nicht verwendet werden.</p>" +
             "<p>Zudem ist er bei Untersuchungen mit sehr vielen Versuchspersonen nicht informativ, da er für große Stichproben typischerweise sehr klein wird.</p>"
     },
+    "confint": {
+        "heading": "Konfidenzintervall",  // the heading.
+        "subheading": "",  // placeholder for a potential subheading.
+        "aliases": [""],  // list of other names.
+        "annotation": "",  // internal annotations; should be eventually ""
+        "overview": ["Intervall, in dem der wahre Wert in 95% aller Experimente liegen würde, wenn man dasselbe Experiment sehr oft wiederholt."],  // array of list items overview of most important points, displayed in wiki and text checker.
+        "examples": [],  // array of list items with examples.
+        "popup": ["<p><a href='wiki-confint'>Konfidenzintervalle</a> werden in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +
+        "<p>Typischerweise werden Konfidenzintervalle, die <emph>nicht</emph> null einschließen, was eine akzeptable Unischerheit ausdrückt.</p>"],
+        "maintext": "<p>Konfidenzintervalle werden in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +
+            "<p>Typischerweise werden Konfidenzintervalle, die <emph>nicht</emph> null einschließen, was eine akzeptable Unischerheit ausdrückt.</p>"
+    },
     "cprob": {
         "heading": "Bedingte Wahrscheinlichkeit",  // the heading.
         "subheading": "",  // placeholder for a potential subheading.
