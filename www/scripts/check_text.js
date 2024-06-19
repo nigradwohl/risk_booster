@@ -167,8 +167,22 @@ $(document).ready(function () {
 
         // token_dat.is_nw  = token_dat.is_nw.map((x, ix) => x && ![-1, "unknown"].includes(token_dat.unit[ix]));  // keep only numberwords that have known units.
 
+        // Detect the type of comparison:
+        token_dat.detect_topic("comp_time", ["schlechter|besser", "als", "vor", "Jahren"]);
 
-        // Detect topis:
+        // Add keywords according to the "topic":
+        // +++ HERE +++
+        if (token_dat.topics.includes("comp_time")) {
+            // We might also include maxyear and minyear!
+            console.log(token_dat.token.filter((x, ix) => token_dat.unit[ix] === "year"));
+            // Amend vocabulary for treatment and control:
+            window_keys.treat_contr.treat = window_keys.treat_contr.treat.concat(["nur_noch"]);
+            window_keys.treat_contr.contr = window_keys.treat_contr.contr.concat(["zum_Vergleich", "vor_.*Jahren", "[Ww]ährend_.*noch"]);
+        }
+
+        console.log(window_keys.treat_contr);
+
+        // Detect topics:
         token_dat.detect_topic("impf", ["(?<!(gl|sch))[Ii]mpf"]);  // must be preceded
         token_dat.detect_topic("mask", ["Maske|FFP"]);  // must be preceded
         token_dat.detect_topic("lower_risk", ["mindern", "Risiko"]);
@@ -523,6 +537,20 @@ $(document).ready(function () {
 
 
         // ~~~~~~~~~~ FEATURES ~~~~~~~~~~~~~~~~
+        const feature_aliases = {
+            "comp_time": {
+                "treat": "<span class=\"tooltiptext tooltip-overview\">Untersuchungszeitpunkt.</span>" +
+                    "<a href='risk_wiki.html#wiki-teval'>Untersuchungszeitpunkt</a>",
+                "contr": "<span class=\"tooltiptext tooltip-overview\">Vergleichszeitpunkt.</span>" +
+                "<a href='risk_wiki.html#wiki-tcontr'>Vergleichszeitpunkt</a>"
+            },
+            "comp_treat": {
+                "treat": "<span class=\"tooltiptext tooltip-overview\">Gruppe, die die Behandlung erhalten hat oder einem Risiko ausgesetzt war.</span>" +
+                    "<a href='risk_wiki.html#wiki-treat'>Behandlungsgruppe</a>"
+            }
+        };
+
+        const curcomp = token_dat.topics.filter(x => /comp_/.test(x));
 
         // Notes about features (presence of effectivity and harm; reporting of comparison group):
         const feature_dict = {
@@ -535,12 +563,9 @@ $(document).ready(function () {
                 "<span class=\"tooltiptext tooltip-overview\">Schaden (z.B., Nebenwirkungen) einer Behandlung oder Impfung.<br>" +
                 "Sollte immer mit Zahlen belegt werden.</span>" +
                 "<a href='risk_wiki.html#wiki-effside'>Schaden</a></div>",
-            "treat": "<div id=\"treat-tt\" class=\"tooltip\">" +
-                "<span class=\"tooltiptext tooltip-overview\">Gruppe, die die Behandlung erhalten hat oder einem Risiko ausgesetzt war.</span>" +
-                "<a href='risk_wiki.html#wiki-treat'>Behandlungsgruppe</a></div>",
+            "treat": "<div id=\"treat-tt\" class=\"tooltip\">" + feature_aliases[curcomp]["treat"] + "</div>",
             "contr": "<div id=\"contr-tt\" class=\"tooltip\">" +
-                "<span class=\"tooltiptext tooltip-overview\">Gruppe, die keine Behandlung erhalten hat oder einem Risiko nicht ausgesetzt war.</span>" +
-                "<a href='risk_wiki.html#wiki-control'>Kontrollgruppe</a></div>",
+                feature_aliases[curcomp]["contr"] + "</div>"
         };
         // let feature_arr = [];  // initialize array to be filled.
 
@@ -643,7 +668,7 @@ $(document).ready(function () {
 
 
         // ++++ HERE NOW +++
-        console.log("+++ HERE NOW +++");
+        // console.log("+++ HERE NOW +++");
 
 
         // Feature sets for testing:
@@ -672,6 +697,8 @@ $(document).ready(function () {
             console.log(feats_present);
             console.log(feats_missing);
 
+            // +++ HERE!
+            // TODO: Remove/adjust Nutzen/Schaden terminology for other kinds of topics (e.g., comparison of risks).
 
             if (feats_present.length > 1) {
                 feature_str = "<i class=\"fa fa-thumbs-up in-text-icon good\"></i>" + feature_str;
@@ -1164,7 +1191,7 @@ const numtype_keyset = {
             [RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder|Erwachsene"),
                 RegExp(collapse_regex_or(["insgesamt", "nahmen", "erh(a|ie)lten", "befragt", "ausgewählt", "umfass(t|en)"])),
                 RegExp(collapse_regex_or(["Studie", "Untersuchung", "Erhebung"]))],
-            [RegExp(["Daten", "[Bb]efragt"]),
+            [RegExp(collapse_regex_or(["Daten", "[Bb]efragt"])),
                 RegExp(collapse_regex_or(["von", "über"])),
                 RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder")],
             // 2nd set:
@@ -1890,6 +1917,8 @@ function detect_number_type(token_data, txt, numtype_dict) {
 
 }
 
+
+// +++ HERE +++
 /**
  * Sets of keys to be used with window approach.
  */
@@ -2102,7 +2131,7 @@ function investigate_context(token_data, index_arr, keyset) {
             const test_str = test_tokens.join("_").replaceAll("-", "_");
             // Issue could be that underscore counts as word character; will exploit this for now!!
             // console.log(test_tokens);
-            console.log("TESTSTRING:\n" + test_str);
+            // console.log("TESTSTRING:\n" + test_str);
 
             // Test the tokens here:
             // Here we should define sets that exclude each other! (e.g., control + treatment)
