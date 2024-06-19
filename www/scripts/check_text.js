@@ -167,28 +167,14 @@ $(document).ready(function () {
 
         // token_dat.is_nw  = token_dat.is_nw.map((x, ix) => x && ![-1, "unknown"].includes(token_dat.unit[ix]));  // keep only numberwords that have known units.
 
-        // Detect the type of comparison:
-        token_dat.detect_topic("comp_time", ["schlechter|besser", "als", "vor", "Jahren"]);
 
-        // Add keywords according to the "topic":
-        // +++ HERE +++
-        if (token_dat.topics.includes("comp_time")) {
-            // We might also include maxyear and minyear!
-            console.log(token_dat.token.filter((x, ix) => token_dat.unit[ix] === "year"));
-            // Amend vocabulary for treatment and control:
-            window_keys.treat_contr.treat = window_keys.treat_contr.treat.concat(["nur_noch"]);
-            window_keys.treat_contr.contr = window_keys.treat_contr.contr.concat(["zum_Vergleich", "vor_.*Jahren", "[Ww]ährend_.*noch"]);
-        }
-
-        console.log(window_keys.treat_contr);
-
-        // Detect topics:
-        token_dat.detect_topic("impf", ["(?<!(gl|sch))[Ii]mpf"]);  // must be preceded
-        token_dat.detect_topic("mask", ["Maske|FFP"]);  // must be preceded
-        token_dat.detect_topic("lower_risk", ["mindern", "Risiko"]);
-        token_dat.detect_topic("lower_risk", ["schützen|Schutz", "Infekt|Ansteck"]);
-        token_dat.detect_topic("cancer_risk", ["[Rr]isiko", "Krebs"]);  // must be preceded
-        token_dat.detect_topic("cancer_drug", ["[Mm]edikament", "Krebs"])
+        // Detect topics: ------------
+        token_dat.detect_topic("impf", [["(?<!(gl|sch))[Ii]mpf"]]);  // must be preceded
+        token_dat.detect_topic("mask", [["Maske|FFP"]]);  // must be preceded
+        token_dat.detect_topic("lower_risk", [["mindern", "Risiko"],
+            ["schützen|Schutz", "Infekt|Ansteck"]]);
+        token_dat.detect_topic("cancer_risk", [["[Rr]isiko", "Krebs"]]);  // must be preceded
+        token_dat.detect_topic("cancer_drug", [["[Mm]edikament", "Krebs"]])
 
         // Try to detect outcomes and conditions!
         const regex_targetcond = /(?:Schutz vor|Krankheit) (?<targetcond>(?:\w+(?=[ .,;?!])){1,2})/mg;  // capture 1 or 2 words!
@@ -197,14 +183,42 @@ $(document).ready(function () {
         const targetconds = condmatches.map((x) => x.groups.targetcond);
         console.log(targetconds);
 
-        // Detect topic features:
-        token_dat.detect_topic("eff", ["Nutz", "(?<!Neben)[Ww]irks(am|ung)", "Schutz",
-            "schütz"].concat(targetconds));
-        token_dat.detect_topic("side", ["Nebenwirk"]);
+        // Detect topic features: ---------
+        token_dat.detect_topic("eff", [[collapse_regex_or(["Nutz", "(?<!Neben)[Ww]irks(am|ung)", "Schutz",
+            "schütz"].concat(targetconds))]]);
+        token_dat.detect_topic("side", [["Nebenwirk"]]);
         // NOTE: Do not add specific side effects, because they may be effects (symptoms) in other contexts!
-        token_dat.detect_topic("treatgroup", ["(Impf|Behandlungs)-?.*[Gg]ruppe"]);
-        token_dat.detect_topic("controlgroup", ["(Kontroll|Placebo|Vergleichs)-?.*[Gg]ruppe"]);
+        console.log("Treat, control:");
+        token_dat.detect_topic("treatgroup", [["(Impf|Behandlungs)-?.*[Gg]ruppe"]]);
+        token_dat.detect_topic("controlgroup", [["(Kontroll|Placebo|Vergleichs)-?.*[Gg]ruppe"]]);
 
+        // Detect the type of comparison:
+        token_dat.detect_topic("comp_time", [["schlechter|besser", "als", "vor", "Jahren"],
+            ["veränder|erhöh", "zwischen_\\d{4}"]]);
+
+
+        // Add keywords according to the type of comparison (currently collected in the "topic" property):
+        // +++ HERE +++
+        // Add keywords for comparisons between timepoints instead of groups:
+        if (token_dat.topics.includes("comp_time")) {
+            // We might also include maxyear and minyear!
+            console.log(token_dat.token.filter((x, ix) => token_dat.unit[ix] === "year"));
+            // Amend vocabulary for treatment and control:
+            window_keys.treat_contr.treat = window_keys.treat_contr.treat.concat(["nur_noch"]);
+            window_keys.treat_contr.contr = window_keys.treat_contr.contr.concat(["zum_Vergleich", "vor_.*Jahren", "[Ww]ährend_.*noch"]);
+        }
+
+        // token_dat.detect_topic("comp_treat", ["veränder|erhöh", "zwischen \\d{4}"]);
+        if (["treatgroup", "controlgroup"].some(x => token_dat.topics.includes(x))) {
+            token_dat.topics = token_dat.topics.concat("comp_treat");
+        }
+
+
+        // Is it an intervention? If it discusses effectivity and side effects yes!
+        const is_intervention = ["eff", "side"].some(x => token_dat.topics.includes(x));
+
+        // Get rid of duplicates: ----------
+        token_dat.topics = [...new Set(token_dat.topics)];
 
         // Number level: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -379,9 +393,9 @@ $(document).ready(function () {
         token_dat.print(allnum_ix);  // print data from object.
 
 
-        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // -------------- HIGHLIGHTING --------------------
-        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         // Loop over tokens to highlight them:
         let cur_ix = 0;  // current index in original text.
@@ -505,6 +519,8 @@ $(document).ready(function () {
         let notes_html = "";  // initialize notes.
 
         // ~~~~~~~~~ TOPICS ~~~~~~~~~~~~~~~
+        // TODO: Risiko minderung" is something good, if it is about protection "erhöhter Schutz" is something good"
+        // If it is about incidence of illness or mortality, "increase" is something bad --> "Nutzen" is decrease!
         // Notes about topics:
         const key_topic_dict = {
             "impf": "Impfung",
@@ -539,18 +555,32 @@ $(document).ready(function () {
         // ~~~~~~~~~~ FEATURES ~~~~~~~~~~~~~~~~
         const feature_aliases = {
             "comp_time": {
-                "treat": "<span class=\"tooltiptext tooltip-overview\">Untersuchungszeitpunkt.</span>" +
+                "treat": "<span class=\"tooltiptext tooltip-overview\">Zeitpunkt, zu dem sich etwas verändert hat (z.B., Zunahme oder Abnhame von Erkrankungen)</span>" +
                     "<a href='risk_wiki.html#wiki-teval'>Untersuchungszeitpunkt</a>",
-                "contr": "<span class=\"tooltiptext tooltip-overview\">Vergleichszeitpunkt.</span>" +
-                "<a href='risk_wiki.html#wiki-tcontr'>Vergleichszeitpunkt</a>"
+                "contr": "<span class=\"tooltiptext tooltip-overview\">Zeitpunkt, mit dem der Untersuchungszeitpunkt verglichen wird.</span>" +
+                    "<a href='risk_wiki.html#wiki-tcontr'>Vergleichszeitpunkt</a>"
             },
             "comp_treat": {
                 "treat": "<span class=\"tooltiptext tooltip-overview\">Gruppe, die die Behandlung erhalten hat oder einem Risiko ausgesetzt war.</span>" +
-                    "<a href='risk_wiki.html#wiki-treat'>Behandlungsgruppe</a>"
-            }
+                    "<a href='risk_wiki.html#wiki-treat'>Behandlungsgruppe</a>",
+                "contr": "<span class=\"tooltiptext tooltip-overview\">Gruppe, die keine Behandlung erhalten hat oder einem Risiko nicht ausgesetzt war.</span>" +
+                    "<a href='risk_wiki.html#wiki-contr'>Kontrollgruppe/Vergleichsgruppe</a>"
+            },
+            "comp_default": {
+                "treat": "<span class=\"tooltiptext tooltip-overview\">Gruppe, in der sich etwas verändert hat (z.B., Zunahme oder Abnhame von Erkrankungen).</span>" +
+                    "<a href='risk_wiki.html#wiki-treat'>Untersuchungsgruppe</a>",
+                "contr": "<span class=\"tooltiptext tooltip-overview\">Gruppe, mit der verglichen wird.</span>" +
+                    "<a href='risk_wiki.html#wiki-contr'>Vergleichsgruppe</a>"
+            },
         };
 
         const curcomp = token_dat.topics.filter(x => /comp_/.test(x));
+        const curfeats = (curcomp === undefined || curcomp.length === 0) ? feature_aliases["comp_default"] : feature_aliases[curcomp];
+
+        console.log(curcomp);
+
+        //
+
 
         // Notes about features (presence of effectivity and harm; reporting of comparison group):
         const feature_dict = {
@@ -563,9 +593,9 @@ $(document).ready(function () {
                 "<span class=\"tooltiptext tooltip-overview\">Schaden (z.B., Nebenwirkungen) einer Behandlung oder Impfung.<br>" +
                 "Sollte immer mit Zahlen belegt werden.</span>" +
                 "<a href='risk_wiki.html#wiki-effside'>Schaden</a></div>",
-            "treat": "<div id=\"treat-tt\" class=\"tooltip\">" + feature_aliases[curcomp]["treat"] + "</div>",
+            "treat": "<div id=\"treat-tt\" class=\"tooltip\">" + curfeats["treat"] + "</div>",
             "contr": "<div id=\"contr-tt\" class=\"tooltip\">" +
-                feature_aliases[curcomp]["contr"] + "</div>"
+                curfeats["contr"] + "</div>"
         };
         // let feature_arr = [];  // initialize array to be filled.
 
@@ -590,10 +620,6 @@ $(document).ready(function () {
         // Get each of these rows:
         const risknum_rows = risknum_ix.map((x) => token_dat.get_row(x));
         const risknums_flat = risknum_rows.flat();
-
-        function check_any_arr(arrs, check_arr) {
-            return arrs.some((arr) => check_arr.every((x) => arr.includes(x)))
-        }
 
         // 1. and 2. Global tests: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // List of keys; decide for each true/false and keep those that are true!
@@ -1477,7 +1503,7 @@ class TokenData {
         // Add global properties like number of rows (and columns) as properties:
         this.global_keys = ["global_keys", "nrow", "ncol", "colnames", "topics"];
         this.colnames = Object.keys(this).filter((x) => !this.global_keys.includes(x));
-        this.topics = [];  // initialize empty topic list.
+        this.topics = [];  // initialize empty topic set.
 
 
     }
@@ -1584,19 +1610,13 @@ class TokenData {
         // These topics may inform also keywords (Impfung may make "schwerer Verlauf" relevant etc.
         // This will imply some tree structures -- our non-random grove.
 
-        let topic_present = false;
+        // Implement window check instead?
+        // Check, if some of the regular expression sets match:
 
-        const regex = RegExp(collapse_regex_or(key_list), "g");
-        // console.log(regex);
+        const token_str = this.token.join("_");
 
-        // Simple regex on tokens:
-        for (const token of this.token) {
-            if (topic_present) {
-                this.topics = this.topics.concat(topic);
-                break;
-            }  // move out of loop if topic could already be discerned.
-            topic_present = regex.test(token);
-
+        if (key_list.some(x => x.every(rex => RegExp(rex).test(token_str)))) {
+            this.topics = this.topics.concat(topic);
         }
 
     }
@@ -2617,6 +2637,16 @@ function get_regex_matches(txt, regexp) {
 /*
 Functions that convey some basic utilities
  */
+
+/**
+ * Check, if all elements of any of an array of arrays is included in a test array.
+ * @param arrs Array of arrays to test.
+ * @param check_arr Array to test if any test array is fully included
+ * @returns {*}
+ */
+function check_any_arr(arrs, check_arr) {
+    return arrs.some((arr) => check_arr.every((x) => arr.includes(x)))
+}
 
 /**
  * Count occurrence of each unique array element, similar to table() in R.
