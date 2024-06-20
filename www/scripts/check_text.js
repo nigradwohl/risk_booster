@@ -106,6 +106,83 @@ $(document).ready(function () {
     // When the button is clicked, process and output the text:
     $("#check-text").on("click", function () {
 
+        // INITIALIZE OBJECTS (that may be modified):
+        /**
+         * Sets of keys to be used with window approach. Will be created upon each click!
+         */
+        const window_keys = {
+            "grouptype": {
+                "total": ["insgesamt", "alle_", "Basis", "umfass(t|en)", "waren.*jeweils", "etwa.*[Tt]eiln[ae]hme"],
+                "sub": ["[Ii]n_", "[Uu]nter_", "[Dd]avon_",
+                    "der.*[Tt]eilnehmer", "entfielen.*auf"]
+                // Note: Switch from \w* to .*, since \w does not capture % etc.
+            },
+            "treat_contr": {
+                // Types of subgroups:
+                "contr": ["Kontroll-?.*[Gg]ruppe", "Placebo-?.*[Gg]ruppe",
+                    "Vergleichs-?.*[Gg]ruppe",
+                    "Prävention.*wenigsten.*befolgte",
+                    "kein.*Medika"],
+                "treat": ["[Gg]eimpfte?n?", "Impf-?.*[Gg]ruppe",
+                    "(?<!Kontroll|Vergleichs|Placebo).Gruppe",  // negative definition of treatment group.
+                    "Behandlungsgruppe", "Behandelte",
+                    "([Tt]eilnehmer|Probanden).*Impfung",
+                    "erh(a|ie)lten.*(Präparat|Medikament)",
+                    "(Präparat|Medikament|Antidepressiva).*erh(a|ie)lten",
+                    "gesündesten.*Lebensstil"],
+                // "all": ["insgesamt.*([Tt]eilnehmer|Probanden)"],
+                "all": ["(aller|insgesamt).*[Tt]eilnehmer|Probanden",
+                    "insgesamt.*(Fälle|Verläufe)", "(Fälle|Verläufe).*insgesamt",
+                    "beiden.*Gruppen", "sowohl.*[Gg]ruppe"]  // problematic!
+            },
+            "effside": {
+                "eff": ["(?<![Nn]eben)[Ww]irk(?!lich)", "Impfschutz",
+                    "Schutz", "geschützt",
+                    "(reduziert|verringert|minimiert).*(Risiko|Gefahr|Wahrscheinlichkeit).*(Ansteckung|Infektion|[Ee]rkrank)",
+                    "((Risiko|Gefahr|Wahrscheinlichkeit).*(Ansteckung|Infektion|[Ee]rkrank)).*(reduziert|verringert|minimiert)",
+                    "Reduzierung",
+                    "(mindert|reduziert).*Symptome",
+                    // The following may only apply to vaccination? (But likely also to treatment!)
+                    "schwer.*Verl[aä]uf",
+                    "Verbesserung"],
+                "side": ["Nebenwirk", "Komplikation", "unerwünschte.*Effekt", "Herzmuskelentzündung"],  // more keywords?
+                "damage": ["(Inzidenz|[Ee]rkank|Todesfäll|Risiko).*(erhöht|vielfach)",
+                    "(erhöht|vielfach).*(Inzidenz|[Ee]rkank|Todesfäll|Risiko)",
+                    "Todesf[aä]ll|gestorben|Infektion",
+                    "[Nn]ur.*Gesundheitszustand.*gut",  // absence of positive!
+                    "([Gg]esundheit|[Ff]inanz|[Pp]sychisch).*Belastung"],
+                "all": ["jeweils", "beiden.*Gruppen"],
+                // Other types (age etc.):
+                "sample": ["im.*Alter"]  // sample description.
+            },
+            "incr_decr": {
+                "risk_incr": [
+                    "(Risiko|Wahrscheinlichkeit).*(erhöht|steigt)",
+                    "(erhöht|steigt).*(Risiko|Wahrscheinlichkeit)"],
+                "risk_decr": [
+                    "(Risiko|Wahrscheinlichkeit).*(sinkt|verringert|reduziert)",
+                    "(sinkt|verringert|reduziert).*(Risiko|Wahrscheinlichkeit)",
+                    "schütz(en|t).*(Erkrankung|Ansteckung)"]
+            },
+            "conditions": {
+                // Verbs:
+                "pers": ["Krankenakt"],  // numbers of persons.
+                "ill": ["erkrank(t|en)", "Verl[äa]uf", "[Ii]nfiziert", "entwickeln"],  // ill individuals.
+                "death": ["st[eao]rben", "Todesfälle", "Todesfall(!?e)"]  // death cases.
+            },
+            "units": {
+                "freq": ["Proband", "Teilnehm", "Infektion", "Krankenakt"],
+                "death": ["(ge|ver)st[aeo]rben"],
+                // Units for exclusion:
+                "medical": ["BMI"]
+            },
+            "rel": {
+                "rel": ["Wirksamkeit", "Impfschutz", "Schutzwirkung"]
+            }
+
+        }
+
+
         // INITIALIZE VARIABLES:
         let arr_li = new Set;  // create HTML for the list.
 
@@ -208,14 +285,19 @@ $(document).ready(function () {
             window_keys.treat_contr.contr = window_keys.treat_contr.contr.concat(["zum_Vergleich", "vor_.*Jahren", "[Ww]ährend_.*noch"]);
         }
 
+        // Detect if the text reports an intervention (experiment):
         // token_dat.detect_topic("comp_treat", ["veränder|erhöh", "zwischen \\d{4}"]);
         if (["treatgroup", "controlgroup"].some(x => token_dat.topics.includes(x))) {
             token_dat.topics = token_dat.topics.concat("comp_treat");
         }
 
-
         // Is it an intervention? If it discusses effectivity and side effects yes!
-        const is_intervention = ["eff", "side"].some(x => token_dat.topics.includes(x));
+        const is_intervention = ["eff", "side"].every(x => token_dat.topics.includes(x));
+
+        if (!token_dat.topics.includes("comp_treat")) {
+            delete window_keys.effside.eff;
+            delete window_keys.effside.side;
+        }
 
         // Get rid of duplicates: ----------
         token_dat.topics = [...new Set(token_dat.topics)];
@@ -310,11 +392,15 @@ $(document).ready(function () {
         token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.treat_contr), "group");
         console.log(token_dat.group.toString());
 
+
         console.log("---------- Get effectivity and side effects: -----------");
-        window_keys.effside.eff = window_keys.effside.eff.concat(targetconds);
+        if (token_dat.topics.includes("comp_treat")) {
+            window_keys.effside.eff = window_keys.effside.eff.concat(targetconds);
+        }
         token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.effside), "effside");
         // Note: Nutzen muss bei Verhaltensrisiken ggf. nicht unbedingt benannt werden (wenn es keinen ersichtlichen gibt)
         console.log(token_dat.effside.toString());
+
 
         // Get information about the underlyeing conditions (morbidity, mortality...):
         console.log("---------- Get information about the underlying conditions (morbidity, mortality...): -----------");
@@ -719,24 +805,27 @@ $(document).ready(function () {
             }
         }
 
-        // +++ HERE!
-        // TODO: Remove/adjust Nutzen/Schaden terminology for other kinds of topics (e.g., comparison of risks).
+
+        // Remove/adjust Nutzen/Schaden terminology for other kinds of topics (e.g., comparison of risks).
         if (token_dat.topics.includes("comp_treat")) {
             delete feature_set.damage;
         } else {
 
             key_topics_str += "<p class=\"note-par\">" +
-                "Der Text scheint keine Intervention (z.B., Medikamentenbehandlung)," +
-                " die einen Vergleich zwischen einer Behandlungsgruppe und einer Vergleichsgruppe anstellt, zu berichten. " +
+                "Der Text scheint keine Intervention (z.B., Medikamentenbehandlung) zu berichten, " +
+                "die einen Vergleich zwischen einer Behandlungsgruppe und einer Vergleichsgruppe anstellt" +
+                (token_dat.topics.includes("comp_time") ? ", sondern scheint Zeitpunkte zu vergleichen. " : ". ") +
                 "Daher sind keine " +
                 "<span id=\"causal-tt\" class=\"tooltip\">" +
                 "<span class=\"tooltiptext tooltip-overview\">Kausalaussagen beschreiben, ob ein Faktor ursächlich für ein Ergebnis ist " +
-                "(z.B., ein Medikament für die Genesung). Das ist nur zuverlässig in Experimenten mit randomisierter zuteilung möglich.</span>" +
+                "(z.B., ein Medikament für die Genesung). Das ist nur zuverlässig in Experimenten mit randomisierter Zuteilung möglich.</span>" +
                 "<a href='risk_wiki.html#wiki-causal'>Kausalaussagen</a></span> " +
                 "möglich" +
                 "</p>";
 
             delete feature_set.eff_side;  // remove the inappropriate effectivity/side-effects category.
+            // feature_set.treat_contr.zumzur = "zum ";
+            delete feature_set.treat_contr;
         }
 
 
@@ -759,13 +848,16 @@ $(document).ready(function () {
                 feature_str = "<i class=\"fa fa-thumbs-up in-text-icon good\"></i>" + feature_str;
                 feature_str += " werden Informationen " + value.zumzur + feats_present.join(" und ") +
                     " berichtet.";
+            } else if (key === "damage") {
+                feature_str += " konnte kein Gesundheitsrisiko erkannt werden. " +
+                    "Wenn der Text ein Gesundheitsrisiko behandelt, kontaktieren Sie uns bitte, damit wir den Fehler beheben können.";
             } else if (feats_missing.length === 1) {
                 feature_str = "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i>" + feature_str;
                 feature_str += " werden nur Informationen " + value.zumzur + feats_present.toString() +
                     " berichtet. Es sollten auch Informationen " + value.zumzur + feats_missing + " berichtet werden.";
             } else {
                 feature_str = "<i class=\"fa fa-thumbs-down in-text-icon error\"></i>" + feature_str;
-                feature_str += " werden weder Informationen zu " +
+                feature_str += " werden weder Informationen " + value.zumzur +
                     value.fset.map((key) => feature_dict[key]).join(" noch " + value.zumzur) + " berichtet."
                 // "<br>NOTE: In Wiki mention the reasons and that one should mention if the evidence is not based on a group comparison";
             }
@@ -785,42 +877,77 @@ $(document).ready(function () {
                 "<div id=\"risk-tt\" class=\"tooltip\">" +
                 "<span class=\"tooltiptext tooltip-overview\">Anders der umgangssprachliche Risikobegriff gleichbedeutend mit \"Wahrscheinlichkeit\"" +
                 "(häufig etwa Wahrscheinlichkeit zu erkranken oder versterben; aber auch positiv, z.B., Wahrscheinlichkeit länger zu leben).</span>" +
-                "<a href='risk_wiki.html#wiki-risk'>Risiken</a></div> zu berichten. </li><li>";
+                "<a href='risk_wiki.html#wiki-risk'>Risiken</a></div> zu berichten.";
 
+            // +++ HERE!
+            // TODO: Remove/adjust Nutzen/Schaden terminology for other kinds of topics (e.g., comparison of risks).
 
             // Differentiate numbers for control and treat group:
             // Do numbers apply to treat and contr group
             // (or: affected and general population for other risks)
 
             // Differentiate: Does it report numbers only about effectivity? Also about side effects?
-            const eff_num = feature_arr.includes("eff_num");
-            const side_num = feature_arr.includes("side_num");
+            if (token_dat.topics.includes("comp_treat")) {
+                // Do this only, if groups are compared!
 
-            if (eff_num && side_num) {
-                feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> " +
-                    "Sowohl zum Nutzen, als auch zum Schaden wurden Zahlen angegeben."
-            } else if (eff_num || side_num) {
-                feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> " +
-                    "Zahlen nur zu" +
-                    (eff_num ? "m Nutzen" : " Schaden") +
-                    " angegeben."
-            } else {
-                feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> " +
-                    "Die Zahlen scheinen sich leider weder auf Nutzen noch auf Schaden zu beziehen."
+                feature_num += "<li>";
+
+                const eff_num = feature_arr.includes("eff_num");
+                const side_num = feature_arr.includes("side_num");
+
+                if (eff_num && side_num) {
+                    feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> " +
+                        "Sowohl zum Nutzen, als auch zum Schaden wurden Zahlen angegeben."
+                } else if (eff_num || side_num) {
+                    feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> " +
+                        "Zahlen nur zu" +
+                        (eff_num ? "m Nutzen" : " Schaden") +
+                        " angegeben."
+                } else {
+                    feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> " +
+                        "Die Zahlen scheinen sich leider weder auf Nutzen noch auf Schaden zu beziehen."
+                }
+
+                feature_num += "</li><li>";
+
+                // Die Wirksamkeit wird (nicht) mit Zahlen aus Behandlungs- und Kontrollgruppe belegt.
+                // Nebenwirkungen werden nicht für Behandlungs- und Kontrollgruppe angegeben
+                let arr_eff_both = feature_arr.includes("eff_treat_num") && feature_arr.includes("eff_contr_num") ?
+                    ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>", "nicht erkennbar "];
+                let arr_side_both = feature_arr.includes("side_treat_num") && feature_arr.includes("side_contr_num") ?
+                    ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>", "nicht erkennbar "];
+
+
+                feature_num += arr_eff_both[0] + " Der Nutzen wird " + arr_eff_both[1] + "mit Zahlen für Behandlungs- und Kontrollgruppe belegt</li><li>";
+                feature_num += arr_side_both[0] + " Die Schadenwirkung wird " + arr_side_both[1] + "mit Zahlen für Behandlungs- und Kontrollgruppe belegt";
+                // Rather "Nur für" oä.
+            } else if (token_dat.topics.includes("comp_time")) {
+
+                feature_num += "<li>";
+
+                const treat_num = feature_arr.includes("treat_num");
+                const contr_num = feature_arr.includes("contr_num");
+
+                if (treat_num && contr_num) {
+                    feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> " +
+                        "Sowohl zum Untersuchungszeitpunkt, als auch zum Vergleichszeitpunkt wurden Zahlen angegeben."
+                } else if (treat_num || contr_num) {
+                    feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> " +
+                        "Zahlen nur zum " +
+                        (treat_num ? "Untersuchungszeitpunkt" : "Vergleichszeitpunkt") +
+                        " angegeben."
+                } else {
+                    feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> " +
+                        "Die Zahlen scheinen sich leider weder auf den Untersuchungs- noch auf den Vergleichszeitpunkt zu beziehen."
+                }
             }
 
+            feature_num += "</li>";  // close the final list element.
 
-            feature_num += "</li><li>";
+            /*
+            NOTE: Handle further cases!
+             */
 
-            // Die Wirksamkeit wird (nicht) mit Zahlen aus Behandlungs- und Kontrollgruppe belegt.
-            // Nebenwirkungen werden nicht für Behandlungs- und Kontrollgruppe angegeben
-            let arr_eff_both = feature_arr.includes("eff_treat_num") && feature_arr.includes("eff_contr_num") > 0 ? ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>", "nicht erkennbar "];
-            let arr_side_both = feature_arr.includes("side_treat_num") && feature_arr.includes("side_contr_num") ? ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>", "nicht erkennbar "];
-
-
-            feature_num += arr_eff_both[0] + " Der Nutzen wird " + arr_eff_both[1] + "mit Zahlen für Behandlungs- und Kontrollgruppe belegt</li><li>";
-            feature_num += arr_side_both[0] + " Die Schadenwirkung wird " + arr_side_both[1] + "mit Zahlen für Behandlungs- und Kontrollgruppe belegt</li>";
-            // Rather "Nur für" oä.
 
         } else {
             // ONLY NUMBERS: ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1965,80 +2092,6 @@ function detect_number_type(token_data, txt, numtype_dict) {
     // console.log("Output numtypes:");
     // console.log(num_types);
     return num_types;
-
-}
-
-
-// +++ HERE +++
-/**
- * Sets of keys to be used with window approach.
- */
-const window_keys = {
-    "grouptype": {
-        "total": ["insgesamt", "alle_", "Basis", "umfass(t|en)", "waren.*jeweils", "etwa.*[Tt]eiln[ae]hme"],
-        "sub": ["[Ii]n_", "[Uu]nter_", "[Dd]avon_",
-            "der.*[Tt]eilnehmer", "entfielen.*auf"]
-        // Note: Switch from \w* to .*, since \w does not capture % etc.
-    },
-    "treat_contr": {
-        // Types of subgroups:
-        "contr": ["Kontroll-?.*[Gg]ruppe", "Placebo-?.*[Gg]ruppe",
-            "Vergleichs-?.*[Gg]ruppe",
-            "Prävention.*wenigsten.*befolgte",
-            "kein.*Medika"],
-        "treat": ["[Gg]eimpfte?n?", "Impf-?.*[Gg]ruppe",
-            "(?<!Kontroll|Vergleichs|Placebo).Gruppe",  // negative definition of treatment group.
-            "Behandlungsgruppe", "Behandelte",
-            "([Tt]eilnehmer|Probanden).*Impfung",
-            "erh(a|ie)lten.*(Präparat|Medikament)",
-            "(Präparat|Medikament|Antidepressiva).*erh(a|ie)lten",
-            "gesündesten.*Lebensstil"],
-        // "all": ["insgesamt.*([Tt]eilnehmer|Probanden)"],
-        "all": ["(aller|insgesamt).*[Tt]eilnehmer|Probanden",
-            "insgesamt.*(Fälle|Verläufe)", "(Fälle|Verläufe).*insgesamt",
-            "beiden.*Gruppen", "sowohl.*[Gg]ruppe"]  // problematic!
-    },
-    "effside": {
-        "eff": ["(?<![Nn]eben)[Ww]irk(?!lich)", "Impfschutz",
-            "Schutz", "geschützt",
-            "(reduziert|verringert|minimiert).*(Risiko|Gefahr|Wahrscheinlichkeit.*Ansteckung)",
-            "(Risiko|Gefahr|Wahrscheinlichkeit.*Ansteckung).*(reduziert|verringert|minimiert)",
-            "Reduzierung",
-            "(mindert|reduziert).*Symptome",
-            // The following may only apply to vaccination? (But likely also to treatment!)
-            "Infektion", "[Ee]rkrank", "Verl[aä]uf",
-            "Verbesserung"],
-        "side": ["Nebenwirk", "Komplikation", "unerwünschte.*Effekt"],  // more keywords?
-        "damage": ["(Inzidenz|Erkank|Todesfäll|Risiko).*(erhöht|vielfach)",
-            "(erhöht|vielfach).*(Inzidenz|Erkank|Todesfäll|Risiko)"],
-        "all": ["jeweils", "beiden.*Gruppen"],
-        // Other types (age etc.):
-        "sample": ["im.*Alter"]  // sample description.
-    },
-    "incr_decr": {
-        "risk_incr": [
-            "(Risiko|Wahrscheinlichkeit).*(erhöht|steigt)",
-            "(erhöht|steigt).*(Risiko|Wahrscheinlichkeit)"],
-        "risk_decr": [
-            "(Risiko|Wahrscheinlichkeit).*(sinkt|verringert|reduziert)",
-            "(sinkt|verringert|reduziert).*(Risiko|Wahrscheinlichkeit)",
-            "schütz(en|t).*(Erkrankung|Ansteckung)"]
-    },
-    "conditions": {
-        // Verbs:
-        "pers": ["Krankenakt"],  // numbers of persons.
-        "ill": ["erkrank(t|en)", "Verl[äa]uf", "[Ii]nfiziert", "entwickeln"],  // ill individuals.
-        "death": ["st[eao]rben", "Todesfälle", "Todesfall(!?e)"]  // death cases.
-    },
-    "units": {
-        "freq": ["Proband", "Teilnehm", "Infektion", "Krankenakt"],
-        "death": ["(ge|ver)st[aeo]rben"],
-        // Units for exclusion:
-        "medical": ["BMI"]
-    },
-    "rel": {
-        "rel": ["Wirksamkeit", "Impfschutz", "Schutzwirkung"]
-    }
 
 }
 
