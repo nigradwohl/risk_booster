@@ -148,6 +148,7 @@ $(document).ready(function () {
                 "side": ["Nebenwirk", "Komplikation", "unerwünschte.*Effekt", "Herzmuskelentzündung"],  // more keywords?
                 "damage": ["(Inzidenz|[Ee]rkank|Todesfäll|Risiko).*(erhöht|vielfach)",
                     "(erhöht|vielfach).*(Inzidenz|[Ee]rkank|Todesfäll|Risiko)",
+                    "Risiko.*Erkrank",
                     "Todesf[aä]ll|gestorben|Infektion",
                     "[Nn]ur.*Gesundheitszustand.*gut",  // absence of positive!
                     "([Gg]esundheit|[Ff]inanz|[Pp]sychisch).*Belastung"],
@@ -263,11 +264,13 @@ $(document).ready(function () {
         // Detect topic features: ---------
         token_dat.detect_topic("eff", [[collapse_regex_or(["Nutz", "(?<!Neben)[Ww]irks(am|ung)", "Schutz",
             "schütz"].concat(targetconds))]]);
-        token_dat.detect_topic("side", [["Nebenwirk"]]);
+        token_dat.detect_topic("side", [["Nebenwirk"], ["Herzmuskelentzünd"]]);
         // NOTE: Do not add specific side effects, because they may be effects (symptoms) in other contexts!
         console.log("Treat, control:");
-        token_dat.detect_topic("treatgroup", [["(Impf|Behandlungs)-?.*[Gg]ruppe"]]);
-        token_dat.detect_topic("controlgroup", [["(Kontroll|Placebo|Vergleichs)-?.*[Gg]ruppe"]]);
+        token_dat.detect_topic("treatgroup", [["(Impf|Behandlungs)-?.*[Gg]ruppe"],
+            ["(Antidepressiva|Medika).*erh(a|ie)lten"]]);
+        token_dat.detect_topic("controlgroup", [["(Kontroll|Placebo|Vergleichs)-?.*[Gg]ruppe"],
+            ["kein.*Medika"]]);
 
         // Detect the type of comparison:
         token_dat.detect_topic("comp_time", [["schlechter|besser", "als", "vor", "Jahren"],
@@ -287,7 +290,7 @@ $(document).ready(function () {
 
         // Detect if the text reports an intervention (experiment):
         // token_dat.detect_topic("comp_treat", ["veränder|erhöh", "zwischen \\d{4}"]);
-        if (["treatgroup", "controlgroup"].some(x => token_dat.topics.includes(x))) {
+        if (["treatgroup", "controlgroup"].some(x => token_dat.topics.includes(x)) || token_dat.topics.includes("impf")) {
             token_dat.topics = token_dat.topics.concat("comp_treat");
         }
 
