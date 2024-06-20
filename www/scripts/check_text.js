@@ -593,6 +593,10 @@ $(document).ready(function () {
                 "<span class=\"tooltiptext tooltip-overview\">Schaden (z.B., Nebenwirkungen) einer Behandlung oder Impfung.<br>" +
                 "Sollte immer mit Zahlen belegt werden.</span>" +
                 "<a href='risk_wiki.html#wiki-effside'>Schaden</a></div>",
+            // More general damage like an increase in risk over time or in specific groups:
+            "damage": "<div id=\"eff-tt\" class=\"tooltip\">" +
+                "<span class=\"tooltiptext tooltip-overview\">Risiko einer negativen Auswirkung (z.B., Erkrankung)</span>" +
+                "<a href='risk_wiki.html#wiki-risk'>Gesundheitsrisiko</a></div>",
             "treat": "<div id=\"treat-tt\" class=\"tooltip\">" + curfeats["treat"] + "</div>",
             "contr": "<div id=\"contr-tt\" class=\"tooltip\">" +
                 curfeats["contr"] + "</div>"
@@ -627,6 +631,7 @@ $(document).ready(function () {
             "any_risknum": risknum_ix.length > 0,
             "eff_num": risknums_flat.includes("eff"),
             "side_num": risknums_flat.includes("side"),
+            "damage_num": risknums_flat.includes("damage"),
             "treat_num": risknums_flat.includes("treat"),
             "contr_num": risknums_flat.includes("contr"),
             // Interactions:
@@ -647,6 +652,7 @@ $(document).ready(function () {
 
         txtfeat_dict["eff"] = txtfeat_dict.eff_num || token_dat.topics.includes("eff");
         txtfeat_dict["side"] = txtfeat_dict.side_num || token_dat.topics.includes("side");
+        txtfeat_dict["damage"] = txtfeat_dict.damage_num || token_dat.topics.includes("damage");
         txtfeat_dict["treat"] = txtfeat_dict.treat_num || token_dat.topics.includes("treatgroup");
         txtfeat_dict["contr"] = txtfeat_dict.contr_num || token_dat.topics.includes("controlgroup");
         // Specific number info:
@@ -703,12 +709,38 @@ $(document).ready(function () {
                 "fset": ["eff", "side"],
                 "zumzur": "zum "
             },
+            "damage": {
+                "fset": ["damage"],
+                "zumzur": "zu einem "
+            },
             "treat_contr": {
                 "fset": ["treat", "contr"],
                 "zumzur": "zur "
             }
         }
 
+        // +++ HERE!
+        // TODO: Remove/adjust Nutzen/Schaden terminology for other kinds of topics (e.g., comparison of risks).
+        if (token_dat.topics.includes("comp_treat")) {
+            delete feature_set.damage;
+        } else {
+
+            key_topics_str += "<p class=\"note-par\">" +
+                "Der Text scheint keine Intervention (z.B., Medikamentenbehandlung)," +
+                " die einen Vergleich zwischen einer Behandlungsgruppe und einer Vergleichsgruppe anstellt, zu berichten. " +
+                "Daher sind keine " +
+                "<span id=\"causal-tt\" class=\"tooltip\">" +
+                "<span class=\"tooltiptext tooltip-overview\">Kausalaussagen beschreiben, ob ein Faktor ursächlich für ein Ergebnis ist " +
+                "(z.B., ein Medikament für die Genesung). Das ist nur zuverlässig in Experimenten mit randomisierter zuteilung möglich.</span>" +
+                "<a href='risk_wiki.html#wiki-causal'>Kausalaussagen</a></span> " +
+                "möglich" +
+                "</p>";
+
+            delete feature_set.eff_side;  // remove the inappropriate effectivity/side-effects category.
+        }
+
+
+        // Overarching text features: ~~~~~~~~~~~~~~~~~~~~~
         for (const [key, value] of Object.entries(feature_set)) {
 
             let feature_str = " Es ";
@@ -722,15 +754,15 @@ $(document).ready(function () {
             console.log(feats_present);
             console.log(feats_missing);
 
-            // +++ HERE!
-            // TODO: Remove/adjust Nutzen/Schaden terminology for other kinds of topics (e.g., comparison of risks).
 
-            if (feats_present.length > 1) {
+            if (feats_missing.length === 0) {
                 feature_str = "<i class=\"fa fa-thumbs-up in-text-icon good\"></i>" + feature_str;
-                feature_str += " werden Informationen " + value.zumzur + feats_present.join(" und ") + " berichtet.";
-            } else if (feats_present.length > 0) {
+                feature_str += " werden Informationen " + value.zumzur + feats_present.join(" und ") +
+                    " berichtet.";
+            } else if (feats_missing.length === 1) {
                 feature_str = "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i>" + feature_str;
-                feature_str += " werden nur Informationen " + value.zumzur + feats_present.toString() + " berichtet. Es sollten auch Informationen " + value.zumzur + feats_missing + " berichtet werden.";
+                feature_str += " werden nur Informationen " + value.zumzur + feats_present.toString() +
+                    " berichtet. Es sollten auch Informationen " + value.zumzur + feats_missing + " berichtet werden.";
             } else {
                 feature_str = "<i class=\"fa fa-thumbs-down in-text-icon error\"></i>" + feature_str;
                 feature_str += " werden weder Informationen zu " +
@@ -751,8 +783,8 @@ $(document).ready(function () {
         if (any_risk_num.length > 0) {
             feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> Der Text scheint Zahlen zu den genannten " +
                 "<div id=\"risk-tt\" class=\"tooltip\">" +
-                "<span class=\"tooltiptext tooltip-overview\">Anders als alltäglicher Risikobegriff gleichbedeutend mit \"Wahrscheinlichkeit\"" +
-                "(etwa Wahrscheinlichkeit zu erkranken oder versterben; aber auch positiv, z.B., Wahrscheinlichkeit länger zu leben).</span>" +
+                "<span class=\"tooltiptext tooltip-overview\">Anders der umgangssprachliche Risikobegriff gleichbedeutend mit \"Wahrscheinlichkeit\"" +
+                "(häufig etwa Wahrscheinlichkeit zu erkranken oder versterben; aber auch positiv, z.B., Wahrscheinlichkeit länger zu leben).</span>" +
                 "<a href='risk_wiki.html#wiki-risk'>Risiken</a></div> zu berichten. </li><li>";
 
 

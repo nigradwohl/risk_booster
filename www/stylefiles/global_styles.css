@@ -565,7 +565,12 @@ h3 {
 }
 
 .instruction-par {
-    color: #666
+    color: #666;
+    font-size: 0.8em;
+}
+
+.note-par {
+    font-size: 0.8em;
 }
 
 .fillout-info {

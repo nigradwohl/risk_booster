@@ -268,6 +268,24 @@ const info_data = {
     },
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Non-numeric entries: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    "causal": {
+        "heading": "Aussagen über Wirkung und Ursache (Kausalität)",  // the heading.
+        "subheading": "",  // placeholder for a potential subheading.
+        "aliases": ["Kausalität"],  // list of other names.
+        "annotation": "",  // internal annotations; should be eventually ""
+        "overview": [""],  // array of list items overview of most important points, displayed in wiki and text checker.
+        "examples": ["Die Impfung verringert das Risiko einer Erkrankung um 50%.",
+            "Rauchen verursacht Lungenkrebs"],  // array of list items with examples.
+        "popup": [],
+        "maintext": "<p>Veränderungen zwischen Zeitpunkten oder nicht experimentellen[MAKE ENTRY] Gruppen können zwar" +
+            "auf Ursachen Hinweisen, können aber auch durch andere Veränderungen über die Zeit oder andere systematische Unterschiede" +
+            "zwischen den Gruppen erklärt werden [GUTES BEISPIEL?]." +
+            "Daher sind solche Vergleiche nicht schlussgültig aussagekräftig, welche Ursache ettwas hat.</p>" +
+            "Nur ein Experiment (z.B., <a href='#wiki-rct'>randomized controlled trial (RCT)</a>) erlaubt kausale Schlüsse." +
+            "Dabei werden Personen zufällig auf die zu vergleichenden Gruppen aufgeteilt (z.B., Medikament und Placebo), so dass Unterschiede zwischen den Gruppen " +
+            "nicht systematisch sind und damit beobachtete Unterschiede auf die Intervention zurückzuführen sind."
+        // string of main text for wiki.
+    },
     "rct": {
         "heading": "Randomized Controlled Trial",  // the heading.
         "subheading": "",  // placeholder for a potential subheading.
