@@ -151,6 +151,7 @@ $(document).ready(function () {
                     "(erhöht|vielfach).*(Inzidenz|[Ee]rkank|Todesfäll|Risiko)",
                     "Risiko.*Erkrank",
                     "Todesf[aä]ll|gestorben|Infektion",
+                    "Lebenserwartung.*sink|weniger", "st[aeo]rb.*früher",
                     "[Nn]ur.*Gesundheitszustand.*gut",  // absence of positive!
                     "([Gg]esundheit|[Ff]inanz|[Pp]sychisch).*Belastung"],
                 "all": ["jeweils", "beiden.*Gruppen"],
@@ -463,7 +464,8 @@ $(document).ready(function () {
 
         // Detect the type of comparison:
         token_dat.detect_topic("comp_time", [["schlechter|besser", "als", "vor", "Jahren"],
-            ["veränder|erhöh", "zwischen_\\d{4}"]]);
+            ["veränder|erhöh", "zwischen_\\d{4}"],
+            ["Abstand", "wuchs|vergrößert", "Jahre", "\\d{4}"]]);
 
 
         // Add keywords according to the type of comparison (currently collected in the "topic" property):
@@ -1061,10 +1063,10 @@ $(document).ready(function () {
 
         // Flag out the use of numbers: ~~~~~~~~~~~~~~~~~~~~~~~
         let feature_num = "</ul><p>Welche Zahleninformation wird berichtet?</p><ul><li>";
-        const any_risk_num = ["perc", "freq", "nh", "mult"].filter((x) => token_dat.unit.includes(x));
+        const any_risk_num = txtfeat_dict.any_risknum;  // ["perc", "freq", "nh", "mult", "nyear"].filter((x) => token_dat.unit.includes(x));
         // console.log("Any risk num:");
         // console.log(token_dat.unit);
-        if (any_risk_num.length > 0) {
+        if (txtfeat_dict.any_risknum) {
             feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> Der Text scheint Zahlen " +
                 (!feature_arr.includes("damage") && feature_set?.damage ? "" :
                     "zu den genannten " +
@@ -1133,7 +1135,7 @@ $(document).ready(function () {
                         " angegeben."
                 } else {
                     feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> " +
-                        "Die Zahlen scheinen sich leider weder auf den Untersuchungs- noch auf den Vergleichszeitpunkt zu beziehen."
+                        "Die Zahlen scheinen sich leider nicht auf die absoluten Risiken zum Untersuchungs- oder Vergleichszeitpunkt zu beziehen."
                 }
             }
 
