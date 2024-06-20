@@ -211,7 +211,7 @@ class Checklist {
         }
 
 
-        const skip_misses = ev.currentTarget.id === "skip-missing" || this.is_skip;
+        const skip_misses = ev.currentTarget.id === "skip-missing" || this.is_skip || this.entry_ix === 0;
         // skip, if calling event is the "skip-misses" button or if the page is to be skipped.
         console.log(`Current target ID is ${ev.currentTarget.id}; Skip misses ${skip_misses}`);
 
