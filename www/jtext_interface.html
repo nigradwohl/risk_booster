@@ -8,7 +8,7 @@
     <script src="jquery/jquery-3.7.1.min.js"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <!--    Check whether to download the icon libarary or the icons-->
+    <!--    Check whether to download the icon library or the icons-->
 
     <script src="global_scripts.js"></script>
     <script src="scripts/info_data.js"></script>
@@ -39,14 +39,26 @@
 
     <div class="input-col text-input noprint">
         <p>
-            Geben Sie hier Ihren Text ein.
+            Geben Sie hier Ihren Text ein (das Tool kann aktuell nur deutsche Texte verarbeiten).
             Wenn Sie auf "Prüfe meinen Text" klicken, erhalten Sie einen Überblick,
             ob wichtige Kriterien transparenter Berichterstattung als erfüllt klassifiziert werden können.
+            Der Fokus liegt dabei auf transparenten Zahlenformaten (s.
+            <a href="risk_wiki.html"></a>).
         </p>
-        <p>
-            Bitte beachten Sie: Das Tool kann Fehler machen
-            (insbesondere, wenn Texte die keine Interventionen, wie Medikamente oder Impfungen behandeln eingegeben werden).
+        <p class="note-par">
+            Bitte beachten Sie: Das Tool wird manche Zahlen nicht korrekt identifizieren
+            (insbesondere, wenn Texte die keine Interventionen, wie Medikamente oder Impfungen behandeln eingegeben
+            werden).
         </p>
+
+
+        <p class="note-par">
+            Falls etwas nicht funktioniert, können Sie uns <a id="mail-feedback"
+                                                              href="mailto:risk.boost@gmail.com">hier</a> eine kurze
+            Rückmeldung geben
+            (dabei wird der Text per Email an risk.booster@gmail.com geschickt, damit wir den Fehler beheben können):
+        </p>
+
         <textarea class="longtext" name="description" id="text-query"></textarea>
         <br>
         <button class="input-button" id="check-text">Prüfe meinen Text</button>
@@ -139,16 +151,9 @@
 
 <div class="row current-theme">
 
-
     <!--    The resulting text with intext annotations:-->
     <div class="output-col text-output noprint">
 
-        <div>
-            <p>
-                Falls etwas nicht funktioniert, können Sie uns <a id="mail-feedback" href="mailto:risk.boost@gmail.com">hier</a> eine kurze Rückmeldung geben
-                (dabei wird der Text per Email an risk.booster@gmail.com geschickt, damit wir den Fehler beheben können):
-            </p>
-        </div>
 
         <div id="text-result"></div>
 

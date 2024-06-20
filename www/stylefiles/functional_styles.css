@@ -29,6 +29,11 @@
     cursor: pointer;
 }
 
+.highlight-other {
+    opacity: 60%;
+    border-radius: 2px;
+}
+
 .highlight-base {
     background-color: lightsteelblue;
 }
@@ -42,7 +47,7 @@
     position: relative;
     overflow: visible;
     opacity: 0.9;
-    display: inline;
+    display: inline-block; /* vorher: inline */  
     border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
 }
 
@@ -52,10 +57,25 @@
     padding: 0.5em;
 }
 
+.tooltip .tooltiptext.tooltip-overview {
+    width: 15em;
+    text-align: left;
+    padding: 0.5em;
+    background-color: #fff;
+    color: black;
+    opacity: 1;
+    border: 1px solid #0077be;
+    border-radius: 2px;
+}
+
+.tooltip .tooltiptext.tooltip-overview::after {
+    border-color: #0077be transparent transparent transparent;
+}
+
 /* Tooltip text */
 .tooltip .tooltiptext {
     visibility: hidden;
-    width: 10em;
+    width: 8.5em; /* von 10em auf 8.5em */
     background-color: #555;
     color: #fff;
     text-align: center;

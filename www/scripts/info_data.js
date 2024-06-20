@@ -30,7 +30,7 @@ const info_data = {
             "an einer Erkrankung zu versterben, oder",
             "sich bei einer Sportart zu verletzen"],  // array of list items with examples.
         "popup": [],
-        "maintext": "Erwähnen: Relative risiken"
+        "maintext": "<p>Erwähnen: Relative risiken.</p>"
 
     },
     "effside": {
@@ -75,7 +75,11 @@ const info_data = {
             "oder dass von 10,000 Personen anstelle von 200 Personen 400 Personen erkranken (Veränderung von 2% auf 4%)" +
             "Daher muss immer (auch) die [LINK]<a>absolute Reduktion</a> kommuniziert werden (mindestens als absolute Prozentzahlen in den " +
             "Gruppen, die verglichen werden)." +
-            "</p>"
+            "</p>" +
+            "<p>Es kann sinnvoll sein, Situationen für niedriges und hohes Basisrisiko darzustellen." +
+            "Beispielsweise verhindert eine Impfung mit einer Wirksamkeit von 80%" +
+            "für ein relativ niedriges Risiko von 10 in 1000 nur 8 von 1000 Infektionen (da sich die meisten Personen ohnehin nicht infiziert hätten)," +
+            "während sie für ein höheres Risiko von 50 in 1000 etwa 40 von 1000 Infektionen verhindert.</p>"
 
     },
     // Percentages:
@@ -84,21 +88,17 @@ const info_data = {
         "subheading": "",  // placeholder for a potential subheading.
         "aliases": [""],  // list of other names.
         "annotation": "",
-        "overview": ["1%",
-            "Bezugsgröße ist entscheidend, besonders für <a href=\"risk_wiki.html#wiki-rel\">relative Angaben</a>" +
-            " (z.B., eine Erhöhung von 50%, eine Impfstoffwirksamkeit von 90%)",
+        "overview": [
             "Absolute Ereigniswahrscheinlichkeiten sind relativen Angaben vorzuziehen",
-            "Prozentzahlen sollten nur für Zahlenwerte größer 1% verwendet werden."],
-        "examples": ["Die Wahrscheinlichkeit zu erkranken, wenn man auf eine infizierte Person getroffen ist liegt bei 2%.",
-            "52% der Versuchsteilnehmer*innen waren weiblich"],
-        "popup": ["<ul>" +
-        "<li>Bei Prozentzahlen muss die <a>[LINK!]Bezugsgröße</a> immer klar sein (d.h., auf welche Gruppe sich der Anteil bezieht)</li>" +
-        "<li>Anstelle von Wahrscheinlichkeiten sollten lieber Anteile kommuniziert werden.</li>" +
-        "<li>Prozentzahlen sollten nur bei Angaben größer als 1% verwendet werden.</li>" +
-        "<li>Besser als <a href=\"\">Prozentzahlen</a> sind <a href=\"#wiki-nh\">natürliche Häufigkeiten</a>.</li>" +
-        "</ul>"],
+            "Für <a href=\"risk_wiki.html#wiki-rel\">relative Angaben</a>" +
+            " (z.B., eine Erhöhung von 50%, eine Impfstoffwirksamkeit von 90%) sollten unbedingt die Basisrisiken berichtet werden",
+            "Prozentzahlen sollten nur für Zahlenwerte größer 1% verwendet werden (ansonsten sind <a href=\"#wiki-nh\">natürliche Häufigkeiten</a> vorzuziehen)."],
+        "examples": ["Die Wahrscheinlichkeit zu erkranken, wenn man auf eine infizierte Person getroffen ist liegt bei 2% (absolut).",
+            "Das Infektionsrisiko war in der Kontrollgruppe 50% höher (relativ).",
+            "52% der Versuchsteilnehmer*innen waren weiblich (absolut)."],
+        "popup": ["<ul><li>Achten Sie darauf anzugeben, auf welche Gruppe sich der Prozentanteil bezieht</li></ul>"],
         "maintext": // "<p>Prozentzahlen sollten nur bei Angaben größer als 1% verwendet werden.</p>" +
-            "<p>Besser als <a href=\"\">Prozentzahlen</a> sind <a href=\"#wiki-nh\">natürliche Häufigkeiten</a> (z.B., 1 aus 100 oder 1 aus 1000). " +
+            "<p>Besser als <a href=\"\">Prozentzahlen</a> sind typischerweise <a href=\"#wiki-nh\">natürliche Häufigkeiten</a> (z.B., 1 aus 100 oder 1 aus 1000). " +
             "Diese werden häufig besser verstanden, insbesondere, für Prozentzahlen < 1%.</p>" +
             "<p>1% einspricht den <a href='#wiki-nh'>natürlichen Häufigkeiten</a> 1 von 100 oder 10 von 1000. " +
             "Folglich entspricht 0,1% (oder ein Promille) 1 in 1000 und 0,01% entspricht 1 in 10,000." +
@@ -118,7 +118,7 @@ const info_data = {
         "<li>Wenn es sich nicht um die Gesamtzahl in einer Gruppe handelt, achten Sie darauf diese Gesamtzahl immer (z.B., Anzahl der Geimpften) anzugeben.</li>" +
         "<li>Transparenter für die Kommunkation von Risiken sind <a href=\"risk_wiki.html#wiki-rel\">natürliche Häufigkeiten</a> (z.B., 15 aus 1000).</li>" +
         "</ul>"],
-        "maintext": "<p>Häufigkeiten natürliche Zahlen, die die Anzahl von Personen oder Dingen beschreiben.</p>" +
+        "maintext": "<p>Häufigkeiten sind natürliche Zahlen, die die Anzahl von Personen oder Dingen beschreiben.</p>" +
             "<p>Im Kontext medizinischer Berichterstattung handelt es sich häufig um die Anzahl von Erkrankungsfällen oder " +
             "die Anzahl von Personen mit Nebenwirkungen in einer Studie.</p>" +
             "<p>Auch die Gesamtzahl an untersuchten Personen (in einer Studie) sind eine Häufigkeit.</p>" +
@@ -137,8 +137,7 @@ const info_data = {
             "Die Stichprobengröße sollte möglichst immer angegeben werden, da so Rückschlüsse auf die Verlässlichkeit der Ergebnisse gezogen werden können."],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": ["10.000 Studienteilnehmende", "1000 Probanden", "insgesamt 5000 Versuchsteilnehmer"],  // array of list items with examples.
         "popup": [
-            "<p>Hilfreiche Angabe. Die Stichprobengröße hilft, die Zuverlässigkeit der Daten zu beurteilen und kann als Referenz dienen.</p>" +
-            "<p></p>"],
+            "<p>Hilfreiche Angabe. Die <a href='#wiki-sample'>Stichprobengröße</a> hilft, die Zuverlässigkeit der Daten zu beurteilen und kann als Referenz dienen.</p>"],
         "maintext": "<p></p>" +
             "<p>Die Größe einer Stichprobe ist aber oft von den verfügbaren Ressourcen geleitet. " +
             "Kleine Stichproben liefern nicht zwingend " +
@@ -155,7 +154,7 @@ const info_data = {
         "examples": ["440 von 1000 Personen ohne Auffrischungsimpfung gegen COVID-19 erkranken, während unter den " +
         "Geimpften nur 270 von 1000 erkranken.<br><a href=\"https://www.hardingcenter.de/de/impfungen/mrna-schutzimpfung-gegen-covid-19-fuer-erwachsene-unter-60-jahren\">https://www.hardingcenter.de/de/impfungen/mrna-schutzimpfung-gegen-covid-19-fuer-erwachsene-unter-60-jahren</a>"],
         "popup": ["<p><a href=\"risk_wiki.html#wiki-nh\">Natürliche Häufigkeiten</a> sind sehr transparent, um Risiken auszudrücken. " +
-        "Achten Sie aber darauf, dass die Referenz (d.h., 1 in 1000 oder 1 in 10000) jeweils konstant ist.</p>"],
+        "Achten Sie aber darauf, dass die Referenz (d.h., 1 in 1000 oder 1 in 10000) jeweils für alle Risiken konstant ist.</p>"],
         "maintext": "<p>Im Unterschied zu <a href='#wiki-freq'>Häufigkeiten</a> haben <a href=\"#wiki-nh\">natürliche Häufigkeiten</a> eine Bezugsgruppe(?).</p>"
     },
     "rel": {
@@ -171,10 +170,10 @@ const info_data = {
         ],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": ["20-mal so viel", "Impfwirksamkeit[LINK] von 90%"],  // array of list items with examples.
         "popup": [
-            "<p><i class=\"fa fa-exclamation-triangle annote-text-icon\"></i>Vorsicht vor relativen Angaben! Alleinstehend intransparent. Bezug?</p>" +
+            "<p><i class=\"fa fa-exclamation-triangle annote-text-icon\"></i>&nbsp;Relative Angaben sind oft intransparent.</p>" +
             "<ul>" +
-            "<li>Leicht missverständlich; führt häufig zu <a href=\"risk_wiki.html#wiki-error-rel\">Überschätzung des Risikos</a></li>" +
-            "<li>Es muss zumindest die <a href='base-prob'>Basiswahrscheinlichkeit</a> in der Vergleichsgruppe angegeben werden.</li>" +
+            // "<li>sie führen häufig zu einer <a href=\"risk_wiki.html#wiki-error-rel\">Überschätzung des Risikos</a></li>" +
+            "<li>Achten Sie darauf, dass die <a href='base-prob'>Basiswahrscheinlichkeit (bzw. das Basisrisiko)</a> angegeben wurde, auf die sich die Veränderung bezieht.</li>" +
             "</ul>"
         ],
         "maintext": "<h4>Verwendung</h4>" +
@@ -208,6 +207,17 @@ const info_data = {
             "[BEISPIEL!]" +
             "</p>"
     },
+    "reference": {
+        "heading": "Bezugsgröße",  // the heading.
+        "subheading": "",  // placeholder for a potential subheading.
+        "aliases": [""],  // list of other names.
+        "annotation": "",  // internal annotations; should be eventually ""
+        "overview": ["Anzahl oder Anteil auf die sich eine Prozentzahl oder eine anteilige Anzahl bezieht."],  // array of list items overview of most important points, displayed in wiki and text checker.
+        "examples": ["In der Gruppe der Geimpften waren <emph>1.000 Personen</emph>, davon erkrankten 9",
+            "Von den <emph>780 untersuchten Personen</emph> waren 50% in der Behandlungsgruppe"],  // array of list items with examples.
+        "popup": [],
+        "maintext": "<p>Die Bezugsgröße erlaubt einzuschätzen, ob eine Anzahl oder ein relativer Prozentanteil</p>"   // string of main text for wiki.
+    },
     // Other kinds of numbers:
     "pval": {
         "heading": "<i>p</i>-Werte",  // the heading.
@@ -217,7 +227,7 @@ const info_data = {
         "overview": ["<a href='risk_wiki.html#wiki-cprob'>Bedingte Wahrscheinlichkeit</a> diese oder extremere Daten in einer Stichprobe zu beobachten",
             "Der p-Wert wird häufig missverstanden und sollte nicht verwendet werden"],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": [],  // array of list items with examples.
-        "popup": ["<p>Der p-Wert wird in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +
+        "popup": ["<p>Der <a href='wiki-pval'>p-Wert</a> wird in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +
         "<p>Typischerweise wird ein p-Wert kleiner als 0.05 als \"statistisch signifikant\" bezeichtnet, was eine akzeptable Unischerheit ausdrückt.</p>" +
         "<p>Da der p-Wert auch von Expert*innen häufig missverstanden wird, sollte er in journalistische Publikationen eher nicht verwendet werden.</p>"],
         "maintext": "<p>Der p-Wert wird in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +
@@ -230,6 +240,18 @@ const info_data = {
             "wenn es eigentlich keinen Unterschied gibt, bei 1% liegt.</p>" +
             "<p>Da der p-Wert auch von Expert*innen häufig missverstanden wird, sollte er in journalistische Publikationen eher nicht verwendet werden.</p>" +
             "<p>Zudem ist er bei Untersuchungen mit sehr vielen Versuchspersonen nicht informativ, da er für große Stichproben typischerweise sehr klein wird.</p>"
+    },
+    "confint": {
+        "heading": "Konfidenzintervall",  // the heading.
+        "subheading": "",  // placeholder for a potential subheading.
+        "aliases": [""],  // list of other names.
+        "annotation": "",  // internal annotations; should be eventually ""
+        "overview": ["Intervall, in dem der wahre Wert in 95% aller Experimente liegen würde, wenn man dasselbe Experiment sehr oft wiederholt."],  // array of list items overview of most important points, displayed in wiki and text checker.
+        "examples": [],  // array of list items with examples.
+        "popup": ["<p><a href='wiki-confint'>Konfidenzintervalle</a> werden in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +
+        "<p>Typischerweise werden Konfidenzintervalle, die <emph>nicht</emph> null einschließen, was eine akzeptable Unischerheit ausdrückt.</p>"],
+        "maintext": "<p>Konfidenzintervalle werden in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +
+            "<p>Typischerweise werden Konfidenzintervalle, die <emph>nicht</emph> null einschließen, was eine akzeptable Unischerheit ausdrückt.</p>"
     },
     "cprob": {
         "heading": "Bedingte Wahrscheinlichkeit",  // the heading.
@@ -244,7 +266,26 @@ const info_data = {
         "popup": ["TODO: Sensitivität, Spezifität etc.!"],
         "maintext": "[TODO] Stichworte: Sensitivität, Spezifität, PPV, NPV"   // string of main text for wiki.
     },
+
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Non-numeric entries: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    "causal": {
+        "heading": "Aussagen über Wirkung und Ursache (Kausalität)",  // the heading.
+        "subheading": "",  // placeholder for a potential subheading.
+        "aliases": ["Kausalität"],  // list of other names.
+        "annotation": "",  // internal annotations; should be eventually ""
+        "overview": [""],  // array of list items overview of most important points, displayed in wiki and text checker.
+        "examples": ["Die Impfung verringert das Risiko einer Erkrankung um 50%.",
+            "Rauchen verursacht Lungenkrebs"],  // array of list items with examples.
+        "popup": [],
+        "maintext": "<p>Veränderungen zwischen Zeitpunkten oder nicht experimentellen[MAKE ENTRY] Gruppen können zwar" +
+            "auf Ursachen Hinweisen, können aber auch durch andere Veränderungen über die Zeit oder andere systematische Unterschiede" +
+            "zwischen den Gruppen erklärt werden [GUTES BEISPIEL?]." +
+            "Daher sind solche Vergleiche nicht schlussgültig aussagekräftig, welche Ursache ettwas hat.</p>" +
+            "Nur ein Experiment (z.B., <a href='#wiki-rct'>randomized controlled trial (RCT)</a>) erlaubt kausale Schlüsse." +
+            "Dabei werden Personen zufällig auf die zu vergleichenden Gruppen aufgeteilt (z.B., Medikament und Placebo), so dass Unterschiede zwischen den Gruppen " +
+            "nicht systematisch sind und damit beobachtete Unterschiede auf die Intervention zurückzuführen sind."
+        // string of main text for wiki.
+    },
     "rct": {
         "heading": "Randomized Controlled Trial",  // the heading.
         "subheading": "",  // placeholder for a potential subheading.
@@ -262,11 +303,23 @@ const info_data = {
         "subheading": "",  // placeholder for a potential subheading.
         "aliases": ["Impfgruppe"],  // list of other names.
         "annotation": "",  // internal annotations; should be eventually ""
-        "overview": ["Gruppe die eine Behandlung erhält oder bei der ein Einfluss vorliegt (im Unterschied zur <a>Verlgeichs- oder Kontrollgruppe</a>",
-            "Der Vergleich von Behandlungs- und Vergleichsgruppe erlaubt Aussagen über den Effekt (und dessen größe), also z.B., ob ein Medikament wirksam Symptome lindert."],  // array of list items overview of most important points, displayed in wiki and text checker.
+        "overview": ["Gruppe die eine Behandlung erhält oder bei der ein Einfluss vorliegt (im Unterschied zur <a href\"#wiki-control\">Verlgeichs- oder Kontrollgruppe</a>",
+            "Der Vergleich von Behandlungs- und Vergleichsgruppe erlaubt Aussagen über den Effekt (und dessen Größe), also z.B., ob ein Medikament wirksam Symptome lindert."],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": [],  // array of list items with examples.
         "popup": [],
         "maintext": ""   // string of main text for wiki.
+    },
+    "teval": {
+        "heading": "Untersuchungszeitpunkt",
+        "subheading": "",  // placeholder for a potential subheading.
+        "aliases": ["Impfgruppe"],  // list of other names.
+        "annotation": "",  // internal annotations; should be eventually ""
+        "overview": ["Zeitpunkt zu dem Daten gesammelt werden, die mit Daten zu einem <a href\"#wiki-tcomp\">Vergleichszeitpunkt</a> verglichen werden.",
+            "Der Vergleich von Untersuchungs- und Vergleichszeitpunkt erlaubt Aussagen über Veränderungen über die Zeit (und deren Größe), " +
+            "also z.B., ob es Menschen besser oder schlechter geht (nur aufgrund der Zeit sind üblicherweise keine Aussagen über die Wirkmechanismen möglich)."],  // array of list items overview of most important points, displayed in wiki and text checker.
+        "examples": [],  // array of list items with examples.
+        "popup": ["Zeitpunkt zu dem eine Untersuchung stattfindet und der mit einem <a href\"#wiki-tcomp\">Vergleichszeitpunkt</a> verglichen wird."],
+        "maintext": "Ähnlich zur <a href\"#wiki-treat\">Behandlungsgruppe</a> etwa in Medikamentenstudien."   // string of main text for wiki.
     },
     "control": {
         "heading": "Vergleichsgruppe",  // the heading.
@@ -278,6 +331,18 @@ const info_data = {
         "examples": ["Placebogruppe bei Impf- und medikamentenstudien"],  // array of list items with examples.
         "popup": [],
         "maintext": "<p>Erfolgt die Zuteilung in <a href\"#wiki-treat\">Behandlungs-</a> und Kontrollgruppe zufällig, spricht man von einem Experiment.</p>"   // string of main text for wiki.
+    },
+    "tcomp": {
+        "heading": "Vergleichszeitpunkt",
+        "subheading": "",  // placeholder for a potential subheading.
+        "aliases": ["Impfgruppe"],  // list of other names.
+        "annotation": "",  // internal annotations; should be eventually ""
+        "overview": ["Zeitpunkt mit dem Daten zu einem <a href\"#wiki-teval\">Untersuchungszeitpunkt</a> verglichen werden.",
+            "Der Vergleich von Untersuchungs- und Vergleichszeitpunkt erlaubt Aussagen über Veränderungen über die Zeit (und deren Größe), " +
+            "also z.B., ob es Menschen besser oder schlechter geht (nur aufgrund der Zeit sind üblicherweise keine Aussagen über die Wirkmechanismen möglich)."],  // array of list items overview of most important points, displayed in wiki and text checker.
+        "examples": [],  // array of list items with examples.
+        "popup": ["Zeitpunkt mit dem Daten zu einem <a href\"#wiki-teval\">Untersuchungszeitpunkt</a> verglichen werden."],
+        "maintext": ""   // string of main text for wiki.
     },
     "placebo": {
         "heading": "Placebo",  // the heading.

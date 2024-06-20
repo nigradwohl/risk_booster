@@ -106,6 +106,85 @@ $(document).ready(function () {
     // When the button is clicked, process and output the text:
     $("#check-text").on("click", function () {
 
+        // INITIALIZE OBJECTS (that may be modified):
+        /**
+         * Sets of keys to be used with window approach. Will be created upon each click!
+         */
+        const window_keys = {
+            "grouptype": {
+                "total": ["insgesamt", "alle_", "Basis", "umfass(t|en)", "waren.*jeweils", "etwa.*[Tt]eiln[ae]hme"],
+                "sub": ["[Ii]n_", "[Uu]nter_", "[Dd]avon_",
+                    "der.*[Tt]eilnehmer", "entfielen.*auf"]
+                // Note: Switch from \w* to .*, since \w does not capture % etc.
+            },
+            "treat_contr": {
+                // Types of subgroups:
+                "contr": ["Kontroll-?.*[Gg]ruppe", "Placebo-?.*[Gg]ruppe",
+                    "Vergleichs-?.*[Gg]ruppe",
+                    "Prävention.*wenigsten.*befolgte",
+                    "kein.*Medika"],
+                "treat": ["[Gg]eimpfte?n?", "Impf-?.*[Gg]ruppe",
+                    "(?<!Kontroll|Vergleichs|Placebo).Gruppe",  // negative definition of treatment group.
+                    "Behandlungsgruppe", "Behandelte",
+                    "([Tt]eilnehmer|Probanden).*Impfung",
+                    "erh(a|ie)lten.*(Präparat|Medikament)",
+                    "(Präparat|Medikament|Antidepressiva).*erh(a|ie)lten",
+                    "gesündesten.*Lebensstil"],
+                // "all": ["insgesamt.*([Tt]eilnehmer|Probanden)"],
+                "all": ["(aller|insgesamt).*[Tt]eilnehmer|Probanden",
+                    "insgesamt.*(Fälle|Verläufe)", "(Fälle|Verläufe).*insgesamt",
+                    "beiden.*Gruppen", "sowohl.*[Gg]ruppe"]  // problematic!
+            },
+            "effside": {
+                "eff": ["(?<![Nn]eben)[Ww]irk(?!lich)", "Impfschutz",
+                    "Schutz", "geschützt",
+                    "(reduziert|verringert|minimiert).*(Risiko|[Gg]efahr|Wahrscheinlichkeit).*(Ansteckung|Infektion|[Ee]rkrank)",
+                    "((Risiko|[Gg]efahr|Wahrscheinlichkeit).*(Ansteckung|Infektion|[Ee]rkrank)).*(reduziert|verringert|minimiert)",
+                    "(Ansteckungsgefahr|Infektionsrisiko).*(nur|verringert)",
+                    "Reduzierung",
+                    "(mindert|reduziert).*Symptome",
+                    // The following may only apply to vaccination? (But likely also to treatment!)
+                    "schwer.*Verl[aä]uf",
+                    "Verbesserung"],
+                "side": ["Nebenwirk", "Komplikation", "unerwünschte.*Effekt", "Herzmuskelentzündung"],  // more keywords?
+                "damage": ["(Inzidenz|[Ee]rkank|Todesfäll|Risiko).*(erhöht|vielfach)",
+                    "(erhöht|vielfach).*(Inzidenz|[Ee]rkank|Todesfäll|Risiko)",
+                    "Risiko.*Erkrank",
+                    "Todesf[aä]ll|gestorben|Infektion",
+                    "[Nn]ur.*Gesundheitszustand.*gut",  // absence of positive!
+                    "([Gg]esundheit|[Ff]inanz|[Pp]sychisch).*Belastung"],
+                "all": ["jeweils", "beiden.*Gruppen"],
+                // Other types (age etc.):
+                "sample": ["im.*Alter"]  // sample description.
+            },
+            "incr_decr": {
+                "risk_incr": [
+                    "(Risiko|Wahrscheinlichkeit).*(erhöht|steigt)",
+                    "(erhöht|steigt).*(Risiko|Wahrscheinlichkeit)"],
+                "risk_decr": [
+                    "(Risiko|Wahrscheinlichkeit).*(sinkt|verringert|reduziert)",
+                    "(sinkt|verringert|reduziert).*(Risiko|Wahrscheinlichkeit)",
+                    "schütz(en|t).*(Erkrankung|Ansteckung)"]
+            },
+            "conditions": {
+                // Verbs:
+                "pers": ["Krankenakt"],  // numbers of persons.
+                "ill": ["erkrank(t|en)", "Verl[äa]uf", "[Ii]nfiziert", "entwickeln"],  // ill individuals.
+                "death": ["st[eao]rben", "Todesfälle", "Todesfall(!?e)"]  // death cases.
+            },
+            "units": {
+                "freq": ["Proband", "Teilnehm", "Infektion", "Krankenakt"],
+                "death": ["(ge|ver)st[aeo]rben"],
+                // Units for exclusion:
+                "medical": ["BMI"]
+            },
+            "rel": {
+                "rel": ["Wirksamkeit", "Impfschutz", "Schutzwirkung"]
+            }
+
+        }
+
+
         // INITIALIZE VARIABLES:
         let arr_li = new Set;  // create HTML for the list.
 
@@ -131,7 +210,7 @@ $(document).ready(function () {
             .replaceAll(/\.\n\./gm, ".\n\n");  // Replace stray changes.
 
 
-        console.log("Pre-processed text text:");
+        console.log("Pre-processed text:");
         console.log(JSON.stringify(inputText));
 
         // Maybe replace missing punctuation here?
@@ -153,8 +232,8 @@ $(document).ready(function () {
 
         // Get regex-based matches:
         const regex_matches = detect_regex_match(inputText, token_dat, check_numbers_dict);
-        console.log("Regex matches");
-        console.log(regex_matches);
+        // console.log("Regex matches");
+        // console.log(regex_matches);
 
 
         // Text-level: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -162,16 +241,20 @@ $(document).ready(function () {
         token_dat.add_column(regex_matches.match_id, "match");
         token_dat.add_column(regex_matches.match_type.map((x) => x !== -1 ? x.toString() : x), "unit");  // get unit info from regex matches.
         token_dat.add_number_info();  // add info about numbers.
-        token_dat.add_column(token_dat.token.map((x, ix) => (RegExp(collapse_regex_or(numwords), "dg").test(x) && token_dat.unit[ix] !== -1)), "is_nw");  // is it a number word?
+        token_dat.add_column(token_dat.token.map((x, ix) => (RegExp(collapse_regex_or(numwords), "dg").test(x))), "is_nw");  // is it a number word?
         token_dat.detect_unit();  // get additional unit info from token data.
 
-        // Detect topis:
-        token_dat.detect_topic("impf", ["(?<!(gl|sch))[Ii]mpf"]);  // must be preceded
-        token_dat.detect_topic("mask", ["Maske|FFP"]);  // must be preceded
-        token_dat.detect_topic("lower_risk", ["mindern", "Risiko"]);
-        token_dat.detect_topic("lower_risk", ["schützen|Schutz", "Infekt|Ansteck"]);
-        token_dat.detect_topic("cancer_risk", ["[Rr]isiko", "Krebs"]);  // must be preceded
-        token_dat.detect_topic("cancer_drug", ["[Mm]edikament", "Krebs"])
+        // token_dat.is_nw  = token_dat.is_nw.map((x, ix) => x && ![-1, "unknown"].includes(token_dat.unit[ix]));  // keep only numberwords that have known units.
+
+
+        // Detect topics: ------------
+        token_dat.detect_topic("impf", [["(?<!(gl|sch))[Ii]mpf"]]);  // must be preceded
+        token_dat.detect_topic("mask", [["Maske|FFP"]]);  // must be preceded
+        token_dat.detect_topic("protect", [["Schutzwirkung"], ["Ansteckungsgefahr", "nur"]]);  // must be preceded
+        token_dat.detect_topic("lower_risk", [["mindern", "Risiko"],
+            ["schützen|Schutz", "Infekt|Ansteck"]]);
+        token_dat.detect_topic("cancer_risk", [["[Rr]isiko", "Krebs"]]);  // must be preceded
+        token_dat.detect_topic("cancer_drug", [["[Mm]edikament", "Krebs"]])
 
         // Try to detect outcomes and conditions!
         const regex_targetcond = /(?:Schutz vor|Krankheit) (?<targetcond>(?:\w+(?=[ .,;?!])){1,2})/mg;  // capture 1 or 2 words!
@@ -180,21 +263,57 @@ $(document).ready(function () {
         const targetconds = condmatches.map((x) => x.groups.targetcond);
         console.log(targetconds);
 
-        // Detect topic features:
-        token_dat.detect_topic("eff", ["Nutz", "(?<!Neben)[Ww]irks(am|ung)", "Schutz",
-            "schütz"].concat(targetconds));
-        token_dat.detect_topic("side", ["Nebenwirk"]);
+        // Detect topic features: ---------
+        token_dat.detect_topic("eff", [[collapse_regex_or(["Nutz", "(?<!Neben)[Ww]irks(am|ung)", "Schutz",
+            "schütz"].concat(targetconds))]]);
+        token_dat.detect_topic("side", [["Nebenwirk"], ["Herzmuskelentzünd"]]);
         // NOTE: Do not add specific side effects, because they may be effects (symptoms) in other contexts!
-        token_dat.detect_topic("treatgroup", ["(Impf|Behandlungs)-?.*[Gg]ruppe"]);
-        token_dat.detect_topic("controlgroup", ["(Kontroll|Placebo|Vergleichs)-?.*[Gg]ruppe"]);
+        console.log("Treat, control:");
+        token_dat.detect_topic("treatgroup", [["(Impf|Behandlungs)-?.*[Gg]ruppe"],
+            ["(Antidepressiva|Medika).*erh(a|ie)lten"]]);
+        token_dat.detect_topic("controlgroup", [["(Kontroll|Placebo|Vergleichs)-?.*[Gg]ruppe"],
+            ["kein.*Medika"]]);
 
+        // Detect the type of comparison:
+        token_dat.detect_topic("comp_time", [["schlechter|besser", "als", "vor", "Jahren"],
+            ["veränder|erhöh", "zwischen_\\d{4}"]]);
+
+
+        // Add keywords according to the type of comparison (currently collected in the "topic" property):
+        // +++ HERE +++
+        // Add keywords for comparisons between timepoints instead of groups:
+        if (token_dat.topics.includes("comp_time")) {
+            // We might also include maxyear and minyear!
+            console.log(token_dat.token.filter((x, ix) => token_dat.unit[ix] === "year"));
+            // Amend vocabulary for treatment and control:
+            window_keys.treat_contr.treat = window_keys.treat_contr.treat.concat(["nur_noch"]);
+            window_keys.treat_contr.contr = window_keys.treat_contr.contr.concat(["zum_Vergleich", "vor_.*Jahren", "[Ww]ährend_.*noch"]);
+        }
+
+        // Detect if the text reports an intervention (experiment):
+        // token_dat.detect_topic("comp_treat", ["veränder|erhöh", "zwischen \\d{4}"]);
+        if (["treatgroup", "controlgroup", "impf", "protect"].some(x => token_dat.topics.includes(x))) {
+            token_dat.topics = token_dat.topics.concat("comp_treat");
+        }
+
+        // Is it an intervention? If it discusses effectivity and side effects yes!
+        const is_intervention = ["eff", "side"].every(x => token_dat.topics.includes(x));
+
+        if (!token_dat.topics.includes("comp_treat")) {
+            delete window_keys.effside.eff;
+            delete window_keys.effside.side;
+        }
+
+        // Get rid of duplicates: ----------
+        token_dat.topics = [...new Set(token_dat.topics)];
 
         // Number level: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         // Detect number types (may eventually need the topics to inform context names!):
         numtype_keyset.ncase.keyset = numtype_keyset.ncase.keyset.concat([[RegExp(collapse_regex_or(targetconds))]]);  // modify qwith targetconds!
-        console.log(numtype_keyset);
+        // console.log(numtype_keyset);
         token_dat.detect_number_type(inputText, numtype_keyset);
+        console.log(token_dat.numtype.toString());  // initial number types.
 
         // Context detection: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -222,23 +341,43 @@ $(document).ready(function () {
 
         }
 
-        // Detect number words:
+        // Detect unidentified number words:
         // Case to handle:
         // "Davon wurden 9 in der Placebogruppe und **einer** in der BNT162b2-Gruppe beobachtet."
-        // ++++ HERE NOW +++
-        // python: https://github.com/IBM/wort-to-number
-        // const pat_numwords = RegExp(collapse_regex_or(
-        //     ["[Ee]in", "[Zz]wei", "[Dd]rei"]), "dg");
-        // const numwords_ix = token_dat.id.filter((x) => pat_numwords.test(token_dat.token[x]));
-        // // Investigate these tokens further!
-        // const numword_arr = investigate_context(token_dat, numwords_ix,
-        //     {"numword_keys": RegExp(collapse_regex_or(["Verl[aä]uf"]))});
-        // console.log("+++ Get numwords +++");
-        // console.log(pat_numwords);
-        // console.log(numwords_ix);
-        // console.log(numword_arr);
-        // Rather do reverse search? Search for "Verläufe", "Erkrankungen" etc.
 
+        const regex_numwords_raw = RegExp("(?<!\\w)(" + collapse_regex_or(numwords) + ")", "dg");
+        const is = token_dat.token
+            .map((x) => regex_numwords_raw.test(x) && !token_dat.is_num ? x : -1);
+
+        console.log("+++ Additional candidate number words: +++");
+        // Also detect "Drittel" etc.)
+        // Loop (map?) over all candidate numwords
+        // get up to 1 sentence before and check for a frequency(?) unit
+        // Apply the unit and set number to "true" if applicable!
+        for (let i = 0; i < token_dat.nrow; i++) {
+            // Is it a candidate?
+            if (regex_numwords_raw.test(token_dat.token[i])) {
+                const cursent = token_dat.sent[i];
+                // const window_start = token_dat.id
+                //     .filter((ix) => token_dat.sent[ix] >= cursent - 1 && token_dat.sent[ix] <= cursent);
+                // const window_start = token_dat.id
+                //     .filter((ix) => token_dat.sent[ix] >= cursent - 1 && token_dat.sent[ix] <= cursent);
+                const prev_ntypes = token_dat.numtype  // was: token_dat.unit === freq; switched to ncase to avoid FP.
+                    .filter((x, ix) => token_dat.sent[ix] >= cursent - 1 && ix <= i && x === "ncase")
+                    .flat();
+                // console.log(token_dat);
+                // console.log("Previous number units");
+                // console.log(token_dat.token[i]);
+                // console.log(prev_units);
+                const ulen = prev_ntypes.length;
+                if (ulen > 0) {
+                    token_dat.unit[i] = "freq";
+                    token_dat.is_num[i] = true;
+                    token_dat.numtype[i] = prev_ntypes[ulen - 1];
+                }
+
+            }
+        }
 
         // NOTE: May also be applied to numbers that could not be identified so far!
 
@@ -254,14 +393,22 @@ $(document).ready(function () {
         // Do not apply the following to total numbers:
         const n_subgroup_ix = token_dat.id.filter((d, ix) => token_dat.is_num[ix] &&
             token_dat.gtype[ix] !== "total" && token_dat.gtype[ix] !== -1);
-        // console.log("---------- Get treatment and control: -----------");
+        console.log("---------- Get treatment and control: -----------");
         token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.treat_contr), "group");
-        // console.log("---------- Get effectivity and side effects: -----------");
-        window_keys.effside.eff = window_keys.effside.eff.concat(targetconds);
+        console.log(token_dat.group.toString());
+
+
+        console.log("---------- Get effectivity and side effects: -----------");
+        if (token_dat.topics.includes("comp_treat")) {
+            window_keys.effside.eff = window_keys.effside.eff.concat(targetconds);
+        }
         token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.effside), "effside");
         // Note: Nutzen muss bei Verhaltensrisiken ggf. nicht unbedingt benannt werden (wenn es keinen ersichtlichen gibt)
+        console.log(token_dat.effside.toString());
+
 
         // Get information about the underlyeing conditions (morbidity, mortality...):
+        console.log("---------- Get information about the underlying conditions (morbidity, mortality...): -----------");
         token_dat.add_column(investigate_context(token_dat, freq_ix, window_keys.conditions), "ftype");
 
         // Update missing information: ~~~~~~~~~~~
@@ -279,8 +426,9 @@ $(document).ready(function () {
         token_dat.gtype = token_dat.gtype
             .map((gtype, ix) => token_dat.numtype[ix] === "ncase" && ["unknown", "all"].includes(token_dat.group[ix]) ? "total" : gtype);
 
-        token_dat.numtype = token_dat.numtype
-            .map((ntype, ix) => token_dat.gtype[ix] === "subgroup" && ["ncase"].includes(ntype.toString()) ? token_dat.group[ix] : ntype);
+        // TODO: WHere do we need this? Why should numtype be = group?
+        // token_dat.numtype = token_dat.numtype
+        //     .map((ntype, ix) => token_dat.gtype[ix] === "sub" && ["ncase"].includes(ntype.toString()) ? token_dat.group[ix] : ntype);
 
 
         // Detect whether a change is relative:
@@ -295,10 +443,10 @@ $(document).ready(function () {
 
         // Column for percentages <1%:
         // Translate number words:
-        const num_arr = Array.from(Array(12).keys());
+        const num_arr = Array.from(Array(13).keys());
         token_dat.add_column(token_dat.token
-            .map((x, ix) => token_dat.is_num[ix] && token_dat.is_nw[ix] ? 1 + num_arr[num_arr
-                .filter((ix) => RegExp(numwords[ix], "dg").test(x))].toString() : x), "trnum");
+            .map((x, ix) => token_dat.is_num[ix] && token_dat.is_nw[ix] ? (num_arr[num_arr
+                .filter((ixn) => RegExp(numwords[ixn], "dg").test(x))]).toString() : x), "trnum");
 
         token_dat.add_column(token_dat.unit.map((x, ix) => x === "perc" && token_dat.is_num[ix] ?
             token_dat.trnum[ix].match(regex_num)[0].replace(",", ".") < 1 : -1), "smperc");
@@ -322,17 +470,23 @@ $(document).ready(function () {
             token_dat.relabs[ix] = out;
         }
 
+        // Fix some issues:
+        token_dat.numtype = token_dat.numtype
+            .map((x, ix) => token_dat.unit[ix] === "freq" && [-1, "other"].includes(x) && token_dat.gtype[ix] === "sub" ? "ncase" : x);
 
-        // Display for testing:
-        console.log("Updated token data:");
+        // Reference information for absolute percentages:
+        token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.reference), "reference");
+
+        // Display for testing: ~~~~~~~~~~~~~~~~~~
+        console.log("~~~~~ Updated token data: ~~~~~~");
         console.log(token_dat);
         console.log(`${token_dat.nrow} rows and ${token_dat.ncol} columns`);
         token_dat.print(allnum_ix);  // print data from object.
 
 
-        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // -------------- HIGHLIGHTING --------------------
-        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         // Loop over tokens to highlight them:
         let cur_ix = 0;  // current index in original text.
@@ -372,38 +526,6 @@ $(document).ready(function () {
                         match_len++;
                     }
 
-                    // TODO: Adjust co-occurrence patterns and go from more specific (freq_ncase_contr_eff) to less specific (freq_ntot)?
-                    // Split by unit
-
-                    const tooltip_dict = {
-                        "freq_ntot": "Gesamtzahl Personen",
-                        "freq_ntot_all_all": "Gesamtzahl Personen",
-                        "freq_ntot_unknown_eff,unknown": "Gesamtzahl Personen",
-                        "freq_ntot_unknown_all": "Gesamtzahl Todesfälle",
-                        "freq_ncase_all": "Anzahl Fälle gesamt",  // exchange "Fälle" for the more general "(verhinderte) Ereignisse"?
-                        "freq_ncase_all_eff": "Anzahl Erkrankungen",  // oder: andere Fälle!
-                        "freq_ncase_treat_eff": "Anzahl Fälle Behandelte",
-                        "freq_ncase_contr_eff": "Anzahl Fälle Vergleichsgruppe",
-                        "freq_ntot_treat_eff": "Anzahl Behandelte",
-                        "freq_ntot_contr_eff": "Anzahl Vergleichsgruppe",
-                        "freq_ncase_treat_side": "Anzahl Nebenwirkungen Behandelte",
-                        "freq_ncase_contr_side": "Anzahl Nebenwirkungen Vergleichsgruppe",
-                        // Oddities (that may be fixed eventually):
-                        "freq_ntot_unknown_unknown": "Gesamtzahl Personen",  // if the subgroup cannot  be identified it may be something else.
-                        "freq_ntot_all_unknown": "Gesamtzahl Personen",  // Likewise if it apples to all.
-                        // Percentages:
-                        "perc_incr_rel": "Relative Risikoreduktion",
-                        "perc_decr_rel": "Relative Risikoreduktion",
-                        "perc_decr_eff_rel": "Relative Risikoreduktion",
-                        "perc_other_side_abs": "Wahrscheinlichkeit Nebenwirkungen",
-                        "perc_other_sample_abs": "Prozentzahl Stichprobenbeschreibung",
-                        "perc_other_eff_abs": "Absolute Prozentangabe",
-                        // Natural frequencies:
-                        "nh_ncase_eff": "Natürliche Häufigkeit",
-                        "nh_ncase_side": "Natürliche Häufigkeit",
-                        // Multiples:
-                        "mult_other_eff": "Relative Angabe"
-                    }
 
                     // Get types for each tooltip from dictionary:
                     let cur_numtype = token_dat.numtype.slice(i, i + match_len).filter((x) => x !== -1);
@@ -412,34 +534,19 @@ $(document).ready(function () {
                     // ignature of current number:
                     const currow = token_dat.get_row(i);
 
-                    let col_arr = ["unit", "numtype", "effside"];
-                    if (cur_unit === "perc") {
-                        col_arr = col_arr.concat(["relabs"]);
-
-                        if (currow.includes("rel")) {
-                            // console.log("+++ Remove effside!");
-                            col_arr.splice(col_arr.indexOf("effside"), 1);
-                        }
-                    }
-                    if (cur_unit === "freq") {
-                        col_arr = col_arr.concat("group", "effside");
-                    }
-
-                    const cur_sign = currow
-                        .filter((x, ix) => col_arr.includes(token_dat.colnames[ix]) &&
-                            x !== -1)
-                        .join("_");
-                    console.log(cur_sign);
+                    // This might help: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get?retiredLocale=de
 
 
-                    let cur_tooltip = {
-                        "perc": "Prozentzahl", "freq": "Anzahl", "nh": "Natürliche Häufigkeit", "pval": "p-Wert",
-                        "undefined": "Konnte nicht identifiziert werden"
-                    }[cur_unit];
-                    cur_tooltip = cur_tooltip === undefined ? "Konnte nicht identifiziert werden" : cur_tooltip;
-                    if (Object.keys(tooltip_dict).includes(cur_sign)) {
-                        cur_tooltip = tooltip_dict[cur_sign];
-                    }
+                    // const colix = ["relabs", "unit", "numtype"].map(x => token_dat.colnames.indexOf(x));
+
+                    const col_info = ["unit", "relabs", "numtype"].map(x => currow[token_dat.colnames.indexOf(x)]);
+
+                    console.log(`~~~~~ Traverse tree for ${token_dat.token[i]}: ~~~~~~`);
+                    console.log(col_info);
+                    // console.log(info_tree.traverse(col_info)["tool"]);
+
+                    const cur_tooltip = info_tree.traverse(col_info)["tool"];
+
 
                     // const cur_tooltip = unit_note_dict[cur_unit].tooltip[cur_numtype[0]];  // NOTE: currently first type only.
 
@@ -503,6 +610,8 @@ $(document).ready(function () {
         let notes_html = "";  // initialize notes.
 
         // ~~~~~~~~~ TOPICS ~~~~~~~~~~~~~~~
+        // TODO: Risiko minderung" is something good, if it is about protection "erhöhter Schutz" is something good"
+        // If it is about incidence of illness or mortality, "increase" is something bad --> "Nutzen" is decrease!
         // Notes about topics:
         const key_topic_dict = {
             "impf": "Impfung",
@@ -535,13 +644,53 @@ $(document).ready(function () {
 
 
         // ~~~~~~~~~~ FEATURES ~~~~~~~~~~~~~~~~
+        const feature_aliases = {
+            "comp_time": {
+                "treat": "<span class=\"tooltiptext tooltip-overview\">Zeitpunkt, zu dem sich etwas verändert hat (z.B., Zunahme oder Abnhame von Erkrankungen)</span>" +
+                    "<a href='risk_wiki.html#wiki-teval'>Untersuchungszeitpunkt</a>",
+                "contr": "<span class=\"tooltiptext tooltip-overview\">Zeitpunkt, mit dem der Untersuchungszeitpunkt verglichen wird.</span>" +
+                    "<a href='risk_wiki.html#wiki-tcontr'>Vergleichszeitpunkt</a>"
+            },
+            "comp_treat": {
+                "treat": "<span class=\"tooltiptext tooltip-overview\">Gruppe, die die Behandlung erhalten hat oder einem Risiko ausgesetzt war.</span>" +
+                    "<a href='risk_wiki.html#wiki-treat'>Behandlungsgruppe</a>",
+                "contr": "<span class=\"tooltiptext tooltip-overview\">Gruppe, die keine Behandlung erhalten hat oder einem Risiko nicht ausgesetzt war.</span>" +
+                    "<a href='risk_wiki.html#wiki-contr'>Kontrollgruppe/Vergleichsgruppe</a>"
+            },
+            "comp_default": {
+                "treat": "<span class=\"tooltiptext tooltip-overview\">Gruppe, in der sich etwas verändert hat (z.B., Zunahme oder Abnhame von Erkrankungen).</span>" +
+                    "<a href='risk_wiki.html#wiki-treat'>Untersuchungsgruppe</a>",
+                "contr": "<span class=\"tooltiptext tooltip-overview\">Gruppe, mit der verglichen wird.</span>" +
+                    "<a href='risk_wiki.html#wiki-contr'>Vergleichsgruppe</a>"
+            },
+        };
+
+        const curcomp = token_dat.topics.filter(x => /comp_/.test(x));
+        const curfeats = (curcomp === undefined || curcomp.length === 0) ? feature_aliases["comp_default"] : feature_aliases[curcomp];
+
+        console.log(curcomp);
+
+        //
+
 
         // Notes about features (presence of effectivity and harm; reporting of comparison group):
         const feature_dict = {
-            "eff": "<a href='risk_wiki.html#wiki-effside'>Nutzen</a>",
-            "side": "<a href='risk_wiki.html#wiki-effside'>Schaden</a>",
-            "treat": "<a href='risk_wiki.html#wiki-treat'>Behandlungsgruppe</a>",
-            "contr": "<a href='risk_wiki.html#wiki-control'>Kontrollgruppe</a>"
+            "eff": "<div id=\"eff-tt\" class=\"tooltip\">" +
+                "<span class=\"tooltiptext tooltip-overview\">Wirksamkeit einer Behandlung oder Impfung" +
+                "(z.B., verhinderte Erkranungen, Genesung, Vermeidung von Todesfällen).<br>" +
+                "Sollte immer mit Zahlen belegt werden.</span>" +
+                "<a href='risk_wiki.html#wiki-effside'>Nutzen</a></div>",
+            "side": "<div id=\"side-tt\" class=\"tooltip\">" +
+                "<span class=\"tooltiptext tooltip-overview\">Schaden (z.B., Nebenwirkungen) einer Behandlung oder Impfung.<br>" +
+                "Sollte immer mit Zahlen belegt werden.</span>" +
+                "<a href='risk_wiki.html#wiki-effside'>Schaden</a></div>",
+            // More general damage like an increase in risk over time or in specific groups:
+            "damage": "<div id=\"eff-tt\" class=\"tooltip\">" +
+                "<span class=\"tooltiptext tooltip-overview\">Risiko einer negativen Auswirkung (z.B., Erkrankung)</span>" +
+                "<a href='risk_wiki.html#wiki-risk'>Gesundheitsrisiko</a></div>",
+            "treat": "<div id=\"treat-tt\" class=\"tooltip\">" + curfeats["treat"] + "</div>",
+            "contr": "<div id=\"contr-tt\" class=\"tooltip\">" +
+                curfeats["contr"] + "</div>"
         };
         // let feature_arr = [];  // initialize array to be filled.
 
@@ -567,16 +716,13 @@ $(document).ready(function () {
         const risknum_rows = risknum_ix.map((x) => token_dat.get_row(x));
         const risknums_flat = risknum_rows.flat();
 
-        function check_any_arr(arrs, check_arr) {
-            return arrs.some((arr) => check_arr.every((x) => arr.includes(x)))
-        }
-
         // 1. and 2. Global tests: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // List of keys; decide for each true/false and keep those that are true!
         const txtfeat_dict = {
             "any_risknum": risknum_ix.length > 0,
             "eff_num": risknums_flat.includes("eff"),
             "side_num": risknums_flat.includes("side"),
+            "damage_num": risknums_flat.includes("damage"),
             "treat_num": risknums_flat.includes("treat"),
             "contr_num": risknums_flat.includes("contr"),
             // Interactions:
@@ -597,6 +743,7 @@ $(document).ready(function () {
 
         txtfeat_dict["eff"] = txtfeat_dict.eff_num || token_dat.topics.includes("eff");
         txtfeat_dict["side"] = txtfeat_dict.side_num || token_dat.topics.includes("side");
+        txtfeat_dict["damage"] = txtfeat_dict.damage_num || token_dat.topics.includes("damage");
         txtfeat_dict["treat"] = txtfeat_dict.treat_num || token_dat.topics.includes("treatgroup");
         txtfeat_dict["contr"] = txtfeat_dict.contr_num || token_dat.topics.includes("controlgroup");
         // Specific number info:
@@ -644,7 +791,7 @@ $(document).ready(function () {
 
 
         // ++++ HERE NOW +++
-        console.log("+++ HERE NOW +++");
+        // console.log("+++ HERE NOW +++");
 
 
         // Feature sets for testing:
@@ -653,16 +800,44 @@ $(document).ready(function () {
                 "fset": ["eff", "side"],
                 "zumzur": "zum "
             },
+            "damage": {
+                "fset": ["damage"],
+                "zumzur": "zu einem "
+            },
             "treat_contr": {
                 "fset": ["treat", "contr"],
                 "zumzur": "zur "
             }
         }
 
+
+        // Remove/adjust Nutzen/Schaden terminology for other kinds of topics (e.g., comparison of risks).
+        if (token_dat.topics.includes("comp_treat")) {
+            delete feature_set.damage;
+        } else {
+
+            key_topics_str += "<p class=\"note-par\">" +
+                "Der Text scheint keine Intervention (z.B., Medikamentenbehandlung) zu berichten, " +
+                "die einen Vergleich zwischen einer Behandlungsgruppe und einer Vergleichsgruppe anstellt" +
+                (token_dat.topics.includes("comp_time") ? ", sondern scheint Zeitpunkte zu vergleichen. " : ". ") +
+                "Daher sind keine " +
+                "<span id=\"causal-tt\" class=\"tooltip\">" +
+                "<span class=\"tooltiptext tooltip-overview\">Kausalaussagen beschreiben, ob ein Faktor ursächlich für ein Ergebnis ist " +
+                "(z.B., ein Medikament für die Genesung). Das ist nur zuverlässig in Experimenten mit randomisierter Zuteilung möglich.</span>" +
+                "<a href='risk_wiki.html#wiki-causal'>Kausalaussagen</a></span> " +
+                "möglich" +
+                "</p>";
+
+            delete feature_set.eff_side;  // remove the inappropriate effectivity/side-effects category.
+            // feature_set.treat_contr.zumzur = "zum ";
+            delete feature_set.treat_contr;
+        }
+
+
+        // Overarching text features: ~~~~~~~~~~~~~~~~~~~~~
         for (const [key, value] of Object.entries(feature_set)) {
 
             let feature_str = " Es ";
-
 
             // Get present features:
             let feats_present = value.fset.filter((feat) => feature_arr.includes(feat));
@@ -674,15 +849,20 @@ $(document).ready(function () {
             console.log(feats_missing);
 
 
-            if (feats_present.length > 1) {
+            if (feats_missing.length === 0) {
                 feature_str = "<i class=\"fa fa-thumbs-up in-text-icon good\"></i>" + feature_str;
-                feature_str += " werden Informationen " + value.zumzur + feats_present.join(" und ") + " berichtet.";
-            } else if (feats_present.length > 0) {
+                feature_str += " werden Informationen " + value.zumzur + feats_present.join(" und ") +
+                    " berichtet.";
+            } else if (key === "damage") {
+                feature_str += " konnte kein Gesundheitsrisiko erkannt werden. " +
+                    "Wenn der Text ein Gesundheitsrisiko behandelt, kontaktieren Sie uns bitte, damit wir den Fehler beheben können.";
+            } else if (feats_missing.length === 1) {
                 feature_str = "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i>" + feature_str;
-                feature_str += " werden nur Informationen " + value.zumzur + feats_present.toString() + " berichtet. Es sollten auch Informationen " + value.zumzur + feats_missing + " berichtet werden.";
+                feature_str += " werden nur Informationen " + value.zumzur + feats_present.toString() +
+                    " berichtet. Es sollten auch Informationen " + value.zumzur + feats_missing + " berichtet werden.";
             } else {
                 feature_str = "<i class=\"fa fa-thumbs-down in-text-icon error\"></i>" + feature_str;
-                feature_str += " werden weder Informationen zu " +
+                feature_str += " werden weder Informationen " + value.zumzur +
                     value.fset.map((key) => feature_dict[key]).join(" noch " + value.zumzur) + " berichtet."
                 // "<br>NOTE: In Wiki mention the reasons and that one should mention if the evidence is not based on a group comparison";
             }
@@ -698,43 +878,84 @@ $(document).ready(function () {
         // console.log("Any risk num:");
         // console.log(token_dat.unit);
         if (any_risk_num.length > 0) {
-            feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> Der Text scheint Zahlen zu den genannten " +
-                "<a href='risk_wiki.html#wiki-risk'>Risiken</a> zu berichten. </li><li>";
+            feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> Der Text scheint Zahlen " +
+                (!feature_arr.includes("damage") && feature_set?.damage ? "" :
+                "zu den genannten " +
+                "<div id=\"risk-tt\" class=\"tooltip\">" +
+                "<span class=\"tooltiptext tooltip-overview\">Anders der umgangssprachliche Risikobegriff gleichbedeutend mit \"Wahrscheinlichkeit\"" +
+                "(häufig etwa Wahrscheinlichkeit zu erkranken oder versterben; aber auch positiv, z.B., Wahrscheinlichkeit länger zu leben).</span>" +
+                "<a href='risk_wiki.html#wiki-risk'>Risiken</a></div> ") +
+                "zu berichten.";
 
+            // +++ HERE!
+            // TODO: Remove/adjust Nutzen/Schaden terminology for other kinds of topics (e.g., comparison of risks).
 
             // Differentiate numbers for control and treat group:
             // Do numbers apply to treat and contr group
             // (or: affected and general population for other risks)
 
             // Differentiate: Does it report numbers only about effectivity? Also about side effects?
-            const eff_num = feature_arr.includes("eff_num");
-            const side_num = feature_arr.includes("side_num");
+            if (token_dat.topics.includes("comp_treat")) {
+                // Do this only, if groups are compared!
 
-            if (eff_num && side_num) {
-                feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> " +
-                    "Sowohl zum Nutzen, als auch zum Schaden wurden Zahlen angegeben."
-            } else if (eff_num || side_num) {
-                feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> " +
-                    "Zahlen nur zu" +
-                    (eff_num ? "m Nutzen" : " Schaden") +
-                    " angegeben."
-            } else {
-                feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> " +
-                    "Die Zahlen scheinen sich leider weder auf Nutzen noch auf Schaden zu beziehen."
+                feature_num += "<li>";
+
+                const eff_num = feature_arr.includes("eff_num");
+                const side_num = feature_arr.includes("side_num");
+
+                if (eff_num && side_num) {
+                    feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> " +
+                        "Sowohl zum Nutzen, als auch zum Schaden wurden Zahlen angegeben."
+                } else if (eff_num || side_num) {
+                    feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> " +
+                        "Zahlen nur zu" +
+                        (eff_num ? "m Nutzen" : " Schaden") +
+                        " angegeben."
+                } else {
+                    feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> " +
+                        "Die Zahlen scheinen sich leider weder auf Nutzen noch auf Schaden zu beziehen."
+                }
+
+                feature_num += "</li><li>";
+
+                // Die Wirksamkeit wird (nicht) mit Zahlen aus Behandlungs- und Kontrollgruppe belegt.
+                // Nebenwirkungen werden nicht für Behandlungs- und Kontrollgruppe angegeben
+                let arr_eff_both = feature_arr.includes("eff_treat_num") && feature_arr.includes("eff_contr_num") ?
+                    ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>", "nicht erkennbar "];
+                let arr_side_both = feature_arr.includes("side_treat_num") && feature_arr.includes("side_contr_num") ?
+                    ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>", "nicht erkennbar "];
+
+
+                feature_num += arr_eff_both[0] + " Der Nutzen wird " + arr_eff_both[1] + "mit Zahlen für Behandlungs- und Kontrollgruppe belegt</li><li>";
+                feature_num += arr_side_both[0] + " Die Schadenwirkung wird " + arr_side_both[1] + "mit Zahlen für Behandlungs- und Kontrollgruppe belegt";
+                // Rather "Nur für" oä.
+            } else if (token_dat.topics.includes("comp_time")) {
+
+                feature_num += "<li>";
+
+                const treat_num = feature_arr.includes("treat_num");
+                const contr_num = feature_arr.includes("contr_num");
+
+                if (treat_num && contr_num) {
+                    feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> " +
+                        "Sowohl zum Untersuchungszeitpunkt, als auch zum Vergleichszeitpunkt wurden Zahlen angegeben."
+                } else if (treat_num || contr_num) {
+                    feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> " +
+                        "Zahlen nur zum " +
+                        (treat_num ? "Untersuchungszeitpunkt" : "Vergleichszeitpunkt") +
+                        " angegeben."
+                } else {
+                    feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> " +
+                        "Die Zahlen scheinen sich leider weder auf den Untersuchungs- noch auf den Vergleichszeitpunkt zu beziehen."
+                }
             }
 
+            feature_num += "</li>";  // close the final list element.
 
-            feature_num += "</li><li>";
+            /*
+            NOTE: Handle further cases!
+             */
 
-            // Die Wirksamkeit wird (nicht) mit Zahlen aus Behandlungs- und Kontrollgruppe belegt.
-            // Nebenwirkungen werden nicht für Behandlungs- und Kontrollgruppe angegeben
-            let arr_eff_both = feature_arr.includes("eff_treat_num") && feature_arr.includes("eff_contr_num") > 0 ? ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>", "nicht erkennbar "];
-            let arr_side_both = feature_arr.includes("side_treat_num") && feature_arr.includes("side_contr_num") ? ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>", "nicht erkennbar "];
-
-
-            feature_num += arr_eff_both[0] + " Der Nutzen wird " + arr_eff_both[1] + "mit Zahlen für Behandlungs- und Kontrollgruppe belegt</li><li>";
-            feature_num += arr_side_both[0] + " Die Schadenwirkung wird " + arr_side_both[1] + "mit Zahlen für Behandlungs- und Kontrollgruppe belegt</li>";
-            // Rather "Nur für" oä.
 
         } else {
             // ONLY NUMBERS: ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -761,7 +982,13 @@ $(document).ready(function () {
         // Add mismatched framing:
         if (mismatched_framing) {
             arr_li.add('Achtung: Sie haben in Behandlungsgruppe relative Zahlen und in der Vergleichsgruppe absolute Zahlen verwendet.' +
-                'Dieses "mismatched framing" sollte vermieden werden, ' +
+                'Dieses "' +
+                '<div id=\\"eff-tt\\" class=\\"tooltip\\">' +
+                '                <span class="tooltiptext tooltip-overview">Beschreibt die Verwendung relativer und absoluter Maße ' +
+                'für Nutzen und Schadenwirkung. Da relative Angaben meist überschätzt werden, ' +
+                'stellt mismatched framing eine intransparente Verzerrung dar und sollte vermieden werden.</span>' +
+                '<a href=\'risk_wiki.html#wiki-mismatch\'>mismatched framing</a></div>' +
+                '" sollte vermieden werden, ' +
                 'da es <a>[LINK]Die Wirksamkeit größer und den Schaden kleiner [ODER ANDERSHERUM!] erscheinen lässt</a>');
         }
 
@@ -846,123 +1073,20 @@ $(document).ready(function () {
 
             // console.log("Clicked token");
             // console.log(token_dat.token[token_id] + ", unit: " + token_dat.unit[token_id] +
-            //     ", numtype: " + token_dat.numtype[token_id]);
 
-            // const numtype = unit_note_dict[token_dat.unit[token_id]].tooltip[token_dat.numtype[token_id]];
-            const numtype = token_dat.numtype[token_id];
-            // console.log(numtype);
-            const curunit = token_dat.unit[token_id].toString();
-            // console.log(curunit);
 
-            // Collapse unit and numtype:
-            // Signature of current number:
+            // Get current row:
             const currow = token_dat.get_row(token_id);
             console.log(currow);
 
-            let col_arr = ["unit", "numtype"];
-            if (curunit === "perc") {
-                col_arr = col_arr.concat(["effside", "relabs"])
-
-                if (currow.includes("rel")) {
-                    // console.log("+++ Remove effside!");
-                    col_arr.splice(col_arr.indexOf("effside"), 1);
-                }
-
-            }
-            if (curunit === "freq") {
-                col_arr = col_arr.concat(["gtype", "group"])
-            }
-            console.log(col_arr);
-
-            const infokey = currow
-                .filter((x, ix) => col_arr.includes(token_dat.colnames[ix]) &&
-                    x !== -1)
-                .join("_");
-
-            // const infokey = [curunit, numtype].join("_");
-            console.log(`Current info key: ${infokey}`);
-
-            // Draft for overarching dictionary:
-            // Important: have a default for each unit to avoid non-identification
-            // const note_dict = {
-            //     "perc": {
-            //         "default": "Prozentzahl"
-            //     },
-            //     "freq": {
-            //         "ntot": {"death": "Todesfälle", "default": "Personen/Beobachtungen"},
-            //         "default": "Anzahl"
-            //     },
-            //     "nh": {
-            //         "default": "Natürliche Häufigkeit"
-            //     }
-            // }
-
-
-            // const tooltip_dict = {
-            //             "freq_ntot": "Gesamtzahl Personen",
-            //             "freq_ntot_all_all": "Gesamtzahl Personen",
-            //             "freq_ntot_unknown_eff,unknown": "Gesamtzahl Personen",
-            //             "freq_ntot_unknown_all": "Gesamtzahl Todesfälle",
-            //             "freq_ncase_all": "Anzahl Fälle gesamt",  // exchange "Fälle" for the more general "(verhinderte) Ereignisse"?
-            //             "freq_ncase_all_eff": "Anzahl Erkrankungen",  // oder: andere Fälle!
-            //             "freq_ncase_treat_eff": "Anzahl Fälle Behandelte",
-            //             "freq_ncase_contr_eff": "Anzahl Fälle Vergleichsgruppe",
-            //             "freq_ntot_treat_eff": "Anzahl Behandelte",
-            //             "freq_ntot_contr_eff": "Anzahl Vergleichsgruppe",
-            //             "freq_ncase_treat_side": "Anzahl Nebenwirkungen Behandelte",
-            //             "freq_ncase_contr_side": "Anzahl Nebenwirkungen Vergleichsgruppe",
-            //             // Oddities (that may be fixed eventually):
-            //             "freq_ntot_unknown_unknown": "Gesamtzahl Personen",  // if the subgroup cannot  be identified it may be something else.
-            //             "freq_ntot_all_unknown": "Gesamtzahl Personen",  // Likewise if it apples to all.
-            //             // Percentages:
-            //             "perc_incr_rel": "Relative Risikoreduktion",
-            //             "perc_decr_rel": "Relative Risikoreduktion",
-            //             "perc_decr_eff_rel": "Relative Risikoreduktion",
-            //             "perc_other_side_abs": "Wahrscheinlichkeit Nebenwirkungen",
-            //             "perc_other_sample_abs": "Prozentzahl Stichprobenbeschreibung",
-            //             "perc_other_eff_abs": "Absolute Prozentangabe",
-            //             // Natural frequencies:
-            //             "nh_ncase_eff": "Natürliche Häufigkeit",
-            //             "nh_ncase_side": "Natürliche Häufigkeit",
-            //             // Multiples:
-            //             "mult_other_eff": "Relative Angabe"
-            //         }
-
-
-            // Reference to the wiki object:
-            const wiki_ref = {
-                "perc_other": "prozent",
-                "perc_other_eff_abs": "prozent",
-                "perc_other_side_abs": "prozent",
-                // Relative percentages:
-                "perc_decr_rel": "rel",
-                "perc_decr_eff_rel": "rel",  // +++ UPDATE! +++
-                "perc_decr_side_rel": "rel",
-                // Types of freqs -- update!
-                "freq_ntot": "sample_size",
-                "freq_ntot_total": "sample_size",
-                "freq_ntot_sub_treat": "sample_size",
-                "freq_ntot_sub_contr": "sample_size",
-                "freq_ncase_total_all": "freq",  // total numbers of cases often not informative!
-                "freq_ncase_sub_treat": "freq",
-                "freq_ncase_sub_contr": "freq",  // here: reference.
-                "freq_treat": "freq",
-                "freq_contr": "freq",
-                "freq_other": "freq",
-                // Natural frequencies:
-                "nh_ncase": "nh",
-                // Other kinds of numbers:
-                "mult_other": "rel",
-                "pval_other": "pval"
-            };
-
-            // Note: Here, we might also allow to exclude certain elements!
-
-            const curinfo = info_data[wiki_ref[infokey]];
+            // Traverse the info tree:
+            const col_info = ["unit", "relabs", "numtype"].map(x => currow[token_dat.colnames.indexOf(x)]);
+            // const curinfo = info_data[info_tree.traverse(col_info)["popup"]];
+            // Directly enter info in info tree? Maybe borrow from info dict?
+            const curinfo = info_tree.traverse(col_info);
 
             const addinfo_perc = "<p>" +
-                "Diese <a href='risk_wiki.html#wiki-prozent'>Prozentzahl</a> scheint " + (/_abs/.test(infokey) ? "absolut" : "relativ") + " zu sein." +
-                (token_dat.smperc[token_id] === true ? "<br>Sie ist < 1. Greifen Sie bitte auf <a href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> " +
+                (token_dat.smperc[token_id] === true ? "<br>Die Prozentzahl ist < 1%. Greifen Sie bitte auf <a href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> " +
                     "(z.B., 1 aus 100 oder 1 aus 1000) zurück." : "") +
                 // Alternativ: Wir konnten
                 "</p>";  // z.B., relative/absolute Prozentzahl.
@@ -973,18 +1097,13 @@ $(document).ready(function () {
             //     "</p>";  // z.B., relative/absolute Prozentzahl.
 
             cur_popup.html(
-                // `<h4>${numtype}</h4>` +
-                // `<p>${unit_note_dict[token_dat.unit[token_id]].note([numtype])}</p>`
-                // `<h4>${txt_snips[numtype][0] + txt_snips[numtype][1][token_dat.unit[token_id]]}</h4>` +
-                // `<p>${txt_snips[numtype][2]}</p>`
-                // `<h4>${curinfo.heading}</h4>` +
+                `<h4>${curinfo.tool}</h4>` +
                 // `<p><strong>Bezug</strong>: ${token_dat.group[token_id]}</p>` +  // Some additional info!
-                `${curunit === "perc" ? addinfo_perc : ""}` +  // additional info.
-                `${(/_sub/.test(infokey) ? ("<p>Die Zahl bezieht sich auf eine Subgruppe. " +
-                    "Stellen Sie sicher, das klar ist auf welche übergeordnete Gruppe sie sich bezieht.</p>") : "")}` +
-                // `<p><ul><li>${curinfo.overview.join("</li><li>")}</li></ul></p>` +
+                `${col_info[0] === "perc" ? addinfo_perc : ""}` +  // additional info.
+                // `${(/_sub/.test(infokey) ? ("<p>Die Zahl bezieht sich auf eine Subgruppe. " +
+                //     "Stellen Sie sicher, das klar ist auf welche übergeordnete Gruppe sie sich bezieht.</p>") : "")}` +
                 // `<p><ul><li>${curinfo.popup.join("</li><li>")}</li></ul></p>`  // to process an array as list.
-                `${curinfo === undefined ? "<p>Diese Zahl konnten wir leider nicht näher identifizieren.</p>" : curinfo.popup}`
+                `${!curinfo.popup ? "<p>Diese Zahl konnten wir leider nicht näher identifizieren.</p>" : curinfo.popup}`
 
                 // +++ `<p>[Place to add more info, if needed!]</p>`+++
             );
@@ -993,7 +1112,7 @@ $(document).ready(function () {
             const txt_ele = $("#text-result");  // element for text container
             const correction_left = txt_ele.position().left + txt_ele.width();
 
-            // Note: Eventuall improve positioning; seemingly, the issue occurs only on the first click!
+            // Note: Eventually improve positioning; seemingly, the issue occurs only on the first click!
 
             console.log(`Popup height (pad): ${popup_height} (${popup_pad}), Num height: ${num_height}, 
             num pos (top, bottom) ${thispos.top}, ${thispos.left}`);
@@ -1081,17 +1200,18 @@ Other formats to detect: Odds ratio, ARR/RRR, NNT...
 
 // Constants:
 const pat_num = "(?:(?<![\\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,:][0-9]+)?))(?!\\\.[0-9A-Za-zÄÖÜäöüß]|[a-zA-Z0-9ÄÖÜäöüß])"
-const numwords = ["[Ee]ine?r?", "[Zz]wei(?!fe)", "[Dd]rei", "[Vv]ier", "[Ff]ünf", "[Ss]echs",
+const numwords = ["[Kk]eine", "(?<![Kk])[Ee]ine?r?", "[Zz]wei(?!fe)", "[Dd]rei", "[Vv]ier", "[Ff]ünf", "[Ss]echs",
     "[Ss]ieben", "[Aa]cht(?!e)", "[Nn]eun(?!k)", "[Zz]ehn", "[Ee]lf", "[Zz]wölf"]
 
 // TODO: DIctionary to translate:
 const numword_dict = {};
 
-const regex_num = new RegExp("(?<unknown>" + pat_num + ")", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
+const regex_num = new RegExp("(?<unknown>" + pat_num + "( Millionen| Milliarden)?)", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
 const regex_numwords = new RegExp("(?<unknown>(" + collapse_regex_or(numwords) + ") (Person(en)?|F[aä]lle?))", "dg");
 const regex_perc = new RegExp("(?<perc>" + pat_num + " ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.?!])" + ")", "dg");
 const regex_nh = new RegExp("(?<nh>" + pat_num + " (\\w+ )?(von|aus|in) (\\w+ )?" + pat_num + ")", "dg");  // TODO: Handle numberwords here.
-const regex_mult = new RegExp("(?<mult>" + pat_num + "[ \\-]?([Mm]al|[Ff]ach) (so )?( ?viele|gr[oö]ß|hoch|niedrig|besser|erhöht|höher)(?=[\\s.?!])" + ")", "dg");
+const regex_mult = new RegExp("(?<mult>" + pat_num + "[ \\-]?([Mm]al|[Ff]ach) (so )?( ?viele|gr[oö]ß(er)?|hoch|niedrig(er)?|besser|erhöht|höher)(?=[\\s.?!])" + ")", "dg");
+const regex_dur2 = /(?<dur>\d+([,.]\d+)?-?\d*([,.]\d+)?(Minuten?| Stunden?| Tagen?| Wochen?))/dg;
 // Note: in regex_nh we may also try to get the denominator as a group or as its own entity.
 // nh must also be identified from tokens (e.g., In der Gruppe von 1000[case] Leuten sterben 4[num/case].
 
@@ -1133,6 +1253,9 @@ const check_numbers_dict = {
     "pval": {
         "regex": RegExp("(?<pval>p ?[\\<\\=] ?" + pat_num + ")", "dg")
     },
+    "confint": {
+        "regex": RegExp("(?<confint>" + pat_num + " ?% ?[CK]I:? \\[?" + pat_num + " ?[-\\u2013;,] ?" + pat_num + "\\]?)", "dg")
+    },
     "yearnum": {
         "regex": /(?<nyear>\d+([.|,]\d+)( Jahr[a-z]*))/dg  // require comma or pouint separator!
         // "regex": /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
@@ -1140,7 +1263,7 @@ const check_numbers_dict = {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Simple matches:
     "age": {
-        "regex": /(?<age>(?<![,.])(\d+-? bis )*\d+-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
+        "regex": /(?<age>(?<![,.])(\d+-? bis )?\d+-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
         // "regex": /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
     },
     // "age2": {
@@ -1159,7 +1282,7 @@ const check_numbers_dict = {
         "regex": /(?<date>\d{1,2}\.\d{1,2}\.(18|19|20)\d{2}(?![|.\w]))/dg
     },
     "year": {
-        "regex": /(?<year>(Jahr|Anfang|Ende|Mitte|Nach) \d{4}(?![|.\w]))/dg
+        "regex": /(?<year>(Jahr|Anfang|Ende|Mitte|Nach) \d{4})/dg
     },
     "year2": {
         "regex": /(?<year>(18|19|20)?\d{2}er)/dg
@@ -1177,6 +1300,9 @@ const check_numbers_dict = {
     },
     "dur": {
         "regex": /(?<dur>[0-9]+(-stündig|-tägig| Minuten?| Stunden?| Tagen?| Wochen?| Monate?))/dg
+    },
+    "dur2": {
+        "regex": regex_dur2
     },
     "legal": {
         "regex": /(?<legal>(Artikel|§|Absatz|Paragra(ph|f)) ?\d+)/dg
@@ -1231,7 +1357,9 @@ const numtype_keyset = {
         "keyset": [
             // A first entry to a domain-general keyset for risk:
             [RegExp(collapse_regex_or(["[Rr]isiko", "Gefahr", "[Ww]ahrscheinlich", "Inzidenz", "Todesfälle", "Erkrank"])),
-                RegExp(collapse_regex_or(["[Rr]eduzier", "minimier", "niedriger", "(ge|ver)ringert?", "s[ae]nk"]))]
+                RegExp(collapse_regex_or(["[Rr]eduzier", "minimier", "niedriger", "(ge|ver)ringert?", "s[ae]nk"]))],
+            [RegExp(collapse_regex_or(["besser"])),
+                RegExp(collapse_regex_or(["geschützt"]))]
         ]
     },
     // Total nuber of cases/incidents:
@@ -1243,7 +1371,7 @@ const numtype_keyset = {
             [RegExp("Fälle|Verläufe"), RegExp("insgesamt|nach|Studie")],
             [RegExp("[Ee]rkrankt|[Bb]etroffen")],
             [RegExp("Todesfälle")],
-            [RegExp("verst[aeo]rben"), RegExp("Person|Teilnehm|[Gg]ruppe")],
+            [RegExp("(ver)?st[aeo]rben"), RegExp("Person|Teilnehm|[Gg]ruppe")],
             // Reporting certain effects in study:
             [RegExp("berichte(te)?n|entwickel|beobacht"), RegExp("Unwohlsein|Nebenwirkungen")],
             [RegExp("berichte(te)?n"), RegExp("wohl"), RegExp("fühlen")]
@@ -1253,11 +1381,14 @@ const numtype_keyset = {
         "number_unit": ["freq"],
         "keyset": [
             [RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder|Erwachsene"),
-                RegExp(collapse_regex_or(["insgesamt", "nahmen",
-                    "Studie", "Untersuchung", "erh(a|ie)lten", "jeweils", "befragt"]))],
-            [RegExp("Studie"),
-                RegExp(collapse_regex_or(["umfass(t|en)"])),
-                RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder")]
+                RegExp(collapse_regex_or(["insgesamt", "nahmen", "erh(a|ie)lten", "befragt", "ausgewählt", "umfass(t|en)"])),
+                RegExp(collapse_regex_or(["Studie", "Untersuchung", "Erhebung"]))],
+            [RegExp(collapse_regex_or(["Daten", "[Bb]efragt"])),
+                RegExp(collapse_regex_or(["von", "über"])),
+                RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder")],
+            // 2nd set:
+            [RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder|Erwachsene"),
+                RegExp("Analyse")]
         ]
     }
 }
@@ -1305,8 +1436,12 @@ const unit_note_dict = {
                 }
 
                 txt_out = txt_out.replace(/(relative Prozentzahl(en)?)/g,
-                    "<div id=\"relnote\" class=\"highlight-num highlight-warning tooltip\">$1<span class=\"tooltiptext\">" +
-                    "Achten Sie darauf, dass Sie auch die <strong>absoluten Wahrscheinlichkeiten in den Gruppen berichten</strong> -- " +
+                    "<div id=\"relnote\" class=\"highlight-other highlight-warning tooltip\">" +
+                    "<a href=\"risk_wiki.html#wiki-rel\">$1</a>" +
+                    "<span class=\"tooltiptext tooltip-overview\">" +
+                    "Achten Sie darauf, dass Sie auch die <strong>" +
+                    "absoluten Wahrscheinlichkeiten" +
+                    " in der Behandlungs- und Vergleichsgruppe berichten</strong> &ndash; " +
                     "am besten als <a href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> (d.h., 3 aus 1000 oä.).</span></div>");
 
 
@@ -1355,9 +1490,14 @@ const unit_note_dict = {
     "pval": {
         "tooltip": {"other": "P-Wert"},
         "note": function (type_arr) {
-            return "Der Text enthält <a href='risk_wiki.html#wiki-pval'>p-Werte</a>. Diese sind leicht missverständlich und sollten vermieden werden. " +
-                "Ein besseres Maß für Unsicherheit sind Zahlenspannen (z.B., Credibilitätsintervalle oder Konfidenzintervalle." +
-                "z.B., die Anzahl an vermiedenen Todensfällen unter den Behandelten liegt zwischen 5 und 10)"
+            return "Der Text enthält " +
+                "<div id=\"pval-tt\" class=\"tooltip\">" +
+                "<span class=\"tooltiptext tooltip-overview\">" +
+                "<p>wird in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +
+                "<p>Typischerweise wird ein p-Wert kleiner als 0.05 als \"statistisch signifikant\" bezeichtnet, was eine akzeptable Unischerheit ausdrückt.</p>" +
+                "<p>Ein besseres Maß für Unsicherheit sind Zahlenspannen (z.B., Credibilitätsintervalle oder Konfidenzintervalle." +
+                "z.B., die Anzahl an vermiedenen Todensfällen unter den Behandelten liegt zwischen 5 und 10)</p></span>" +
+                "<a href='risk_wiki.html#wiki-pval'>p-Werte</a></div>. Diese sind leicht missverständlich und sollten vermieden werden. "
         }
     },
     // Unidentified matches:
@@ -1369,6 +1509,121 @@ const unit_note_dict = {
     }
 }
 
+
+// Info tree:
+// Class to quickly define output nodes:
+class OutputNode {
+    constructor(tool, popup) {
+        this.tool = tool;
+        this.popup = popup;
+    }
+}
+
+// Previous defaults:
+// "perc": "Prozentzahl", "freq": "Anzahl", "nh": "Natürliche Häufigkeit", "pval": "p-Wert",
+// "undefined": "Konnte nicht identifiziert werden"
+
+// Previous wiki reference:
+//     "perc_other": "prozent",
+//     "perc_other_eff_abs": "prozent",
+//     "perc_other_side_abs": "prozent",
+//     // Relative percentages:
+//     "perc_decr_rel": "rel",
+//     "perc_decr_eff_rel": "rel",  // +++ UPDATE! +++
+//     "perc_decr_side_rel": "rel",
+//     // Types of freqs -- update!
+//     "freq_ntot": "sample_size",
+//     "freq_ntot_total": "sample_size",
+//     "freq_ntot_sub_treat": "sample_size",
+//     "freq_ntot_sub_contr": "sample_size",
+//     "freq_ncase_total_all": "freq",  // total numbers of cases often not informative!
+//     "freq_ncase_sub_treat": "freq",
+//     "freq_ncase_sub_contr": "freq",  // here: reference.
+//     "freq_treat": "freq",
+//     "freq_contr": "freq",
+//     "freq_other": "freq",
+//     // Natural frequencies:
+//     "nh_ncase": "nh",
+//     // Other kinds of numbers:
+//     "mult_other": "rel",
+//     "pval_other": "pval"
+
+const popup_perc = function (rel) {
+    return "<p>Diese <a href='risk_wiki.html#wiki-prozent'>Prozentzahl</a> scheint " +
+        (rel === "rel" ? "relativ" : "absolut") + " zu sein.</p>"
+};
+
+const popup_freq = function (sample) {
+    return "<p>Diese Häufigkeit scheint eine " +
+        (sample === "ntot" ? "<a href='risk_wiki.html#wiki-sample'>Stichprobengröße</a>" : "<a href='risk_wiki.html#wiki-freq'>Anzahl von Fällen</a>") + " zu sein.</p>"
+};
+
+// In the future we might try to have more sophisticated methods to allow the passing of specific parameters!
+
+const info_tree = {
+    // Levels:
+    // "treelvs": ["relabs", "unit"],
+    "tree": {
+        // unit tree:
+        "perc": {
+            "abs": new OutputNode("Absolute Prozentzahl", popup_perc("abs") + info_data.prozent.popup),
+            "rel": new OutputNode("Relative Prozentzahl", popup_perc("rel") + info_data.rel.popup),
+        },  // Note: This is merely an addition; make its own tree or a condition within the perc-tree?
+        "nh": new OutputNode("Natürliche Häufigkeit.", info_data.nh.popup),
+        "freq": {
+            "ncase": new OutputNode("Fallzahl", popup_freq("ncase") + info_data.freq.popup),
+            "ntot": new OutputNode("Stichprobengröße", popup_freq("ntot") + info_data.sample_size.popup),
+            "default": new OutputNode("Anzahl", "Diese Zahl konnte leider nicht näher identifiziert werden")
+        },
+        "mult": new OutputNode("Relative Veränderung", info_data.rel.popup),
+        "pval": new OutputNode("p-Wert", info_data.pval.popup),
+        "confint": new OutputNode("Konfidenzintervall", info_data.confint.popup),
+        "nyear": new OutputNode("Anzahl an Jahren.", "Anzahl an Jahren. Kann z.B. zur Veränderung von Lebenserwartung anegeben werden."),
+        "default": new OutputNode("Zahl.", "Diese Zahl konnte leider nicht näher identifiziert werden")
+    },
+    "traverse": function (arr) {
+
+        let curtree = this.tree;
+        let curdefault = this.tree.default;
+
+        console.log(curtree);
+        console.log(curdefault);
+
+        for (const i of arr) {
+            console.log(i);
+            const curentry = curtree[i];
+
+            if (curentry !== undefined) {
+                curtree = curentry;
+
+                // Log the default for if the tree is undefined!
+                curdefault = curtree["default"];
+
+                console.log(curtree);
+                console.log(curdefault);
+
+                // When reaching an output node return:
+                if (curtree instanceof OutputNode) {
+                    break;
+                }
+
+            }
+
+        }
+
+        // Replace undefined tree by last encountered default:
+        if (!(curtree instanceof OutputNode)) {
+            curtree = curdefault;
+        }
+
+        console.log("Final tree:");
+        console.log(curtree);
+        console.log(curdefault);
+
+        return curtree;
+
+    }
+}
 
 // ~~~~~~~~~~~~~~~~~~~~~~~ CLASSES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /**
@@ -1414,7 +1669,7 @@ class TokenData {
         // Add global properties like number of rows (and columns) as properties:
         this.global_keys = ["global_keys", "nrow", "ncol", "colnames", "topics"];
         this.colnames = Object.keys(this).filter((x) => !this.global_keys.includes(x));
-        this.topics = [];  // initialize empty topic list.
+        this.topics = [];  // initialize empty topic set.
 
 
     }
@@ -1521,19 +1776,13 @@ class TokenData {
         // These topics may inform also keywords (Impfung may make "schwerer Verlauf" relevant etc.
         // This will imply some tree structures -- our non-random grove.
 
-        let topic_present = false;
+        // Implement window check instead?
+        // Check, if some of the regular expression sets match:
 
-        const regex = RegExp(collapse_regex_or(key_list), "g");
-        // console.log(regex);
+        const token_str = this.token.join("_");
 
-        // Simple regex on tokens:
-        for (const token of this.token) {
-            if (topic_present) {
-                this.topics = this.topics.concat(topic);
-                break;
-            }  // move out of loop if topic could already be discerned.
-            topic_present = regex.test(token);
-
+        if (key_list.some(x => x.every(rex => RegExp(rex).test(token_str)))) {
+            this.topics = this.topics.concat(topic);
         }
 
     }
@@ -1573,7 +1822,9 @@ function get_token_data(text) {
         token_i = text_tokens[i];
 
         // Regex for token to ensure exact matching:
-        if (["\\n\\*", ".", ":", ";", ",", "?", "!", "(", ")", "\"", "'", "/", "\u2018", "\u2019", "\u201c", "\u201d"].includes(token_i)) {
+        if (["\\n\\*", ".", ":", ";", ",", "?", "!", "(", ")", "\"", "'", "/", "\u2018", "\u2019", "\u201c", "\u201d"].includes(token_i) ||
+            /\++/g.test(token_i)  // also test plus signs (and potentially other quantifiers)
+        ) {
             // Punctuation follows somewhat different rules.
             // NOTE: Overlaps with other entities, likely because of the lack of spaces.
 
@@ -1583,7 +1834,7 @@ function get_token_data(text) {
             } else if (["\"", "'", "\u2018", "\u2019", "\u201c", "\u201d"].includes(token_i)) {
                 token_pat = token_i;  // no requirement to escape?
             } else {
-                token_pat = token_i.replace(/([.?()/])/dgm, "\\$1") + "(?=\\s|\\n|$|\\.|,|[\"'\u2018\u2019\u201c\u201d])";
+                token_pat = token_i.replace(/([.?()/+])/dgm, "\\$1") + "(?=\\s|\\n|$|\\.|,|[\"'\u2018\u2019\u201c\u201d])";
             }
 
         } else {
@@ -1640,12 +1891,12 @@ function detect_number_type(token_data, txt, numtype_dict) {
     const sentence_set = new Set(token_data.sent);
     const sentence_counts = count(token_data.sent);
 
-    console.log("Sentence counts");
-    console.log(sentence_counts);
-
-    // Update the keyset:
-    console.log("Current keyset numtype:");
-    console.log(numtype_dict);
+    // console.log("Sentence counts");
+    // console.log(sentence_counts);
+    //
+    // // Update the keyset:
+    // console.log("Current keyset numtype:");
+    // console.log(numtype_dict);
 
     // Include topic-specific keywords:
     if (token_data.topics.includes("impf")) {
@@ -1682,8 +1933,8 @@ function detect_number_type(token_data, txt, numtype_dict) {
 
     const ref_matches = detect_regex_match(txt, token_data, relation_dict);
 
-    console.log("Reference matches");
-    console.log(ref_matches);
+    // console.log("Reference matches");
+    // console.log(ref_matches);
 
     /*
     Overview of the pipeline (tree-like structures?)
@@ -1785,9 +2036,9 @@ function detect_number_type(token_data, txt, numtype_dict) {
 
                         // Check each token:
                         // const key_present = sentence_tokens.filter((x) => keyrex.test(x));
-                        console.log(`Keys from ${key} present in sentence:`);
-                        // console.log(keyset);
-                        console.log(keys_present);
+                        // console.log(`Keys from ${key} present in sentence:`);
+                        // // console.log(keyset);
+                        // console.log(keys_present);
 
                         /*
                          Implement:
@@ -1818,8 +2069,8 @@ function detect_number_type(token_data, txt, numtype_dict) {
                 // Check number if numtype remained other:
                 if (numtype === "other") {
 
-                    console.log("Sentence tokens");
-                    console.log(sentence_tokens);
+                    // console.log("Sentence tokens");
+                    // console.log(sentence_tokens);
 
                     // console.log(`Number match from regex (num = ${num})`);
                     // console.log(ref_matches.match_type[num]);
@@ -1849,72 +2100,6 @@ function detect_number_type(token_data, txt, numtype_dict) {
     // console.log("Output numtypes:");
     // console.log(num_types);
     return num_types;
-
-}
-
-/**
- * Sets of keys to be used with window approach.
- */
-const window_keys = {
-    "grouptype": {
-        "total": ["insgesamt", "alle_", "Basis", "umfass(t|en)"],
-        "sub": ["[Ii]n_", "[Uu]nter_", "[Dd]avon_",
-            "der\\w*[Tt]eilnehmer", "entfielen\w*auf"]
-    },
-    "treat_contr": {
-        // Types of subgroups:
-        "contr": ["Kontroll-?\\w*[Gg]ruppe", "Placebo-?\\w*[Gg]ruppe",
-            "Vergleichs-?\\w*[Gg]ruppe",
-            "Prävention\\w*wenigsten\\w*befolgte",
-            "kein\w*Medika"],
-        "treat": ["[Gg]eimpfte?n?", "Impf-?\\w*[Gg]ruppe",
-            "Behandlungsgruppe", "Behandelte",
-            "([Tt]eilnehmer|Probanden).*Impfung",
-            "erh(a|ie)lten\\w*(Präparat|Medikament)",
-            "gesündesten\\w*Lebensstil"],
-        // "all": ["insgesamt.*([Tt]eilnehmer|Probanden)"],
-        "all": ["[Tt]eilnehmer|Probanden",
-            "insgesamt\\w*(Fälle|Verläufe)", "(Fälle|Verläufe)\\w*insgesamt",
-            "beiden\\w*Gruppen", "sowohl\\w*[Gg]ruppe"]  // problematic!
-    },
-    "effside": {
-        "eff": ["(?<![Nn]eben)[Ww]irk", "Impfschutz",
-            "Schutz", "geschützt",
-            "(reduziert|verringert|minimiert)\\w*(Risiko|Gefahr)", "(Risiko|Gefahr)\\w*(reduziert|verringert|minimiert)",
-            "Reduzierung",
-            "(mindert|reduziert)\\w*Symptome",
-            // The following may only apply to vaccination? (But likely also to treatment!)
-            "Infektion", "[Ee]rkrank", "Verl[aä]uf",
-            "Verbesserung"],
-        "side": ["Nebenwirk", "Komplikation", "unerwünschte\\w*Effekt"],  // more keywords?
-        "all": ["jeweils", "beiden\\w*Gruppen"],
-        // Other types (age etc.):
-        "sample": ["im.*Alter"]  // sample description.
-    },
-    "incr_decr": {
-        "risk_incr": [
-            "(Risiko|Wahrscheinlichkeit)\\w*(erhöht|steigt)",
-            "(erhöht|steigt)\\w*(Risiko|Wahrscheinlichkeit)"],
-        "risk_decr": [
-            "(Risiko|Wahrscheinlichkeit)\\w*sinkt|verringert",
-            "sinkt|verringert\\w*(Risiko|Wahrscheinlichkeit)",
-            "schütz(en|t)\\w*(Erkrankung|Ansteckung)"]
-    },
-    "conditions": {
-        // Verbs:
-        "pers": ["Krankenakt"],  // numbers of persons.
-        "ill": ["erkrank(t|en)", "Verl[äa]uf", "[Ii]nfiziert", "entwickeln"],  // ill individuals.
-        "death": ["st[eao]rben", "Todesfälle", "Todesfall(!?e)"]  // death cases.
-    },
-    "units": {
-        "freq": ["Proband", "Teilnehm", "Infektion", "Krankenakt"],
-        "death": ["(ge|ver)st[aeo]rben"],
-        // Units for exclusion:
-        "medical": ["BMI"]
-    },
-    "rel": {
-        "rel": ["Wirksamkeit", "Impfschutz", "Schutzwirkung"]
-    }
 
 }
 
@@ -2201,7 +2386,7 @@ function detect_unit(token_data) {
     // ALTERNATIVELY use dict etc.?
     const unit_lookup = [
         [/(%|[Pp]rozent\w*)/, "perc"],  // percentages.
-        [/Teilnehm|[Ff][aä]ll|Proband|Person|Mensch|Kind|Mädchen|Junge|Männer|Frauen|Verl[aä]uf/, "freq"]  // frequencies.
+        [/Teilnehm|[Ff][aä]ll|Proband|Person|Mensch|Kind|Mädchen|Junge|Männer|Frauen|Verl[aä]uf|Erwachsen/, "freq"]  // frequencies.
         // natural/relative frequencies.
     ]
     // Note: Percentage signs may also be contained in the number token!
@@ -2327,6 +2512,7 @@ function detect_regex_match(txt, token_dat, check_dict) {
     // Clean up the matches from all for redundancy:
     // console.log("Match objects:");
     // console.log(arr_match);
+    // console.log(token_dat);
     // If a match is fully included in another, the match can be removed.
     // There is also some hierarchy (undefined numbers should only be output when
 
@@ -2349,8 +2535,11 @@ function detect_regex_match(txt, token_dat, check_dict) {
         //
         // console.log("Match start and end: " + match_start + ", " + match_end);
         // console.log(match);
+        // console.log(match.type);
+        // console.log(["unknown", "ucarryforward"].includes(match.type[0]));
+        // console.log(match_type);  // already found matches.
 
-        // If one of the idices can be found:
+        // If one of the indices can be found:
         if (match_start !== -1 || match_end !== -1) {
             let match_id = -1;
             let cur_type = -1;
@@ -2365,7 +2554,13 @@ function detect_regex_match(txt, token_dat, check_dict) {
 
             const n_ele = match_end - match_start + 1;
 
-            if (token_match[match_start] === -1 && token_match[match_end] === -1) {
+            // Check if the match has been defined already:
+            // console.log("Match start and end: " + match_start + ", " + match_end);
+            // console.log(token_match);
+            // console.log(match_type.toString());
+            if (match_type[match_start] === -1 && match_type[match_end] === -1) {
+
+                // console.log("Establish new match");
                 match_id = [i];
                 cur_type = match.type;
 
@@ -2377,10 +2572,11 @@ function detect_regex_match(txt, token_dat, check_dict) {
                 // Note: If we can establish a clear hierarchical structure, we could drop the match here:
                 // arr_match.splice(i);
                 droplist = droplist.concat(i);
-                const prev_ix = token_match[match_start]
+                let prev_ix = token_match[match_start]
 
                 if (prev_ix !== -1) {
-                    match_id = prev_ix.concat(i)
+                    prev_ix = Array.isArray(prev_ix) ? prev_ix : [prev_ix];
+                    match_id = prev_ix.concat(i);
                     cur_type = match.type;  // might also concat...
 
                     // Also amend the previous match to include the other type?
@@ -2389,6 +2585,7 @@ function detect_regex_match(txt, token_dat, check_dict) {
 
 
             } else {
+                // console.log(`Drop match ${match.type}`);
                 droplist = droplist.concat(i);
             }
 
@@ -2403,58 +2600,19 @@ function detect_regex_match(txt, token_dat, check_dict) {
 
         }
 
-
-        // if (match_start !== -1) {
-        //     if (token_match[match_start] === -1) {
-        //         token_match[match_start] = [i];
-        //         match_type[match_start] = match.type;
-        //     } else if (match.type[0] !== "unknown") {
-        //         console.log("Match type");
-        //         console.log(match.type);
-        //         // Note: If we can establish a clear hierarchical structure, we could drop the match here:
-        //         // arr_match.splice(i);
-        //         droplist = droplist.concat(i);
-        //         const prev_ix = token_match[match_start]
-        //
-        //         // Also amend the previous match to include the other type?
-        //         arr_match[prev_ix[0]].type = arr_match[prev_ix[0]].type.concat(match.type);
-        //
-        //         // Add index:
-        //         token_match[match_start] = prev_ix.concat(i);
-        //
-        //     }
-        //
-        // }
-        // if (match_end !== -1) {
-        //
-        //     if (token_match[match_end] === -1) {
-        //         token_match[match_end] = [i];
-        //         match_type[match_end] = match.type;
-        //     } else if (match.type[0] !== "unknown") {
-        //         // Note: If we can establish a clear hierarchical structure, we could drop the match here:
-        //         // arr_match.splice(i);
-        //         droplist = droplist.concat(i);
-        //
-        //         const prev_ix = token_match[match_end]
-        //
-        //         // Also amend the previous match to include the other type?
-        //         arr_match[prev_ix[0]].type = arr_match[prev_ix[0]].type.concat(match.type);
-        //
-        //         // Add index:
-        //         token_match[match_end] = prev_ix.concat(i);
-        //     }
-        // }
-
         // Increment match ID:
         i++;
 
     }
 
     // console.log("Match data (raw):");
-    // console.log(arr_match);
+    // console.log(token_match);
+    // console.log(match_type);
+    // console.log(droplist);
 
     // Remove the indices that have to be dropped:
     arr_match = arr_match.filter((ele, index) => !droplist.includes(index));
+    console.log(arr_match);
 
     // Sort the array by the starting position of each match:
     arr_match = arr_match.sort((a, b) => a.start_end[0] - b.start_end[0]);
@@ -2495,8 +2653,8 @@ function word_tokenizer(txt) {
 
     const out = split.map((x) => x.replace("xABBREVx", "."));  // re-replace the point.
 
-    console.log("Token split");
-    console.log(split);
+    // console.log("Token split");
+    // console.log(split);
 
     // Remove empty tokens and punctuation:
     // const clean_split = split.replace(/(?<!\W)[.,/#!$%^&*;:{}=_`~()](?!\W)/g,"");
@@ -2542,7 +2700,7 @@ function get_regex_matches(txt, regexp) {
         // console.log(match);
 
         if (match.groups === undefined) {
-            console.log(match.groups);
+            // console.log(match.groups);
             throw new Error("No group provided. Please provide a regex with a named group using (?<GROUPNAME>REGEX).")
         }
 
@@ -2573,6 +2731,16 @@ function get_regex_matches(txt, regexp) {
 /*
 Functions that convey some basic utilities
  */
+
+/**
+ * Check, if all elements of any of an array of arrays is included in a test array.
+ * @param arrs Array of arrays to test.
+ * @param check_arr Array to test if any test array is fully included
+ * @returns {*}
+ */
+function check_any_arr(arrs, check_arr) {
+    return arrs.some((arr) => check_arr.every((x) => arr.includes(x)))
+}
 
 /**
  * Count occurrence of each unique array element, similar to table() in R.

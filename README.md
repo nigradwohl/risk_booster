@@ -22,31 +22,40 @@ Features are sorted by importance and are further split by features that should 
 
 ## Text-checking tool 
 
-* Treatment case (and )
-* Improve global feedback by restructuring it and making it perceptually easier
-    + also add links to wiki 
+
+* handle the unhandled numbers
+* life-expectancy: in wiki; at least social engineering
+* Feedback button
+* instructions on which risk information we can handle (not years -- longer living etc.) 
+
+
 * Increase the number of test-texts that are successfully handled
     + also handle number words
-    + detect absolute risk reductions (e.g., smaller percentages, percentage points)
-* Adapt the highlighting to potentially critical numbers (e.g., relative risk reductions) 
+    + detect absolute risk reductions (e.g., smaller percentages, percentage points): distinguish from unidentified percentages (and mention if they are likely relative)
+* detect if numbers have a reference (e.g., is only the number of infections or percentages in groups reported? 
+Do we also have the group sizes?)
 * Handle margins for tooltips 
 
 ### Nice to have
 
-* handle other topics (especially feedback) 
+* handle other topics (especially feedback)
 * try again to catch unidentified numbers after current iterations 
 
 
 ## Checklist
 
-* Create one functional checklist
-    + improve calculations (from relative) 
-    + hide redundant questions 
+* look for articles and press releases to process (SciMedia center; JAMA network open!; BMJ, JAMA, Lancet, Annals of internal medicine, NEJM; Tim, get endpoints and superordinate terms; Cochrane?)
+* Superordinate statement: "Das uns interessierende **Ereignis**"
+* allow to show only 1 icon array
+* Implement additional questions as needed (e.g., AR or ARR for side effects)
+* Calculation from AR in 1 group (+ rel) possible?
 
 ### Nice to have
 
+* Make assumptions in case of missing information
+
 ## Wiki
-* 
+
 * Decide on the central entries and fill them with information 
 
 ### Nice to have
