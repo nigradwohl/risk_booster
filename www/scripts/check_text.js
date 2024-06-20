@@ -106,86 +106,17 @@ $(document).ready(function () {
     // When the button is clicked, process and output the text:
     $("#check-text").on("click", function () {
 
-        // INITIALIZE OBJECTS (that may be modified):
+        // INITIALIZE OBJECTS and ARRAYs (that may be modified):
         /**
-         * Sets of keys to be used with window approach. Will be created upon each click!
+         * Array of units that should not be considered further
+         * @type {string[]}
          */
-        const window_keys = {
-            "grouptype": {
-                "total": ["insgesamt", "alle_", "Basis", "umfass(t|en)", "waren.*jeweils", "etwa.*[Tt]eiln[ae]hme"],
-                "sub": ["[Ii]n_", "[Uu]nter_", "[Dd]avon_",
-                    "der.*[Tt]eilnehmer", "entfielen.*auf"]
-                // Note: Switch from \w* to .*, since \w does not capture % etc.
-            },
-            "treat_contr": {
-                // Types of subgroups:
-                "contr": ["Kontroll-?.*[Gg]ruppe", "Placebo-?.*[Gg]ruppe",
-                    "Vergleichs-?.*[Gg]ruppe",
-                    "Prävention.*wenigsten.*befolgte",
-                    "kein.*Medika"],
-                "treat": ["[Gg]eimpfte?n?", "Impf-?.*[Gg]ruppe",
-                    "(?<!Kontroll|Vergleichs|Placebo).Gruppe",  // negative definition of treatment group.
-                    "Behandlungsgruppe", "Behandelte",
-                    "([Tt]eilnehmer|Probanden).*Impfung",
-                    "erh(a|ie)lten.*(Präparat|Medikament)",
-                    "(Präparat|Medikament|Antidepressiva).*erh(a|ie)lten",
-                    "gesündesten.*Lebensstil"],
-                // "all": ["insgesamt.*([Tt]eilnehmer|Probanden)"],
-                "all": ["(aller|insgesamt).*[Tt]eilnehmer|Probanden",
-                    "insgesamt.*(Fälle|Verläufe)", "(Fälle|Verläufe).*insgesamt",
-                    "beiden.*Gruppen", "sowohl.*[Gg]ruppe"]  // problematic!
-            },
-            "effside": {
-                "eff": ["(?<![Nn]eben)[Ww]irk(?!lich)", "Impfschutz",
-                    "Schutz", "geschützt",
-                    "(reduziert|verringert|minimiert).*(Risiko|[Gg]efahr|Wahrscheinlichkeit).*(Ansteckung|Infektion|[Ee]rkrank)",
-                    "((Risiko|[Gg]efahr|Wahrscheinlichkeit).*(Ansteckung|Infektion|[Ee]rkrank)).*(reduziert|verringert|minimiert)",
-                    "(Ansteckungsgefahr|Infektionsrisiko).*(nur|verringert)",
-                    "Reduzierung",
-                    "(mindert|reduziert).*Symptome",
-                    // The following may only apply to vaccination? (But likely also to treatment!)
-                    "schwer.*Verl[aä]uf",
-                    "Verbesserung"],
-                "side": ["Nebenwirk", "Komplikation", "unerwünschte.*Effekt", "Herzmuskelentzündung"],  // more keywords?
-                "damage": ["(Inzidenz|[Ee]rkank|Todesfäll|Risiko).*(erhöht|vielfach)",
-                    "(erhöht|vielfach).*(Inzidenz|[Ee]rkank|Todesfäll|Risiko)",
-                    "Risiko.*Erkrank",
-                    "Todesf[aä]ll|gestorben|Infektion",
-                    "Lebenserwartung.*sink|weniger", "st[aeo]rb.*früher",
-                    "[Nn]ur.*Gesundheitszustand.*gut",  // absence of positive!
-                    "([Gg]esundheit|[Ff]inanz|[Pp]sychisch).*Belastung"],
-                "all": ["jeweils", "beiden.*Gruppen"],
-                // Other types (age etc.):
-                "sample": ["im.*Alter"]  // sample description.
-            },
-            "incr_decr": {
-                "risk_incr": [
-                    "(Risiko|Wahrscheinlichkeit).*(erhöht|steigt)",
-                    "(erhöht|steigt).*(Risiko|Wahrscheinlichkeit)"],
-                "risk_decr": [
-                    "(Risiko|Wahrscheinlichkeit).*(sinkt|verringert|reduziert)",
-                    "(sinkt|verringert|reduziert).*(Risiko|Wahrscheinlichkeit)",
-                    "schütz(en|t).*(Erkrankung|Ansteckung)"]
-            },
-            "conditions": {
-                // Verbs:
-                "pers": ["Krankenakt"],  // numbers of persons.
-                "ill": ["erkrank(t|en)", "Verl[äa]uf", "[Ii]nfiziert", "entwickeln"],  // ill individuals.
-                "death": ["st[eao]rben", "Todesfälle", "Todesfall(!?e)"]  // death cases.
-            },
-            "units": {
-                "freq": ["Proband", "Teilnehm", "Infektion", "Krankenakt"],
-                "death": ["(ge|ver)st[aeo]rben"],
-                // Units for exclusion:
-                "medical": ["BMI"]
-            },
-            "rel": {
-                "abs": ["[Qq]uote", "Anteil"],  // quotas should always be absolute.
-                "rel": ["Wirksamkeit", "Impfschutz", "Schutzwirkung"]
-            }
+        let units_exc = ["age", "currency", "time", "date", "year", "dur", "legal", "medical", "enum", "misc"];
 
-        }
-
+        /**
+         * Object that is looped over to check for units.
+         * @type {{date: {regex: RegExp}, dur: {regex: RegExp}, medical: {regex: RegExp}, mult: {regex: RegExp}, pval: {regex: RegExp}, currency_pre: {regex: RegExp}, year: {regex: RegExp}, yearrange: {regex: RegExp}, year2: {regex: RegExp}, year3: {regex: RegExp}, perc: {regex: RegExp}, freq_word: {regex: RegExp}, currency_post: {regex: RegExp}, legal: {regex: RegExp}, datemon: {regex: RegExp}, carry_forward_pre: {regex: RegExp}, yearnum: {regex: RegExp}, other_num: {regex: RegExp}, misc: {regex: RegExp}, medical_post: {regex: RegExp}, perc_word: {regex: RegExp}, enum: {regex: RegExp}, mult2: {regex: RegExp}, carry_forward_post: {regex: RegExp}, nh: {regex: RegExp}, confint: {regex: RegExp}, time: {regex: RegExp}, age: {regex: RegExp}, monyear: {regex: RegExp}, dur2: {regex: RegExp}}}
+         */
         const check_numbers_dict = {
             "perc": {
                 "regex": regex_perc,
@@ -220,10 +151,14 @@ $(document).ready(function () {
                 "regex": /(?<nyear>\d+([.|,]\d+)( Jahr[a-z]*))/dg  // require comma or pouint separator!
                 // "regex": /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
             },
+            // "lifeexpectancy": {
+            //     "regex": RegExp("(?<nyear>Lebens(dauer|erwartung) (zwischen|von) " + pat_num + "( Jahr[a-z]*))", "dg")  // require comma or pouint separator!
+            //     // "regex": /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
+            // },
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             // Simple matches:
             "age": {
-                "regex": /(?<age>(?<![,.])(\d+-? bis )?\d+-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
+                "regex": /(?<age>(?<![,.])(\d+-? (bis|und) )?\d+-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
                 // "regex": /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
             },
             // "age2": {
@@ -305,7 +240,10 @@ $(document).ready(function () {
 
         }
 
-//
+        /**
+         * Object that can be looped over to check numbers for number types taht are specific to their units in "number_unit".
+         * @type {{ncase: {number_unit: string[], keyset: RegExp[][]}, incr: {number_unit: string[], keyset: RegExp[][]}, ntot: {number_unit: string[], keyset: RegExp[][]}, decr: {number_unit: string[], keyset: RegExp[][]}}}
+         */
         const numtype_keyset = {
             "incr": {
                 "number_unit": ["perc", "mult", "nyear"],  // add in other types eventually! 30-fach etc.
@@ -363,6 +301,85 @@ $(document).ready(function () {
                         RegExp("Analyse")]
                 ]
             }
+        }
+
+        /**
+         * Sets of keys to be used with window approach. Will be created upon each click!
+         */
+        const window_keys = {
+            "grouptype": {
+                "total": ["insgesamt", "alle_", "Basis", "umfass(t|en)", "waren.*jeweils", "etwa.*[Tt]eiln[ae]hme"],
+                "sub": ["[Ii]n_", "[Uu]nter_", "[Dd]avon_",
+                    "der.*[Tt]eilnehmer", "entfielen.*auf"]
+                // Note: Switch from \w* to .*, since \w does not capture % etc.
+            },
+            "treat_contr": {
+                // Types of subgroups:
+                "contr": ["Kontroll-?.*[Gg]ruppe", "Placebo-?.*[Gg]ruppe",
+                    "Vergleichs-?.*[Gg]ruppe",
+                    "Prävention.*wenigsten.*befolgte",
+                    "kein.*Medika"],
+                "treat": ["[Gg]eimpfte?n?", "Impf-?.*[Gg]ruppe",
+                    "(?<!Kontroll|Vergleichs|Placebo).Gruppe",  // negative definition of treatment group.
+                    "Behandlungsgruppe", "Behandelte",
+                    "([Tt]eilnehmer|Probanden).*Impfung",
+                    "erh(a|ie)lten.*(Präparat|Medikament)",
+                    "(Präparat|Medikament|Antidepressiva).*erh(a|ie)lten",
+                    "gesündesten.*Lebensstil"],
+                // "all": ["insgesamt.*([Tt]eilnehmer|Probanden)"],
+                "all": ["(aller|insgesamt).*[Tt]eilnehmer|Probanden",
+                    "insgesamt.*(Fälle|Verläufe)", "(Fälle|Verläufe).*insgesamt",
+                    "beiden.*Gruppen", "sowohl.*[Gg]ruppe"]  // problematic!
+            },
+            "effside": {
+                "eff": ["(?<![Nn]eben)[Ww]irk(?!lich)", "Impfschutz",
+                    "Schutz", "geschützt",
+                    "(reduziert|verringert|minimiert).*(Risiko|[Gg]efahr|Wahrscheinlichkeit).*(Ansteckung|Infektion|[Ee]rkrank)",
+                    "((Risiko|[Gg]efahr|Wahrscheinlichkeit).*(Ansteckung|Infektion|[Ee]rkrank)).*(reduziert|verringert|minimiert)",
+                    "(Ansteckungsgefahr|Infektionsrisiko).*(nur|verringert)",
+                    "Reduzierung",
+                    "(mindert|reduziert).*Symptome",
+                    // The following may only apply to vaccination? (But likely also to treatment!)
+                    "schwer.*Verl[aä]uf",
+                    "Verbesserung"],
+                "side": ["Nebenwirk", "Komplikation", "unerwünschte.*Effekt", "Herzmuskelentzündung"],  // more keywords?
+                "damage": ["(Inzidenz|[Ee]rkank|Todesfäll|Risiko).*(erhöht|vielfach)",
+                    "(erhöht|vielfach).*(Inzidenz|[Ee]rkank|Todesfäll|Risiko)",
+                    "Risiko.*Erkrank",
+                    "Todesf[aä]ll|gestorben|Infektion",
+                    "Lebenserwartung.*sink|weniger", "st[aeo]rb.*früher",
+                    "[Nn]ur.*Gesundheitszustand.*gut",  // absence of positive!
+                    "([Gg]esundheit|[Ff]inanz|[Pp]sychisch).*Belastung"],
+                "all": ["jeweils", "beiden.*Gruppen"],
+                // Other types (age etc.):
+                "sample": ["im.*Alter"]  // sample description.
+            },
+            "incr_decr": {
+                "risk_incr": [
+                    "(Risiko|Wahrscheinlichkeit).*(erhöht|steigt)",
+                    "(erhöht|steigt).*(Risiko|Wahrscheinlichkeit)"],
+                "risk_decr": [
+                    "(Risiko|Wahrscheinlichkeit).*(sinkt|verringert|reduziert)",
+                    "(sinkt|verringert|reduziert).*(Risiko|Wahrscheinlichkeit)",
+                    "schütz(en|t).*(Erkrankung|Ansteckung)"]
+            },
+            "conditions": {
+                // Verbs:
+                "pers": ["Krankenakt"],  // numbers of persons.
+                "ill": ["erkrank(t|en)", "Verl[äa]uf", "[Ii]nfiziert", "entwickeln"],  // ill individuals.
+                "death": ["st[eao]rben", "Todesfälle", "Todesfall(!?e)"]  // death cases.
+            },
+            "units": {
+                "freq": ["Proband", "Teilnehm", "Infektion", "Krankenakt"],
+                "death": ["(ge|ver)st[aeo]rben"],
+                // Units for exclusion:
+                "medical": ["BMI"]
+            },
+            "rel": {
+                "abs": ["[Qq]uote", "Anteil"],  // quotas should always be absolute.
+                "rel": ["Wirksamkeit", "Impfschutz", "Schutzwirkung"]
+            }
+
         }
 
 
@@ -428,7 +445,14 @@ $(document).ready(function () {
 
         if (!token_dat.topics.includes("lifex")) {
             delete check_numbers_dict.yearnum;  // If no life-expectancy is discussed, remove numbers of years.
+        } else {
+            const index = units_exc.indexOf("age");
+            units_exc.splice(index, 1);
+            // show age, when it comes to life expectancy.
         }
+
+        console.log("EXCLUDED UNITS!!!!");
+        console.log(units_exc);
 
         // Get regex-based matches:
         const regex_matches = detect_regex_match(inputText, token_dat, check_numbers_dict);
@@ -660,7 +684,7 @@ $(document).ready(function () {
                 // console.log("Get relative percentages and percentages <1%!");
                 // const numpart = token_dat.token[ix].match(regex_num)[0].replace(",", ".");
                 const numpart = token_dat.trnum[ix].match(regex_num)[0].replace(",", ".");
-                    // use transformed number instead to capture number words.
+                // use transformed number instead to capture number words.
                 // console.log(numpart);
                 out = numpart < 10 ? "abs" : "rel";
             }
@@ -694,6 +718,7 @@ $(document).ready(function () {
         token_dat.unit = token_dat.unit.map((x) => x === "ucarryforward" ? -1 : x);
 
         // Loop over all tokens:
+        // TODO: Turn into a function eventually?
         for (let i = 0; i < token_dat.nrow; i++) {
 
             if (token_dat.is_num[i]) {
@@ -1414,8 +1439,6 @@ const regex_dur2 = /(?<dur>\d+([,.]\d+)?-?\d*([,.]\d+)?(Minuten?| Stunden?| Tage
 // Note: in regex_nh we may also try to get the denominator as a group or as its own entity.
 // nh must also be identified from tokens (e.g., In der Gruppe von 1000[case] Leuten sterben 4[num/case].
 
-// Define units to not consider further:
-const units_exc = ["age", "currency", "time", "date", "year", "dur", "legal", "medical", "enum", "misc"];
 
 /*
 Tests for simple units:
@@ -1546,6 +1569,17 @@ const unit_note_dict = {
             // "Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
         }
     },
+    "age": {
+        "tooltip": {
+            "other": "Alter in Jahren"
+        },
+        "note": function (type_arr) {
+            // console.log("~~~~~~~~~~~~~ HANDLE NUMBERS OF YEARS ~~~~~~~~~~~~~~~~~~");
+            // console.log(type_arr);
+            return `Der Text enthält Altersangaben.`
+            // "Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
+        }
+    },
     // Unidentified matches:
     "unknown": {
         "tooltip": {"other": "Konnte nicht identifiziert werden"},
@@ -1633,6 +1667,7 @@ const info_tree = {
             "other": new OutputNode("Lebenserwartung in Jahren", "Lebenserwartung kann zur Beurteilung der Sterblichkeit dienen."),
             "default": new OutputNode("Anzahl an Jahren", "Diese Anzahl an Jahren konnte leider nicht näher identifiziert werden")
         },
+        "age": new OutputNode("Altersangabe", "Kann insbesondere hilfreich sein, um Unterschiede in der Lebenserwartung einzuordnen."),
         "default": new OutputNode("Zahl.", "Diese Zahl konnte leider nicht näher identifiziert werden")
     },
     "traverse": function (arr) {
