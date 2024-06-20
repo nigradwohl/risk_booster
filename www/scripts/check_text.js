@@ -713,7 +713,6 @@ $(document).ready(function () {
 
             let feature_str = " Es ";
 
-
             // Get present features:
             let feats_present = value.fset.filter((feat) => feature_arr.includes(feat));
             let feats_missing = value.fset.filter((feat) => !feature_arr.includes(feat));
@@ -1978,6 +1977,8 @@ const window_keys = {
             "Infektion", "[Ee]rkrank", "Verl[aä]uf",
             "Verbesserung"],
         "side": ["Nebenwirk", "Komplikation", "unerwünschte.*Effekt"],  // more keywords?
+        "damage": ["(Inzidenz|Erkank|Todesfäll|Risiko).*(erhöht|vielfach)",
+            "(erhöht|vielfach).*(Inzidenz|Erkank|Todesfäll|Risiko)"],
         "all": ["jeweils", "beiden.*Gruppen"],
         // Other types (age etc.):
         "sample": ["im.*Alter"]  // sample description.
