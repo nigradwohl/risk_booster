@@ -239,6 +239,9 @@ $(document).ready(function () {
             "date": {
                 "regex": /(?<date>\d{1,2}\.\d{1,2}\.(18|19|20)\d{2}(?![|.\w]))/dg
             },
+            "datemon": {
+                "regex": /(?<date>\d{1,2}\.\d{1,2}\.(18|19|20)\d{2}(?![|.\w]))/dg
+            },
             "year": {
                 "regex": /(?<year>(Jahr|Anfang|Ende|Mitte|Nach) \d{4})/dg
             },
@@ -249,9 +252,9 @@ $(document).ready(function () {
                 "regex": /(?<year>(?<!(,|\.|Jahr |Anfang |Ende |Mitte |Nach ))(19|20)\d{2}(?![|.\w]))/dg  // 20th and 21st century.
             },
             "monyear": {
-                "regex": RegExp("(?<year>(" + collapse_regex_or(["Januar", "Februar", "März", "April", "Mai", "Juni",
+                "regex": RegExp("(?<date>\\d{1,2}\\.? (" + collapse_regex_or(["Januar", "Februar", "März", "April", "Mai", "Juni",
                     "Juli", "August", "September", "Oktober", "November",
-                    "Dezember"]) + ") (18|19|20)?\\d{2})", "dg")
+                    "Dezember"]) + "))", "dg")
             },
             "yearrange": {
                 "regex": /(?<year>(zwischen|von) (18|19|20)\d{2}(?![|.\w]) (und|bis) (18|19|20)?\d{2}(?![|.\w]))/dg
@@ -322,7 +325,11 @@ $(document).ready(function () {
                     [RegExp(collapse_regex_or(["besser"])),
                         RegExp(collapse_regex_or(["geschützt"]))],
                     [RegExp(collapse_regex_or(["st[aeo]rb"])),
-                        RegExp(collapse_regex_or(["früher"]))]
+                        RegExp(collapse_regex_or(["früher"]))],
+                    [RegExp(collapse_regex_or(["weniger"])),
+                        RegExp(collapse_regex_or(["lebt?en"]))],
+                    [RegExp(collapse_regex_or(["Sterblichkeitslücke"])),
+                        RegExp(collapse_regex_or(["vergrößert"]))]
                 ]
             },
             // Total nuber of cases/incidents:
