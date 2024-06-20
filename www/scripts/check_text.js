@@ -451,9 +451,6 @@ $(document).ready(function () {
             // show age, when it comes to life expectancy.
         }
 
-        console.log("EXCLUDED UNITS!!!!");
-        console.log(units_exc);
-
         // Get regex-based matches:
         const regex_matches = detect_regex_match(inputText, token_dat, check_numbers_dict);
         // console.log("Regex matches");
@@ -691,6 +688,11 @@ $(document).ready(function () {
             // Assign the result:
             token_dat.relabs[ix] = out;
         }
+
+        // Code remaining percentages as absolute:
+        token_dat.relabs = token_dat.relabs.map((x, ix) => token_dat.unit[ix] === "perc" && [-1, "unknown"].includes(x) ? "abs" : x);
+
+        // eof. detecting relative vs. absolute.
 
         // Fix some issues:
         token_dat.numtype = token_dat.numtype
