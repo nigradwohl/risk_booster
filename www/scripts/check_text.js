@@ -138,8 +138,9 @@ $(document).ready(function () {
             "effside": {
                 "eff": ["(?<![Nn]eben)[Ww]irk(?!lich)", "Impfschutz",
                     "Schutz", "geschützt",
-                    "(reduziert|verringert|minimiert).*(Risiko|Gefahr|Wahrscheinlichkeit).*(Ansteckung|Infektion|[Ee]rkrank)",
-                    "((Risiko|Gefahr|Wahrscheinlichkeit).*(Ansteckung|Infektion|[Ee]rkrank)).*(reduziert|verringert|minimiert)",
+                    "(reduziert|verringert|minimiert).*(Risiko|[Gg]efahr|Wahrscheinlichkeit).*(Ansteckung|Infektion|[Ee]rkrank)",
+                    "((Risiko|[Gg]efahr|Wahrscheinlichkeit).*(Ansteckung|Infektion|[Ee]rkrank)).*(reduziert|verringert|minimiert)",
+                    "(Ansteckungsgefahr|Infektionsrisiko).*(nur|verringert)",
                     "Reduzierung",
                     "(mindert|reduziert).*Symptome",
                     // The following may only apply to vaccination? (But likely also to treatment!)
@@ -249,6 +250,7 @@ $(document).ready(function () {
         // Detect topics: ------------
         token_dat.detect_topic("impf", [["(?<!(gl|sch))[Ii]mpf"]]);  // must be preceded
         token_dat.detect_topic("mask", [["Maske|FFP"]]);  // must be preceded
+        token_dat.detect_topic("protect", [["Schutzwirkung"], ["Ansteckungsgefahr", "nur"]]);  // must be preceded
         token_dat.detect_topic("lower_risk", [["mindern", "Risiko"],
             ["schützen|Schutz", "Infekt|Ansteck"]]);
         token_dat.detect_topic("cancer_risk", [["[Rr]isiko", "Krebs"]]);  // must be preceded
@@ -290,7 +292,7 @@ $(document).ready(function () {
 
         // Detect if the text reports an intervention (experiment):
         // token_dat.detect_topic("comp_treat", ["veränder|erhöh", "zwischen \\d{4}"]);
-        if (["treatgroup", "controlgroup"].some(x => token_dat.topics.includes(x)) || token_dat.topics.includes("impf")) {
+        if (["treatgroup", "controlgroup", "impf", "protect"].some(x => token_dat.topics.includes(x))) {
             token_dat.topics = token_dat.topics.concat("comp_treat");
         }
 
@@ -876,11 +878,14 @@ $(document).ready(function () {
         // console.log("Any risk num:");
         // console.log(token_dat.unit);
         if (any_risk_num.length > 0) {
-            feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> Der Text scheint Zahlen zu den genannten " +
+            feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> Der Text scheint Zahlen " +
+                (!feature_arr.includes("damage") && feature_set?.damage ? "" :
+                "zu den genannten " +
                 "<div id=\"risk-tt\" class=\"tooltip\">" +
                 "<span class=\"tooltiptext tooltip-overview\">Anders der umgangssprachliche Risikobegriff gleichbedeutend mit \"Wahrscheinlichkeit\"" +
                 "(häufig etwa Wahrscheinlichkeit zu erkranken oder versterben; aber auch positiv, z.B., Wahrscheinlichkeit länger zu leben).</span>" +
-                "<a href='risk_wiki.html#wiki-risk'>Risiken</a></div> zu berichten.";
+                "<a href='risk_wiki.html#wiki-risk'>Risiken</a></div> ") +
+                "zu berichten.";
 
             // +++ HERE!
             // TODO: Remove/adjust Nutzen/Schaden terminology for other kinds of topics (e.g., comparison of risks).
