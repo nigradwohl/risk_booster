@@ -180,6 +180,7 @@ $(document).ready(function () {
                 "medical": ["BMI"]
             },
             "rel": {
+                "abs": ["[Qq]uote", "Anteil"],  // quotas should always be absolute.
                 "rel": ["Wirksamkeit", "Impfschutz", "Schutzwirkung"]
             }
 
@@ -573,6 +574,7 @@ $(document).ready(function () {
         // For all numbers with non-.excluded units:
         const allnum_ix = token_dat.id.filter((d, ix) => token_dat.is_num[ix] && !units_exc.includes(token_dat.unit[ix]));
         const freq_ix = token_dat.id.filter((d, ix) => token_dat.unit[ix] === "freq");
+        const perc_ix = token_dat.id.filter((d, ix) => ["perc", "mult"].includes(token_dat.unit[ix]));
 
         // Identify if numbers are total counts or refer to a subgroup:
         token_dat.add_column(investigate_context(token_dat, allnum_ix, window_keys.grouptype), "gtype");
@@ -628,7 +630,11 @@ $(document).ready(function () {
         console.log("rel_context");
 
         // Column for relative and absolute:
-        token_dat.add_column(token_dat.numtype.map((x) => !["incr", "decr", -1].includes(x) ? "abs" : x), "relabs");
+        token_dat.add_column(investigate_context(token_dat, perc_ix, window_keys.rel), "relabs");
+        // console.log(token_dat.relabs.toString());
+        // was: token_dat.add_column(token_dat.numtype.map((x) => !["incr", "decr", -1].includes(x) ? "abs" : x), "relabs");
+        token_dat.relabs = token_dat.relabs.map((x, ix) => ["incr", "decr"].includes(token_dat.numtype[ix]) && x !== "abs" ? "rel" : x);
+        // console.log(token_dat.relabs.toString());
 
         // Column for percentages <1%:
         // Translate number words:
@@ -646,12 +652,15 @@ $(document).ready(function () {
 
             if (token_dat.unit[ix] === "mult") {
                 out = "rel";
+            } else if (token_dat.relabs[ix] === "abs") {
+                out = "abs";
             } else {
 
                 // For small percentages assume absolute:
                 // console.log("Get relative percentages and percentages <1%!");
                 // const numpart = token_dat.token[ix].match(regex_num)[0].replace(",", ".");
-                const numpart = token_dat.trnum[ix].match(regex_num)[0].replace(",", ".");  // use trransformed number instead.
+                const numpart = token_dat.trnum[ix].match(regex_num)[0].replace(",", ".");
+                    // use transformed number instead to capture number words.
                 // console.log(numpart);
                 out = numpart < 10 ? "abs" : "rel";
             }
@@ -720,7 +729,7 @@ $(document).ready(function () {
                     let cur_numtype = token_dat.numtype.slice(i, i + match_len).filter((x) => x !== -1);
                     // console.log(token_dat.numtype.slice(i, i + match_len));
 
-                    // ignature of current number:
+                    // Signature of current number:
                     const currow = token_dat.get_row(i);
 
                     // This might help: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get?retiredLocale=de
@@ -751,7 +760,8 @@ $(document).ready(function () {
 
                     // Numbers that issue warnings:
                     // Strong warnings:
-                    const warn_num = ["incr", "decr"].includes(cur_numtype[0]) || ["pval", "mult"].includes(cur_unit);
+                    const warn_num = currow.includes("rel") || ["pval", "mult"].includes(cur_unit);
+                    // was: const warn_num = ["incr", "decr"].includes(cur_numtype[0]) || ["pval", "mult"].includes(cur_unit);
                     const warn_small = token_dat.smperc[i] === true;
 
                     // Unclarities (e.g., missing reference groups):
