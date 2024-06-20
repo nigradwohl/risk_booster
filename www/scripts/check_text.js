@@ -441,9 +441,9 @@ $(document).ready(function () {
 
         // Column for percentages <1%:
         // Translate number words:
-        const num_arr = Array.from(Array(12).keys());
+        const num_arr = Array.from(Array(13).keys());
         token_dat.add_column(token_dat.token
-            .map((x, ix) => token_dat.is_num[ix] && token_dat.is_nw[ix] ? (1 + num_arr[num_arr
+            .map((x, ix) => token_dat.is_num[ix] && token_dat.is_nw[ix] ? (num_arr[num_arr
                 .filter((ixn) => RegExp(numwords[ixn], "dg").test(x))]).toString() : x), "trnum");
 
         token_dat.add_column(token_dat.unit.map((x, ix) => x === "perc" && token_dat.is_num[ix] ?
@@ -1195,7 +1195,7 @@ Other formats to detect: Odds ratio, ARR/RRR, NNT...
 
 // Constants:
 const pat_num = "(?:(?<![\\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,:][0-9]+)?))(?!\\\.[0-9A-Za-zÄÖÜäöüß]|[a-zA-Z0-9ÄÖÜäöüß])"
-const numwords = ["[Ee]ine?r?", "[Zz]wei(?!fe)", "[Dd]rei", "[Vv]ier", "[Ff]ünf", "[Ss]echs",
+const numwords = ["[Kk]eine", "(?<![Kk])[Ee]ine?r?", "[Zz]wei(?!fe)", "[Dd]rei", "[Vv]ier", "[Ff]ünf", "[Ss]echs",
     "[Ss]ieben", "[Aa]cht(?!e)", "[Nn]eun(?!k)", "[Zz]ehn", "[Ee]lf", "[Zz]wölf"]
 
 // TODO: DIctionary to translate:

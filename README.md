@@ -22,21 +22,17 @@ Features are sorted by importance and are further split by features that should 
 
 ## Text-checking tool 
 
-* If no treatment and control group: note that this might not be an experiment
-  (no causal statements possible)
-  * Comparison of different years/timeframes: can we identify and handle these?
+
 * handle the unhandled numbers
 * life-expectancy: in wiki; at least social engineering
 * Feedback button
 * instructions on which risk information we can handle (not years -- longer living etc.) 
 
-* Improve global feedback
-    + also add links to wiki 
-    + add tooltips!
+
 * Increase the number of test-texts that are successfully handled
     + also handle number words
     + detect absolute risk reductions (e.g., smaller percentages, percentage points): distinguish from unidentified percentages (and mention if they are likely relative)
-* detect if numbers have a reference (e.g., is only the number of infections reported? 
+* detect if numbers have a reference (e.g., is only the number of infections or percentages in groups reported? 
 Do we also have the group sizes?)
 * Handle margins for tooltips 
 
