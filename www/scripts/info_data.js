@@ -30,7 +30,7 @@ const info_data = {
             "an einer Erkrankung zu versterben, oder",
             "sich bei einer Sportart zu verletzen"],  // array of list items with examples.
         "popup": [],
-        "maintext": "Erwähnen: Relative risiken"
+        "maintext": "<p>Erwähnen: Relative risiken.</p>"
 
     },
     "effside": {
@@ -75,7 +75,11 @@ const info_data = {
             "oder dass von 10,000 Personen anstelle von 200 Personen 400 Personen erkranken (Veränderung von 2% auf 4%)" +
             "Daher muss immer (auch) die [LINK]<a>absolute Reduktion</a> kommuniziert werden (mindestens als absolute Prozentzahlen in den " +
             "Gruppen, die verglichen werden)." +
-            "</p>"
+            "</p>" +
+            "<p>Es kann sinnvoll sein, Situationen für niedriges und hohes Basisrisiko darzustellen." +
+            "Beispielsweise verhindert eine Impfung mit einer Wirksamkeit von 80%" +
+            "für ein relativ niedriges Risiko von 10 in 1000 nur 8 von 1000 Infektionen (da sich die meisten Personen ohnehin nicht infiziert hätten)," +
+            "während sie für ein höheres Risiko von 50 in 1000 etwa 40 von 1000 Infektionen verhindert.</p>"
 
     },
     // Percentages:
