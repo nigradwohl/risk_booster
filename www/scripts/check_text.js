@@ -1298,11 +1298,6 @@ $(document).ready(function () {
             // cur_popup.removeClass("selected-blur");
             $(".highlight-num").removeClass("selected-blur");
 
-            const popup_height = cur_popup.height();
-            const popup_width = cur_popup.width();
-            const popup_pad = cur_popup.innerHeight() - popup_height;
-            const num_height = cur_num.height();
-
             // Get text for the  popup:
             const token_id = cur_num.attr("id").replace("hn", "");
 
@@ -1331,6 +1326,7 @@ $(document).ready(function () {
             //     "Die Zahl bezieht sich" + (/_sub/.test(infokey) ? "absolut" : "relativ") + " zu sein." +
             //     "</p>";  // z.B., relative/absolute Prozentzahl.
 
+
             cur_popup.html(
                 `<h4>${curinfo.tool}</h4>` +
                 // `<p><strong>Bezug</strong>: ${token_dat.group[token_id]}</p>` +  // Some additional info!
@@ -1343,25 +1339,62 @@ $(document).ready(function () {
                 // +++ `<p>[Place to add more info, if needed!]</p>`+++
             );
 
+            // Get popup properties:
+            const popup_height = cur_popup.height();
+            const popup_width = cur_popup.width();
+            const popup_pad = cur_popup.innerHeight() - popup_height;
+            const num_height = cur_num.height();
+
             // Style the popup, position it and show:
             const txt_ele = $("#text-result");  // element for text container
-            const correction_left = txt_ele.position().left + txt_ele.width();
+            const correction_left = txt_ele.position().left + txt_ele.width();  // rightmost position.
+            const txt_ele_top = txt_ele.position().top;
 
             // Note: Eventually improve positioning; seemingly, the issue occurs only on the first click!
 
-            console.log(`Popup height (pad): ${popup_height} (${popup_pad}), Num height: ${num_height}, 
-            num pos (top, bottom) ${thispos.top}, ${thispos.left}`);
+            console.log(`Popup height (pad): ${popup_height} (${popup_pad}), Highlight height: ${num_height}, 
+            Highlight pos (top, bottom) ${thispos.top}, ${thispos.left}`);
+            console.log(`Correction left is ${correction_left}`);
 
+            // Fixed part of the position:
+            const top_fixed = thispos.top - num_height * 0.75 - popup_pad + 2;
+
+            // Adjust the popup position and show:
             cur_popup
                 .css({
-                    top: thispos.top,  // - popup_height - num_height - popup_pad,
+                    top: top_fixed - popup_height,  // add 2 pixels.
                     // If the popup goes out of bounds, correct.
-                    left: thispos.left + popup_width > correction_left ? thispos.left / 2 : thispos.left,
-                    position: 'absolute'
+                    left: (thispos.left + popup_width > correction_left) ? thispos.left / 2 : thispos.left
+                    // position: 'absolute'
+                })
+                // Redo some calculatios after positioning.
+                .css({
+                    // check if the top of the popup overlaps considerably
+                    top: top_fixed - cur_popup.height(),
+                    // If the popup goes out of bounds, correct.
+                    // left: (thispos.left + popup_width > correction_left) ? thispos.left / 2 : thispos.left
+                    // position: 'absolute'
                 })
                 // .addClass("selected-blur")
+
+                        console.log(`top of txt element: ${txt_ele_top}; 
+            top of parent: ${txt_ele.parent().position().top}, 
+            popup top: ${cur_popup.position().top}`);
+
+                cur_popup
+                // Redo some calculatios after positioning.
+                .css({
+                    // check if the top of the popup overlaps considerably
+                    top: cur_popup.position().top < txt_ele.parent().position().top ?
+                        top_fixed + num_height * 2 : top_fixed - cur_popup.height(),
+                    // If the popup goes out of bounds, correct.
+                    // left: (thispos.left + popup_width > correction_left) ? thispos.left / 2 : thispos.left
+                    // position: 'absolute'
+                })
                 .show();
 
+
+            // Add selection blur to the number:
             $(this).addClass("selected-blur");
 
             // Prevent propagation:
