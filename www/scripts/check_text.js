@@ -230,7 +230,7 @@ $(document).ready(function () {
             },
             "misc": {
                 // MIscellaneous numbers to be excluded!
-                "regex": RegExp("(?<misc>" + pat_num + "\\.? Grad)", "dg")
+                "regex": RegExp("(?<misc>(" + pat_num + " bis )?" + pat_num + "\\.? (Grad|Staat|Schritt))", "dg")
             },
             // Enumeration:
             "enum": {
