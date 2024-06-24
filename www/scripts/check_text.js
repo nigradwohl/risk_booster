@@ -111,7 +111,7 @@ $(document).ready(function () {
          * Array of units that should not be considered further
          * @type {string[]}
          */
-        let units_exc = ["age", "currency", "time", "date", "year", "dur", "legal", "medical", "enum", "misc"];
+        let units_exc = ["age", "currency", "time", "date", "year", "dur", "legal", "medical", "enum", "misc", "rank"];
 
         /**
          * Object that is looped over to check for units.
@@ -155,6 +155,11 @@ $(document).ready(function () {
             //     "regex": RegExp("(?<nyear>Lebens(dauer|erwartung) (zwischen|von) " + pat_num + "( Jahr[a-z]*))", "dg")  // require comma or pouint separator!
             //     // "regex": /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
             // },
+            // Currently excluded:
+            "rank": {
+                "regex": /(?<rank>(Rang|Platz) \d+)/dg
+                // "regex": /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
+            },
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             // Simple matches:
             "age": {
