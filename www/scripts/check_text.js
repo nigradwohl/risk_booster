@@ -1347,14 +1347,14 @@ $(document).ready(function () {
 
             // Style the popup, position it and show:
             const txt_ele = $("#text-result");  // element for text container
-            const correction_left = txt_ele.position().left + txt_ele.width();  // rightmost position.
+            const right_bound = txt_ele.position().left + txt_ele.width();  // rightmost position.
             const txt_ele_top = txt_ele.position().top;
 
             // Note: Eventually improve positioning; seemingly, the issue occurs only on the first click!
 
             console.log(`Popup height (pad): ${popup_height} (${popup_pad}), Highlight height: ${num_height}, 
             Highlight pos (top, bottom) ${thispos.top}, ${thispos.left}`);
-            console.log(`Correction left is ${correction_left}`);
+            console.log(`Right bound is ${right_bound}`);
 
             // Fixed part of the position:
             const top_fixed = thispos.top - num_height * 0.75 - popup_pad + 2;
@@ -1364,7 +1364,7 @@ $(document).ready(function () {
                 .css({
                     top: top_fixed - popup_height,  // add 2 pixels.
                     // If the popup goes out of bounds, correct.
-                    left: (thispos.left + popup_width > correction_left) ? thispos.left / 2 : thispos.left
+                    left: (thispos.left + popup_width > right_bound) ? thispos.left - popup_width/2 : thispos.left
                     // position: 'absolute'
                 })
                 // Redo some calculatios after positioning.
@@ -1376,6 +1376,8 @@ $(document).ready(function () {
                     // position: 'absolute'
                 })
                 // .addClass("selected-blur")
+
+            // TODO: Fix issue with rightmost numbers!
 
                         console.log(`top of txt element: ${txt_ele_top}; 
             top of parent: ${txt_ele.parent().position().top}, 
