@@ -148,7 +148,11 @@ $(document).ready(function () {
                 "regex": RegExp("(?<confint>" + pat_num + " ?% ?[CK]I:? \\[?" + pat_num + " ?[-\\u2013;,] ?" + pat_num + "\\]?)", "dg")
             },
             "yearnum": {
-                "regex": /(?<nyear>\d+([.|,]\d+)( Jahr[a-z]*))/dg  // require comma or pouint separator!
+                "regex": /(?<nyear>\d+([.|,]\d+)( Jahr[a-z]*))/dg  // require comma or point separator!
+                // "regex": /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
+            },
+            "yearnum2": {
+                "regex": /(?<nyear>\d+( Jahr[a-z]*) ([A-Za-z]+ )?(?=länger|steiger|reduzier))/dg  // require comma or point separator!
                 // "regex": /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
             },
             // "lifeexpectancy": {
@@ -157,7 +161,7 @@ $(document).ready(function () {
             // },
             // Currently excluded:
             "rank": {
-                "regex": /(?<rank>(Rang|Platz) \d+)/dg
+                "regex": /(?<rank>(Rang|Pl[aä]tze) \d+( (und|bis) \d+)?)/dg
                 // "regex": /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
             },
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -458,8 +462,8 @@ $(document).ready(function () {
 
         // Get regex-based matches:
         const regex_matches = detect_regex_match(inputText, token_dat, check_numbers_dict);
-        // console.log("Regex matches");
-        // console.log(regex_matches);
+        console.log("Regex matches");
+        console.log(regex_matches);
 
         // Add information to object:
         token_dat.add_column(regex_matches.match_id, "match");
@@ -2590,24 +2594,27 @@ function detect_unit(token_data) {
 function detect_regex_match(txt, token_dat, check_dict) {
     let arr_match = [];
 
+    // Array with precendence rules:
+    const arr_drop = [
+        {"set": ["age", "nyear"], "drop": "age"}  // which should be checked and which should be dropped?
+    ];
+
     // Loop over dictionary with rules:
     for (const [key, value] of Object.entries(check_dict)) {
         // console.log(`${key} ${value["note"]}`); // "a 5", "b 7", "c 9"
-
 
         // Variant with exec:
         const matches = get_regex_matches(txt, value["regex"]);
 
         // console.log(`Raw matches for ${key}:`);
         // console.log(matches);
-
         arr_match = arr_match.concat(matches);
 
     }
 
     // Clean up the matches from all for redundancy:
-    // console.log("Match objects:");
-    // console.log(arr_match);
+    console.log("Match objects:");
+    console.log(JSON.stringify(arr_match));
     // console.log(token_dat);
     // If a match is fully included in another, the match can be removed.
     // There is also some hierarchy (undefined numbers should only be output when
@@ -2629,11 +2636,11 @@ function detect_regex_match(txt, token_dat, check_dict) {
         // Search from the back!
         let match_end = token_dat.end.findLastIndex(x => x <= (match.start_end[1] - 1) && x > match.start_end[0]);
         //
-        // console.log("Match start and end: " + match_start + ", " + match_end);
-        // console.log(match);
-        // console.log(match.type);
+        console.log("Match start and end: " + match_start + ", " + match_end);
+        console.log(match);
+        console.log(match.type);
         // console.log(["unknown", "ucarryforward"].includes(match.type[0]));
-        // console.log(match_type);  // already found matches.
+        console.log(JSON.stringify(match_type));  // already found matches.
 
         // If one of the indices can be found:
         if (match_start !== -1 || match_end !== -1) {
@@ -2656,7 +2663,7 @@ function detect_regex_match(txt, token_dat, check_dict) {
             // console.log(match_type.toString());
             if (match_type[match_start] === -1 && match_type[match_end] === -1) {
 
-                // console.log("Establish new match");
+                console.log("Establish new match");
                 match_id = [i];
                 cur_type = match.type;
 
@@ -2669,14 +2676,33 @@ function detect_regex_match(txt, token_dat, check_dict) {
                 // arr_match.splice(i);
                 droplist = droplist.concat(i);
                 let prev_ix = token_match[match_start]
+                // console.log(prev_ix);
+
+                const precedence_list = ["nyear", "age"];
+                // nyear has precedence over age, because it is more specific!
 
                 if (prev_ix !== -1) {
                     prev_ix = Array.isArray(prev_ix) ? prev_ix : [prev_ix];
                     match_id = prev_ix.concat(i);
-                    cur_type = match.type;  // might also concat...
 
                     // Also amend the previous match to include the other type?
-                    arr_match[prev_ix[0]].type = arr_match[prev_ix[0]].type.concat(match.type);
+                    const prev_type = arr_match[prev_ix[0]].type;  // get the previous type.
+                    cur_type = match.type;  // might also concat...
+                    // note: conversion to string should be robust, since only the first key ist saved.
+
+                    console.log(`Does ${cur_type}: ${precedence_list.indexOf(cur_type)} replace ${prev_type[0]}: ${precedence_list.indexOf(prev_type[0])}`);
+                    console.log(cur_type);
+                    console.log(prev_type);
+
+                    if (precedence_list.indexOf(cur_type[0]) < precedence_list.indexOf(prev_type[0])) {
+                        // Note: undefined is indexOf = -1; thus undefined has precedence over defined!
+                        // arr_match[prev_ix[0]].type = prev_type.type.concat(cur_type);  // combine previous and current.
+                        console.log(`Replace match ${prev_type} with ${cur_type}`);
+                        arr_match[prev_ix[0]].type = cur_type;  // update match, if curtype has precedence.
+                    } else {
+                        cur_type = prev_type;
+                    }
+
                 }
 
 
@@ -2686,6 +2712,7 @@ function detect_regex_match(txt, token_dat, check_dict) {
             }
 
             if (cur_type !== -1) {
+
                 // Update the data when anything could be found:
                 // console.log(`Replacing ${n_ele} elements with matchtype ${cur_type}`);
                 token_match.splice(match_start, n_ele, Array(n_ele).fill(match_id));
@@ -2701,7 +2728,7 @@ function detect_regex_match(txt, token_dat, check_dict) {
 
     }
 
-    // console.log("Match data (raw):");
+    console.log("Match data (raw):");
     // console.log(token_match);
     // console.log(match_type);
     // console.log(droplist);
@@ -2713,10 +2740,10 @@ function detect_regex_match(txt, token_dat, check_dict) {
     // Sort the array by the starting position of each match:
     arr_match = arr_match.sort((a, b) => a.start_end[0] - b.start_end[0]);
 
-    // console.log("Match data (cleaned):");
-    // console.log(arr_match);
+    console.log("Match data (cleaned):");
+    console.log(arr_match);
     // console.log(token_match);
-    // console.log(match_type);
+    console.log(match_type);
 
     // Is it more efficient to check for the matches or the tokens?
     // Likely the matches, because there are fewer by design!
@@ -2812,6 +2839,7 @@ function get_regex_matches(txt, regexp) {
 
         const curmatch = {"type": [key[0]], "match": match.groups[key], "start_end": match.indices.groups[key]};
         // console.log(curmatch);
+        // NOTE: key[0] ensures that it is only one item.
         arr_out = arr_out.concat(curmatch);  // append match object to array.
 
     }
