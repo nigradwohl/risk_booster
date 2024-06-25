@@ -592,6 +592,34 @@ h3 {
     /*justify-items: center;*/
 }
 
+#results-q {
+    padding-top: 0;
+}
+
+.check-results-navrow {
+    font-size: 0.7em;
+    display: flex;
+    align-items: end;
+    width: 100%;
+    /*background-color: lightsteelblue;*/
+    border-bottom: 1px solid darkgrey;
+}
+
+.check-results-navrow div {
+    cursor: pointer;
+    padding: 0.8em 0.5em 0.2em;
+    justify-self: end;
+}
+
+#stop-edit {
+    display: none;
+}
+
+.check-results-navrow div:hover {
+    background-color: var(---navbar-hover-bg);
+    color: var(---navbar-hover-text);
+}
+
 .grid-head {
     /*grid-row: 1;*/
     /*grid-column: 2 / 4;*/

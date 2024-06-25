@@ -154,6 +154,81 @@ $(document).ready(function () {
     // $("#dotdisplay2").show();
     //
     // console.log("~~~~~~~~~ eof. test icon array ~~~~~~~~~~~");
+
+    // Editing risk info elements:
+    let curtext;
+    $(".risk-info").on("click", function () {
+
+        $("#edit-text-popup").show();
+
+        curtext = $(this);
+        console.log("curtext is:");
+        console.log(curtext);
+        $("#edit-newtext").val(curtext.text());
+    })
+
+    $("#edit-texts").on("click", function () {
+
+        const elems_edit = $(".editable");
+
+        elems_edit.each(function (ix) {
+            console.log(this);
+            const curid = this.id;
+            const curtext = $("#" + curid).text();
+            $("#edit-" + curid).val(curtext);
+        });
+
+        // Hide editable elements and show text fields instead:
+        elems_edit.hide();
+        $(this).hide();
+        $("#stop-edit").show();
+
+        const textfields = $(".edit-note");
+        textfields.show();
+        textfields.addClass("selected-blur");
+    })
+
+    $("#stop-edit").on("click", function () {
+
+        const textfields = $(".edit-note");
+        textfields.hide();
+        textfields.removeClass("selected-blur");
+
+        const elems_edit = $(".editable");
+
+        elems_edit.each(function (ix, el) {
+            console.log(el);
+            const curid = el.id;
+            // get the input values:
+            $("#" + curid).text($("#edit-" + curid).val());
+        });
+
+        // Hide editable elements and show text fields instead:
+        elems_edit.show();
+        $(this).hide();
+        $("#edit-texts").show();
+
+
+    })
+
+    $("#edit-ok").on("click", function () {
+
+        console.log(curtext);
+        const text_element = $("#edit-newtext");
+        console.log(text_element.val());
+
+        curtext.text(text_element.val());
+
+        text_element.val("");
+        $("#edit-text-popup").hide();
+    })
+
+
+    $("#edit-cancel").on("click", function () {
+        $("#edit-newtext").val("");
+        $("#edit-text-popup").hide();
+    })
+
 });
 
 

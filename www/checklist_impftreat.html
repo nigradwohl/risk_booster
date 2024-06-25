@@ -60,7 +60,7 @@
 
 
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ MAIN CONTENT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-<div class="row current-theme">
+<!--<div class="row current-theme">-->
 
 <!--    <p class="no-print">-->
 <!--        Anmerkungen: Aktuelle Reihenfolge anhand von Informationen in Beispiel Pressemitteilung.-->
@@ -69,15 +69,23 @@
 <!--        <span id="case-test"></span>-->
 <!--    </p>-->
 
-    <!--        <div class="canvas-container">-->
-    <!--            <canvas id="dotdisplay2"></canvas>-->
-    <!--        </div>-->
-    <!--    <i class="fa fa-solid fa-user"></i>-->
-</div>
+<!--        <div class="canvas-container">-->
+<!--            <canvas id="dotdisplay2"></canvas>-->
+<!--        </div>-->
+<!--    <i class="fa fa-solid fa-user"></i>-->
+<!--</div>-->
 
 <div class="row current-theme">
     <div class="checklist-content">
         <!--    Entry 1-->
+        <div id="edit-text-popup" class="edit-prompt">
+            <p>Passen Sie den untenstehenden Text an:</p>
+            <input id="edit-newtext">
+            <br>
+            <button id="edit-ok">Okay</button>
+            <button id="edit-cancel">Abbrechen</button>
+        </div>
+
         <table>
             <tr>
                 <td class="nav-cell no-print">
@@ -417,6 +425,7 @@
                     <div class="checklist-question checklist-results" id="results-q">
 
                         <!--                        [FAKTENBOX?]-->
+                        <div class="check-results-navrow"><div id="edit-texts">Text bearbeiten</div><div id="stop-edit">Bearbeiten beenden</div></div>
 
                         <!--Container effectivitiy-->
                         <div class="grid-container-check" id="results-1">
@@ -441,14 +450,15 @@
                                 <canvas id="dotdisplay-control" class="canvas-base"></canvas>
                             </div>
 
-                            <p class="grid-note1 content-start"><span class="risk-info"
+                            <textarea class="edit-note grid-note1 content-start" id="edit-effnote1"></textarea>
+                            <p id="effnote1" class="grid-note1 content-start editable"><span class="risk-info"
                                                                       id="risk-control"></span>
                             </p>
 
 
                             <!--                                Treatment group-->
-
-                            <p class="grid-note2 content-end"><span class="risk-info" id="risk-treat"></span>
+                            <textarea class="edit-note grid-note2 content-end" id="edit-effnote2"></textarea>
+                            <p id="effnote2" class="grid-note2 content-end editable"><span class="risk-info" id="risk-treat"></span>
                             </p>
 
                             <p class="grid-subhead2">In der Behandlungsgruppe</p>
