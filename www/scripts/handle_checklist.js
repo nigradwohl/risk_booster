@@ -811,7 +811,10 @@ function handle_missing_input(ev, missing_entries) {
     console.log(input_field);
     console.log(thispos);
 
-    missing_entries.forEach((id) => $("#" + id).addClass("missing-input").addClass("selected-blur"));
+    console.log("MISSING ENTRIES ARE:");
+    console.log(missing_entries);
+    // Only assign blur class to last missing item; for the rest assign decreasing z-indices (above the blurred item though):
+    missing_entries.forEach((id, ix) => $("#" + id).addClass("missing-input").addClass(ix + 1 === missing_entries.length ? "selected-blur" : "").css("z-index", 9998 - ix));
 
     // Change the popup text here:
     const cur_popup = $("#noentry-popup");

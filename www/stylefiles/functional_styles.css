@@ -295,6 +295,7 @@ canvas {
     font-size: 1.2em;
     padding: 5px;
     max-width: 6em;
+    position: relative;
 }
 
 .checklist-button {
