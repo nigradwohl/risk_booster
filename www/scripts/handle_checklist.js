@@ -157,7 +157,7 @@ $(document).ready(function () {
 
     // Editing risk info elements:
     let curtext;
-    $(".risk-info").on("click", function () {
+    $(".editable").on("click", function () {
 
         $("#edit-text-popup").show();
 
@@ -167,29 +167,7 @@ $(document).ready(function () {
         $("#edit-newtext").val(curtext.text());
     })
 
-    $("#edit-texts").on("click", function () {
-
-        const elems_edit = $(".editable");
-
-        elems_edit.each(function (ix) {
-            console.log(this);
-            const curid = this.id;
-            const curtext = $("#" + curid).text();
-            $("#edit-" + curid).val(curtext);
-        });
-
-        // Hide editable elements and show text fields instead:
-        elems_edit.hide();
-        $(this).hide();
-        $("#stop-edit").show();
-
-        const textfields = $(".edit-note");
-        textfields.show();
-        textfields.addClass("selected-blur");
-    })
-
-    $("#stop-edit").on("click", function () {
-
+    function end_editing() {
         const textfields = $(".edit-note");
         textfields.hide();
         textfields.removeClass("selected-blur");
@@ -205,11 +183,52 @@ $(document).ready(function () {
 
         // Hide editable elements and show text fields instead:
         elems_edit.show();
-        $(this).hide();
         $("#edit-texts").show();
+        $("#stop-edit").hide();
+    }
 
+    $("#edit-texts").on("click", function (e) {
 
+        const elems_edit = $(".editable");
+
+        elems_edit.each(function (ix) {
+            console.log(this);
+            const curid = this.id;
+            const curtext = $("#" + curid).text();
+            console.log(JSON.stringify(curtext));
+            $("#edit-" + curid).val(curtext);
+        });
+
+        // Hide editable elements and show text fields instead:
+        elems_edit.hide();
+        $(this).hide();
+        $("#stop-edit").show();
+
+        const textfields = $(".edit-note");
+        textfields.show();
+        // textfields.css("z-index", 9999);
+        textfields[0].className = textfields[0].className + " selected-blur";  // add blurring class to one element.
+
+        // Allow to end editing by clicking anywhere:
+        e.stopPropagation();
+        $(window).on("click", function (e) {
+            // $(".edit-note").removeClass("selected-blur");
+            // $("#stop-edit").hide();
+            // $("#edit-texts").show();
+            // console.log("CLICKED ELEMENT");
+            // console.log(e);
+            // console.log(e.target.className);
+
+            // When not clicking on a text field for editing:
+            if (!/(edit-note|navele)/.test(e.target.className)) {
+                end_editing();
+                $(window).unbind("click");
+            }
+
+        })
     })
+
+    $("#stop-edit").on("click", end_editing)
 
     $("#edit-ok").on("click", function () {
 

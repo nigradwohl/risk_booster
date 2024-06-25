@@ -84,7 +84,7 @@
 
     /* Position the tooltip text */
     position: absolute;
-    z-index: 9999;
+    z-index: 9998;
     bottom: 125%;
     left: 50%;
     margin-left: -70px;
@@ -241,6 +241,7 @@ canvas {
 .zoomed-canvas {
     width: 95%;
     height: 95%;
+    z-index: 9999;
 }
 
 .split-content {
@@ -316,10 +317,14 @@ canvas {
 
 .edit-note {
     display: none;
-    width: 100%;
-    height: 100%;
+    resize: none;
+    width: 102%;
+    overflow: hidden;
+    /*height: 100%;*/
     font-size: 0.8em;
-    z-index: 9999;
+    position: relative;
+    z-index: 9998;
+    -webkit-appearance: none;  /*to render properly*/
 }
 
 .error-note {
