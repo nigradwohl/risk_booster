@@ -50,7 +50,7 @@
                     <li>sich bei einer Sportart zu verletzen</li>
                 </ul>
             </div>
-            <div class="wiki-text">Erwähnen: Relative risiken</div>
+            <div class="wiki-text"><p>Erwähnen: Relative risiken.</p></div>
         </div>
         <div class="wiki-entry full-column" id="wiki-effside"><h2>Nutzen und Schaden</h2>
             <div class="wiki-overview">
@@ -73,23 +73,25 @@
         <div class="wiki-entry full-column" id="wiki-prozent"><h2>Prozentzahlen</h2>
             <div class="wiki-overview">
                 <ul>
-                    <li>1%</li>
-                    <li>Bezugsgröße ist entscheidend, besonders für <a href="risk_wiki.html#wiki-rel">relative
-                        Angaben</a> (z.B., eine Erhöhung von 50%, eine Impfstoffwirksamkeit von 90%)
-                    </li>
                     <li>Absolute Ereigniswahrscheinlichkeiten sind relativen Angaben vorzuziehen</li>
-                    <li>Prozentzahlen sollten nur für Zahlenwerte größer 1% verwendet werden.</li>
+                    <li>Für <a href="risk_wiki.html#wiki-rel">relative Angaben</a> (z.B., eine Erhöhung von 50%, eine
+                        Impfstoffwirksamkeit von 90%) sollten unbedingt die Basisrisiken berichtet werden
+                    </li>
+                    <li>Prozentzahlen sollten nur für Zahlenwerte größer 1% verwendet werden (ansonsten sind <a
+                            href="#wiki-nh">natürliche Häufigkeiten</a> vorzuziehen).
+                    </li>
                 </ul>
             </div>
             <div class="wiki-examples"><p>Beispiele: </p>
                 <ul>
                     <li>Die Wahrscheinlichkeit zu erkranken, wenn man auf eine infizierte Person getroffen ist liegt bei
-                        2%.
+                        2% (absolut).
                     </li>
-                    <li>52% der Versuchsteilnehmer*innen waren weiblich</li>
+                    <li>Das Infektionsrisiko war in der Kontrollgruppe 50% höher (relativ).</li>
+                    <li>52% der Versuchsteilnehmer*innen waren weiblich (absolut).</li>
                 </ul>
             </div>
-            <div class="wiki-text"><p>Besser als <a href="">Prozentzahlen</a> sind <a href="#wiki-nh">natürliche
+            <div class="wiki-text"><p>Besser als <a href="#wiki-prozent">Prozentzahlen</a> sind typischerweise <a href="#wiki-nh">natürliche
                 Häufigkeiten</a> (z.B., 1 aus 100 oder 1 aus 1000). Diese werden häufig besser verstanden, insbesondere,
                 für Prozentzahlen &lt; 1%.</p>
                 <p>1% einspricht den <a href="#wiki-nh">natürlichen Häufigkeiten</a> 1 von 100 oder 10 von 1000.
@@ -113,7 +115,7 @@
                     <li>21 Äpfel</li>
                 </ul>
             </div>
-            <div class="wiki-text"><p>Häufigkeiten natürliche Zahlen, die die Anzahl von Personen oder Dingen
+            <div class="wiki-text"><p>Häufigkeiten sind natürliche Zahlen, die die Anzahl von Personen oder Dingen
                 beschreiben.</p>
                 <p>Im Kontext medizinischer Berichterstattung handelt es sich häufig um die Anzahl von Erkrankungsfällen
                     oder die Anzahl von Personen mit Nebenwirkungen in einer Studie.</p>
@@ -208,7 +210,11 @@
                     Personen 4 Personen erkranken(Veränderung von 0.02% auf 0.04%)oder dass von 10,000 Personen anstelle
                     von 200 Personen 400 Personen erkranken (Veränderung von 2% auf 4%)Daher muss immer (auch) die
                     [LINK]<a>absolute Reduktion</a> kommuniziert werden (mindestens als absolute Prozentzahlen in den
-                    Gruppen, die verglichen werden).</p></div>
+                    Gruppen, die verglichen werden).</p>
+                <p>Es kann sinnvoll sein, Situationen für niedriges und hohes Basisrisiko darzustellen.Beispielsweise
+                    verhindert eine Impfung mit einer Wirksamkeit von 80%für ein relativ niedriges Risiko von 10 in 1000
+                    nur 8 von 1000 Infektionen (da sich die meisten Personen ohnehin nicht infiziert hätten),während sie
+                    für ein höheres Risiko von 50 in 1000 etwa 40 von 1000 Infektionen verhindert.</p></div>
         </div>
         <div class="wiki-entry full-column" id="wiki-sample_size"><h2>Stichprobengröße</h2>
             <div class="wiki-overview">
@@ -266,6 +272,8 @@
             </div>
             <div class="wiki-text"><p>Der p-Wert wird in wissenschaftlichen Publikationen verwendet, um die Unsicherheit
                 eines Ergebnisses zu beziffern.</p>
+                <p>Typischerweise wird ein p-Wert kleiner als 0.05 als "statistisch signifikant" bezeichtnet, was eine
+                    akzeptable Unischerheit ausdrückt.</p>
                 <p>Der p-Wert ist die <a href="wiki-cprob">bedingte Wahrscheinlichkeit</a> diese oder extremere Daten in
                     einer Stichprobe zu beobachten, wenn es in der Population eigentlich
                     <emph>keinen</emph>
@@ -279,6 +287,44 @@
                     Publikationen eher nicht verwendet werden.</p>
                 <p>Zudem ist er bei Untersuchungen mit sehr vielen Versuchspersonen nicht informativ, da er für große
                     Stichproben typischerweise sehr klein wird.</p></div>
+        </div>
+        <div class="wiki-entry full-column" id="wiki-confint"><h2>Konfidenzintervall</h2>
+            <div class="wiki-overview">
+                <ul>
+                    <li>Intervall, in dem der wahre Wert in 95% aller Experimente liegen würde, wenn man dasselbe
+                        Experiment sehr oft wiederholt.
+                    </li>
+                </ul>
+            </div>
+            <div class="wiki-text"><p>Konfidenzintervalle werden in wissenschaftlichen Publikationen verwendet, um die
+                Unsicherheit eines Ergebnisses zu beziffern.</p>
+                <p>Typischerweise werden Konfidenzintervalle, die
+                    <emph>nicht</emph>
+                    null einschließen, was eine akzeptable Unischerheit ausdrückt.
+                </p>
+            </div>
+        </div>
+        <div class="wiki-entry full-column" id="wiki-causal"><h2>Aussagen über Wirkung und Ursache (Kausalität)</h2>
+            <div class="wiki-overview">
+                <ul>
+                    <li></li>
+                </ul>
+            </div>
+            <div class="wiki-examples"><p>Beispiele: </p>
+                <ul>
+                    <li>Die Impfung verringert das Risiko einer Erkrankung um 50%.</li>
+                    <li>Rauchen verursacht Lungenkrebs</li>
+                </ul>
+            </div>
+            <div class="wiki-text"><p>Veränderungen zwischen Zeitpunkten oder nicht experimentellen[MAKE ENTRY] Gruppen
+                können zwarauf Ursachen Hinweisen, können aber auch durch andere Veränderungen über die Zeit oder andere
+                systematische Unterschiedezwischen den Gruppen erklärt werden [GUTES BEISPIEL?].Daher sind solche
+                Vergleiche nicht schlussgültig aussagekräftig, welche Ursache ettwas hat.</p>Nur ein Experiment (z.B.,
+                <a href="#wiki-rct">randomized controlled trial (RCT)</a>) erlaubt kausale Schlüsse.Dabei werden
+                Personen zufällig auf die zu vergleichenden Gruppen aufgeteilt (z.B., Medikament und Placebo), so dass
+                Unterschiede zwischen den Gruppen nicht systematisch sind und damit beobachtete Unterschiede auf die
+                Intervention zurückzuführen sind.
+            </div>
         </div>
         <div class="wiki-entry full-column" id="wiki-rct"><h2>Randomized Controlled Trial</h2>
             <div class="wiki-overview">
@@ -295,12 +341,28 @@
         <div class="wiki-entry full-column" id="wiki-treat"><h2>Behandlungsgruppe</h2>
             <div class="wiki-overview">
                 <ul>
-                    <li>Gruppe die eine Behandlung erhält oder bei der ein Einfluss vorliegt (im Unterschied zur <a>Verlgeichs-
+                    <li>Gruppe die eine Behandlung erhält oder bei der ein Einfluss vorliegt (im Unterschied zur <a href="#wiki-control">Verlgeichs-
                         oder Kontrollgruppe</a></li>
                     <li>Der Vergleich von Behandlungs- und Vergleichsgruppe erlaubt Aussagen über den Effekt (und dessen
-                        größe), also z.B., ob ein Medikament wirksam Symptome lindert.
+                        Größe), also z.B., ob ein Medikament wirksam Symptome lindert.
                     </li>
                 </ul>
+            </div>
+        </div>
+        <div class="wiki-entry full-column" id="wiki-teval"><h2>Untersuchungszeitpunkt</h2>
+            <div class="wiki-overview">
+                <ul>
+                    <li>Zeitpunkt zu dem Daten gesammelt werden, die mit Daten zu einem <a href="#wiki-tcomp">Vergleichszeitpunkt</a>
+                        verglichen werden.
+                    </li>
+                    <li>Der Vergleich von Untersuchungs- und Vergleichszeitpunkt erlaubt Aussagen über Veränderungen
+                        über die Zeit (und deren Größe), also z.B., ob es Menschen besser oder schlechter geht (nur
+                        aufgrund der Zeit sind üblicherweise keine Aussagen über die Wirkmechanismen möglich).
+                    </li>
+                </ul>
+            </div>
+            <div class="wiki-text">Ähnlich zur <a href="#wiki-treat">Behandlungsgruppe</a> etwa in
+                Medikamentenstudien.
             </div>
         </div>
         <div class="wiki-entry full-column" id="wiki-control"><h2>Vergleichsgruppe</h2>
@@ -317,7 +379,7 @@
                     <li>Placebogruppe bei Impf- und medikamentenstudien</li>
                 </ul>
             </div>
-            <div class="wiki-text"><p>Erfolgt die Zuteilung in <a href"#wiki-treat"="">Behandlungs-</a> und
+            <div class="wiki-text"><p>Erfolgt die Zuteilung in <a href="#wiki-treat">Behandlungs-</a> und
                 Kontrollgruppe zufällig, spricht man von einem Experiment.</p></div>
         </div>
         <div class="wiki-entry full-column" id="wiki-placebo"><h2>Placebo</h2>
@@ -334,8 +396,20 @@
                 waren.
             </div>
         </div>
+        <div class="wiki-entry full-column" id="wiki-tcomp"><h2>Vergleichszeitpunkt</h2>
+            <div class="wiki-overview">
+                <ul>
+                    <li>Zeitpunkt mit dem Daten zu einem <a href="#wiki-teval">Untersuchungszeitpunkt</a> verglichen
+                        werden.
+                    </li>
+                    <li>Der Vergleich von Untersuchungs- und Vergleichszeitpunkt erlaubt Aussagen über Veränderungen
+                        über die Zeit (und deren Größe), also z.B., ob es Menschen besser oder schlechter geht (nur
+                        aufgrund der Zeit sind üblicherweise keine Aussagen über die Wirkmechanismen möglich).
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
-
 </div>
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ EOF MAIN CONTENT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 

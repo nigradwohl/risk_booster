@@ -106,7 +106,212 @@ $(document).ready(function () {
     // When the button is clicked, process and output the text:
     $("#check-text").on("click", function () {
 
-        // INITIALIZE OBJECTS (that may be modified):
+        // INITIALIZE OBJECTS and ARRAYs (that may be modified):
+        /**
+         * Array of units that should not be considered further
+         * @type {string[]}
+         */
+        let units_exc = ["age", "currency", "time", "date", "year", "dur", "legal", "medical", "enum", "misc", "rank"];
+
+        /**
+         * Object that is looped over to check for units.
+         * @type {{date: {regex: RegExp}, dur: {regex: RegExp}, medical: {regex: RegExp}, mult: {regex: RegExp}, pval: {regex: RegExp}, currency_pre: {regex: RegExp}, year: {regex: RegExp}, yearrange: {regex: RegExp}, year2: {regex: RegExp}, year3: {regex: RegExp}, perc: {regex: RegExp}, freq_word: {regex: RegExp}, currency_post: {regex: RegExp}, legal: {regex: RegExp}, datemon: {regex: RegExp}, carry_forward_pre: {regex: RegExp}, yearnum: {regex: RegExp}, other_num: {regex: RegExp}, misc: {regex: RegExp}, medical_post: {regex: RegExp}, perc_word: {regex: RegExp}, enum: {regex: RegExp}, mult2: {regex: RegExp}, carry_forward_post: {regex: RegExp}, nh: {regex: RegExp}, confint: {regex: RegExp}, time: {regex: RegExp}, age: {regex: RegExp}, monyear: {regex: RegExp}, dur2: {regex: RegExp}}}
+         */
+        const check_numbers_dict = {
+            "perc": {
+                "regex": regex_perc,
+                // "tooltip": "Ich bin eine Prozentzahl und möchte gerne eine Referenz",
+                // "note": "Sie haben eine Prozentzahl verwendet. Stellen Sie sicher, dass eine Referenz vorhanden ist [mögliche Referenz ggf. ausflaggen!]. klicken Sie [HIER] um mehr zu erfahren."
+            },
+            "perc_word": {
+                "regex": RegExp("(?<perc>(" + collapse_regex_or(numwords) + ") ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.?!])" + ")", "dg")
+            },
+            "freq_word": {
+                "regex": regex_numwords
+            },
+            "nh": {
+                "regex": regex_nh,
+                // "tooltip": "Ich bin eine \"natürliche\" Häufigkeit",
+                // "note": "Sie haben eine natürliche Häufigkeit verwendet. Das ist sehr gut. Am besten sollte der Nenner über Vergleiche der Gleiche sein (z.B. 1 aus 100 Geimpften erkrankt, während 3 aus 100 ungeimpften erkranken)."
+            },
+            // multtude of something (e.g. 20-fach).
+            "mult": {
+                "regex": regex_mult
+            },
+            "mult2": {
+                "regex": /(?<mult>([Hh]alb|[Dd]oppelt|[Dd]reifach|[Dd]reimal) (so )?(viele|gr[oö]ß|hoch|niedrig|besser|erhöht|höher))/dg
+            },
+            "pval": {
+                "regex": RegExp("(?<pval>p ?[\\<\\=] ?" + pat_num + ")", "dg")
+            },
+            "confint": {
+                "regex": RegExp("(?<confint>" + pat_num + " ?% ?[CK]I:? \\[?" + pat_num + " ?[-\\u2013;,] ?" + pat_num + "\\]?)", "dg")
+            },
+            "yearnum": {
+                "regex": /(?<nyear>\d+([.|,]\d+)( Jahr[a-z]*))/dg  // require comma or point separator!
+                // "regex": /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
+            },
+            "yearnum2": {
+                "regex": /(?<nyear>\d+( Jahr[a-z]*) ([A-Za-z]+ )?(?=länger|steiger|reduzier))/dg  // require comma or point separator!
+                // "regex": /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
+            },
+            // "lifeexpectancy": {
+            //     "regex": RegExp("(?<nyear>Lebens(dauer|erwartung) (zwischen|von) " + pat_num + "( Jahr[a-z]*))", "dg")  // require comma or pouint separator!
+            //     // "regex": /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
+            // },
+            // Currently excluded:
+            "rank": {
+                "regex": /(?<rank>(Rang|Pl[aä]tze) \d+( (und|bis) \d+)?)/dg
+                // "regex": /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
+            },
+            // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            // Simple matches:
+            "age": {
+                "regex": /(?<age>(?<![,.])(\d+-? (bis|und) )?\d+-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
+                // "regex": /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
+            },
+            // "age2": {
+            //     "regex": RegExp("(?<age>" + pat_num + "( Jahre|\-jährig)" + ")", "dg")
+            // },
+            "currency_post": {
+                "regex": RegExp("(?<currency>" + pat_num + " ?(EUR|€|Euro|Dollar)" + ")", "dg")
+            },
+            "currency_pre": {
+                "regex": RegExp("(?<currency>" + "(USD|\$) ?" + pat_num + ")", "dg")
+            },
+            "time": {
+                "regex": /(?<time>(\d{1,2}(\.\d{2})? Uhr)|(\d{1,2}:\d{2}))/dg
+            },
+            "date": {
+                "regex": /(?<date>\d{1,2}\.\d{1,2}\.(18|19|20)\d{2}(?![|.\w]))/dg
+            },
+            "datemon": {
+                "regex": /(?<date>\d{1,2}\.\d{1,2}\.(18|19|20)\d{2}(?![|.\w]))/dg
+            },
+            "year": {
+                "regex": /(?<year>(Jahr|Anfang|Ende|Mitte|Nach) \d{4})/dg
+            },
+            "year2": {
+                "regex": /(?<year>(18|19|20)?\d{2}er)/dg
+            },
+            "year3": {
+                "regex": /(?<year>(?<!(,|\.|Jahr |Anfang |Ende |Mitte |Nach ))(19|20)\d{2}(?![|.\w]))/dg  // 20th and 21st century.
+            },
+            "monyear": {
+                "regex": RegExp("(?<date>\\d{1,2}\\.? (" + collapse_regex_or(["Januar", "Februar", "März", "April", "Mai", "Juni",
+                    "Juli", "August", "September", "Oktober", "November",
+                    "Dezember"]) + "))", "dg")
+            },
+            "yearrange": {
+                "regex": /(?<year>(zwischen|von) (18|19|20)\d{2}(?![|.\w]) (und|bis) (18|19|20)?\d{2}(?![|.\w]))/dg
+            },
+            "dur": {
+                "regex": /(?<dur>[0-9]+(-stündig|-tägig| Minuten?| Stunden?| Tagen?| Wochen?| Monate?))/dg
+            },
+            "dur2": {
+                "regex": regex_dur2
+            },
+            "legal": {
+                "regex": /(?<legal>(Artikel|§|Absatz|Paragra(ph|f)) ?\d+)/dg
+            },
+            "medical": {
+                "regex": RegExp("(?<medical>(BMI|Diabetes Typ) ?" + pat_num + ")", "dg")
+            },
+            "medical_post": {
+                "regex": RegExp("(?<medical>" + pat_num + " (Gene))", "dg")
+            },
+            // Carry-forward match:
+            "carry_forward_pre": {
+                "regex": RegExp("(?<ucarryforward>((waren|sind) es|[Dd]avon[^.]*) (\\w+ ){0,2}" + pat_num + "(?=\\W))", "dg")
+                // (\w+ ){0,2} allows up to 2 more words.
+            },
+            "carry_forward_post": {
+                "regex": RegExp("(?<ucarryforward>" + pat_num + " (waren|sind) es)", "dg")
+            },
+            "misc": {
+                // MIscellaneous numbers to be excluded!
+                "regex": RegExp("(?<misc>(" + pat_num + " bis )?" + pat_num + "\\.? (Grad|Staat|Schritt))", "dg")
+            },
+            // Enumeration:
+            "enum": {
+                // MIscellaneous numbers to be excluded!
+                "regex": /(?<enum>\(\d{1,2}\))/dg
+            },
+            // "within_nums": {
+            //   "regex": RegExp("(?<misc>" +"\w*-?" + pat_num + ")", "dg")
+            // },
+            // Default number match:
+            "other_num": {
+                "regex": regex_num,
+                // "tooltip": "Ich weiß nicht, was ich für eine Zahl bin",
+                // "note": "Sie haben eine Zahl verwendet, für die wir nicht bestimmen konnten, was sie bedeutet. Stellen Sie sicher, dass die Bedeutung der Zahl klar ist."
+            }
+
+        }
+
+        /**
+         * Object that can be looped over to check numbers for number types taht are specific to their units in "number_unit".
+         * @type {{ncase: {number_unit: string[], keyset: RegExp[][]}, incr: {number_unit: string[], keyset: RegExp[][]}, ntot: {number_unit: string[], keyset: RegExp[][]}, decr: {number_unit: string[], keyset: RegExp[][]}}}
+         */
+        const numtype_keyset = {
+            "incr": {
+                "number_unit": ["perc", "mult", "nyear"],  // add in other types eventually! 30-fach etc.
+                "keyset": [
+                    // A first entry to a domain-general keyset for risk:
+                    [RegExp(collapse_regex_or(["[Rr]isiko", "[Ww]ahrscheinlich", "Inzidenz", "Todesfälle"])),
+                        RegExp(collapse_regex_or(["höher", "erhöht"]))],
+                    [RegExp(collapse_regex_or(["[Uu]nterschied", "höher", "vergrößerte"])),
+                        RegExp(collapse_regex_or(["Lebenserwartung", "Abstand"]))]
+
+                ]
+            },
+            "decr": {
+                "number_unit": ["perc", "mult", "nyear"],  // add in other types eventually! 30-fach etc.
+                "keyset": [
+                    // A first entry to a domain-general keyset for risk:
+                    [RegExp(collapse_regex_or(["[Rr]isiko", "Gefahr", "[Ww]ahrscheinlich", "Inzidenz", "Todesfälle", "Erkrank"])),
+                        RegExp(collapse_regex_or(["[Rr]eduzier", "minimier", "niedriger", "(ge|ver)ringert?", "s[ae]nk"]))],
+                    [RegExp(collapse_regex_or(["besser"])),
+                        RegExp(collapse_regex_or(["geschützt"]))],
+                    [RegExp(collapse_regex_or(["st[aeo]rb"])),
+                        RegExp(collapse_regex_or(["früher"]))],
+                    [RegExp(collapse_regex_or(["weniger"])),
+                        RegExp(collapse_regex_or(["lebt?en"]))],
+                    [RegExp(collapse_regex_or(["Sterblichkeitslücke"])),
+                        RegExp(collapse_regex_or(["vergrößert"]))]
+                ]
+            },
+            // Total nuber of cases/incidents:
+            // NOTE: Order matters!
+            "ncase": {
+                "number_unit": ["freq", "nh"],
+                "keyset": [
+                    // TODO: Double check these!
+                    [RegExp("Fälle|Verläufe"), RegExp("insgesamt|nach|Studie")],
+                    [RegExp("[Ee]rkrankt|[Bb]etroffen")],
+                    [RegExp("Todesfälle")],
+                    [RegExp("(ver)?st[aeo]rben"), RegExp("Person|Teilnehm|[Gg]ruppe")],
+                    // Reporting certain effects in study:
+                    [RegExp("berichte(te)?n|entwickel|beobacht"), RegExp("Unwohlsein|Nebenwirkungen")],
+                    [RegExp("berichte(te)?n"), RegExp("wohl"), RegExp("fühlen")]
+                ]
+            },
+            "ntot": {
+                "number_unit": ["freq"],
+                "keyset": [
+                    [RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder|Erwachsene"),
+                        RegExp(collapse_regex_or(["insgesamt", "nahmen", "erh(a|ie)lten", "befragt", "ausgewählt", "umfass(t|en)"])),
+                        RegExp(collapse_regex_or(["Studie", "Untersuchung", "Erhebung"]))],
+                    [RegExp(collapse_regex_or(["Daten", "[Bb]efragt"])),
+                        RegExp(collapse_regex_or(["von", "über"])),
+                        RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder")],
+                    // 2nd set:
+                    [RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder|Erwachsene"),
+                        RegExp("Analyse")]
+                ]
+            }
+        }
+
         /**
          * Sets of keys to be used with window approach. Will be created upon each click!
          */
@@ -151,6 +356,7 @@ $(document).ready(function () {
                     "(erhöht|vielfach).*(Inzidenz|[Ee]rkank|Todesfäll|Risiko)",
                     "Risiko.*Erkrank",
                     "Todesf[aä]ll|gestorben|Infektion",
+                    "Lebenserwartung.*sink|weniger", "st[aeo]rb.*früher",
                     "[Nn]ur.*Gesundheitszustand.*gut",  // absence of positive!
                     "([Gg]esundheit|[Ff]inanz|[Pp]sychisch).*Belastung"],
                 "all": ["jeweils", "beiden.*Gruppen"],
@@ -179,10 +385,14 @@ $(document).ready(function () {
                 "medical": ["BMI"]
             },
             "rel": {
+                "abs": ["[Qq]uote", "Anteil"],  // quotas should always be absolute.
                 "rel": ["Wirksamkeit", "Impfschutz", "Schutzwirkung"]
             }
 
         }
+
+
+        // EOF. DYNAMIC OBJECS.
 
 
         // INITIALIZE VARIABLES:
@@ -230,13 +440,31 @@ $(document).ready(function () {
         // console.log("Initial token data:");
         // console.log(token_dat);
 
-        // Get regex-based matches:
-        const regex_matches = detect_regex_match(inputText, token_dat, check_numbers_dict);
-        // console.log("Regex matches");
-        // console.log(regex_matches);
-
 
         // Text-level: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // Detect topics: ------------
+        token_dat.detect_topic("impf", [["(?<!(gl|sch))[Ii]mpf"]]);  // must be preceded
+        token_dat.detect_topic("mask", [["Maske|FFP"]]);  // must be preceded
+        token_dat.detect_topic("protect", [["Schutzwirkung"], ["Ansteckungsgefahr", "nur"]]);  // must be preceded
+        token_dat.detect_topic("lower_risk", [["mindern", "Risiko"],
+            ["schützen|Schutz", "Infekt|Ansteck"]]);
+        token_dat.detect_topic("cancer_risk", [["[Rr]isiko", "Krebs"]]);  // must be preceded
+        token_dat.detect_topic("cancer_drug", [["[Mm]edikament", "Krebs"]])
+        token_dat.detect_topic("lifex", [["Lebenserwartung"]])
+
+        if (!token_dat.topics.includes("lifex")) {
+            delete check_numbers_dict.yearnum;  // If no life-expectancy is discussed, remove numbers of years.
+        } else {
+            const index = units_exc.indexOf("age");
+            units_exc.splice(index, 1);
+            // show age, when it comes to life expectancy.
+        }
+
+        // Get regex-based matches:
+        const regex_matches = detect_regex_match(inputText, token_dat, check_numbers_dict);
+        console.log("Regex matches");
+        console.log(regex_matches);
+
         // Add information to object:
         token_dat.add_column(regex_matches.match_id, "match");
         token_dat.add_column(regex_matches.match_type.map((x) => x !== -1 ? x.toString() : x), "unit");  // get unit info from regex matches.
@@ -246,15 +474,6 @@ $(document).ready(function () {
 
         // token_dat.is_nw  = token_dat.is_nw.map((x, ix) => x && ![-1, "unknown"].includes(token_dat.unit[ix]));  // keep only numberwords that have known units.
 
-
-        // Detect topics: ------------
-        token_dat.detect_topic("impf", [["(?<!(gl|sch))[Ii]mpf"]]);  // must be preceded
-        token_dat.detect_topic("mask", [["Maske|FFP"]]);  // must be preceded
-        token_dat.detect_topic("protect", [["Schutzwirkung"], ["Ansteckungsgefahr", "nur"]]);  // must be preceded
-        token_dat.detect_topic("lower_risk", [["mindern", "Risiko"],
-            ["schützen|Schutz", "Infekt|Ansteck"]]);
-        token_dat.detect_topic("cancer_risk", [["[Rr]isiko", "Krebs"]]);  // must be preceded
-        token_dat.detect_topic("cancer_drug", [["[Mm]edikament", "Krebs"]])
 
         // Try to detect outcomes and conditions!
         const regex_targetcond = /(?:Schutz vor|Krankheit) (?<targetcond>(?:\w+(?=[ .,;?!])){1,2})/mg;  // capture 1 or 2 words!
@@ -276,7 +495,8 @@ $(document).ready(function () {
 
         // Detect the type of comparison:
         token_dat.detect_topic("comp_time", [["schlechter|besser", "als", "vor", "Jahren"],
-            ["veränder|erhöh", "zwischen_\\d{4}"]]);
+            ["veränder|erhöh", "zwischen_\\d{4}"],
+            ["Abstand", "wuchs|vergrößert", "Jahre", "\\d{4}"]]);
 
 
         // Add keywords according to the type of comparison (currently collected in the "topic" property):
@@ -384,6 +604,7 @@ $(document).ready(function () {
         // For all numbers with non-.excluded units:
         const allnum_ix = token_dat.id.filter((d, ix) => token_dat.is_num[ix] && !units_exc.includes(token_dat.unit[ix]));
         const freq_ix = token_dat.id.filter((d, ix) => token_dat.unit[ix] === "freq");
+        const perc_ix = token_dat.id.filter((d, ix) => ["perc", "mult"].includes(token_dat.unit[ix]));
 
         // Identify if numbers are total counts or refer to a subgroup:
         token_dat.add_column(investigate_context(token_dat, allnum_ix, window_keys.grouptype), "gtype");
@@ -439,7 +660,11 @@ $(document).ready(function () {
         console.log("rel_context");
 
         // Column for relative and absolute:
-        token_dat.add_column(token_dat.numtype.map((x) => !["incr", "decr", -1].includes(x) ? "abs" : x), "relabs");
+        token_dat.add_column(investigate_context(token_dat, perc_ix, window_keys.rel), "relabs");
+        // console.log(token_dat.relabs.toString());
+        // was: token_dat.add_column(token_dat.numtype.map((x) => !["incr", "decr", -1].includes(x) ? "abs" : x), "relabs");
+        token_dat.relabs = token_dat.relabs.map((x, ix) => ["incr", "decr"].includes(token_dat.numtype[ix]) && x !== "abs" ? "rel" : x);
+        // console.log(token_dat.relabs.toString());
 
         // Column for percentages <1%:
         // Translate number words:
@@ -457,18 +682,26 @@ $(document).ready(function () {
 
             if (token_dat.unit[ix] === "mult") {
                 out = "rel";
+            } else if (token_dat.relabs[ix] === "abs") {
+                out = "abs";
             } else {
 
                 // For small percentages assume absolute:
                 // console.log("Get relative percentages and percentages <1%!");
                 // const numpart = token_dat.token[ix].match(regex_num)[0].replace(",", ".");
-                const numpart = token_dat.trnum[ix].match(regex_num)[0].replace(",", ".");  // use trransformed number instead.
+                const numpart = token_dat.trnum[ix].match(regex_num)[0].replace(",", ".");
+                // use transformed number instead to capture number words.
                 // console.log(numpart);
                 out = numpart < 10 ? "abs" : "rel";
             }
             // Assign the result:
             token_dat.relabs[ix] = out;
         }
+
+        // Code remaining percentages as absolute:
+        token_dat.relabs = token_dat.relabs.map((x, ix) => token_dat.unit[ix] === "perc" && [-1, "unknown"].includes(x) ? "abs" : x);
+
+        // eof. detecting relative vs. absolute.
 
         // Fix some issues:
         token_dat.numtype = token_dat.numtype
@@ -496,6 +729,7 @@ $(document).ready(function () {
         token_dat.unit = token_dat.unit.map((x) => x === "ucarryforward" ? -1 : x);
 
         // Loop over all tokens:
+        // TODO: Turn into a function eventually?
         for (let i = 0; i < token_dat.nrow; i++) {
 
             if (token_dat.is_num[i]) {
@@ -531,7 +765,7 @@ $(document).ready(function () {
                     let cur_numtype = token_dat.numtype.slice(i, i + match_len).filter((x) => x !== -1);
                     // console.log(token_dat.numtype.slice(i, i + match_len));
 
-                    // ignature of current number:
+                    // Signature of current number:
                     const currow = token_dat.get_row(i);
 
                     // This might help: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get?retiredLocale=de
@@ -562,7 +796,8 @@ $(document).ready(function () {
 
                     // Numbers that issue warnings:
                     // Strong warnings:
-                    const warn_num = ["incr", "decr"].includes(cur_numtype[0]) || ["pval", "mult"].includes(cur_unit);
+                    const warn_num = currow.includes("rel") || ["pval", "mult"].includes(cur_unit);
+                    // was: const warn_num = ["incr", "decr"].includes(cur_numtype[0]) || ["pval", "mult"].includes(cur_unit);
                     const warn_small = token_dat.smperc[i] === true;
 
                     // Unclarities (e.g., missing reference groups):
@@ -708,7 +943,7 @@ $(document).ready(function () {
 
         // Get numbers related to risk communication for 2. and 3.:
         const risknum_ix = token_dat.id
-            .filter((x) => ["perc", "freq", "nh", "mult"].includes(token_dat.unit[x].toString()) && token_dat.is_num[x]);
+            .filter((x) => ["perc", "freq", "nh", "mult", "nyear"].includes(token_dat.unit[x].toString()) && token_dat.is_num[x]);
         console.log("Risknum indices:");
         console.log(risknum_ix);
 
@@ -874,17 +1109,17 @@ $(document).ready(function () {
 
         // Flag out the use of numbers: ~~~~~~~~~~~~~~~~~~~~~~~
         let feature_num = "</ul><p>Welche Zahleninformation wird berichtet?</p><ul><li>";
-        const any_risk_num = ["perc", "freq", "nh", "mult"].filter((x) => token_dat.unit.includes(x));
+        const any_risk_num = txtfeat_dict.any_risknum;  // ["perc", "freq", "nh", "mult", "nyear"].filter((x) => token_dat.unit.includes(x));
         // console.log("Any risk num:");
         // console.log(token_dat.unit);
-        if (any_risk_num.length > 0) {
+        if (txtfeat_dict.any_risknum) {
             feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> Der Text scheint Zahlen " +
                 (!feature_arr.includes("damage") && feature_set?.damage ? "" :
-                "zu den genannten " +
-                "<div id=\"risk-tt\" class=\"tooltip\">" +
-                "<span class=\"tooltiptext tooltip-overview\">Anders der umgangssprachliche Risikobegriff gleichbedeutend mit \"Wahrscheinlichkeit\"" +
-                "(häufig etwa Wahrscheinlichkeit zu erkranken oder versterben; aber auch positiv, z.B., Wahrscheinlichkeit länger zu leben).</span>" +
-                "<a href='risk_wiki.html#wiki-risk'>Risiken</a></div> ") +
+                    "zu den genannten " +
+                    "<div id=\"risk-tt\" class=\"tooltip\">" +
+                    "<span class=\"tooltiptext tooltip-overview\">Anders der umgangssprachliche Risikobegriff gleichbedeutend mit \"Wahrscheinlichkeit\"" +
+                    "(häufig etwa Wahrscheinlichkeit zu erkranken oder versterben; aber auch positiv, z.B., Wahrscheinlichkeit länger zu leben).</span>" +
+                    "<a href='risk_wiki.html#wiki-risk'>Risiken</a></div> ") +
                 "zu berichten.";
 
             // +++ HERE!
@@ -946,7 +1181,7 @@ $(document).ready(function () {
                         " angegeben."
                 } else {
                     feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> " +
-                        "Die Zahlen scheinen sich leider weder auf den Untersuchungs- noch auf den Vergleichszeitpunkt zu beziehen."
+                        "Die Zahlen scheinen sich leider nicht auf die absoluten Risiken zum Untersuchungs- oder Vergleichszeitpunkt zu beziehen."
                 }
             }
 
@@ -1063,11 +1298,6 @@ $(document).ready(function () {
             // cur_popup.removeClass("selected-blur");
             $(".highlight-num").removeClass("selected-blur");
 
-            const popup_height = cur_popup.height();
-            const popup_width = cur_popup.width();
-            const popup_pad = cur_popup.innerHeight() - popup_height;
-            const num_height = cur_num.height();
-
             // Get text for the  popup:
             const token_id = cur_num.attr("id").replace("hn", "");
 
@@ -1096,6 +1326,7 @@ $(document).ready(function () {
             //     "Die Zahl bezieht sich" + (/_sub/.test(infokey) ? "absolut" : "relativ") + " zu sein." +
             //     "</p>";  // z.B., relative/absolute Prozentzahl.
 
+
             cur_popup.html(
                 `<h4>${curinfo.tool}</h4>` +
                 // `<p><strong>Bezug</strong>: ${token_dat.group[token_id]}</p>` +  // Some additional info!
@@ -1108,25 +1339,64 @@ $(document).ready(function () {
                 // +++ `<p>[Place to add more info, if needed!]</p>`+++
             );
 
+            // Get popup properties:
+            const popup_height = cur_popup.height();
+            const popup_width = cur_popup.width();
+            const popup_pad = cur_popup.innerHeight() - popup_height;
+            const num_height = cur_num.height();
+
             // Style the popup, position it and show:
             const txt_ele = $("#text-result");  // element for text container
-            const correction_left = txt_ele.position().left + txt_ele.width();
+            const right_bound = txt_ele.position().left + txt_ele.width();  // rightmost position.
+            const txt_ele_top = txt_ele.position().top;
 
             // Note: Eventually improve positioning; seemingly, the issue occurs only on the first click!
 
-            console.log(`Popup height (pad): ${popup_height} (${popup_pad}), Num height: ${num_height}, 
-            num pos (top, bottom) ${thispos.top}, ${thispos.left}`);
+            console.log(`Popup height (pad): ${popup_height} (${popup_pad}), Highlight height: ${num_height}, 
+            Highlight pos (top, bottom) ${thispos.top}, ${thispos.left}`);
+            console.log(`Right bound is ${right_bound}`);
 
+            // Fixed part of the position:
+            const top_fixed = thispos.top - num_height * 0.75 - popup_pad + 2;
+
+            // Adjust the popup position and show:
             cur_popup
                 .css({
-                    top: thispos.top,  // - popup_height - num_height - popup_pad,
+                    top: top_fixed - popup_height,  // add 2 pixels.
                     // If the popup goes out of bounds, correct.
-                    left: thispos.left + popup_width > correction_left ? thispos.left / 2 : thispos.left,
-                    position: 'absolute'
+                    left: (thispos.left + popup_width > right_bound) ? thispos.left - popup_width/2 : thispos.left
+                    // position: 'absolute'
+                })
+                // Redo some calculatios after positioning.
+                .css({
+                    // check if the top of the popup overlaps considerably
+                    top: top_fixed - cur_popup.height(),
+                    // If the popup goes out of bounds, correct.
+                    // left: (thispos.left + popup_width > correction_left) ? thispos.left / 2 : thispos.left
+                    // position: 'absolute'
                 })
                 // .addClass("selected-blur")
+
+            // TODO: Fix issue with rightmost numbers!
+
+                        console.log(`top of txt element: ${txt_ele_top}; 
+            top of parent: ${txt_ele.parent().position().top}, 
+            popup top: ${cur_popup.position().top}`);
+
+                cur_popup
+                // Redo some calculatios after positioning.
+                .css({
+                    // check if the top of the popup overlaps considerably
+                    top: cur_popup.position().top < txt_ele.parent().position().top ?
+                        top_fixed + num_height * 2 : top_fixed - cur_popup.height(),
+                    // If the popup goes out of bounds, correct.
+                    // left: (thispos.left + popup_width > correction_left) ? thispos.left / 2 : thispos.left
+                    // position: 'absolute'
+                })
                 .show();
 
+
+            // Add selection blur to the number:
             $(this).addClass("selected-blur");
 
             // Prevent propagation:
@@ -1209,14 +1479,12 @@ const numword_dict = {};
 const regex_num = new RegExp("(?<unknown>" + pat_num + "( Millionen| Milliarden)?)", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
 const regex_numwords = new RegExp("(?<unknown>(" + collapse_regex_or(numwords) + ") (Person(en)?|F[aä]lle?))", "dg");
 const regex_perc = new RegExp("(?<perc>" + pat_num + " ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.?!])" + ")", "dg");
-const regex_nh = new RegExp("(?<nh>" + pat_num + " (\\w+ )?(von|aus|in) (\\w+ )?" + pat_num + ")", "dg");  // TODO: Handle numberwords here.
+const regex_nh = new RegExp("(?<nh>" + pat_num + " (?!%|[Pp]rozent)(\\w+ )?(von|aus|in) (\\w+ )?" + pat_num + ")", "dg");  // TODO: Handle numberwords here.
 const regex_mult = new RegExp("(?<mult>" + pat_num + "[ \\-]?([Mm]al|[Ff]ach) (so )?( ?viele|gr[oö]ß(er)?|hoch|niedrig(er)?|besser|erhöht|höher)(?=[\\s.?!])" + ")", "dg");
 const regex_dur2 = /(?<dur>\d+([,.]\d+)?-?\d*([,.]\d+)?(Minuten?| Stunden?| Tagen?| Wochen?))/dg;
 // Note: in regex_nh we may also try to get the denominator as a group or as its own entity.
 // nh must also be identified from tokens (e.g., In der Gruppe von 1000[case] Leuten sterben 4[num/case].
 
-// Define units to not consider further:
-const units_exc = ["age", "currency", "time", "date", "year", "dur", "legal", "medical", "enum", "misc"];
 
 /*
 Tests for simple units:
@@ -1226,172 +1494,6 @@ Um 17 Uhr gehen wir bis 19:00 weg und kommen um 1.00 Uhr am 2.3.2021 heim.
 Das steht so in §12 Artikel 13, Absatz 10.
  */
 
-const check_numbers_dict = {
-    "perc": {
-        "regex": regex_perc,
-        // "tooltip": "Ich bin eine Prozentzahl und möchte gerne eine Referenz",
-        // "note": "Sie haben eine Prozentzahl verwendet. Stellen Sie sicher, dass eine Referenz vorhanden ist [mögliche Referenz ggf. ausflaggen!]. klicken Sie [HIER] um mehr zu erfahren."
-    },
-    "perc_word": {
-        "regex": RegExp("(?<perc>(" + collapse_regex_or(numwords) + ") ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.?!])" + ")", "dg")
-    },
-    "freq_word": {
-        "regex": regex_numwords
-    },
-    "nh": {
-        "regex": regex_nh,
-        // "tooltip": "Ich bin eine \"natürliche\" Häufigkeit",
-        // "note": "Sie haben eine natürliche Häufigkeit verwendet. Das ist sehr gut. Am besten sollte der Nenner über Vergleiche der Gleiche sein (z.B. 1 aus 100 Geimpften erkrankt, während 3 aus 100 ungeimpften erkranken)."
-    },
-    // multtude of something (e.g. 20-fach).
-    "mult": {
-        "regex": regex_mult
-    },
-    "mult2": {
-        "regex": /(?<mult>([Hh]alb|[Dd]oppelt|[Dd]reifach|[Dd]reimal) (so )?(viele|gr[oö]ß|hoch|niedrig|besser|erhöht|höher))/dg
-    },
-    "pval": {
-        "regex": RegExp("(?<pval>p ?[\\<\\=] ?" + pat_num + ")", "dg")
-    },
-    "confint": {
-        "regex": RegExp("(?<confint>" + pat_num + " ?% ?[CK]I:? \\[?" + pat_num + " ?[-\\u2013;,] ?" + pat_num + "\\]?)", "dg")
-    },
-    "yearnum": {
-        "regex": /(?<nyear>\d+([.|,]\d+)( Jahr[a-z]*))/dg  // require comma or pouint separator!
-        // "regex": /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
-    },
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    // Simple matches:
-    "age": {
-        "regex": /(?<age>(?<![,.])(\d+-? bis )?\d+-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
-        // "regex": /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
-    },
-    // "age2": {
-    //     "regex": RegExp("(?<age>" + pat_num + "( Jahre|\-jährig)" + ")", "dg")
-    // },
-    "currency_post": {
-        "regex": RegExp("(?<currency>" + pat_num + " ?(EUR|€|Euro|Dollar)" + ")", "dg")
-    },
-    "currency_pre": {
-        "regex": RegExp("(?<currency>" + "(USD|\$) ?" + pat_num + ")", "dg")
-    },
-    "time": {
-        "regex": /(?<time>(\d{1,2}(\.\d{2})? Uhr)|(\d{1,2}:\d{2}))/dg
-    },
-    "date": {
-        "regex": /(?<date>\d{1,2}\.\d{1,2}\.(18|19|20)\d{2}(?![|.\w]))/dg
-    },
-    "year": {
-        "regex": /(?<year>(Jahr|Anfang|Ende|Mitte|Nach) \d{4})/dg
-    },
-    "year2": {
-        "regex": /(?<year>(18|19|20)?\d{2}er)/dg
-    },
-    "year3": {
-        "regex": /(?<year>(?<!(,|\.|Jahr |Anfang |Ende |Mitte |Nach ))(19|20)\d{2}(?![|.\w]))/dg  // 20th and 21st century.
-    },
-    "monyear": {
-        "regex": RegExp("(?<year>(" + collapse_regex_or(["Januar", "Februar", "März", "April", "Mai", "Juni",
-            "Juli", "August", "September", "Oktober", "November",
-            "Dezember"]) + ") (18|19|20)?\\d{2})", "dg")
-    },
-    "yearrange": {
-        "regex": /(?<year>(zwischen|von) (18|19|20)\d{2}(?![|.\w]) (und|bis) (18|19|20)?\d{2}(?![|.\w]))/dg
-    },
-    "dur": {
-        "regex": /(?<dur>[0-9]+(-stündig|-tägig| Minuten?| Stunden?| Tagen?| Wochen?| Monate?))/dg
-    },
-    "dur2": {
-        "regex": regex_dur2
-    },
-    "legal": {
-        "regex": /(?<legal>(Artikel|§|Absatz|Paragra(ph|f)) ?\d+)/dg
-    },
-    "medical": {
-        "regex": RegExp("(?<medical>(BMI|Diabetes Typ) ?" + pat_num + ")", "dg")
-    },
-    "medical_post": {
-        "regex": RegExp("(?<medical>" + pat_num + " (Gene))", "dg")
-    },
-    // Carry-forward match:
-    "carry_forward_pre": {
-        "regex": RegExp("(?<ucarryforward>((waren|sind) es|[Dd]avon[^.]*) (\\w+ ){0,2}" + pat_num + "(?=\\W))", "dg")
-        // (\w+ ){0,2} allows up to 2 more words.
-    },
-    "carry_forward_post": {
-        "regex": RegExp("(?<ucarryforward>" + pat_num + " (waren|sind) es)", "dg")
-    },
-    "misc": {
-        // MIscellaneous numbers to be excluded!
-        "regex": RegExp("(?<misc>" + pat_num + "\\.? Grad)", "dg")
-    },
-    // Enumeration:
-    "enum": {
-        // MIscellaneous numbers to be excluded!
-        "regex": /(?<enum>\(\d{1,2}\))/dg
-    },
-    // "within_nums": {
-    //   "regex": RegExp("(?<misc>" +"\w*-?" + pat_num + ")", "dg")
-    // },
-    // Default number match:
-    "other_num": {
-        "regex": regex_num,
-        // "tooltip": "Ich weiß nicht, was ich für eine Zahl bin",
-        // "note": "Sie haben eine Zahl verwendet, für die wir nicht bestimmen konnten, was sie bedeutet. Stellen Sie sicher, dass die Bedeutung der Zahl klar ist."
-    }
-
-}
-
-//
-const numtype_keyset = {
-    "incr": {
-        "number_unit": ["perc", "mult"],  // add in other types eventually! 30-fach etc.
-        "keyset": [
-            // A first entry to a domain-general keyset for risk:
-            [RegExp(collapse_regex_or(["[Rr]isiko", "[Ww]ahrscheinlich", "Inzidenz", "Todesfälle"])),
-                RegExp(collapse_regex_or(["höher", "erhöht"]))]
-        ]
-    },
-    "decr": {
-        "number_unit": ["perc", "mult"],  // add in other types eventually! 30-fach etc.
-        "keyset": [
-            // A first entry to a domain-general keyset for risk:
-            [RegExp(collapse_regex_or(["[Rr]isiko", "Gefahr", "[Ww]ahrscheinlich", "Inzidenz", "Todesfälle", "Erkrank"])),
-                RegExp(collapse_regex_or(["[Rr]eduzier", "minimier", "niedriger", "(ge|ver)ringert?", "s[ae]nk"]))],
-            [RegExp(collapse_regex_or(["besser"])),
-                RegExp(collapse_regex_or(["geschützt"]))]
-        ]
-    },
-    // Total nuber of cases/incidents:
-    // NOTE: Order matters!
-    "ncase": {
-        "number_unit": ["freq", "nh"],
-        "keyset": [
-            // TODO: Double check these!
-            [RegExp("Fälle|Verläufe"), RegExp("insgesamt|nach|Studie")],
-            [RegExp("[Ee]rkrankt|[Bb]etroffen")],
-            [RegExp("Todesfälle")],
-            [RegExp("(ver)?st[aeo]rben"), RegExp("Person|Teilnehm|[Gg]ruppe")],
-            // Reporting certain effects in study:
-            [RegExp("berichte(te)?n|entwickel|beobacht"), RegExp("Unwohlsein|Nebenwirkungen")],
-            [RegExp("berichte(te)?n"), RegExp("wohl"), RegExp("fühlen")]
-        ]
-    },
-    "ntot": {
-        "number_unit": ["freq"],
-        "keyset": [
-            [RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder|Erwachsene"),
-                RegExp(collapse_regex_or(["insgesamt", "nahmen", "erh(a|ie)lten", "befragt", "ausgewählt", "umfass(t|en)"])),
-                RegExp(collapse_regex_or(["Studie", "Untersuchung", "Erhebung"]))],
-            [RegExp(collapse_regex_or(["Daten", "[Bb]efragt"])),
-                RegExp(collapse_regex_or(["von", "über"])),
-                RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder")],
-            // 2nd set:
-            [RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder|Erwachsene"),
-                RegExp("Analyse")]
-        ]
-    }
-}
 
 // The following should be its own (because numbers belong to a category and can be an approximation)
 // "APPROX": {
@@ -1500,6 +1602,30 @@ const unit_note_dict = {
                 "<a href='risk_wiki.html#wiki-pval'>p-Werte</a></div>. Diese sind leicht missverständlich und sollten vermieden werden. "
         }
     },
+    "nyear": {
+        "tooltip": {
+            "other": "<a href='risk_wiki.html#wiki-lifex'>Lebenserwartungen</a> in Jahren",
+            "incr": "Unterschiede in der <a href='risk_wiki.html#wiki-lifex'>Lebenserwartung</a>",
+            "decr": "Unterschiede in der <a href='risk_wiki.html#wiki-lifex'>Lebenserwartung</a>"
+        },
+        "note": function (type_arr) {
+            // console.log("~~~~~~~~~~~~~ HANDLE NUMBERS OF YEARS ~~~~~~~~~~~~~~~~~~");
+            // console.log(type_arr);
+            return `Der Text enthält ${[...new Set(type_arr)].join(" und ")}.<br>Diese Information kann aktuell nicht optimal verarbeitet werden.`
+            // "Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
+        }
+    },
+    "age": {
+        "tooltip": {
+            "other": "Alter in Jahren"
+        },
+        "note": function (type_arr) {
+            // console.log("~~~~~~~~~~~~~ HANDLE NUMBERS OF YEARS ~~~~~~~~~~~~~~~~~~");
+            // console.log(type_arr);
+            return `Der Text enthält Altersangaben.`
+            // "Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
+        }
+    },
     // Unidentified matches:
     "unknown": {
         "tooltip": {"other": "Konnte nicht identifiziert werden"},
@@ -1568,17 +1694,26 @@ const info_tree = {
         "perc": {
             "abs": new OutputNode("Absolute Prozentzahl", popup_perc("abs") + info_data.prozent.popup),
             "rel": new OutputNode("Relative Prozentzahl", popup_perc("rel") + info_data.rel.popup),
+            "default": new OutputNode("Prozentzahl", "Diese Prozentzahl konnte leider nicht näher identifiziert werden")
         },  // Note: This is merely an addition; make its own tree or a condition within the perc-tree?
         "nh": new OutputNode("Natürliche Häufigkeit.", info_data.nh.popup),
         "freq": {
             "ncase": new OutputNode("Fallzahl", popup_freq("ncase") + info_data.freq.popup),
             "ntot": new OutputNode("Stichprobengröße", popup_freq("ntot") + info_data.sample_size.popup),
-            "default": new OutputNode("Anzahl", "Diese Zahl konnte leider nicht näher identifiziert werden")
+            "default": new OutputNode("Häufigkeit", "Diese Häufigkeit konnte leider nicht näher identifiziert werden")
         },
         "mult": new OutputNode("Relative Veränderung", info_data.rel.popup),
         "pval": new OutputNode("p-Wert", info_data.pval.popup),
         "confint": new OutputNode("Konfidenzintervall", info_data.confint.popup),
-        "nyear": new OutputNode("Anzahl an Jahren.", "Anzahl an Jahren. Kann z.B. zur Veränderung von Lebenserwartung anegeben werden."),
+        "nyear": {
+            "decr": new OutputNode("Unterschied in der Lebenserwartung", "Kann zum Vergleich der Sterblichkeit verschiedener Gruppen dienen. " +
+                "Achten Sie darauf, die Gesamtlebenserwartung anzugeben."),
+            "incr": new OutputNode("Unterschied in der Lebenserwartung", "Kann zum Vergleich der Sterblichkeit verschiedener Gruppen dienen. " +
+                "Achten Sie darauf, die Gesamtlebenserwartung anzugeben."),
+            "other": new OutputNode("Lebenserwartung in Jahren", "Lebenserwartung kann zur Beurteilung der Sterblichkeit dienen."),
+            "default": new OutputNode("Anzahl an Jahren", "Diese Anzahl an Jahren konnte leider nicht näher identifiziert werden")
+        },
+        "age": new OutputNode("Altersangabe", "Kann insbesondere hilfreich sein, um Unterschiede in der Lebenserwartung einzuordnen."),
         "default": new OutputNode("Zahl.", "Diese Zahl konnte leider nicht näher identifiziert werden")
     },
     "traverse": function (arr) {
@@ -2494,24 +2629,27 @@ function detect_unit(token_data) {
 function detect_regex_match(txt, token_dat, check_dict) {
     let arr_match = [];
 
+    // Array with precendence rules:
+    const arr_drop = [
+        {"set": ["age", "nyear"], "drop": "age"}  // which should be checked and which should be dropped?
+    ];
+
     // Loop over dictionary with rules:
     for (const [key, value] of Object.entries(check_dict)) {
         // console.log(`${key} ${value["note"]}`); // "a 5", "b 7", "c 9"
-
 
         // Variant with exec:
         const matches = get_regex_matches(txt, value["regex"]);
 
         // console.log(`Raw matches for ${key}:`);
         // console.log(matches);
-
         arr_match = arr_match.concat(matches);
 
     }
 
     // Clean up the matches from all for redundancy:
-    // console.log("Match objects:");
-    // console.log(arr_match);
+    console.log("Match objects:");
+    console.log(JSON.stringify(arr_match));
     // console.log(token_dat);
     // If a match is fully included in another, the match can be removed.
     // There is also some hierarchy (undefined numbers should only be output when
@@ -2533,11 +2671,11 @@ function detect_regex_match(txt, token_dat, check_dict) {
         // Search from the back!
         let match_end = token_dat.end.findLastIndex(x => x <= (match.start_end[1] - 1) && x > match.start_end[0]);
         //
-        // console.log("Match start and end: " + match_start + ", " + match_end);
-        // console.log(match);
-        // console.log(match.type);
+        console.log("Match start and end: " + match_start + ", " + match_end);
+        console.log(match);
+        console.log(match.type);
         // console.log(["unknown", "ucarryforward"].includes(match.type[0]));
-        // console.log(match_type);  // already found matches.
+        console.log(JSON.stringify(match_type));  // already found matches.
 
         // If one of the indices can be found:
         if (match_start !== -1 || match_end !== -1) {
@@ -2560,7 +2698,7 @@ function detect_regex_match(txt, token_dat, check_dict) {
             // console.log(match_type.toString());
             if (match_type[match_start] === -1 && match_type[match_end] === -1) {
 
-                // console.log("Establish new match");
+                console.log("Establish new match");
                 match_id = [i];
                 cur_type = match.type;
 
@@ -2573,14 +2711,33 @@ function detect_regex_match(txt, token_dat, check_dict) {
                 // arr_match.splice(i);
                 droplist = droplist.concat(i);
                 let prev_ix = token_match[match_start]
+                // console.log(prev_ix);
+
+                const precedence_list = ["nyear", "age"];
+                // nyear has precedence over age, because it is more specific!
 
                 if (prev_ix !== -1) {
                     prev_ix = Array.isArray(prev_ix) ? prev_ix : [prev_ix];
                     match_id = prev_ix.concat(i);
-                    cur_type = match.type;  // might also concat...
 
                     // Also amend the previous match to include the other type?
-                    arr_match[prev_ix[0]].type = arr_match[prev_ix[0]].type.concat(match.type);
+                    const prev_type = arr_match[prev_ix[0]].type;  // get the previous type.
+                    cur_type = match.type;  // might also concat...
+                    // note: conversion to string should be robust, since only the first key ist saved.
+
+                    console.log(`Does ${cur_type}: ${precedence_list.indexOf(cur_type)} replace ${prev_type[0]}: ${precedence_list.indexOf(prev_type[0])}`);
+                    console.log(cur_type);
+                    console.log(prev_type);
+
+                    if (precedence_list.indexOf(cur_type[0]) < precedence_list.indexOf(prev_type[0])) {
+                        // Note: undefined is indexOf = -1; thus undefined has precedence over defined!
+                        // arr_match[prev_ix[0]].type = prev_type.type.concat(cur_type);  // combine previous and current.
+                        console.log(`Replace match ${prev_type} with ${cur_type}`);
+                        arr_match[prev_ix[0]].type = cur_type;  // update match, if curtype has precedence.
+                    } else {
+                        cur_type = prev_type;
+                    }
+
                 }
 
 
@@ -2590,6 +2747,7 @@ function detect_regex_match(txt, token_dat, check_dict) {
             }
 
             if (cur_type !== -1) {
+
                 // Update the data when anything could be found:
                 // console.log(`Replacing ${n_ele} elements with matchtype ${cur_type}`);
                 token_match.splice(match_start, n_ele, Array(n_ele).fill(match_id));
@@ -2605,7 +2763,7 @@ function detect_regex_match(txt, token_dat, check_dict) {
 
     }
 
-    // console.log("Match data (raw):");
+    console.log("Match data (raw):");
     // console.log(token_match);
     // console.log(match_type);
     // console.log(droplist);
@@ -2617,10 +2775,10 @@ function detect_regex_match(txt, token_dat, check_dict) {
     // Sort the array by the starting position of each match:
     arr_match = arr_match.sort((a, b) => a.start_end[0] - b.start_end[0]);
 
-    // console.log("Match data (cleaned):");
-    // console.log(arr_match);
+    console.log("Match data (cleaned):");
+    console.log(arr_match);
     // console.log(token_match);
-    // console.log(match_type);
+    console.log(match_type);
 
     // Is it more efficient to check for the matches or the tokens?
     // Likely the matches, because there are fewer by design!
@@ -2716,6 +2874,7 @@ function get_regex_matches(txt, regexp) {
 
         const curmatch = {"type": [key[0]], "match": match.groups[key], "start_end": match.indices.groups[key]};
         // console.log(curmatch);
+        // NOTE: key[0] ensures that it is only one item.
         arr_out = arr_out.concat(curmatch);  // append match object to array.
 
     }

@@ -1,7 +1,7 @@
 const wiki_order = ["risk", "effside", "prozent", "freq", "nh",
     "rel", "baseprob", "sample_size",
-    "cprob", "pval",
-    "causal", "rct", "treat", "control", "placebo"]
+    "cprob", "pval", "confint",
+    "causal", "rct", "treat", "teval", "control", "placebo", "tcomp"]
 
 
 $(document).ready(function () {
