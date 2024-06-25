@@ -603,12 +603,14 @@ h3 {
     width: 100%;
     /*background-color: lightsteelblue;*/
     border-bottom: 1px solid darkgrey;
+    z-index: 9999;
 }
 
 .check-results-navrow div {
     cursor: pointer;
     padding: 0.8em 0.5em 0.2em;
     justify-self: end;
+    z-index: 9999;
 }
 
 #stop-edit {
