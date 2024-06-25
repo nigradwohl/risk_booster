@@ -3,74 +3,74 @@ $(document).ready(function () {
 
     console.log("App started");
 
-    // Likely we want to have an OOP table representation, where we can calculate margin sums of interest etc.!
-    let testtab = new Table2x2([[2800, 200], [2950, 50]]);
-    // console.log(testtab);
+    // // Likely we want to have an OOP table representation, where we can calculate margin sums of interest etc.!
+    // let testtab = new Table2x2([[2800, 200], [2950, 50]]);
+    // // console.log(testtab);
+    // // // console.log("Sum margin 1: ");
+    // // // console.log(testtab.margin1_sum());
+    // // console.log("Mean margin 1: ");
+    // // console.log(testtab.margin1_mean());
+    // // console.log("Sum margin 2: " + testtab.margin2_sum());
+    //
+    // // Now test a table with missings (create through update function):
+    // // Note: missings should be handled as NaN, to be ignored in calculations!
+    // testtab.update([[2850, 150], [NaN, 50]]);
+    // // console.log(testtab);
     // // console.log("Sum margin 1: ");
     // // console.log(testtab.margin1_sum());
-    // console.log("Mean margin 1: ");
-    // console.log(testtab.margin1_mean());
-    // console.log("Sum margin 2: " + testtab.margin2_sum());
-
-    // Now test a table with missings (create through update function):
-    // Note: missings should be handled as NaN, to be ignored in calculations!
-    testtab.update([[2850, 150], [NaN, 50]]);
-    // console.log(testtab);
-    // console.log("Sum margin 1: ");
-    // console.log(testtab.margin1_sum());
-    // console.log("Mean margin 1: ");
-    // console.log(testtab.margin1_mean());
-
-    // New usecase:
-
-    // Eventual example:
-    // Basic tables:
-    const ntab2 = new Basetable(
-        [
-            [NaN, NaN],  // non-cases among control and treatment.
-            [NaN, 141]], // cases among control and treatment.
-        [NaN, NaN], [NaN, NaN], 32449);
-    const ptab2 = new Basetable(na_tab,
-        [NaN, NaN], [NaN, 0.67], 1);
-    const mtab12 = new Margintable(na_tab,
-        [NaN, NaN], [NaN, NaN]);
-    const mtab22 = new Margintable(na_tab,
-        [NaN, NaN],  // relative risk (NOT reduction) between dim0 1/0
-        [NaN, 1 - 0.79]  // the array position indicates the direction.
-        // relative risk (NOT REDUCTION) between dim1 1/0 (typically treatment/control)
-    );
-
-    const testcase = new RiskCollection(ntab2, ptab2, mtab12, mtab22);
-
-    // Simple example:
-    const ntab3 = new Basetable([[10708, NaN], [NaN, 141]], [NaN, NaN], [11040, NaN], 32449);
-    const ptab3 = new Basetable(na_tab, [NaN, 0.67], [NaN, NaN], 1);
-    // console.log(ntab2);
-    // console.log(ntab2.complete_margins());
-    // console.log(ntab2.complete_table());
-    // // ntab2.complete_table();
-    // console.log(ntab2);
-
-    // console.log(ptab2);
-    // console.log(ptab2.tab.count_missings());
-
-    const simple_risk = new RiskCollection(ntab3, ptab3, mtab12, mtab22);
-    simple_risk.ptab.complete_margins();
-    simple_risk.n_from_p();
-    // console.log(simple_risk);
-
-    // How far are we with out testcase?
-    // console.log("+++ Main testcase +++");
-    // console.log(JSON.stringify(testcase));
-    // testcase.ptab.complete_margins();
-    // testcase.n_from_p();
-    // testcase.ntab.complete_table();
-    testcase.try_completion(0);
-    // testcase.try_completion();
-    // console.log(testcase);
-    // console.log(testcase.ntab.tab.tab2x2);
-
-    // console.log("+++ eof. Main testcase +++");
+    // // console.log("Mean margin 1: ");
+    // // console.log(testtab.margin1_mean());
+    //
+    // // New usecase:
+    //
+    // // Eventual example:
+    // // Basic tables:
+    // const ntab2 = new Basetable(
+    //     [
+    //         [NaN, NaN],  // non-cases among control and treatment.
+    //         [NaN, 141]], // cases among control and treatment.
+    //     [NaN, NaN], [NaN, NaN], 32449);
+    // const ptab2 = new Basetable(na_tab,
+    //     [NaN, NaN], [NaN, 0.67], 1);
+    // const mtab12 = new Margintable(na_tab,
+    //     [NaN, NaN], [NaN, NaN]);
+    // const mtab22 = new Margintable(na_tab,
+    //     [NaN, NaN],  // relative risk (NOT reduction) between dim0 1/0
+    //     [NaN, 1 - 0.79]  // the array position indicates the direction.
+    //     // relative risk (NOT REDUCTION) between dim1 1/0 (typically treatment/control)
+    // );
+    //
+    // const testcase = new RiskCollection(ntab2, ptab2, mtab12, mtab22);
+    //
+    // // Simple example:
+    // const ntab3 = new Basetable([[10708, NaN], [NaN, 141]], [NaN, NaN], [11040, NaN], 32449);
+    // const ptab3 = new Basetable(na_tab, [NaN, 0.67], [NaN, NaN], 1);
+    // // console.log(ntab2);
+    // // console.log(ntab2.complete_margins());
+    // // console.log(ntab2.complete_table());
+    // // // ntab2.complete_table();
+    // // console.log(ntab2);
+    //
+    // // console.log(ptab2);
+    // // console.log(ptab2.tab.count_missings());
+    //
+    // const simple_risk = new RiskCollection(ntab3, ptab3, mtab12, mtab22);
+    // simple_risk.ptab.complete_margins();
+    // simple_risk.n_from_p();
+    // // console.log(simple_risk);
+    //
+    // // How far are we with out testcase?
+    // // console.log("+++ Main testcase +++");
+    // // console.log(JSON.stringify(testcase));
+    // // testcase.ptab.complete_margins();
+    // // testcase.n_from_p();
+    // // testcase.ntab.complete_table();
+    // testcase.try_completion(0);
+    // // testcase.try_completion();
+    // // console.log(testcase);
+    // // console.log(testcase.ntab.tab.tab2x2);
+    //
+    // // console.log("+++ eof. Main testcase +++");
 
 
 })

@@ -879,6 +879,7 @@ function handle_missing_input(ev, missing_entries) {
  * @param e Calling event
  * @param info_arr ordered array with icon info
  * @param curid Current ID for replacement
+ * @param col_arr Array of colors
  */
 function zoom_canvas(e, info_arr, curid, col_arr) {
     // console.log(obj.attr("id"));
