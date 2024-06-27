@@ -911,7 +911,6 @@ $(document).ready(function () {
         console.log(curcomp);
 
 
-
         // Notes about features (presence of effectivity and harm; reporting of comparison group):
         const feature_dict = {
             "eff": "<div id=\"eff-tt\" class=\"tooltip\">" +
@@ -1001,12 +1000,23 @@ $(document).ready(function () {
         };
 
         // This collection allows to hint at communicating about differences between reporting about effectivity and side effects (mismatched framing).
-        // +++ HERE +++
-        let mismatched_framing = false;
+        let mismatched_framing = "none";
         if (txtfeat_dict.eff_num && txtfeat_dict.side_num) {
 
-            mismatched_framing = check_any_arr(risknum_rows, ["side", "abs"]) && !check_any_arr(risknum_rows, ["side", "rel"]) &&
-                !check_any_arr(risknum_rows, ["eff", "abs"]) && check_any_arr(risknum_rows, ["eff", "rel"]);
+            // Array of relevant indicators:
+            const mismatch_arr = [check_any_arr(risknum_rows, ["side", "abs"]), check_any_arr(risknum_rows, ["side", "rel"]),
+                check_any_arr(risknum_rows, ["eff", "abs"]), check_any_arr(risknum_rows, ["eff", "rel"])]
+
+            if([true, false, false, true].every((x, ix) => mismatch_arr[ix] === x)){
+                mismatched_framing = "side_rel"
+            } else if([false, true, true, false].every((x, ix) => mismatch_arr[ix] === x)){
+                mismatched_framing = "eff_rel"
+            }
+
+
+            // // The less likely case:
+            // check_any_arr(risknum_rows, ["side", "rel"]) && !check_any_arr(risknum_rows, ["side", "abs"]) &&
+            // !check_any_arr(risknum_rows, ["eff", "rel"]) && check_any_arr(risknum_rows, ["eff", "abs"]);
         }
 
         console.log("~~~~~~~~~~~~ Text features: ~~~~~~~~~~~~~~~~");
@@ -1219,16 +1229,30 @@ $(document).ready(function () {
 
 
         // Add mismatched framing:
-        if (mismatched_framing) {
-            arr_li.add('Achtung: Sie haben in Behandlungsgruppe relative Zahlen und in der Vergleichsgruppe absolute Zahlen verwendet.' +
+        if (["side_rel", "eff_rel"].includes(mismatched_framing)) {
+
+            let mismatch_inf = [["relative Zahlen", "größer"], ["absolute Zahlen", "kleiner"]];
+            if(mismatched_framing === "eff_rel"){mismatch_inf.reverse()}
+
+            arr_li.add('Achtung: Sie haben für den Nutzen ' +
+                mismatch_inf[0][0] +
+                ' und für die Schadenwirkung ' +
+                mismatch_inf[1][0] +
+                ' verwendet. ' +
                 'Dieses "' +
-                '<div id=\\"eff-tt\\" class=\\"tooltip\\">' +
-                '                <span class="tooltiptext tooltip-overview">Beschreibt die Verwendung relativer und absoluter Maße ' +
-                'für Nutzen und Schadenwirkung. Da relative Angaben meist überschätzt werden, ' +
+                '<div id="eff-mmf" class="tooltip">' +
+                '<span class="tooltiptext tooltip-overview">Verwendung relativer Maße ' +
+                'für den Nutzen und absoluter Maße für die Schadenwirkung (auch umgekehrt möglich). ' +
+                'Da relative Angaben meist überschätzt werden, ' +
                 'stellt mismatched framing eine intransparente Verzerrung dar und sollte vermieden werden.</span>' +
                 '<a href=\'risk_wiki.html#wiki-mismatch\'>mismatched framing</a></div>' +
-                '" sollte vermieden werden, ' +
-                'da es <a>[LINK]Die Wirksamkeit größer und den Schaden kleiner [ODER ANDERSHERUM!] erscheinen lässt</a>');
+                '" sollte vermieden werden. '
+                // 'da es <a href="risk_wiki.html#wiki-effside">Die Wirksamkeit ' +
+                // mismatch_inf[0][1] +
+                // ' und den Schaden ' +
+                // mismatch_inf[1][1] +
+                // ' erscheinen lässt</a>'
+        );
         }
 
         // List of notes on number types:
@@ -1368,7 +1392,7 @@ $(document).ready(function () {
                 .css({
                     top: top_fixed - popup_height,  // add 2 pixels.
                     // If the popup goes out of bounds, correct.
-                    left: (thispos.left + popup_width > right_bound) ? thispos.left - popup_width/2 : thispos.left
+                    left: (thispos.left + popup_width > right_bound) ? thispos.left - popup_width / 2 : thispos.left
                     // position: 'absolute'
                 })
                 // Redo some calculatios after positioning.
@@ -1379,15 +1403,15 @@ $(document).ready(function () {
                     // left: (thispos.left + popup_width > correction_left) ? thispos.left / 2 : thispos.left
                     // position: 'absolute'
                 })
-                // .addClass("selected-blur")
+            // .addClass("selected-blur")
 
             // TODO: Fix issue with rightmost numbers!
 
-                        console.log(`top of txt element: ${txt_ele_top}; 
+            console.log(`top of txt element: ${txt_ele_top}; 
             top of parent: ${txt_ele.parent().position().top}, 
             popup top: ${cur_popup.position().top}`);
 
-                cur_popup
+            cur_popup
                 // Redo some calculatios after positioning.
                 .css({
                     // check if the top of the popup overlaps considerably
