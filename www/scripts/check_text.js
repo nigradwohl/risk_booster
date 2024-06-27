@@ -99,7 +99,6 @@ Content ideas:
 
 */
 
-
 // Trigger the functionality:
 $(document).ready(function () {
 
@@ -185,6 +184,9 @@ $(document).ready(function () {
             "date": {
                 "regex": /(?<date>\d{1,2}\.\d{1,2}\.(18|19|20)\d{2}(?![|.\w]))/dg
             },
+            "month": {
+                "regex": RegExp("(?<date>\\d{1,2}\\.? (" + collapse_regex_or(month_names) + ")( \\d{4})?)", "dg")
+            },
             "datemon": {
                 "regex": /(?<date>\d{1,2}\.\d{1,2}\.(18|19|20)\d{2}(?![|.\w]))/dg
             },
@@ -198,15 +200,13 @@ $(document).ready(function () {
                 "regex": /(?<year>(?<!(,|\.|Jahr |Anfang |Ende |Mitte |Nach ))(19|20)\d{2}(?![|.\w]))/dg  // 20th and 21st century.
             },
             "monyear": {
-                "regex": RegExp("(?<date>\\d{1,2}\\.? (" + collapse_regex_or(["Januar", "Februar", "März", "April", "Mai", "Juni",
-                    "Juli", "August", "September", "Oktober", "November",
-                    "Dezember"]) + "))", "dg")
+                "regex": RegExp("(?<year>" + collapse_regex_or(month_names) + " \\d{4})", "dg")
             },
             "yearrange": {
                 "regex": /(?<year>(zwischen|von) (18|19|20)\d{2}(?![|.\w]) (und|bis) (18|19|20)?\d{2}(?![|.\w]))/dg
             },
             "dur": {
-                "regex": /(?<dur>[0-9]+(-stündig|-tägig| Minuten?| Stunden?| Tagen?| Wochen?| Monate?))/dg
+                "regex": /(?<dur>[0-9]+(-stündig|-tägig|-monatig| Minuten?| Stunden?| Tagen?| Wochen?| Monate?))/dg
             },
             "dur2": {
                 "regex": regex_dur2
@@ -233,7 +233,11 @@ $(document).ready(function () {
             },
             "misc": {
                 // MIscellaneous numbers to be excluded!
-                "regex": RegExp("(?<misc>(" + pat_num + " bis )?" + pat_num + "\\.? (Grad|Staat|Schritt))", "dg")
+                "regex": RegExp("(?<misc>(" + pat_num + " bis )?" + pat_num + "\\.? (Grad|Staat|Schritt|Kommentare|.[gC](?= .)))", "dg")
+            },
+            "degree": {
+                // MIscellaneous numbers to be excluded!
+                "regex": RegExp("(?<misc>(" + pat_num + " bis )?" + pat_num + "\\.?(.[gC](?= .)))", "dg")
             },
             // Enumeration:
             "enum": {
@@ -281,7 +285,9 @@ $(document).ready(function () {
                     [RegExp(collapse_regex_or(["weniger"])),
                         RegExp(collapse_regex_or(["lebt?en"]))],
                     [RegExp(collapse_regex_or(["Sterblichkeitslücke"])),
-                        RegExp(collapse_regex_or(["vergrößert"]))]
+                        RegExp(collapse_regex_or(["vergrößert"]))],
+                    [RegExp(collapse_regex_or(["Demenz", "Krankheit"])),
+                        RegExp(collapse_regex_or(["verlangsamt"]))]
                 ]
             },
             // Total nuber of cases/incidents:
@@ -1010,9 +1016,9 @@ $(document).ready(function () {
             const mismatch_arr = [check_any_arr(risknum_rows, ["side", "abs"]), check_any_arr(risknum_rows, ["side", "rel"]),
                 check_any_arr(risknum_rows, ["eff", "abs"]), check_any_arr(risknum_rows, ["eff", "rel"])]
 
-            if([true, false, false, true].every((x, ix) => mismatch_arr[ix] === x)){
+            if ([true, false, false, true].every((x, ix) => mismatch_arr[ix] === x)) {
                 mismatched_framing = "side_rel"
-            } else if([false, true, true, false].every((x, ix) => mismatch_arr[ix] === x)){
+            } else if ([false, true, true, false].every((x, ix) => mismatch_arr[ix] === x)) {
                 mismatched_framing = "eff_rel"
             }
 
@@ -1235,7 +1241,9 @@ $(document).ready(function () {
         if (["side_rel", "eff_rel"].includes(mismatched_framing)) {
 
             let mismatch_inf = [["relative Zahlen", "größer"], ["absolute Zahlen", "kleiner"]];
-            if(mismatched_framing === "eff_rel"){mismatch_inf.reverse()}
+            if (mismatched_framing === "eff_rel") {
+                mismatch_inf.reverse()
+            }
 
             arr_li.add('Achtung: Sie haben für den Nutzen ' +
                 mismatch_inf[0][0] +
@@ -1255,7 +1263,7 @@ $(document).ready(function () {
                 // ' und den Schaden ' +
                 // mismatch_inf[1][1] +
                 // ' erscheinen lässt</a>'
-        );
+            );
         }
 
         // List of notes on number types:
@@ -1500,12 +1508,12 @@ Other formats to detect: Odds ratio, ARR/RRR, NNT...
 */
 
 // Constants:
+const month_names = ["Januar", "Februar", "März", "April", "Mai", "Juni",
+    "Juli", "August", "September", "Oktober", "November",
+    "Dezember"];
 const pat_num = "(?:(?<![\\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,:][0-9]+)?))(?!\\\.[0-9A-Za-zÄÖÜäöüß]|[a-zA-Z0-9ÄÖÜäöüß])"
-const numwords = ["[Kk]eine", "(?<![Kk])[Ee]ine?r?", "[Zz]wei(?!fe)", "[Dd]rei", "[Vv]ier", "[Ff]ünf", "[Ss]echs",
+const numwords = ["[Kk]eine", "(?<![Kk])[Ee]ine?r?(?![gnz])", "[Zz]wei(?!fe)", "[Dd]rei", "[Vv]ier", "[Ff]ünf", "[Ss]echs",
     "[Ss]ieben", "[Aa]cht(?!e)", "[Nn]eun(?!k)", "[Zz]ehn", "[Ee]lf", "[Zz]wölf"]
-
-// TODO: DIctionary to translate:
-const numword_dict = {};
 
 const regex_num = new RegExp("(?<unknown>" + pat_num + "( Millionen| Milliarden)?)", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
 const regex_numwords = new RegExp("(?<unknown>(" + collapse_regex_or(numwords) + ") (Person(en)?|F[aä]lle?))", "dg");
