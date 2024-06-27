@@ -196,7 +196,7 @@
 .canvas-zoom {
     position: absolute;
     justify-content: center;
-    top: 2.5%;
+    top: 5px;  /*slight space to top.*/
     left: 15%;
     height: 90%;
     width: 90%;

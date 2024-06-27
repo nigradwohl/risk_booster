@@ -558,7 +558,7 @@ class Checklist {
                 const curgrp = clickid.match(/control|treat/)[0];
                 console.log(group_arrs)
 
-                zoom_canvas(e, group_arrs[curgrp], "dotdisplay-zoom", col_arr);
+                zoom_canvas(e, group_arrs[curgrp], ncol, "dotdisplay-zoom", col_arr);
             })
             .show();
     }
@@ -882,7 +882,7 @@ function handle_missing_input(ev, missing_entries) {
  * @param curid Current ID for replacement
  * @param col_arr Array of colors
  */
-function zoom_canvas(e, info_arr, curid, col_arr) {
+function zoom_canvas(e, info_arr, ncol, curid, col_arr) {
     // console.log(obj.attr("id"));
     $(".zoomed-canvas").hide();
 
@@ -893,14 +893,32 @@ function zoom_canvas(e, info_arr, curid, col_arr) {
         info_arr,  // control group.
         curid,
         // obj.attr("id") + '-zoom',
-        undefined,
-        col_arr);
+        ncol,
+        col_arr,
+        25);
 
-    const mindim = Math.min(window.innerWidth, window.innerHeight);
+    // Determine plotting area:
+    const n_dots = info_arr.reduce((d, i) => d + i);
+
+    // Create an array of types:
+    const block = [10, -1];  // current blocking constant!
+    // Determine number of rows:
+    let nrows = Math.ceil(n_dots / ncol);
+    nrows = nrows + (block[0] > 0 ? Math.floor(nrows / block[0]) : 0);
+    let ncols = ncol + (block[1] > 0 ? Math.floor(ncol / block[1]) : 0);
+
+    const hw_arr = [window.innerWidth, window.innerHeight];
+
+    const height_is_min = hw_arr[0] <= hw_arr[1] ? 0 : 1;
+    const minpx = hw_arr[height_is_min] - 10;
+
+    // Use the minimal dimension to determine the ratio!
+    const zoom_hi = height_is_min ? minpx : minpx * ncols/nrows;
+    const zoom_wd = height_is_min ? minpx * ncols/nrows : minpx;
 
     $(".canvas-zoom")
-        .width(mindim)
-        .height(mindim)
+        .width(zoom_wd)
+        .height(zoom_hi)
         .css("display", "flex");
     $("#" + curid).show();
 
