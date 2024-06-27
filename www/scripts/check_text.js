@@ -1992,8 +1992,9 @@ function get_token_data(text) {
             // NOTE: Overlaps with other entities, likely because of the lack of spaces.
 
             // Escape and add lookahead or behind.
-            if (["("].includes(token_i)) {
-                token_pat = "(?<=\\s|\\n|^)" + token_i.replace(/([.?()/])/dgm, "\\$1");
+            if (["(", ")"].includes(token_i)) {
+                token_pat = token_i.replace(/([.?()/])/dgm, "\\$1");
+                // was: token_pat = "(?<=\\s|\\n|^)" + token_i.replace(/([.?()/])/dgm, "\\$1");
             } else if (["\"", "'", "\u2018", "\u2019", "\u201c", "\u201d"].includes(token_i)) {
                 token_pat = token_i;  // no requirement to escape?
             } else {
@@ -2007,6 +2008,7 @@ function get_token_data(text) {
         // console.log(token_rex);
 
         // Set index to search from to previous index:
+        // NOTE: In this place the debugger often stops on unhandled expressions!
         token_rex.lastIndex = tpos_end[tpos_end.length - 1];  // tpos_start[ix_prev] + text_tokens[ix_prev].length;
         curpos = token_rex.exec(text).index;
 
