@@ -900,12 +900,16 @@ $(document).ready(function () {
             },
         };
 
-        const curcomp = token_dat.topics.filter(x => /comp_/.test(x));
+        // Get the topics:
+        let curcomp = token_dat.topics.filter(x => /comp_/.test(x));
+        // Determine the set of texts and tooltips:
+        // Handle multiple comparison types by giving precedence for treatment for now!
+        curcomp = curcomp.includes("comp_treat") ? "comp_treat" : [curcomp].flat()[0];
+        // Use the default or th topic:
         const curfeats = (curcomp === undefined || curcomp.length === 0) ? feature_aliases["comp_default"] : feature_aliases[curcomp];
 
         console.log(curcomp);
 
-        //
 
 
         // Notes about features (presence of effectivity and harm; reporting of comparison group):
