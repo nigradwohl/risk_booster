@@ -111,7 +111,7 @@ $(document).ready(function () {
          * Array of units that should not be considered further
          * @type {string[]}
          */
-        let units_exc = ["age", "currency", "time", "date", "year", "dur", "legal", "medical", "enum", "misc", "rank"];
+        let units_exc = ["age", "currency", "time", "date", "year", "dur", "legal", "medical", "enum", "misc", "rank", "phone"];
 
         /**
          * Object that is looped over to check for units.
@@ -227,6 +227,9 @@ $(document).ready(function () {
             },
             "carry_forward_post": {
                 "regex": RegExp("(?<ucarryforward>" + pat_num + " (waren|sind) es)", "dg")
+            },
+            "phone": {
+                "regex": /(?<phone>[+]?[0-9]* ?([(]?[0-9]{0,3}[)])?[-\s.]?[0-9]{3,4}[-\s.]?[0-9]{3,4}[-\s.]?[0-9]{1,6})/dg
             },
             "misc": {
                 // MIscellaneous numbers to be excluded!
