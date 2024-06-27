@@ -327,6 +327,10 @@ canvas {
     -webkit-appearance: none;  /*to render properly*/
 }
 
+#edit-text-popup {
+    display: none;
+}
+
 .error-note {
     display: none;
 }

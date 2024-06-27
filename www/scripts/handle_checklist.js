@@ -27,7 +27,8 @@ $(document).ready(function () {
     if (text === "treat") {
         typeword = "Behandlung";
 
-        outcome = {"verb": ["versterben", "sind verstorben"], "noun": "Todsfälle"};
+        // outcome = {"verb": ["versterben", "sind verstorben"], "noun": "Todsfälle"};
+        outcome = {"verb": ["genesen", "sind genesen"], "noun": "Genesungen"};
 
     } else if (text === "impf") {
         typeword = "Impfung";
