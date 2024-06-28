@@ -339,6 +339,19 @@ body {
     /*overflow-y: scroll;*/
 }
 
+.text-notes ul {
+    padding-left: 1.2em;
+    list-style-type: none;
+}
+.text-notes ul li {
+    padding-top: 0.5em;
+}
+
+.text-notes ul ul {
+    padding-left: 1.5em;
+    list-style-type: circle;
+}
+
 .text-output {
     /*flex: 55%;*/
     padding: 2em;
