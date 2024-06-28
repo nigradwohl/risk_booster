@@ -22,18 +22,18 @@ $(document).ready(function () {
     let info_contr = "Vergleichsgruppe (z.B., Placebo)";
     let info_contr2 = "Vergleichsgruppe";
 
-    let outcome_list = {};
+    let outcome_list = [{"verb": ["sterben", "sind verstorben"], "noun": "Todesfälle"}];
     // TODO:
-    const outcome_list_side = {"Leichte Nebenwirkungen": ""};
+    const outcome_list_side = [
+        {"verb": ["erleiden leichte Nebenwirkungen"], "noun": "leichte Nebenwirkungen"}];
 
     if (text === "treat") {
         typeword = "Behandlung";
 
         // outcome = {"verb": ["versterben", "sind verstorben"], "noun": "Todsfälle"};
         outcome_list = [
-            {"verb": ["genesen", "sind genesen"], "noun": "Genesungen"},
-            {"verb": ["sterben", "sind verstorben"], "noun": "Todesfälle"}
-        ];
+            {"verb": ["werden symptomfrei", "sind symptomfrei"], "noun": "Symptomfreiheit"},
+            {"verb": ["genesen", "sind genesen"], "noun": "Genesungen"}].concat(outcome_list);
 
     } else if (text === "impf") {
         typeword = "Impfung";
@@ -47,7 +47,7 @@ $(document).ready(function () {
         info_contr2 = "Ungeimpft";
 
         outcome_list = [{"verb": ["erkranken", "erkrankt"], "noun": "Erkrankungen"},
-            {"verb": ["eingewiesen", "eingewiesen"], "noun": "Krankenhauseinweisungen"}];
+            {"verb": ["eingewiesen", "eingewiesen"], "noun": "Krankenhauseinweisungen"}].concat(outcome_list);
     }
 
     $("#case-test").text(typeword);
@@ -65,6 +65,9 @@ $(document).ready(function () {
     // Add outcome to selections:
     for (let i = 0; i < outcome_list.length; i++) {
         $("#out-eff").append(`<option value="${i}">${outcome_list[i].noun}</option>`);
+    }
+    for (let i = 0; i < outcome_list_side.length; i++) {
+        $("#out-side").append(`<option value="${i}">${outcome_list_side[i].noun}</option>`);
     }
 
     // TODO: Currently fixed; migrate to page advancement!
