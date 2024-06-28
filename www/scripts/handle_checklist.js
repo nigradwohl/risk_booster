@@ -22,13 +22,18 @@ $(document).ready(function () {
     let info_contr = "Vergleichsgruppe (z.B., Placebo)";
     let info_contr2 = "Vergleichsgruppe";
 
-    let outcome = {};
+    let outcome_list = {};
+    // TODO:
+    const outcome_list_side = {"Leichte Nebenwirkungen": ""};
 
     if (text === "treat") {
         typeword = "Behandlung";
 
         // outcome = {"verb": ["versterben", "sind verstorben"], "noun": "Todsfälle"};
-        outcome = {"verb": ["genesen", "sind genesen"], "noun": "Genesungen"};
+        outcome_list = [
+            {"verb": ["genesen", "sind genesen"], "noun": "Genesungen"},
+            {"verb": ["sterben", "sind verstorben"], "noun": "Todesfälle"}
+        ];
 
     } else if (text === "impf") {
         typeword = "Impfung";
@@ -41,11 +46,12 @@ $(document).ready(function () {
         info_treat2 = "Geimpft";
         info_contr2 = "Ungeimpft";
 
-        outcome = {"verb": ["erkranken", "erkrankt"], "noun": "Erkrankungen"};
+        outcome_list = [{"verb": ["erkranken", "erkrankt"], "noun": "Erkrankungen"},
+            {"verb": ["eingewiesen", "eingewiesen"], "noun": "Krankenhauseinweisungen"}];
     }
 
     $("#case-test").text(typeword);
-    $("#cur-topic").text(typeword);
+    $(".cur-topic").text(typeword);
     $(".typeword").text(typeword);  // Set wordings
     $(".typeverb").text(typeverb);  // Set wordings
     $(".addinfo-rrr").html(addinfo_rrr);
@@ -55,11 +61,19 @@ $(document).ready(function () {
     $(".info-control").text(info_contr);
     $(".info-control2").text(info_contr2);
 
-    $(".outcome-noun").text(outcome.noun);
-    $(".outcome-verb").text(outcome.verb[1]);
+
+    // Add outcome to selections:
+    for(const out of outcome_list){
+        $("#out-eff").append(`<option>${out.noun}</option>`);
+    }
+
+    // TODO: Currently fixed; migrate to page advancement!
+    $(".outcome-noun").text(outcome_list[0].noun);
+    $(".outcome-verb").text(outcome_list[0].verb[1]);
 
     // Preparations:
-    const cur_checklist = new Checklist(q_order, outcome);  // create a new checklist instance.
+    // TODO: Create Checklist after deciding on outcome:
+    const cur_checklist = new Checklist(q_order, outcome_list[0]);  // create a new checklist instance.
     // const check_risk = new RiskCollection();
     // console.log(check_risk);
 
@@ -941,6 +955,7 @@ function zoom_canvas(e, info_arr, ncol, curid, col_arr) {
  */
 const q_order = [
     "start",
+    "select-outcome",
     "rel-risk-reduction",
     // "any-control",
     "n-treat-control",

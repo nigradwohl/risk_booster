@@ -129,7 +129,7 @@
 
                         <div class="question-content">
                             <p class="checklist-qtext">
-                                <span id="cur-topic"></span>
+                                <span class="cur-topic"></span>
                             </p>
                             <p>
                                 Prüfen Sie, ob die Ihnen vorliegenden Risikoinformationen eine transparente Darstellung
@@ -147,6 +147,59 @@
                             <p>
                                 Mit den Pfeilen links und rechts können Sie navigieren.
                             </p>
+
+                            <!--                                <button class="checklist-button continue-btn">Weiter</button>-->
+
+
+                            <!--                            <p>-->
+                            <!--                                [Als tooltip!]-->
+                            <!--                                <i class="fa fa-exclamation-triangle"></i>-->
+                            <!--                                Manchmal wird diese Zahl auch als "Impfschutz" bezeichnet.-->
+                            <!--                                <strong>Weitere Begriffe?</strong>-->
+                            <!--                            </p>-->
+
+                            <!--                            <p>Unter dem Begriff der Impfstoffwirksamkeit versteht man in der Regel,-->
+                            <!--                                wie viele Prozent weniger in der Gruppe der Geimpften erkranken.</p>-->
+
+                            <!--                            <p>Anmerkung: Wenn die Information fehlt, wird nachgefragt.</p>-->
+                        </div>
+
+
+                    </div>
+
+                    <div class="checklist-question" id="select-outcome-q">
+
+                        <div class="question-content">
+                            <p class="checklist-qtext">
+                                Bitte wählen Sie die Endpunkte für Nutzen und Schaden aus.
+                                Achten Sie dabei auf das
+                                <span id="framing-tt" class="tooltip">
+                        <span class="tooltiptext tooltip-overview">
+                        Wie die Folgen einer <span class="cur-topic"></span> wahrgenommen werden
+                            wird davon beeinflusst, ob sie positiv (Genesung, Überlebende) oder
+                            negativ (Erkrankung, Verstorbene) ausgedrückt werden.
+                        </span><a href="wiki-framing">framing</a></span>
+
+                            </p>
+                            <table>
+                                <tr>
+                                    <td><label for="out-eff">Effektivität/Nutzen</label></td>
+                                    <td><select name="out-eff" id="out-eff">
+                                        <option>Default</option>
+                                    </select></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label for="out-side">Nebenwirkungen/Schadenwirkung</label>
+                                    </td>
+                                    <td>
+                                        <select name="out-side" id="out-side">
+                                            <option>Default</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </table>
+
 
                             <!--                                <button class="checklist-button continue-btn">Weiter</button>-->
 
@@ -300,7 +353,7 @@
                                 Wie viele Personen sind jeweils unter den
                                 <span class="info-treat2"></span>en
                                 und in der Vergleichsgruppe (Kontrollgruppe) <span class="outcome-verb">erkrankt</span>?
-<!--                                [Outcome for treatment case: mortality? symptoms? ask Helge]-->
+                                <!--                                [Outcome for treatment case: mortality? symptoms? ask Helge]-->
                             </p>
                             <table>
                                 <tr>
@@ -424,7 +477,10 @@
                     <div class="checklist-question checklist-results" id="results-q">
 
                         <!--                        [FAKTENBOX?]-->
-                        <div class="check-results-navrow"><div id="edit-texts" class="navele">Text bearbeiten</div><div id="stop-edit" class="navele">Bearbeiten beenden</div></div>
+                        <div class="check-results-navrow">
+                            <div id="edit-texts" class="navele">Text bearbeiten</div>
+                            <div id="stop-edit" class="navele">Bearbeiten beenden</div>
+                        </div>
 
                         <!--Container effectivitiy-->
                         <div class="grid-container-check" id="results-1">
@@ -451,13 +507,14 @@
 
                             <textarea class="edit-note grid-note1 content-start" id="edit-effnote1"></textarea>
                             <p id="effnote1" class="grid-note1 content-start editable"><span class="risk-info"
-                                                                      id="risk-control"></span>
+                                                                                             id="risk-control"></span>
                             </p>
 
 
                             <!--                                Treatment group-->
                             <textarea class="edit-note grid-note2 content-end" id="edit-effnote2"></textarea>
-                            <p id="effnote2" class="grid-note2 content-end editable"><span class="risk-info" id="risk-treat"></span>
+                            <p id="effnote2" class="grid-note2 content-end editable"><span class="risk-info"
+                                                                                           id="risk-treat"></span>
                             </p>
 
                             <p class="grid-subhead2">In der Behandlungsgruppe</p>
