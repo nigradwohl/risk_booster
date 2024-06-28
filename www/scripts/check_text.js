@@ -1056,6 +1056,10 @@ $(document).ready(function () {
         const feature_set = {
             "eff_side": {
                 "fset": ["eff", "side"],
+                "tool":
+                    "Nur indem Lesende vollständig über die Wirksamkeit und mögliche Nebeneffekte informiert werden, " +
+                    "können sie sich ein unabhängiges Urteil über die erwünschten und unerwünschten Folgen " +
+                    "bilden und eine informierte Entscheidung treffen.",
                 "zumzur": "zum "
             },
             "damage": {
@@ -1064,6 +1068,9 @@ $(document).ready(function () {
             },
             "treat_contr": {
                 "fset": ["treat", "contr"],
+                "tool": "Nur indem die Lesenden die Risiken (Wahrscheinlichkeiten) mit und ohne Intervention kennen, " +
+                    "können Sie sich ein unabhängiges Urteil über das Ausmaß von Nutzen und Schaden bilden " +
+                    "und eine informierte Entscheidung treffen.",
                 "zumzur": "zur "
             }
         }
@@ -1100,8 +1107,8 @@ $(document).ready(function () {
             // Get present features:
             let feats_present = value.fset.filter((feat) => feature_arr.includes(feat));
             let feats_missing = value.fset.filter((feat) => !feature_arr.includes(feat));
-            feats_present = feats_present.map((key) => feature_dict[key]);
-            feats_missing = feats_missing.map((key) => feature_dict[key]);
+            feats_present = feats_present.map((k) => feature_dict[k]);
+            feats_missing = feats_missing.map((k) => feature_dict[k]);
             console.log(`Features present and missing are:`);
             console.log(feats_present);
             console.log(feats_missing);
@@ -1114,15 +1121,28 @@ $(document).ready(function () {
             } else if (key === "damage") {
                 feature_str += " konnte kein Gesundheitsrisiko erkannt werden. " +
                     "Wenn der Text ein Gesundheitsrisiko behandelt, kontaktieren Sie uns bitte, damit wir den Fehler beheben können.";
-            } else if (feats_missing.length === 1) {
-                feature_str = "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i>" + feature_str;
-                feature_str += " werden nur Informationen " + value.zumzur + feats_present.toString() +
-                    " berichtet. Es sollten auch Informationen " + value.zumzur + feats_missing + " berichtet werden.";
             } else {
-                feature_str = "<i class=\"fa fa-thumbs-down in-text-icon error\"></i>" + feature_str;
-                feature_str += " werden weder Informationen " + value.zumzur +
-                    value.fset.map((key) => feature_dict[key]).join(" noch " + value.zumzur) + " berichtet."
-                // "<br>NOTE: In Wiki mention the reasons and that one should mention if the evidence is not based on a group comparison";
+                if (feats_missing.length === 1) {
+                    feature_str = "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i>" + feature_str;
+                    feature_str += " werden nur Informationen " + value.zumzur + feats_present.toString() +
+                        " berichtet. Es sollten auch Informationen " + value.zumzur + feats_missing + " berichtet werden.";
+                } else {
+                    feature_str = "<i class=\"fa fa-thumbs-down in-text-icon error\"></i>" + feature_str;
+                    feature_str += " werden weder Informationen " + value.zumzur +
+                        value.fset.map((key) => feature_dict[key]).join(" noch " + value.zumzur) + " berichtet."
+                    // "<br>NOTE: In Wiki mention the reasons and that one should mention if the evidence is not based on a group comparison";
+                }
+
+                // Add tooltip why this a problem:
+                // "<div id=\"eff-tt\" class=\"tooltip\">" +
+                // "<span class=\"tooltiptext tooltip-overview\">Wirksamkeit einer Behandlung oder Impfung" +
+                // "(z.B., verhinderte Erkranungen, Genesung, Vermeidung von Todesfällen).<br>" +
+                // "Sollte immer mit Zahlen belegt werden.</span>" +
+                // "<a href='risk_wiki.html#wiki-effside'>Nutzen</a></div>"
+                feature_str = feature_str + "<div id=\"" + key + "-tt\" class=\"tooltip\">" +
+                    "<span class=\"tooltiptext tooltip-overview\" style='width: 100%'>" +
+                    value.tool +
+                    "</span>(Warum ist das ein Problem?)</div>";
             }
 
 
@@ -1164,14 +1184,24 @@ $(document).ready(function () {
                 if (eff_num && side_num) {
                     feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> " +
                         "Sowohl zum Nutzen, als auch zum Schaden wurden Zahlen angegeben."
-                } else if (eff_num || side_num) {
-                    feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> " +
-                        "Zahlen nur zu" +
-                        (eff_num ? "m Nutzen" : " Schaden") +
-                        " angegeben."
                 } else {
-                    feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> " +
-                        "Die Zahlen scheinen sich leider weder auf Nutzen noch auf Schaden zu beziehen."
+                    if (eff_num || side_num) {
+                        feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> " +
+                            "Zahlen nur zu" +
+                            (eff_num ? "m Nutzen" : " Schaden") +
+                            " angegeben."
+                    } else {
+                        feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> " +
+                            "Die Zahlen scheinen sich leider weder auf Nutzen noch auf Schaden zu beziehen."
+                    }
+
+                    // Add explanatory popup:
+                    feature_num += "<div id=\"noeffnum-tt\" class=\"tooltip\">" +
+                        "<span class=\"tooltiptext tooltip-overview\">" +
+                        "Nur wenn sowohl der Nutzen, als auch der Schaden mit transprarenten Zahlen belegt werden, " +
+                        "ist eine informierte Beurteilung möglich, wie groß der Nutzen im Vergleich zu anderen " +
+                        "Interventionen und zum Schaden ist" +
+                        "</span> (Warum ist das ein Problem?)</div>";
                 }
 
                 feature_num += "</li><li>";
@@ -1179,13 +1209,30 @@ $(document).ready(function () {
                 // Die Wirksamkeit wird (nicht) mit Zahlen aus Behandlungs- und Kontrollgruppe belegt.
                 // Nebenwirkungen werden nicht für Behandlungs- und Kontrollgruppe angegeben
                 let arr_eff_both = feature_arr.includes("eff_treat_num") && feature_arr.includes("eff_contr_num") ?
-                    ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>", "nicht erkennbar "];
+                    ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", "", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>",
+                        "nicht erkennbar ",
+                        "<div id=\"noeffnum-tt\" class=\"tooltip\">" +
+                        "<span class=\"tooltiptext tooltip-overview\">" +
+                        "Nur indem die Lesenden die Größe des Nutzens mit und ohne Intervention kennen, " +
+                        "können Sie sich ein unabhängiges Urteil über das Ausmaß des Nutzens bilden " +
+                        "und eine informierte Entscheidung treffen." +
+                        "</span> (Warum ist das ein Problem?)</div>"
+                    ];
                 let arr_side_both = feature_arr.includes("side_treat_num") && feature_arr.includes("side_contr_num") ?
-                    ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>", "nicht erkennbar "];
+                    ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", "", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>",
+                        "nicht erkennbar ",
+                        "<div id=\"nosidenum-tt\" class=\"tooltip\">" +
+                        "<span class=\"tooltiptext tooltip-overview\">" +
+                        "Nur indem die Lesenden die Größe des Schadens mit und ohne Intervention kennen, " +
+                        "können Sie sich ein unabhängiges Urteil über das Ausmaß des Schadens bilden " +
+                        "und eine informierte Entscheidung treffen." +
+                        "</span> (Warum ist das ein Problem?)</div>"];
 
 
-                feature_num += arr_eff_both[0] + " Der Nutzen wird " + arr_eff_both[1] + "mit Zahlen für Behandlungs- und Kontrollgruppe belegt</li><li>";
-                feature_num += arr_side_both[0] + " Die Schadenwirkung wird " + arr_side_both[1] + "mit Zahlen für Behandlungs- und Kontrollgruppe belegt";
+                feature_num += arr_eff_both[0] + " Der Nutzen wird " + arr_eff_both[1] +
+                    "mit Zahlen für Behandlungs- und Kontrollgruppe belegt</li>" + arr_eff_both[2] + "<li>";
+                feature_num += arr_side_both[0] + " Die Schadenwirkung wird " + arr_side_both[1] +
+                    "mit Zahlen für Behandlungs- und Kontrollgruppe belegt" + arr_eff_both[2];
                 // Rather "Nur für" oä.
             } else if (token_dat.topics.includes("comp_time")) {
 
