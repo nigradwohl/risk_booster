@@ -887,6 +887,7 @@ function zoom_canvas(e, info_arr, ncol, curid, col_arr) {
     $(".zoomed-canvas").hide();
 
     // const cur_type = obj.attr("id").replace("dotdisplay-", "");
+    const n_dots = info_arr.reduce((d, i) => d + i);
 
     // $(this).clone().appendTo(".canvas-zoom");
     create_icon_array(
@@ -895,11 +896,9 @@ function zoom_canvas(e, info_arr, ncol, curid, col_arr) {
         // obj.attr("id") + '-zoom',
         ncol,
         col_arr,
-        25);
+        (n_dots > 100 ? 25 : 40));
 
     // Determine plotting area:
-    const n_dots = info_arr.reduce((d, i) => d + i);
-
     // Create an array of types:
     const block = [10, -1];  // current blocking constant!
     // Determine number of rows:
@@ -918,11 +917,6 @@ function zoom_canvas(e, info_arr, ncol, curid, col_arr) {
 
     console.log(`height is min: ${height_is_min}, hi, wd: ${zoom_hi}, ${zoom_wd}, nrows/ncols: ${nrows}, ${ncols},
     window hi/wd: ${hw_arr.toString()}`);
-
-    // Note: fitting maximum plot dimension to minimum is easier, since there will be enough space for maximum!
-    // if (zoom_hi > window.innerHeight) {
-    //     alert("Window too large!");
-    // }
 
     $(".canvas-zoom")
         .height(zoom_hi)
