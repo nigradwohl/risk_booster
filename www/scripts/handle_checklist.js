@@ -63,8 +63,8 @@ $(document).ready(function () {
 
 
     // Add outcome to selections:
-    for(const out of outcome_list){
-        $("#out-eff").append(`<option>${out.noun}</option>`);
+    for (let i = 0; i < outcome_list.length; i++) {
+        $("#out-eff").append(`<option value="${i}">${outcome_list[i].noun}</option>`);
     }
 
     // TODO: Currently fixed; migrate to page advancement!
@@ -73,7 +73,7 @@ $(document).ready(function () {
 
     // Preparations:
     // TODO: Create Checklist after deciding on outcome:
-    const cur_checklist = new Checklist(q_order, outcome_list[0]);  // create a new checklist instance.
+    const cur_checklist = new Checklist(q_order, outcome_list);  // create a new checklist instance.
     // const check_risk = new RiskCollection();
     // console.log(check_risk);
 
@@ -285,9 +285,10 @@ $(document).ready(function () {
  */
 
 class Checklist {
-    constructor(q_order, outcome) {
+    constructor(q_order, outcome_list) {
         this.q_order = q_order;
-        this.outcome = outcome;
+        this.outcome_list = outcome_list;
+        this.outcome = "";
 
         this.entry_ix = 0;
 
@@ -328,68 +329,96 @@ class Checklist {
 
         console.log(`${"~".repeat(30)} NEXT PAGE ${curid} ${"~".repeat(30)}`);
 
-        // 1. Get the inputs on current page: ~~~~~~~~~~~~~~~~~~~~~~~~
-        if (!skip_misses) {
-            // If it is not a round where inputs should be skipped:
-            const inp_test = this.get_current_input(curid, q_inputs[curid], id_to_num_dict);
-            // After trying to get the inputs, try completing the table:
-            try {
-                this.check_risk.try_completion(0);
-                this.check_side.try_completion(0);
-            } catch (e) {
-                console.error("Non-matching entries! " + e);
-                $("#incompatible-popup").show().addClass("selected-blur");
-                this.is_error = true;
-            }
+        // For the first page where outcomes are selected:
+        if (curid === "select-outcome") {
 
-            if (this.is_error) {
-                console.error(`An error (${inp_test}) occured when providing input!`);
-            }
+            const out_eff = $("#out-eff").val();
+            const out_side = $("#out-side").val();
 
+            console.log(`Eff: ${out_eff}, Side: ${out_side}`);
+
+            this.outcome = this.outcome_list[out_eff];  // assign the selected outcome.
+
+            // Show the new question and hide the previous one:
+            this.entry_ix++;
+            $("#" + q_order[this.entry_ix] + "-q").css('display', 'flex');
+            $("#select-outcome-q").hide();
+
+            // Removal of higlighting classes:
+            $("#noentry-popup").hide();
+            $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
+
+            // Show back button:
+            if (this.entry_ix > 0) {
+                $(".back-btn").css('display', 'inline-block');
+            }
 
         } else {
-            // If misses were skipped:
-            this.is_skip = false;
-        }
+            // For all subsequent pages:
+            // 1. Get the inputs on current page: ~~~~~~~~~~~~~~~~~~~~~~~~
+            if (!skip_misses) {
+                // If it is not a round where inputs should be skipped:
+                const inp_test = this.get_current_input(curid, q_inputs[curid], id_to_num_dict);
+                // After trying to get the inputs, try completing the table:
+                try {
+                    this.check_risk.try_completion(0);
+                    this.check_side.try_completion(0);
+                } catch (e) {
+                    console.error("Non-matching entries! " + e);
+                    $("#incompatible-popup").show().addClass("selected-blur");
+                    this.is_error = true;
+                }
 
-        // TODO: Check for errors!
+                if (this.is_error) {
+                    console.error(`An error (${inp_test}) occured when providing input!`);
+                }
 
-        // 2. Handle missing entries:
-        if (this.missing_entries.length > 0) {
-            // alert("Sie haben nichts eingegeben! Absicht?");
-            // Show popup that can be skipped!
-            this.is_skip = true;
-            handle_missing_input(ev, this.missing_entries);
 
-        }
-
-        // Advance page:
-        if (!this.is_error && this.missing_entries.length === 0) {
-
-            // Pages before results:
-            if (this.entry_ix < q_order.length) {
-                this.increment_or_skip();
+            } else {
+                // If misses were skipped:
+                this.is_skip = false;
             }
 
-            // Final results page:
-            if (this.entry_ix === this.q_order.length - 1) {
+            // TODO: Check for errors!
 
-                // if (this.is_reload) {
-                //     console.log("Handle reload");
-                //     this.handle_reloads();
-                // } else {
-                //     this.is_reload = true;
-                // }
+            // 2. Handle missing entries:
+            if (this.missing_entries.length > 0) {
+                // alert("Sie haben nichts eingegeben! Absicht?");
+                // Show popup that can be skipped!
+                this.is_skip = true;
+                handle_missing_input(ev, this.missing_entries);
 
-                this.handle_final_page();  // handle the final page.
-
-
-                // Hide the continue button:
-                $(".continue-btn").hide();
             }
 
-        } else if (this.is_error) {
-            console.error("An error occured!");
+
+            // Advance page:
+            if (!this.is_error && this.missing_entries.length === 0) {
+
+                // Pages before results:
+                if (this.entry_ix < q_order.length) {
+                    this.increment_or_skip();
+                }
+
+                // Final results page:
+                if (this.entry_ix === this.q_order.length - 1) {
+
+                    // if (this.is_reload) {
+                    //     console.log("Handle reload");
+                    //     this.handle_reloads();
+                    // } else {
+                    //     this.is_reload = true;
+                    // }
+
+                    this.handle_final_page();  // handle the final page.
+
+
+                    // Hide the continue button:
+                    $(".continue-btn").hide();
+                }
+
+            } else if (this.is_error) {
+                console.error("An error occured!");
+            }
         }
 
 
