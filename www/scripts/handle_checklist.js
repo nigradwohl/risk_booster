@@ -907,18 +907,26 @@ function zoom_canvas(e, info_arr, ncol, curid, col_arr) {
     nrows = nrows + (block[0] > 0 ? Math.floor(nrows / block[0]) : 0);
     let ncols = ncol + (block[1] > 0 ? Math.floor(ncol / block[1]) : 0);
 
-    const hw_arr = [window.innerWidth, window.innerHeight];
+    const hw_arr = [window.innerHeight, window.innerWidth];
 
-    const height_is_min = hw_arr[0] <= hw_arr[1] ? 0 : 1;
-    const minpx = hw_arr[height_is_min] - 10;
+    const height_is_min = hw_arr[0] <= hw_arr[1];
+    const minpx = hw_arr[(height_is_min ? 0 : 1)] - 10;
 
     // Use the minimal dimension to determine the ratio!
-    const zoom_hi = height_is_min ? minpx : minpx * ncols/nrows;
-    const zoom_wd = height_is_min ? minpx * ncols/nrows : minpx;
+    let zoom_hi = height_is_min ? minpx : minpx * nrows / ncols;
+    let zoom_wd = height_is_min ? minpx * ncols / nrows : minpx;
+
+    console.log(`height is min: ${height_is_min}, hi, wd: ${zoom_hi}, ${zoom_wd}, nrows/ncols: ${nrows}, ${ncols},
+    window hi/wd: ${hw_arr.toString()}`);
+
+    // Note: fitting maximum plot dimension to minimum is easier, since there will be enough space for maximum!
+    // if (zoom_hi > window.innerHeight) {
+    //     alert("Window too large!");
+    // }
 
     $(".canvas-zoom")
-        .width(zoom_wd)
         .height(zoom_hi)
+        .width(zoom_wd)
         .css("display", "flex");
     $("#" + curid).show();
 
