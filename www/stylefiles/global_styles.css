@@ -602,6 +602,7 @@ h3 {
             "subhead1 . . . subhead2"
             "arr1 arrnote1 . arrnote2 arr2"
             "arr1 midnote midnote midnote arr2";
+    margin-top: 0.8em;
     /*justify-items: center;*/
 }
 
@@ -617,6 +618,7 @@ h3 {
     /*background-color: lightsteelblue;*/
     border-bottom: 1px solid darkgrey;
     z-index: 9999;
+    margin-bottom: 1em;
 }
 
 .check-results-navrow div {
