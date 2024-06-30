@@ -57,5 +57,6 @@ Do we also have the group sizes?)
 ## Wiki
 
 * Decide on the central entries and fill them with information 
+* Implement navigation on the side
 
 ### Nice to have

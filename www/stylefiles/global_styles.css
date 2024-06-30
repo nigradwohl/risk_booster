@@ -697,26 +697,60 @@ h3 {
     justify-self: end;
 }
 
-/*.c1 {*/
-/*    grid-column: 1;*/
-/*}*/
+/* WIKI STYLES */
+ /* The side navigation menu */
+.sidebar {
+  margin: 0;
+  padding: 0;
+  width: 200px;
+  background-color: #f1f1f1;
+  position: fixed;
+  height: 100%;
+  overflow: auto;
+}
 
-/*.c2 {*/
-/*    grid-column: 2;*/
-/*}*/
+/* Sidebar links */
+.sidebar a {
+  display: block;
+  color: black;
+  padding: 16px;
+  text-decoration: none;
+}
 
-/*.c3 {*/
-/*    grid-column: 3;*/
-/*}*/
+/* Active/current link */
+.sidebar a.active {
+  background-color: #04AA6D;
+  color: white;
+}
 
-/*.c4 {*/
-/*    grid-column: 4;*/
-/*}*/
+/* Links on mouse-over */
+.sidebar a:hover:not(.active) {
+  background-color: #555;
+  color: white;
+}
 
-/*.c5 {*/
-/*    grid-column: 5;*/
-/*}*/
+/* Page content. The value of the margin-left property should match the value of the sidebar's width property */
+div.content {
+  margin-left: 200px;
+  padding: 1px 16px;
+  height: 1000px;
+}
 
-/*.cmid {*/
-/*    grid-column: 2 / 4;*/
-/*}*/
+/* On screens that are less than 700px wide, make the sidebar into a topbar */
+@media screen and (max-width: 700px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+  .sidebar a {float: left;}
+  div.content {margin-left: 0;}
+}
+
+/* On screens that are less than 400px, display the bar vertically, instead of horizontally */
+@media screen and (max-width: 400px) {
+  .sidebar a {
+    text-align: center;
+    float: none;
+  }
+}

@@ -7,6 +7,7 @@ const wiki_order = ["risk", "effside", "prozent", "freq", "nh",
 $(document).ready(function () {
 
     let wiki_text = "";
+    let sidebar_text = "";
 
     for (const entry of wiki_order) {
 
@@ -43,8 +44,15 @@ $(document).ready(function () {
         }
 
         wiki_text += "</div>";
+
+        // Sidebar:
+        sidebar_text += `<a href="${entry}">${curinfo.heading}</a>`;
     }
 
     $("#entry-list").html(wiki_text);
+
+    // Add sidebar:
+    $(".sidebar").html(sidebar_text);
+
 
 })
