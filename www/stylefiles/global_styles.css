@@ -623,7 +623,7 @@ h3 {
 
 .check-results-navrow div {
     cursor: pointer;
-    padding: 0.8em 0.5em 0.2em;
+    padding: 0.8em 0.9em 0.5em;
     justify-self: end;
     z-index: 9999;
 }
