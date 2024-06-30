@@ -391,9 +391,9 @@
 
                     <div class="checklist-question" id="side-q">
                         <div class="question-content">
-                            <p class="checklist-qtext">Für wie viele Personen wurden Nebenwirkungen berichtet?</p>
-                            <p>
-                                [Rather ask, which Side effects were reported? Let people update as dynamic list?]
+                            <p class="checklist-qtext">Für wie viele Personen wurden
+                                <span class="side-noun"></span>
+                                berichtet?
                             </p>
                             <input class="checklist-input" id="side" type="text">
                             <br>
@@ -405,14 +405,16 @@
                         <div class="question-content">
                             <p class="checklist-qtext">
                                 Für wie viele Personen wurden unter den <span class="info-treat2"></span>en und in
-                                der <span class="info-control"></span> jeweils Nebenwirkungen beobachtet?
+                                der <span class="info-control"></span> jeweils
+                                <span class="side-noun"></span>
+                                berichtet?
                             </p>
                             <!--                        TODO: Eventually translate to grid layout?-->
                             <table>
                                 <tr>
                                     <td>
                                         <label for="n-side-impf">
-                                            Nebenwirkungen unter den <span class="info-treat2"></span>en
+                                            <span class="side-noun"></span> unter den <span class="info-treat2"></span>en
                                         </label>
                                     </td>
                                     <td>
@@ -421,7 +423,7 @@
                                 </tr>
                                 <tr>
                                     <td><label for="n-side-control">
-                                        Nebenwirkungen in der Vergleichsgruppe (Placebogruppe/<span
+                                        <span class="side-noun"></span> in der Vergleichsgruppe (Placebogruppe/<span
                                             class="info-control2"></span>)
                                     </label></td>
                                     <td>
@@ -438,7 +440,8 @@
                         <div class="question-content">
                             <p class="checklist-qtext">
                                 Für welchen Anteil der Personen wurden unter den <span class="info-treat2"></span>en und
-                                der <span class="info-control2"></span> jeweils Nebenwirkungen beobachtet?
+                                der <span class="info-control2"></span> jeweils <span class="side-noun"></span>
+                                berichtet?
                             </p>
                             <p>
                                 Bitte geben Sie die Anteile in Prozent (d.h., Zahlen zwischen 0 und 100 an).
@@ -447,7 +450,7 @@
                                 <tr>
                                     <td>
                                         <label for="p-side-impf">
-                                            Nebenwirkungen unter den <span class="info-treat2"></span>en
+                                            <span class="side-noun"></span> unter den <span class="info-treat2"></span>en
                                         </label>
                                     </td>
                                     <td>
@@ -456,7 +459,7 @@
                                 </tr>
                                 <tr>
                                     <td><label for="p-side-control">
-                                        Nebenwirkungen in der Vergleichsgruppe (Placebogruppe/<span
+                                        <span class="side-noun"></span> in der Vergleichsgruppe (Placebogruppe/<span
                                             class="info-control2"></span>)
                                     </label></td>
                                     <td>
@@ -554,18 +557,14 @@
                             </div>
 
                             <p class="grid-note1 content-start">
-                                erleiden
                                 <span class="risk-info" id="risk-control-side"></span>
-                                Nebenwirkungen
                             </p>
 
 
                             <!--                                Treatment group-->
 
                             <p class="grid-note2 content-end">
-                                erleiden
                                 <span class="risk-info" id="risk-treat-side"></span>
-                                Nebenwirkungen
                             </p>
 
                             <p class="grid-subhead2">In der Behandlungsgruppe</p>

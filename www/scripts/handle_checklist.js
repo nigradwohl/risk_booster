@@ -22,18 +22,42 @@ $(document).ready(function () {
     let info_contr = "Vergleichsgruppe (z.B., Placebo)";
     let info_contr2 = "Vergleichsgruppe";
 
-    let outcome_list = [{"verb": ["sterben", "sind verstorben"], "noun": "Todesfälle"}];
+    class Verblist {
+        constructor(base, aux, main) {
+            this.base = base;
+            this.aux = aux;
+            this.main = main;
+        }
+    }
+
+    const outcome_list = {
+        "eff":
+            [{"verb": new Verblist("sterben", "sind", "verstorben"), "noun": "Todesfälle"}],
+        "side": [
+            // Exchange ERLEIDEN for BERICHTEN?
+            {"verb": new Verblist("erleiden Nebenwirkungen", "erleiden", "Nebenwirkungen"), "noun": "Nebenwirkungen"},
+            {
+                "verb": new Verblist("erleiden leichte Nebenwirkungen", "erleiden", "leichte Nebenwirkungen"),
+                "noun": "leichte Nebenwirkungen"
+            },
+            {
+                "verb": new Verblist("erleiden schwere Nebenwirkungen", "erleiden", "schwere Nebenwirkungen"),
+                "noun": "schwere Nebenwirkungen"
+            }
+        ]
+    };
     // TODO:
-    const outcome_list_side = [
-        {"verb": ["erleiden leichte Nebenwirkungen"], "noun": "leichte Nebenwirkungen"}];
+
 
     if (text === "treat") {
         typeword = "Behandlung";
 
         // outcome = {"verb": ["versterben", "sind verstorben"], "noun": "Todsfälle"};
-        outcome_list = [
-            {"verb": ["werden symptomfrei", "sind symptomfrei"], "noun": "Symptomfreiheit"},
-            {"verb": ["genesen", "sind genesen"], "noun": "Genesungen"}].concat(outcome_list);
+        // Ad treatment specific endpoints:
+        outcome_list.eff = [
+            {"verb": new Verblist("werden symptomfrei", "werden", "symptomfrei"), "noun": "Symptomfreiheit"},
+            {"verb": new Verblist("genesen", "genesen", ""), "noun": "Genesungen"}
+        ].concat(outcome_list.eff);
 
     } else if (text === "impf") {
         typeword = "Impfung";
@@ -46,8 +70,12 @@ $(document).ready(function () {
         info_treat2 = "Geimpft";
         info_contr2 = "Ungeimpft";
 
-        outcome_list = [{"verb": ["erkranken", "erkrankt"], "noun": "Erkrankungen"},
-            {"verb": ["eingewiesen", "eingewiesen"], "noun": "Krankenhauseinweisungen"}].concat(outcome_list);
+        outcome_list.eff = [
+            {"verb": new Verblist("erkranken", "erkranken", ""), "noun": "Erkrankungen"},
+            {"verb": new Verblist("ins Krankenhaus eingewiesen worden", "werden", "ins Krankenhaus eingewiesen"), "noun": "Krankenhauseinweisungen"},
+            {"verb": new Verblist("auf die Intensivstation eingewiesen worden", "werden", "auf die Intensivstation eingewiesen"), "noun": "Krankenhauseinweisungen"},
+            {"verb": new Verblist("werden diagnostiziert", "werden", "diagnostiziert"), "noun": "Positive Diagnosen"}
+        ].concat(outcome_list.eff);
     }
 
     $("#case-test").text(typeword);
@@ -63,19 +91,15 @@ $(document).ready(function () {
 
 
     // Add outcome to selections:
-    for (let i = 0; i < outcome_list.length; i++) {
-        $("#out-eff").append(`<option value="${i}">${outcome_list[i].noun}</option>`);
+    for (let i = 0; i < outcome_list.eff.length; i++) {
+        $("#out-eff").append(`<option value="${i}">${outcome_list.eff[i].noun}</option>`);
     }
-    for (let i = 0; i < outcome_list_side.length; i++) {
-        $("#out-side").append(`<option value="${i}">${outcome_list_side[i].noun}</option>`);
+    for (let i = 0; i < outcome_list.side.length; i++) {
+        $("#out-side").append(`<option value="${i}">${outcome_list.side[i].noun}</option>`);
     }
 
-    // TODO: Currently fixed; migrate to page advancement!
-    $(".outcome-noun").text(outcome_list[0].noun);
-    $(".outcome-verb").text(outcome_list[0].verb[1]);
 
     // Preparations:
-    // TODO: Create Checklist after deciding on outcome:
     const cur_checklist = new Checklist(q_order, outcome_list);  // create a new checklist instance.
     // const check_risk = new RiskCollection();
     // console.log(check_risk);
@@ -292,6 +316,7 @@ class Checklist {
         this.q_order = q_order;
         this.outcome_list = outcome_list;
         this.outcome = "";
+        this.outcome_side = "";
 
         this.entry_ix = 0;
 
@@ -340,7 +365,14 @@ class Checklist {
 
             console.log(`Eff: ${out_eff}, Side: ${out_side}`);
 
-            this.outcome = this.outcome_list[out_eff];  // assign the selected outcome.
+            this.outcome = this.outcome_list.eff[out_eff];  // assign the selected outcome.
+            this.outcome_side = this.outcome_list.side[out_side]
+
+            $(".outcome-noun").text(this.outcome.noun);
+            $(".outcome-verb").text(this.outcome.verb.base);
+
+            $(".side-noun").text(this.outcome_side.noun);
+            $(".side-verb").text(this.outcome_side.verb.base);
 
             // Show the new question and hide the previous one:
             this.entry_ix++;
@@ -692,9 +724,9 @@ class Checklist {
         const eff_risks = get_risk_set(eff_group_risks);
 
         // Assign the information to the objects in results page:
-        $("#risk-treat").text(this.outcome.verb[0] + " " + eff_risks.risk_treat_nh);
-        $("#risk-control").text(this.outcome.verb[0] + " " + eff_risks.risk_control_nh);
-        $("#abs-change").html(`Absolute${eff_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe ${this.outcome.verb[0]} <span class="risk-info" id="arr">${eff_risks.arr_p}</span>`);
+        $("#risk-treat").text(this.outcome.verb.aux + " " + eff_risks.risk_treat_nh + " " + this.outcome.verb.main);
+        $("#risk-control").text(this.outcome.verb.aux + " " + eff_risks.risk_control_nh + " " + this.outcome.verb.main);
+        $("#abs-change").html(`Absolute${eff_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe ${this.outcome.verb.aux} <span class="risk-info" id="arr">${eff_risks.arr_p} ${this.outcome.verb.main}</span>`);
         $("#rel-change").html(`Relative${eff_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${eff_risks.rrr_p}</span>`);
         // Rounding can eventually be improved!
 
@@ -702,11 +734,12 @@ class Checklist {
         console.log(cur2x2_eff);
 
         // Handle side effects:
+        // Handle side effects:
         const side_risks = get_risk_set(side_group_risks);
         // Assign the information to the objects in results page:
-        $("#risk-treat-side").text(side_risks.risk_treat_nh);
-        $("#risk-control-side").text(side_risks.risk_control_nh);
-        $("#abs-change-side").html(`Absolute${side_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe erleiden <span class="risk-info" id="arr">${side_risks.arr_p}</span> Nebenwirkungen`);
+        $("#risk-treat-side").text(this.outcome_side.verb.aux + " " + side_risks.risk_treat_nh + " " + this.outcome_side.verb.main);
+        $("#risk-control-side").text(this.outcome_side.verb.aux + " " + side_risks.risk_control_nh + " " + this.outcome_side.verb.main);
+        $("#abs-change-side").html(`Absolute${side_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe ${this.outcome_side.verb.aux} <span class="risk-info" id="arr">${side_risks.arr_p}</span> ${this.outcome_side.verb.main}`);
         $("#rel-change-side").html(`Relative${side_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${side_risks.rrr_p}</span>`);
 
         const cur2x2_side = side_group_risks.map((x) => x.map((y) => Math.round(y * N_scale)));
