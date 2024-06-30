@@ -56,7 +56,8 @@ $(document).ready(function () {
         // Ad treatment specific endpoints:
         outcome_list.eff = [
             {"verb": new Verblist("werden symptomfrei", "werden", "symptomfrei"), "noun": "Symptomfreiheit"},
-            {"verb": new Verblist("genesen", "genesen", ""), "noun": "Genesungen"}
+            {"verb": new Verblist("genesen", "genesen", ""), "noun": "Genesungen"},
+            {"verb": new Verblist("berichten Symptomlinderung", "berichten", "Symptomlinderung"), "noun": "Symptomlinderung"}
         ].concat(outcome_list.eff);
 
     } else if (text === "impf") {
