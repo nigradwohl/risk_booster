@@ -145,7 +145,8 @@ $(document).ready(function () {
     // Continue on keypress:
     $(window).on("keypress", function (ev) {
         // console.log(ev);
-        if (ev.key === "Enter") {
+        if (ev.key === "Enter" && cur_checklist.entry_ix < cur_checklist.q_order.length - 1) {
+            // console.log(`CONTINUE ON ENTER! -- ${cur_checklist.entry_ix} < ${cur_checklist.q_order.length}?`);
             cur_checklist.continue_page(ev);
             // out_arr = continue_page(ev, entry_ix, check_risk, is_skip);
             // entry_ix = out_arr[0];
@@ -156,21 +157,6 @@ $(document).ready(function () {
 
     // ~~~ GOING BACK ~~~
     $(".back-btn").on("click", function () {
-        // if (cur_checklist.entry_ix > 0) {
-        //     cur_checklist.entry_ix--;
-        //     $("#" + q_order[cur_checklist.entry_ix] + "-q").css('display', 'flex');
-        //     $("#" + q_order[cur_checklist.entry_ix + 1] + "-q").hide();
-        //     $(".continue-btn").css('display', 'inline-block');
-        //
-        //     // TODO: Skip inputs that were previously skipped (use OOP?)
-        //
-        //     if (cur_checklist.entry_ix === 0) {
-        //         $(".back-btn").hide();
-        //     }
-        //
-        //     // Removal of highlighting classes:
-        //     $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
-        // }
         cur_checklist.handle_back();
 
     })
@@ -221,15 +207,15 @@ $(document).ready(function () {
 
     // Editing risk info elements:
     let curtext;
-    $(".editable").on("click", function () {
-
-        $("#edit-text-popup").show();
-
-        curtext = $(this);
-        console.log("curtext is:");
-        console.log(curtext);
-        $("#edit-newtext").val(curtext.text());
-    })
+    // $(".editable").on("click", function () {
+    //
+    //     $("#edit-text-popup").show();
+    //
+    //     curtext = $(this);
+    //     console.log("curtext is:");
+    //     console.log(curtext);
+    //     $("#edit-newtext").val(curtext.text());
+    // })
 
     function end_editing() {
         const textfields = $(".edit-note");
@@ -288,29 +274,29 @@ $(document).ready(function () {
                 end_editing();
                 $(window).unbind("click");
             }
-
         })
+
     })
 
     $("#stop-edit").on("click", end_editing)
 
-    $("#edit-ok").on("click", function () {
+    // $("#edit-ok").on("click", function () {
+    //
+    //     console.log(curtext);
+    //     const text_element = $("#edit-newtext");
+    //     console.log(text_element.val());
+    //
+    //     curtext.text(text_element.val());
+    //
+    //     text_element.val("");
+    //     $("#edit-text-popup").hide();
+    // })
 
-        console.log(curtext);
-        const text_element = $("#edit-newtext");
-        console.log(text_element.val());
 
-        curtext.text(text_element.val());
-
-        text_element.val("");
-        $("#edit-text-popup").hide();
-    })
-
-
-    $("#edit-cancel").on("click", function () {
-        $("#edit-newtext").val("");
-        $("#edit-text-popup").hide();
-    })
+    // $("#edit-cancel").on("click", function () {
+    //     $("#edit-newtext").val("");
+    //     $("#edit-text-popup").hide();
+    // })
 
 });
 
@@ -605,12 +591,12 @@ class Checklist {
                 ["coral", "lightgrey"],
                 expansion);
 
-            $("#results-1-error ~ *").show();
+            $("#results-1-error ~ *:not(textarea)").show();
             $("#results-1-error").hide();
 
         } catch (error) {
             console.warn(error);
-            $("#results-1-error ~ *").hide();
+            $("#results-1-error ~ *:not(textarea)").hide();
             $("#results-1-error").show();
 
         }
