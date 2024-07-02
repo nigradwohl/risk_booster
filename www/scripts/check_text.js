@@ -256,6 +256,8 @@ $(document).ready(function () {
 
         }
 
+        const person_all = ["Proband", "[Tt]eilnehme", "[Pp]erson", "Menschen", "Frauen", "Männer", "Kinder", "Erwachsene"]
+
         /**
          * Object that can be looped over to check numbers for number types taht are specific to their units in "number_unit".
          * @type {{ncase: {number_unit: string[], keyset: RegExp[][]}, incr: {number_unit: string[], keyset: RegExp[][]}, ntot: {number_unit: string[], keyset: RegExp[][]}, decr: {number_unit: string[], keyset: RegExp[][]}}}
@@ -299,7 +301,7 @@ $(document).ready(function () {
                     [RegExp("Fälle|Verläufe"), RegExp("insgesamt|nach|Studie")],
                     [RegExp("[Ee]rkrankt|[Bb]etroffen")],
                     [RegExp("Todesfälle")],
-                    [RegExp("(ver)?st[aeo]rben"), RegExp("Person|Teilnehm|[Gg]ruppe")],
+                    [RegExp("(ver)?st[aeo]rben"), RegExp(collapse_regex_or(person_all))],
                     // Reporting certain effects in study:
                     [RegExp("berichte(te)?n|entwickel|beobacht"), RegExp("Unwohlsein|Nebenwirkungen")],
                     [RegExp("berichte(te)?n"), RegExp("wohl"), RegExp("fühlen")]
@@ -308,14 +310,14 @@ $(document).ready(function () {
             "ntot": {
                 "number_unit": ["freq"],
                 "keyset": [
-                    [RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder|Erwachsene"),
+                    [RegExp(collapse_regex_or(person_all)),
                         RegExp(collapse_regex_or(["insgesamt", "nahmen", "erh(a|ie)lten", "befragt", "ausgewählt", "umfass(t|en)"])),
                         RegExp(collapse_regex_or(["Studie", "Untersuchung", "Erhebung"]))],
                     [RegExp(collapse_regex_or(["Daten", "[Bb]efragt"])),
                         RegExp(collapse_regex_or(["von", "über"])),
-                        RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder")],
+                        RegExp(collapse_regex_or(person_all))],
                     // 2nd set:
-                    [RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder|Erwachsene"),
+                    [RegExp(collapse_regex_or(person_all)),
                         RegExp("Analyse")]
                 ]
             }
@@ -396,6 +398,14 @@ $(document).ready(function () {
             "rel": {
                 "abs": ["[Qq]uote", "Anteil", "mehr_als"],  // quotas should always be absolute.
                 "rel": ["Wirksamkeit", "Impfschutz", "Schutzwirkung"]
+            },
+            "reference": {
+                // TODO!
+                "tot": ["(der|aller)_(Studien)?[Tt]eilnehm"],
+                "sub": ["Kontroll-?.*[Gg]ruppe", "Placebo-?.*[Gg]ruppe",
+                    "Vergleichs-?.*[Gg]ruppe",
+                    "Prävention.*wenigsten.*befolgte",
+                    "kein.*Medika"]
             }
 
         }
@@ -740,7 +750,8 @@ $(document).ready(function () {
         token_dat.numtype = token_dat.numtype
             .map((x, ix) => token_dat.unit[ix] === "freq" && [-1, "other"].includes(x) && token_dat.gtype[ix] === "sub" ? "ncase" : x);
 
-        // Reference information for absolute percentages:
+        // Reference information for absolute percentages and subgroups:
+        // +++ HERE +++
         token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.reference), "reference");
 
         // Display for testing: ~~~~~~~~~~~~~~~~~~
