@@ -34,7 +34,6 @@ Features are sorted by importance and are further split by features that should 
     + detect absolute risk reductions (e.g., smaller percentages, percentage points): distinguish from unidentified percentages (and mention if they are likely relative)
 * detect if numbers have a reference (e.g., is only the number of infections or percentages in groups reported? 
 Do we also have the group sizes?)
-* Handle margins for tooltips 
 
 ### Nice to have
 

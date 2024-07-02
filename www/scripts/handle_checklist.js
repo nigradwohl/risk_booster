@@ -93,8 +93,10 @@ $(document).ready(function () {
                 "verb": new Verblist("auf die Intensivstation eingewiesen worden", "werden", "auf die Intensivstation eingewiesen"),
                 "noun": "Krankenhauseinweisungen", "direction": "prevent"
             },
-            {"verb": new Verblist("werden diagnostiziert", "werden", "diagnostiziert"),
-                "noun": "Positive Diagnosen", "direction": "prevent"}
+            {
+                "verb": new Verblist("werden diagnostiziert", "werden", "diagnostiziert"),
+                "noun": "Positive Diagnosen", "direction": "prevent"
+            }
         ].concat(outcome_list.eff);
     }
 
@@ -603,6 +605,9 @@ class Checklist {
                 ["coral", "lightgrey"],
                 expansion);
 
+            $("#results-1-error ~ *").show();
+            $("#results-1-error").hide();
+
         } catch (error) {
             console.warn(error);
             $("#results-1-error ~ *").hide();
@@ -628,6 +633,9 @@ class Checklist {
                 ncol,
                 ["steelblue", "lightgrey"],
                 expansion);
+
+            $("#results-2-error ~ *").show();
+            $("#results-2-error").hide();
 
         } catch (error) {
             console.warn(error);
@@ -756,6 +764,8 @@ class Checklist {
         // Handle side effects:
         // Handle side effects:
         const side_risks = get_risk_set(side_group_risks);
+        console.log("Side risks");
+        console.log(side_group_risks);
         // Assign the information to the objects in results page:
         $("#risk-treat-side").text(this.outcome_side.verb.aux + " " + side_risks.risk_treat_nh + " " + this.outcome_side.verb.main);
         $("#risk-control-side").text(this.outcome_side.verb.aux + " " + side_risks.risk_control_nh + " " + this.outcome_side.verb.main);
@@ -819,7 +829,7 @@ class Checklist {
 
                     if (eff_keys.includes(cur_q_key)) {
                         // Change effectivity as a function of prevention vs. achievement:
-                        if(cur_q_key === "rrr" && this.outcome.direction === "achieve"){
+                        if (cur_q_key === "rrr" && this.outcome.direction === "achieve") {
                             console.log("Update relative value:");
                             checked_val = 2 - checked_val;
                         }
