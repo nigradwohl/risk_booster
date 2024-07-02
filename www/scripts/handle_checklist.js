@@ -736,10 +736,11 @@ class Checklist {
         }
 
         const eff_risks = get_risk_set(eff_group_risks);
+        console.log(eff_risks);
 
         // Assign the information to the objects in results page:
-        $("#risk-treat").text(this.outcome.verb.aux + " " + eff_risks.risk_treat_nh + " " + this.outcome.verb.main);
-        $("#risk-control").text(this.outcome.verb.aux + " " + eff_risks.risk_control_nh + " " + this.outcome.verb.main);
+        $("#risk-treat").html(this.outcome.verb.aux + "<br>" + eff_risks.risk_treat_nh + " " + this.outcome.verb.main);
+        $("#risk-control").html(this.outcome.verb.aux + "<br>" + eff_risks.risk_control_nh + " " + this.outcome.verb.main);
         $("#abs-change").html(`Absolute${eff_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe ${this.outcome.verb.aux} <span class="risk-info" id="arr">${eff_risks.arr_p} ${this.outcome.verb.main}</span>`);
         $("#rel-change").html(`Relative${eff_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${eff_risks.rrr_p}</span>`);
         // Rounding can eventually be improved!
@@ -753,8 +754,8 @@ class Checklist {
         console.log("Side risks");
         console.log(side_group_risks);
         // Assign the information to the objects in results page:
-        $("#risk-treat-side").text(this.outcome_side.verb.aux + " " + side_risks.risk_treat_nh + " " + this.outcome_side.verb.main);
-        $("#risk-control-side").text(this.outcome_side.verb.aux + " " + side_risks.risk_control_nh + " " + this.outcome_side.verb.main);
+        $("#risk-treat-side").html(this.outcome_side.verb.aux + "<br>" + side_risks.risk_treat_nh + " " + this.outcome_side.verb.main);
+        $("#risk-control-side").html(this.outcome_side.verb.aux + "<br>" + side_risks.risk_control_nh + " " + this.outcome_side.verb.main);
         $("#abs-change-side").html(`Absolute${side_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe ${this.outcome_side.verb.aux} <span class="risk-info" id="arr">${side_risks.arr_p}</span> ${this.outcome_side.verb.main}`);
         $("#rel-change-side").html(`Relative${side_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${side_risks.rrr_p}</span>`);
 
