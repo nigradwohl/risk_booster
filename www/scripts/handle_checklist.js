@@ -32,10 +32,13 @@ $(document).ready(function () {
 
     const outcome_list = {
         "eff":
-            [{"verb": new Verblist("sterben", "sind", "verstorben"), "noun": "Todesfälle"}],
+            [{"verb": new Verblist("sterben", "sind", "verstorben"), "noun": "Todesfälle", "direction": "prevent"}],
         "side": [
             // Exchange ERLEIDEN for BERICHTEN?
-            {"verb": new Verblist("erleiden Nebenwirkungen", "erleiden", "Nebenwirkungen"), "noun": "Nebenwirkungen"},
+            {
+                "verb": new Verblist("erleiden Nebenwirkungen", "erleiden", "Nebenwirkungen"), "noun": "Nebenwirkungen",
+                "direction": "prevent"
+            },
             {
                 "verb": new Verblist("erleiden leichte Nebenwirkungen", "erleiden", "leichte Nebenwirkungen"),
                 "noun": "leichte Nebenwirkungen"
@@ -55,9 +58,18 @@ $(document).ready(function () {
         // outcome = {"verb": ["versterben", "sind verstorben"], "noun": "Todsfälle"};
         // Ad treatment specific endpoints:
         outcome_list.eff = [
-            {"verb": new Verblist("werden symptomfrei", "werden", "symptomfrei"), "noun": "Symptomfreiheit"},
-            {"verb": new Verblist("genesen", "genesen", ""), "noun": "Genesungen"},
-            {"verb": new Verblist("berichten Symptomlinderung", "berichten", "Symptomlinderung"), "noun": "Symptomlinderung"}
+            {
+                "verb": new Verblist("werden symptomfrei", "werden", "symptomfrei"),
+                "noun": "Symptomfreiheit", "direction": "achieve"
+            },
+            {
+                "verb": new Verblist("genesen", "genesen", ""),
+                "noun": "Genesungen", "direction": "achieve"
+            },
+            {
+                "verb": new Verblist("berichten Symptomlinderung", "berichten", "Symptomlinderung"),
+                "noun": "Symptomlinderung", "direction": "achieve"
+            }
         ].concat(outcome_list.eff);
 
     } else if (text === "impf") {
@@ -73,9 +85,16 @@ $(document).ready(function () {
 
         outcome_list.eff = [
             {"verb": new Verblist("erkranken", "erkranken", ""), "noun": "Erkrankungen"},
-            {"verb": new Verblist("ins Krankenhaus eingewiesen worden", "werden", "ins Krankenhaus eingewiesen"), "noun": "Krankenhauseinweisungen"},
-            {"verb": new Verblist("auf die Intensivstation eingewiesen worden", "werden", "auf die Intensivstation eingewiesen"), "noun": "Krankenhauseinweisungen"},
-            {"verb": new Verblist("werden diagnostiziert", "werden", "diagnostiziert"), "noun": "Positive Diagnosen"}
+            {
+                "verb": new Verblist("ins Krankenhaus eingewiesen worden", "werden", "ins Krankenhaus eingewiesen"),
+                "noun": "Krankenhauseinweisungen", "direction": "prevent"
+            },
+            {
+                "verb": new Verblist("auf die Intensivstation eingewiesen worden", "werden", "auf die Intensivstation eingewiesen"),
+                "noun": "Krankenhauseinweisungen", "direction": "prevent"
+            },
+            {"verb": new Verblist("werden diagnostiziert", "werden", "diagnostiziert"),
+                "noun": "Positive Diagnosen", "direction": "prevent"}
         ].concat(outcome_list.eff);
     }
 
@@ -464,7 +483,7 @@ class Checklist {
     increment_or_skip() {
         // Check whether input can be skipped: ~~~~~~~~~~~~
         console.log("+++ CHECK IF SKIPPABLE +++");
-        const skiplist = ["n-total", "p-treat", "p-side"];  // Make p-side or n-side skippable, if both were provided!
+        const skiplist = ["n-total", "p-treat", "n-side", "p-side"];  // Make p-side or n-side skippable, if both were provided!
         const cur_entry = q_order[this.entry_ix];
         let next_entry;
 
@@ -785,7 +804,7 @@ class Checklist {
                 // If the current value is defined and non-empty:
 
                 // Evaluate entry (curval in, checked val out):
-                const checked_val = evaluate_entry(curval, cur_q_key);
+                let checked_val = evaluate_entry(curval, cur_q_key);
                 // this.is_error = cureval !== "noerr";  // log if an error occurred.
                 //
                 // // Save value to table object:
@@ -796,9 +815,14 @@ class Checklist {
                     console.log(`Update objects ${cur_q_key}:`);
                     console.log(number_dict[cur_q_key]);
 
-                    console.log(`Side keys: ${side_keys.includes(cur_q_key)}, eff keys: ${eff_keys.includes(cur_q_key)}`)
+                    console.log(`Side keys: ${side_keys.includes(cur_q_key)}, eff keys: ${eff_keys.includes(cur_q_key)}; VALUE: ${checked_val}`)
 
                     if (eff_keys.includes(cur_q_key)) {
+                        // Change effectivity as a function of prevention vs. achievement:
+                        if(cur_q_key === "rrr" && this.outcome.direction === "achieve"){
+                            console.log("Update relative value:");
+                            checked_val = 2 - checked_val;
+                        }
                         this.check_risk.update_by_arr(number_dict[cur_q_key], checked_val);
                     }
 
