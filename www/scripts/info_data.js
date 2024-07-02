@@ -163,8 +163,8 @@ const info_data = {
             "als größer wahrgenommen wird als 1 aus 100. " +
             "Zuletzt berücksichtigen Personen den Nenner in ihrer Wahrnehmung, so dass auch 1 aus 1000 fälschlicherweise als größer" +
             "als 1 aus 100 wahrgenommen werden kann.</p>" +
-            "<p>Daraus folgt auch, dass keine grundsätzliche Überlegenheit gegenüber" +
-            "<a href='risk_wiki.html#prozent'>Prozentzahlen</a> abgeleitet werden kann. " +
+            "<p>Daraus folgt auch, dass keine grundsätzliche Überlegenheit gegenüber " +
+            "<a href='risk_wiki.html#wiki-prozent'>Prozentzahlen</a> abgeleitet werden kann. " +
             "Lediglich bei Prozentangaben kleiner als ein Prozent (z.B., 0,2 %) sind natürliche Häufigkeiten zu bevorzugen, " +
             "da so Kommazahlen vermieden werden können. " +
             "Dennoch kann eine generelle Verwendung natürlicher Häufigkeiten als Daumenregel verwendet werden, " +
@@ -186,7 +186,7 @@ const info_data = {
             "<p><i class=\"fa fa-exclamation-triangle annote-text-icon\"></i>&nbsp;Relative Angaben sind oft intransparent.</p>" +
             "<ul>" +
             // "<li>sie führen häufig zu einer <a href=\"risk_wiki.html#wiki-error-rel\">Überschätzung des Risikos</a></li>" +
-            "<li>Achten Sie darauf, dass die <a href='base-prob'>Basiswahrscheinlichkeit (bzw. das Basisrisiko)</a> angegeben wurde, auf die sich die Veränderung bezieht.</li>" +
+            "<li>Achten Sie darauf, dass die <a href='risk_wiki.html#wiki-baseprob'>Basiswahrscheinlichkeit (bzw. das Basisrisiko)</a> angegeben wurde, auf die sich die Veränderung bezieht.</li>" +
             "</ul>"
         ],
         "maintext": "<h4>Verwendung</h4>" +
