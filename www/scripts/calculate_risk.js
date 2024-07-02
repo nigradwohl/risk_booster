@@ -1,3 +1,8 @@
+
+/* NOTES
+* On Odds Ratios in case control studies: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7850067/
+* * Case-control studies sample based on outcome status: https://en.wikipedia.org/wiki/Case%E2%80%93control_study
+ */
 $(document).ready(function () {
 
 
