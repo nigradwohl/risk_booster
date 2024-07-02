@@ -394,7 +394,7 @@ $(document).ready(function () {
                 "medical": ["BMI"]
             },
             "rel": {
-                "abs": ["[Qq]uote", "Anteil"],  // quotas should always be absolute.
+                "abs": ["[Qq]uote", "Anteil", "mehr_als"],  // quotas should always be absolute.
                 "rel": ["Wirksamkeit", "Impfschutz", "Schutzwirkung"]
             }
 
@@ -677,10 +677,34 @@ $(document).ready(function () {
 
         // Column for percentages <1%:
         // Translate number words:
+        console.log("~~~~~~~~~~~~~~ TRANSLATING NUMBER WORDS ~~~~~~~~~~~~~~");
         const num_arr = Array.from(Array(13).keys());
-        token_dat.add_column(token_dat.token
-            .map((x, ix) => token_dat.is_num[ix] && token_dat.is_nw[ix] ? (num_arr[num_arr
-                .filter((ixn) => RegExp(numwords[ixn], "dg").test(x))]).toString() : x), "trnum");
+        // token_dat.add_column(token_dat.token
+        //     .map((x, ix) => token_dat.is_num[ix] && token_dat.is_nw[ix] ? (num_arr[num_arr
+        //         .filter((ixn) => RegExp(numwords[ixn] + " (?!\\d)", "dg").test(x))]).toString() : x), "trnum");
+        token_dat.add_column([...token_dat.token], "trnum");
+        for (let ix = 0; ix < token_dat.nrow - 1; ix++) {
+            if (token_dat.is_num[ix] && token_dat.is_nw[ix]) {
+
+                if (!token_dat.is_num[ix + 1]) {
+                    const token = token_dat.token[ix];
+                    console.log(`+++ Current token is ${token}`);
+                    const num_ix = num_arr
+                        .filter((ixn) => RegExp(numwords[ixn], "dg").test(token))
+                    // Excludes numbers that occur directly after the number word.
+                    if (num_ix !== undefined && num_ix.length > 0) {
+                        token_dat.trnum[ix] = num_arr[num_ix].toString();
+                    }
+                } else {
+                    // Revoke status as number, if the next token after a potential number word is number itself.
+                    token_dat.is_num[ix] = false;
+                    token_dat.is_nw[ix] = false;
+                }
+
+            }
+
+
+        }
 
         token_dat.add_column(token_dat.unit.map((x, ix) => x === "perc" && token_dat.is_num[ix] ?
             token_dat.trnum[ix].match(regex_num)[0].replace(",", ".") < 1 : -1), "smperc");
@@ -1559,7 +1583,7 @@ const month_names = ["Januar", "Februar", "März", "April", "Mai", "Juni",
     "Juli", "August", "September", "Oktober", "November",
     "Dezember"];
 const pat_num = "(?:(?<![\\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,:][0-9]+)?))(?!\\\.[0-9A-Za-zÄÖÜäöüß]|[a-zA-Z0-9ÄÖÜäöüß])"
-const numwords = ["[Kk]eine", "(?<![Kk])[Ee]ine?r?(?![gnz])", "[Zz]wei(?!fe)", "[Dd]rei", "[Vv]ier", "[Ff]ünf", "[Ss]echs",
+const numwords = ["[Kk]einen?", "(?<![Kk])[Ee]ine?r?(?![gnz])", "[Zz]wei(?!fe)", "[Dd]rei", "[Vv]ier", "[Ff]ünf", "[Ss]echs",
     "[Ss]ieben", "[Aa]cht(?!e)", "[Nn]eun(?!k)", "[Zz]ehn", "[Ee]lf", "[Zz]wölf"]
 
 const regex_num = new RegExp("(?<unknown>" + pat_num + "( Millionen| Milliarden)?)", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
@@ -2092,11 +2116,24 @@ function get_token_data(text) {
 let testcount = 0;
 
 // ~~~~~~~~~~~~~~~~~~~ PROCESSING FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~
+// Entry of keyset
+// "number_unit": ["perc", "mult", "nyear"],  // add in other types eventually! 30-fach etc.
+//                 "keyset": [
+//                     // A first entry to a domain-general keyset for risk:
+//                     [RegExp(collapse_regex_or(["[Rr]isiko", "[Ww]ahrscheinlich", "Inzidenz", "Todesfälle"])),
+//                         RegExp(collapse_regex_or(["höher", "erhöht"]))],
+//                     [RegExp(collapse_regex_or(["[Uu]nterschied", "höher", "vergrößerte"])),
+//                         RegExp(collapse_regex_or(["Lebenserwartung", "Abstand"]))]
+//
+//                 ]
 /**
  * Tries to detect the type of each number by using its unit and additional context information
  * @return {Array}     An array of number types for numeric token data
  * @param token_data {Object} A token data object with information about numbers.
  * @param txt {String} The text corresponding to the token data, allowing to detect matches.
+ * @param numtype_dict {Object} Object with numtypes as keys. Field "number_unit" must contain units that are eligible for this number type.
+ Field keyset contains an array of arrays containing RegEx. If all RegEx in any inner array are true, the number type is assigned.
+ * @returns {any[]}
  */
 function detect_number_type(token_data, txt, numtype_dict) {
 
