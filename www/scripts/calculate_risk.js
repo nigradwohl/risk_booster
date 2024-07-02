@@ -139,14 +139,15 @@ class RiskCollection {
         const psums1 = this.ptab.msums1;
         const nsums2 = this.ntab.msums2;
         const psums2 = this.ptab.msums2;
+        const Ntot = this.ntab.N;
 
         // console.log("Input n from p:");
         // this.print();
 
         this.ntab.msums1 = nsums1
-            .map((val, ix) => compare_vals(Math.round(psums1[ix] * this.ntab.N), val, 1));
+            .map((val, ix) => compare_vals(Math.round(psums1[ix] * Ntot), val, 1));
         this.ntab.msums2 = nsums2
-            .map((val, ix) => compare_vals(Math.round(psums2[ix] * this.ntab.N), val, 1));
+            .map((val, ix) => compare_vals(Math.round(psums2[ix] * Ntot), val, 1));
 
         // console.log("Output n from p:");
         // console.log(JSON.stringify(this.ntab.msums1));
@@ -158,6 +159,11 @@ class RiskCollection {
             .map((val, ix) => compare_vals(Math.round(nsums1[1 - ix] * psums1[ix] / psums1[1 - ix]), val, 1));
         this.ntab.msums2 = nsums2
             .map((val, ix) => compare_vals(Math.round(nsums2[1 - ix] * psums2[ix] / psums2[1 - ix]), val, 1));
+
+        // Full table from probabilities:
+        this.ntab.tab.tab2x2 = this.ptab.tab.tab2x2
+            .map((vx, ix) => vx
+                .map((vy, iy) => compare_vals(Math.round(vy * Ntot), this.ntab.tab.tab2x2[ix][iy], 1)));
 
     }
 

@@ -1046,6 +1046,7 @@ const q_order = [
     // "any-control",
     "n-treat-control",
     "n-total", "p-treat",
+    "p-case",
     "n-case",
     // "or-case",
     // "side",
@@ -1061,6 +1062,7 @@ const q_order = [
  */
 const q_inputs = Object.fromEntries(q_order.map((x) => [x, [x]]));
 q_inputs["n-case"] = ["n-case-impf", "n-case-control"];
+q_inputs["p-case"] = ["p-case-impf", "p-case-control"];
 q_inputs["n-treat-control"] = ["n-impf", "n-control"];
 q_inputs["n-side"] = ["n-side-impf", "n-side-control"];
 q_inputs["p-side"] = ["p-side-impf", "p-side-control"];
@@ -1076,6 +1078,10 @@ const id_to_num_dict = {
     "n-impf": "msumx1",
     "n-control": "msumx0",
     "p-treat": "mpx1",
+    "p-case-impf": "mtx1",
+    // careful! Vaccinated are now column 2 (index 1)!
+    // cases are second row (index 1)
+    "p-case-control": "mtx0",  // cases among untreated (cases: 1, treatment: 0)
     "n-case-impf": "n11",
     // careful! Vaccinated are now column 2 (index 1)!
     // cases are second row (index 1)
@@ -1092,7 +1098,8 @@ const eff_keys = ["N_tot",
     "msum0x", "msum1x",
     "rrr",
     "p00", "p01", "p10", "p11",
-    "mpx0", "mpx1"
+    "mpx0", "mpx1",
+    "mtx0", "mtx1"
 ]
 
 const side_keys = ["N_tot",
@@ -1141,6 +1148,8 @@ const number_dict = {
     "p11": ["ptab", "tab", "tab2x2", 1, 1],
     "mpx0": [],
     "mpx1": ["ptab", "msums2", 1],
+    "mtx0": ["mtab2", "tab", "tab2x2", 0, 1],
+    "mtx1": ["mtab2", "tab", "tab2x2", 1, 1],
     // Side-effect info:
     "n10s": ["ntab", "tab", "tab2x2", 1, 0],
     "n11s": ["ntab", "tab", "tab2x2", 1, 1],
@@ -1180,8 +1189,12 @@ const int_keys = ["N_tot",
 const float_keys = ["rrr",
     "p00", "p01", "p10", "p11",
     "mpx0",
+    "mtx0", "mtx1",
     "mtx0s", "mtx1s"]
-const perc_keys = ["rrr", "mpx1", "mtx0s", "mtx1s"]
+const perc_keys = ["rrr", "mpx1",
+    "mtx0", "mtx1",
+    "mtx0s", "mtx1s",
+    "p00", "p01", "p10", "p11"]
 
 
 // FUNCTIONS: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
