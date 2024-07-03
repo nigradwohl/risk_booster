@@ -721,7 +721,9 @@ class Checklist {
                 (Math.sign(arc) * Math.round(arc * curscale) + " aus " + curscale + meaning_arc);
 
             // Note: If the risk is negative, it corresponds to an increase!
-            const rrc = Math.abs(arc / group_risks[0][1]); // relative risk change.
+            // For an increase report the multiple!
+            const rrc = arc > 0 ? Math.abs(arc / group_risks[0][1]) : group_risks[1][1]/group_risks[0][1];
+            // relative risk change.
             // How many times higher is the risk in the treatment group?
 
             const rrr = Math.round(rrc * 1000) / 1000;
