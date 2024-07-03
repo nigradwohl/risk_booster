@@ -74,6 +74,10 @@
     border-radius: 2px;
 }
 
+.tooltip .tooltiptext.tooltip-overview > p {
+    color: white;
+}
+
 .tooltip .tooltiptext.tooltip-overview::after {
     border-color: #0077be transparent transparent transparent;
 }

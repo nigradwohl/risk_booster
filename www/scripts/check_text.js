@@ -1707,7 +1707,15 @@ const unit_note_dict = {
             "contr": "Anzahl in der Kontrollgruppe"
         },
         "note": function (type_arr) {
-            return "Der Text enthält <a target=\"_blank\" href='risk_wiki.html#wiki-freq'>Anzahlen von Fällen</a>. "
+            return "Der Text enthält " +
+                "<div id=\"case-tt\" class=\"tooltip\">" +
+                "<span class=\"tooltiptext tooltip-overview\">" +
+                "<p>" +
+                "Fallzahlen können sehr transparent sein und sind oft leichter verständlich, als z.B. Prozentzahlen. " +
+                "Wichtig ist aber, dass klar ist, wie groß die Gruppe oder Grundgesamtheit ist, in der die Fälle auftreten." +
+                "</p></span>" +
+                "<a target=\"_blank\" href='risk_wiki.html#wiki-freq'>Anzahlen von Fällen</a>" +
+                "</div>. "
             // "Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
         }
     },
