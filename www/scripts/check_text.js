@@ -1301,7 +1301,7 @@ $(document).ready(function () {
             // ONLY NUMBERS: ~~~~~~~~~~~~~~~~~~~~~~~~
             feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> " +
                 "Der Text scheint keine Zahlen zu den Risiken zu berichten. " +
-                "Rein verbale Beschreibungen sollten vermieden werden. [LINK WIKI!]" +
+                "Rein verbale Beschreibungen sollten vermieden werden." +
                 "Bitte versuchen Sie Zahlen zu berichten.";
         }
 
@@ -1316,7 +1316,14 @@ $(document).ready(function () {
 
 
         // Output topics:
-        $("#text-note-general").html("<p id=\"text-note-general\">" + key_topics_str + "</p>");
+        // $("#text-note-general").html("<p id=\"text-note-general\">" + key_topics_str + "</p>");
+        // General information:
+        $("#text-note-general").html("<p id=\"text-note-general\" class='note-par'>" +
+            "Fahren Sie über die hervorgehobenen Ausdrücke, um weitere Informationen zu erhalten. " +
+            "Klicken Sie auf die Links, um ins Wiki zu gelangen." +
+            "</p>" +
+            key_topics_str
+        );
 
 
         // Add mismatched framing:
@@ -1405,7 +1412,7 @@ $(document).ready(function () {
 
 
         // Alternative tooltip as popup:
-        $(".tooltip").on("click", function (e) {
+        $(".highlight-num").on("click", function (e) {
 
 
             const cur_num = $(this);
