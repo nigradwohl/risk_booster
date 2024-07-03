@@ -288,6 +288,8 @@ class RiskCollection {
         this.mtab1.get_from_rel();
         this.mtab2.get_from_rel();
 
+        this.mtab1.get_from_diff();
+        this.mtab2.get_from_diff();
         // console.log("Output margin tables");
         // console.log(JSON.stringify(this.mtab1));
         // console.log(JSON.stringify(this.mtab2));
@@ -360,11 +362,13 @@ class RiskCollection {
 
         this.mtab1 = new Margintable([[NaN, NaN], [NaN, NaN]],  // condition.
             [NaN, NaN],
-            [NaN, NaN]);
+            [NaN, NaN],
+            [NaN, NaN], [NaN, NaN]);
 
         this.mtab2 = new Margintable([[NaN, NaN], [NaN, NaN]],  // condition.
             [NaN, NaN],
-            [NaN, NaN]);
+            [NaN, NaN],
+            [NaN, NaN], [NaN, NaN]);
         console.log("Cleared all");
         console.log(this);
     }
@@ -544,10 +548,14 @@ class Basetable {
 
 class Margintable {
     // A marginal table with known relations:
-    constructor(nested_list, rel1, rel2) {
+    constructor(nested_list, rel1, rel2, diff1, diff2) {
         this.tab = new Table2x2(nested_list);
-        this.rel1 = rel1;
+        // Relative risk changes:
+        this.rel1 = rel1;  // TODO: Really needed? We have 2 margin tables -- one for each?
         this.rel2 = rel2;
+        // Absolute risk differences:
+        this.diff1 = diff1;
+        this.diff2 = diff2;
     }
 
     // Complete margins to sum up to 1:
@@ -557,17 +565,47 @@ class Margintable {
 
         // Potentially make more concise?
         // Add other dimensions?
-        console.log("Margintable before:");
+        console.log("Margintable before getting from relative information:");
         console.log(JSON.stringify(this));
 
         // Margins should be designed so that the arrays add up to 1.
+
+        // TODO: May be simplified a lot!
 
         // Complete the relations:
         this.rel2[0] = isNaN(this.rel2[0]) ? 1 / this.rel2[1] : this.rel2[0];
         this.rel2[1] = isNaN(this.rel2[1]) ? 1 / this.rel2[0] : this.rel2[1];
 
-        const curtab = this.tab.tab2x2;
+        this.complete_tab();
 
+        console.log("Margintable after getting from relative information:");
+        console.log(JSON.stringify(this));
+    }
+
+    get_from_diff() {
+
+        // Potentially make more concise?
+        // Add other dimensions?
+        console.log("Margintable before getting fromdifference information:");
+        console.log(JSON.stringify(this));
+
+        // Margins should be designed so that the arrays add up to 1.
+
+        // TODO: May be simplified a lot!
+
+        // Complete the relations:
+        this.diff2[0] = isNaN(this.diff2[0]) ? -this.diff2[1] : this.diff2[0];
+        this.diff2[1] = isNaN(this.diff2[1]) ? -this.diff2[0] : this.diff2[1];
+
+        this.complete_tab();
+
+
+        console.log("Margintable after getting from difference:");
+        console.log(JSON.stringify(this));
+    }
+
+    complete_tab(){
+        const curtab = this.tab.tab2x2;
 
         // Note: Currently ONLY for dim1 in margin table!
         curtab[1][1] = compare_vals(curtab[1][1], curtab[0][1] / this.rel2[0], 0.005);
@@ -585,10 +623,6 @@ class Margintable {
         // isNaN(this.tab[1][0]) ? 1 - this.tab[1][1] : this.tab[1][0];
         curtab[1][1] = compare_vals(1 - curtab[1][0], curtab[1][1], 0.005);
         // isNaN(this.tab[1][1]) ? 1 - this.tab[1][0] : this.tab[1][1];
-
-
-        console.log("Margintable after:");
-        console.log(JSON.stringify(this));
     }
 
 
@@ -704,6 +738,6 @@ const ptabb = new Basetable(
     na_tab,
     [NaN, NaN], [NaN, NaN], 1);
 // NOTE: Make sure to appropriately distinguish relative risk increase and reduction!
-const mtab1b = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
-const mtab2b = new Margintable(na_tab, [NaN, NaN], [NaN, NaN]);
+const mtab1b = new Margintable(na_tab, [NaN, NaN], [NaN, NaN], [NaN, NaN], [NaN, NaN]);
+const mtab2b = new Margintable(na_tab, [NaN, NaN], [NaN, NaN], [NaN, NaN], [NaN, NaN]);
 const check_risk2 = new RiskCollection(ntabb, ptabb, mtab1b, mtab2b);
