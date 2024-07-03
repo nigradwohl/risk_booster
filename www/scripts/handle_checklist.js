@@ -678,6 +678,8 @@ class Checklist {
         console.log(this.check_side);
 
         console.log("~~~~~~ Calculate the risks ~~~~");
+        // TODO: Rather get from ptab/mtab -- this should be more flexible
+        //  (e.g., if the risks in both groups were entered in percent).
         const eff_group_risks = this.check_risk.ntab.tab.margin2_mean();
         const side_group_risks = this.check_side.ntab.tab.margin2_mean();
 
@@ -689,7 +691,8 @@ class Checklist {
 
         // Translate to natural frequencies:
         // const curscale = 1000;  // fixed reference! Should eventually be so that the smallest number is detectable!
-        const curscale = [100, 1000, 2000, 5000, 10000, 50000, 100000]
+        // was: [100, 1000, 2000, 5000, 10000, 50000, 100000]
+        const curscale = [100, 1000, 10000, 100000]
             .filter((x) => group_risks_flat.every((r) => (r * x) >= 5))[0];
         // Get the first reference for which the product is greater 1!
         // Altering this threshold will lead to larger references (which may differentiate better!)
