@@ -1195,9 +1195,9 @@ $(document).ready(function () {
                 (!feature_arr.includes("damage") && feature_set?.damage ? "" :
                     "zu den genannten " +
                     "<div id=\"risk-tt\" class=\"tooltip\">" +
-                    "<span class=\"tooltiptext tooltip-overview\">Anders der umgangssprachliche Risikobegriff gleichbedeutend mit \"Wahrscheinlichkeit\"" +
+                    "<span class=\"tooltiptext tooltip-overview\">Anders der umgangssprachliche Risikobegriff gleichbedeutend mit \"Wahrscheinlichkeit\" " +
                     "(häufig etwa Wahrscheinlichkeit zu erkranken oder versterben; aber auch positiv, z.B., Wahrscheinlichkeit länger zu leben).</span>" +
-                    "<a href='risk_wiki.html#wiki-risk'>Risiken</a></div> ") +
+                    "<a target=\"_blank\" href='risk_wiki.html#wiki-risk'>Risiken</a></div> ") +
                 "zu berichten.";
 
             // +++ HERE!
@@ -1267,7 +1267,7 @@ $(document).ready(function () {
                 feature_num += arr_eff_both[0] + " Der Nutzen wird " + arr_eff_both[1] +
                     "mit Zahlen für Behandlungs- und Kontrollgruppe belegt</li>" + arr_eff_both[2] + "<li>";
                 feature_num += arr_side_both[0] + " Die Schadenwirkung wird " + arr_side_both[1] +
-                    "mit Zahlen für Behandlungs- und Kontrollgruppe belegt" + arr_eff_both[2];
+                    "mit Zahlen für Behandlungs- und Kontrollgruppe belegt" + arr_side_both[2];
                 // Rather "Nur für" oä.
             } else if (token_dat.topics.includes("comp_time")) {
 
@@ -1338,9 +1338,9 @@ $(document).ready(function () {
                 'für den Nutzen und absoluter Maße für die Schadenwirkung (auch umgekehrt möglich). ' +
                 'Da relative Angaben meist überschätzt werden, ' +
                 'stellt mismatched framing eine intransparente Verzerrung dar und sollte vermieden werden.</span>' +
-                '<a href=\'risk_wiki.html#wiki-mismatch\'>mismatched framing</a></div>' +
+                '<a target=\"_blank\" href=\'risk_wiki.html#wiki-mismatch\'>mismatched framing</a></div>' +
                 '" sollte vermieden werden. '
-                // 'da es <a href="risk_wiki.html#wiki-effside">Die Wirksamkeit ' +
+                // 'da es <a target=\"_blank\" href="risk_wiki.html#wiki-effside">Die Wirksamkeit ' +
                 // mismatch_inf[0][1] +
                 // ' und den Schaden ' +
                 // mismatch_inf[1][1] +
@@ -1437,7 +1437,7 @@ $(document).ready(function () {
             const curinfo = info_tree.traverse(col_info);
 
             const addinfo_perc = "<p>" +
-                (token_dat.smperc[token_id] === true ? "<br>Die Prozentzahl ist < 1%. Greifen Sie bitte auf <a href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> " +
+                (token_dat.smperc[token_id] === true ? "<br>Die Prozentzahl ist < 1%. Greifen Sie bitte auf <a target=\"_blank\" href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> " +
                     "(z.B., 1 aus 100 oder 1 aus 1000) zurück." : "") +
                 // Alternativ: Wir konnten
                 "</p>";  // z.B., relative/absolute Prozentzahl.
@@ -1646,33 +1646,35 @@ const unit_note_dict = {
                 types = type_arr.join("en und ") + "en";
             } else {
                 const last = type_arr.pop();
-                types = type_arr.join("en, ") + " und " + last + "en";
+                types = type_arr.join("en, ") + "en und " + last + "en";
             }
 
             let txt_out = "Der Text verwendet ";
 
             if (type_arr.includes("relative Prozentzahl")) {
                 if (type_arr.length === 1) {
-                    txt_out += "nur " + types + ". <a href=\"risk_wiki.html#wiki-rel\">Relative Angaben</a> ohne Basisrisiko sollten vermieden werden.";
+                    txt_out += "nur " + types + ". <a target=\"_blank\" href=\"risk_wiki.html#wiki-rel\">Relative Angaben</a> ohne Basisrisiko sollten vermieden werden.";
                 } else {
                     txt_out += types + ". ";
                 }
 
+                console.log(`+++++++ CURRENT TEXT SNIP: ${type_arr.join()}`);
+
                 txt_out = txt_out.replace(/(relative Prozentzahl(en)?)/g,
                     "<div id=\"relnote\" class=\"highlight-other highlight-warning tooltip\">" +
-                    "<a href=\"risk_wiki.html#wiki-rel\">$1</a>" +
+                    "<a target=\"_blank\" href=\"risk_wiki.html#wiki-rel\">$1</a>" +
                     "<span class=\"tooltiptext tooltip-overview\">" +
                     "Achten Sie darauf, dass Sie auch die <strong>" +
                     "absoluten Wahrscheinlichkeiten" +
                     " in der Behandlungs- und Vergleichsgruppe berichten</strong> &ndash; " +
-                    "am besten als <a href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> (d.h., 3 aus 1000 oä.).</span></div>");
+                    "am besten als <a target=\"_blank\" href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> (d.h., 3 aus 1000 oä.).</span></div>");
 
 
                 // txt_out += "Achten Sie darauf, dass Sie auch die <strong>absoluten Wahrscheinlichkeiten in den Gruppen berichten</strong> -- " +
-                //     "am besten als <a href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> (d.h., 3 aus 1000 oä.).";
+                //     "am besten als <a target=\"_blank\" href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> (d.h., 3 aus 1000 oä.).";
 
             } else {
-                txt_out += `${types}. Achten Sie darauf, dass klar ist auf welche Größe sich die <a href=\"risk_wiki.html#wiki-prozent\">Prozentangabe</a> bezieht.`
+                txt_out += `${types}. Achten Sie darauf, dass klar ist auf welche Größe sich die <a target=\"_blank\" href=\"risk_wiki.html#wiki-prozent\">Prozentangabe</a> bezieht.`
             }
 
             return txt_out;
@@ -1685,7 +1687,7 @@ const unit_note_dict = {
         },
         "note": function (type_arr) {
             return "Der Text enthält " +
-                "<a href=\"risk_wiki.html#wiki-nh\">Natürliche Häufigkeiten.</a> " +
+                "<a target=\"_blank\" href=\"risk_wiki.html#wiki-nh\">Natürliche Häufigkeiten.</a> " +
                 "Sehr gut! Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
         }
     },
@@ -1698,15 +1700,15 @@ const unit_note_dict = {
             "contr": "Anzahl in der Kontrollgruppe"
         },
         "note": function (type_arr) {
-            return "Der Text enthält <a href='risk_wiki.html#wiki-freq'>Anzahlen von Fällen</a>. "
+            return "Der Text enthält <a target=\"_blank\" href='risk_wiki.html#wiki-freq'>Anzahlen von Fällen</a>. "
             // "Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
         }
     },
     "mult": {
         "tooltip": {"other": "Relative Angabe"},
         "note": function (type_arr) {
-            return "Der Text enthält <a href='risk_wiki.html#wiki-rel'>relative Vergleiche</a> (10-mal so groß, halb so groß)." +
-                "Bitte achten Sie darauf, auch die <a href='risk_wiki.html#wiki-abs'>absoluten Risiken</a> in jeder Gruppe anzugeben &ndash; am besten als <a href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> " +
+            return "Der Text enthält <a target=\"_blank\" href='risk_wiki.html#wiki-rel'>relative Vergleiche</a> (10-mal so groß, halb so groß)." +
+                "Bitte achten Sie darauf, auch die <a target=\"_blank\" href='risk_wiki.html#wiki-abs'>absoluten Risiken</a> in jeder Gruppe anzugeben &ndash; am besten als <a target=\"_blank\" href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> " +
                 "(z.B., unter denen ohne Impfung steckten sich 2 aus 1000 an unter den geimpften nur 1 aus 1000)."
         }
     },
@@ -1720,14 +1722,14 @@ const unit_note_dict = {
                 "<p>Typischerweise wird ein p-Wert kleiner als 0.05 als \"statistisch signifikant\" bezeichtnet, was eine akzeptable Unischerheit ausdrückt.</p>" +
                 "<p>Ein besseres Maß für Unsicherheit sind Zahlenspannen (z.B., Credibilitätsintervalle oder Konfidenzintervalle." +
                 "z.B., die Anzahl an vermiedenen Todensfällen unter den Behandelten liegt zwischen 5 und 10)</p></span>" +
-                "<a href='risk_wiki.html#wiki-pval'>p-Werte</a></div>. Diese sind leicht missverständlich und sollten vermieden werden. "
+                "<a target=\"_blank\" href='risk_wiki.html#wiki-pval'>p-Werte</a></div>. Diese sind leicht missverständlich und sollten vermieden werden. "
         }
     },
     "nyear": {
         "tooltip": {
-            "other": "<a href='risk_wiki.html#wiki-lifex'>Lebenserwartungen</a> in Jahren",
-            "incr": "Unterschiede in der <a href='risk_wiki.html#wiki-lifex'>Lebenserwartung</a>",
-            "decr": "Unterschiede in der <a href='risk_wiki.html#wiki-lifex'>Lebenserwartung</a>"
+            "other": "<a target=\"_blank\" href='risk_wiki.html#wiki-lifex'>Lebenserwartungen</a> in Jahren",
+            "incr": "Unterschiede in der <a target=\"_blank\" href='risk_wiki.html#wiki-lifex'>Lebenserwartung</a>",
+            "decr": "Unterschiede in der <a target=\"_blank\" href='risk_wiki.html#wiki-lifex'>Lebenserwartung</a>"
         },
         "note": function (type_arr) {
             // console.log("~~~~~~~~~~~~~ HANDLE NUMBERS OF YEARS ~~~~~~~~~~~~~~~~~~");
@@ -1796,13 +1798,13 @@ class OutputNode {
 //     "pval_other": "pval"
 
 const popup_perc = function (rel) {
-    return "<p>Diese <a href='risk_wiki.html#wiki-prozent'>Prozentzahl</a> scheint " +
+    return "<p>Diese <a target=\"_blank\" href='risk_wiki.html#wiki-prozent'>Prozentzahl</a> scheint " +
         (rel === "rel" ? "relativ" : "absolut") + " zu sein.</p>"
 };
 
 const popup_freq = function (sample) {
     return "<p>Diese Häufigkeit scheint eine " +
-        (sample === "ntot" ? "<a href='risk_wiki.html#wiki-sample'>Stichprobengröße</a>" : "<a href='risk_wiki.html#wiki-freq'>Anzahl von Fällen</a>") + " zu sein.</p>"
+        (sample === "ntot" ? "<a target=\"_blank\" href='risk_wiki.html#wiki-sample'>Stichprobengröße</a>" : "<a target=\"_blank\" href='risk_wiki.html#wiki-freq'>Anzahl von Fällen</a>") + " zu sein.</p>"
 };
 
 // In the future we might try to have more sophisticated methods to allow the passing of specific parameters!
