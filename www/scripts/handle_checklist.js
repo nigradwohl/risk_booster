@@ -22,12 +22,55 @@ $(document).ready(function () {
     let info_contr = "Vergleichsgruppe (z.B., Placebo)";
     let info_contr2 = "Vergleichsgruppe";
 
-    let outcome = {};
+    class Verblist {
+        constructor(base, aux, main) {
+            this.base = base;
+            this.aux = aux;
+            this.main = main;
+        }
+    }
+
+    const outcome_list = {
+        "eff":
+            [{"verb": new Verblist("sterben", "sind", "verstorben"), "noun": "Todesfälle", "direction": "prevent"}],
+        "side": [
+            // Exchange ERLEIDEN for BERICHTEN?
+            {
+                "verb": new Verblist("erleiden Nebenwirkungen", "erleiden", "Nebenwirkungen"), "noun": "Nebenwirkungen",
+                "direction": "prevent"
+            },
+            {
+                "verb": new Verblist("erleiden leichte Nebenwirkungen", "erleiden", "leichte Nebenwirkungen"),
+                "noun": "leichte Nebenwirkungen"
+            },
+            {
+                "verb": new Verblist("erleiden schwere Nebenwirkungen", "erleiden", "schwere Nebenwirkungen"),
+                "noun": "schwere Nebenwirkungen"
+            }
+        ]
+    };
+    // TODO:
+
 
     if (text === "treat") {
         typeword = "Behandlung";
 
-        outcome = {"verb": ["versterben", "sind verstorben"], "noun": "Todsfälle"};
+        // outcome = {"verb": ["versterben", "sind verstorben"], "noun": "Todsfälle"};
+        // Ad treatment specific endpoints:
+        outcome_list.eff = [
+            {
+                "verb": new Verblist("werden symptomfrei", "werden", "symptomfrei"),
+                "noun": "Symptomfreiheit", "direction": "achieve"
+            },
+            {
+                "verb": new Verblist("genesen", "genesen", ""),
+                "noun": "Genesungen", "direction": "achieve"
+            },
+            {
+                "verb": new Verblist("berichten Symptomlinderung", "berichten", "Symptomlinderung"),
+                "noun": "Symptomlinderung", "direction": "achieve"
+            }
+        ].concat(outcome_list.eff);
 
     } else if (text === "impf") {
         typeword = "Impfung";
@@ -40,11 +83,25 @@ $(document).ready(function () {
         info_treat2 = "Geimpft";
         info_contr2 = "Ungeimpft";
 
-        outcome = {"verb": ["erkranken", "erkrankt"], "noun": "Erkrankungen"};
+        outcome_list.eff = [
+            {"verb": new Verblist("erkranken", "erkranken", ""), "noun": "Erkrankungen"},
+            {
+                "verb": new Verblist("ins Krankenhaus eingewiesen worden", "werden", "ins Krankenhaus eingewiesen"),
+                "noun": "Krankenhauseinweisungen", "direction": "prevent"
+            },
+            {
+                "verb": new Verblist("auf die Intensivstation eingewiesen worden", "werden", "auf die Intensivstation eingewiesen"),
+                "noun": "Krankenhauseinweisungen", "direction": "prevent"
+            },
+            {
+                "verb": new Verblist("werden diagnostiziert", "werden", "diagnostiziert"),
+                "noun": "Positive Diagnosen", "direction": "prevent"
+            }
+        ].concat(outcome_list.eff);
     }
 
     $("#case-test").text(typeword);
-    $("#cur-topic").text(typeword);
+    $(".cur-topic").text(typeword);
     $(".typeword").text(typeword);  // Set wordings
     $(".typeverb").text(typeverb);  // Set wordings
     $(".addinfo-rrr").html(addinfo_rrr);
@@ -54,11 +111,18 @@ $(document).ready(function () {
     $(".info-control").text(info_contr);
     $(".info-control2").text(info_contr2);
 
-    $(".outcome-noun").text(outcome.noun);
-    $(".outcome-verb").text(outcome.verb[1]);
+
+    // Add outcome to selections:
+    for (let i = 0; i < outcome_list.eff.length; i++) {
+        $("#out-eff").append(`<option value="${i}">${outcome_list.eff[i].noun}</option>`);
+    }
+    for (let i = 0; i < outcome_list.side.length; i++) {
+        $("#out-side").append(`<option value="${i}">${outcome_list.side[i].noun}</option>`);
+    }
+
 
     // Preparations:
-    const cur_checklist = new Checklist(q_order, outcome);  // create a new checklist instance.
+    const cur_checklist = new Checklist(q_order, outcome_list);  // create a new checklist instance.
     // const check_risk = new RiskCollection();
     // console.log(check_risk);
 
@@ -81,7 +145,8 @@ $(document).ready(function () {
     // Continue on keypress:
     $(window).on("keypress", function (ev) {
         // console.log(ev);
-        if (ev.key === "Enter") {
+        if (ev.key === "Enter" && cur_checklist.entry_ix < cur_checklist.q_order.length - 1) {
+            // console.log(`CONTINUE ON ENTER! -- ${cur_checklist.entry_ix} < ${cur_checklist.q_order.length}?`);
             cur_checklist.continue_page(ev);
             // out_arr = continue_page(ev, entry_ix, check_risk, is_skip);
             // entry_ix = out_arr[0];
@@ -92,21 +157,6 @@ $(document).ready(function () {
 
     // ~~~ GOING BACK ~~~
     $(".back-btn").on("click", function () {
-        // if (cur_checklist.entry_ix > 0) {
-        //     cur_checklist.entry_ix--;
-        //     $("#" + q_order[cur_checklist.entry_ix] + "-q").css('display', 'flex');
-        //     $("#" + q_order[cur_checklist.entry_ix + 1] + "-q").hide();
-        //     $(".continue-btn").css('display', 'inline-block');
-        //
-        //     // TODO: Skip inputs that were previously skipped (use OOP?)
-        //
-        //     if (cur_checklist.entry_ix === 0) {
-        //         $(".back-btn").hide();
-        //     }
-        //
-        //     // Removal of highlighting classes:
-        //     $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
-        // }
         cur_checklist.handle_back();
 
     })
@@ -154,6 +204,100 @@ $(document).ready(function () {
     // $("#dotdisplay2").show();
     //
     // console.log("~~~~~~~~~ eof. test icon array ~~~~~~~~~~~");
+
+    // Editing risk info elements:
+    let curtext;
+    // $(".editable").on("click", function () {
+    //
+    //     $("#edit-text-popup").show();
+    //
+    //     curtext = $(this);
+    //     console.log("curtext is:");
+    //     console.log(curtext);
+    //     $("#edit-newtext").val(curtext.text());
+    // })
+
+    function end_editing() {
+        const textfields = $(".edit-note");
+        textfields.hide();
+        textfields.removeClass("selected-blur");
+
+        const elems_edit = $(".editable");
+
+        elems_edit.each(function (ix, el) {
+            console.log(el);
+            const curid = el.id;
+            // get the input values:
+            $("#" + curid).text($("#edit-" + curid).val());
+        });
+
+        // Hide editable elements and show text fields instead:
+        elems_edit.show();
+        $("#edit-texts").show();
+        $("#stop-edit").hide();
+    }
+
+    $("#edit-texts").on("click", function (e) {
+
+        const elems_edit = $(".editable");
+
+        elems_edit.each(function (ix) {
+            console.log(this);
+            const curid = this.id;
+            const curtext = $("#" + curid).text();
+            console.log(JSON.stringify(curtext));
+            $("#edit-" + curid).val(curtext);
+        });
+
+        // Hide editable elements and show text fields instead:
+        elems_edit.hide();
+        $(this).hide();
+        $("#stop-edit").show();
+
+        const textfields = $(".edit-note");
+        textfields.show();
+        // textfields.css("z-index", 9999);
+        textfields[0].className = textfields[0].className + " selected-blur";  // add blurring class to one element.
+
+        // Allow to end editing by clicking anywhere:
+        e.stopPropagation();
+        $(window).on("click", function (e) {
+            // $(".edit-note").removeClass("selected-blur");
+            // $("#stop-edit").hide();
+            // $("#edit-texts").show();
+            // console.log("CLICKED ELEMENT");
+            // console.log(e);
+            // console.log(e.target.className);
+
+            // When not clicking on a text field for editing:
+            if (!/(edit-note|navele)/.test(e.target.className)) {
+                end_editing();
+                $(window).unbind("click");
+            }
+        })
+
+    })
+
+    $("#stop-edit").on("click", end_editing)
+
+    // $("#edit-ok").on("click", function () {
+    //
+    //     console.log(curtext);
+    //     const text_element = $("#edit-newtext");
+    //     console.log(text_element.val());
+    //
+    //     curtext.text(text_element.val());
+    //
+    //     text_element.val("");
+    //     $("#edit-text-popup").hide();
+    // })
+
+
+    // $("#edit-cancel").on("click", function () {
+    //     $("#edit-newtext").val("");
+    //     $("#edit-text-popup").hide();
+    // })
+
 });
 
 
@@ -176,9 +320,11 @@ $(document).ready(function () {
  */
 
 class Checklist {
-    constructor(q_order, outcome) {
+    constructor(q_order, outcome_list) {
         this.q_order = q_order;
-        this.outcome = outcome;
+        this.outcome_list = outcome_list;
+        this.outcome = "";
+        this.outcome_side = "";
 
         this.entry_ix = 0;
 
@@ -219,68 +365,103 @@ class Checklist {
 
         console.log(`${"~".repeat(30)} NEXT PAGE ${curid} ${"~".repeat(30)}`);
 
-        // 1. Get the inputs on current page: ~~~~~~~~~~~~~~~~~~~~~~~~
-        if (!skip_misses) {
-            // If it is not a round where inputs should be skipped:
-            const inp_test = this.get_current_input(curid, q_inputs[curid], id_to_num_dict);
-            // After trying to get the inputs, try completing the table:
-            try {
-                this.check_risk.try_completion(0);
-                this.check_side.try_completion(0);
-            } catch (e) {
-                console.error("Non-matching entries! " + e);
-                $("#incompatible-popup").show().addClass("selected-blur");
-                this.is_error = true;
-            }
+        // For the first page where outcomes are selected:
+        if (curid === "select-outcome") {
 
-            if (this.is_error) {
-                console.error(`An error (${inp_test}) occured when providing input!`);
-            }
+            const out_eff = $("#out-eff").val();
+            const out_side = $("#out-side").val();
 
+            console.log(`Eff: ${out_eff}, Side: ${out_side}`);
+
+            this.outcome = this.outcome_list.eff[out_eff];  // assign the selected outcome.
+            this.outcome_side = this.outcome_list.side[out_side]
+
+            $(".outcome-noun").text(this.outcome.noun);
+            $(".outcome-verb").text(this.outcome.verb.base);
+
+            $(".side-noun").text(this.outcome_side.noun);
+            $(".side-verb").text(this.outcome_side.verb.base);
+
+            // Show the new question and hide the previous one:
+            this.entry_ix++;
+            $("#" + q_order[this.entry_ix] + "-q").css('display', 'flex');
+            $("#select-outcome-q").hide();
+
+            // Removal of higlighting classes:
+            $("#noentry-popup").hide();
+            $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
+
+            // Show back button:
+            if (this.entry_ix > 0) {
+                $(".back-btn").css('display', 'inline-block');
+            }
 
         } else {
-            // If misses were skipped:
-            this.is_skip = false;
-        }
+            // For all subsequent pages:
+            // 1. Get the inputs on current page: ~~~~~~~~~~~~~~~~~~~~~~~~
+            if (!skip_misses) {
+                // If it is not a round where inputs should be skipped:
+                const inp_test = this.get_current_input(curid, q_inputs[curid], id_to_num_dict);
+                // After trying to get the inputs, try completing the table:
+                try {
+                    this.check_risk.try_completion(0);
+                    this.check_side.try_completion(0);
+                } catch (e) {
+                    console.error("Non-matching entries! " + e);
+                    $("#incompatible-popup").show().addClass("selected-blur");
+                    this.is_error = true;
+                }
 
-        // TODO: Check for errors!
+                if (this.is_error) {
+                    console.error(`An error (${inp_test}) occured when providing input!`);
+                }
 
-        // 2. Handle missing entries:
-        if (this.missing_entries.length > 0) {
-            // alert("Sie haben nichts eingegeben! Absicht?");
-            // Show popup that can be skipped!
-            this.is_skip = true;
-            handle_missing_input(ev, this.missing_entries);
 
-        }
-
-        // Advance page:
-        if (!this.is_error && this.missing_entries.length === 0) {
-
-            // Pages before results:
-            if (this.entry_ix < q_order.length) {
-                this.increment_or_skip();
+            } else {
+                // If misses were skipped:
+                this.is_skip = false;
             }
 
-            // Final results page:
-            if (this.entry_ix === this.q_order.length - 1) {
+            // TODO: Check for errors!
 
-                // if (this.is_reload) {
-                //     console.log("Handle reload");
-                //     this.handle_reloads();
-                // } else {
-                //     this.is_reload = true;
-                // }
+            // 2. Handle missing entries:
+            if (this.missing_entries.length > 0) {
+                // alert("Sie haben nichts eingegeben! Absicht?");
+                // Show popup that can be skipped!
+                this.is_skip = true;
+                handle_missing_input(ev, this.missing_entries);
 
-                this.handle_final_page();  // handle the final page.
-
-
-                // Hide the continue button:
-                $(".continue-btn").hide();
             }
 
-        } else if (this.is_error) {
-            console.error("An error occured!");
+
+            // Advance page:
+            if (!this.is_error && this.missing_entries.length === 0) {
+
+                // Pages before results:
+                if (this.entry_ix < q_order.length) {
+                    this.increment_or_skip();
+                }
+
+                // Final results page:
+                if (this.entry_ix === this.q_order.length - 1) {
+
+                    // if (this.is_reload) {
+                    //     console.log("Handle reload");
+                    //     this.handle_reloads();
+                    // } else {
+                    //     this.is_reload = true;
+                    // }
+
+                    this.handle_final_page();  // handle the final page.
+
+
+                    // Hide the continue button:
+                    $(".continue-btn").hide();
+                }
+
+            } else if (this.is_error) {
+                console.error("An error occured!");
+            }
         }
 
 
@@ -290,7 +471,7 @@ class Checklist {
     increment_or_skip() {
         // Check whether input can be skipped: ~~~~~~~~~~~~
         console.log("+++ CHECK IF SKIPPABLE +++");
-        const skiplist = ["n-total", "p-treat", "p-side"];  // Make p-side or n-side skippable, if both were provided!
+        const skiplist = ["n-total", "p-treat", "n-side", "p-side"];  // Make p-side or n-side skippable, if both were provided!
         const cur_entry = q_order[this.entry_ix];
         let next_entry;
 
@@ -410,9 +591,12 @@ class Checklist {
                 ["coral", "lightgrey"],
                 expansion);
 
+            $("#results-1-error ~ *:not(textarea)").show();
+            $("#results-1-error").hide();
+
         } catch (error) {
             console.warn(error);
-            $("#results-1-error ~ *").hide();
+            $("#results-1-error ~ *:not(textarea)").hide();
             $("#results-1-error").show();
 
         }
@@ -435,6 +619,9 @@ class Checklist {
                 ncol,
                 ["steelblue", "lightgrey"],
                 expansion);
+
+            $("#results-2-error ~ *").show();
+            $("#results-2-error").hide();
 
         } catch (error) {
             console.warn(error);
@@ -463,7 +650,7 @@ class Checklist {
                 const curgrp = clickid.match(/control|treat/)[0];
                 console.log(group_arrs)
 
-                zoom_canvas(e, group_arrs[curgrp], "dotdisplay-zoom", col_arr);
+                zoom_canvas(e, group_arrs[curgrp], ncol, "dotdisplay-zoom", col_arr);
             })
             .show();
     }
@@ -491,6 +678,8 @@ class Checklist {
         console.log(this.check_side);
 
         console.log("~~~~~~ Calculate the risks ~~~~");
+        // TODO: Rather get from ptab/mtab -- this should be more flexible
+        //  (e.g., if the risks in both groups were entered in percent).
         const eff_group_risks = this.check_risk.ntab.tab.margin2_mean();
         const side_group_risks = this.check_side.ntab.tab.margin2_mean();
 
@@ -502,7 +691,8 @@ class Checklist {
 
         // Translate to natural frequencies:
         // const curscale = 1000;  // fixed reference! Should eventually be so that the smallest number is detectable!
-        const curscale = [100, 1000, 2000, 5000, 10000, 50000, 100000]
+        // was: [100, 1000, 2000, 5000, 10000, 50000, 100000]
+        const curscale = [100, 1000, 10000, 100000]
             .filter((x) => group_risks_flat.every((r) => (r * x) >= 5))[0];
         // Get the first reference for which the product is greater 1!
         // Altering this threshold will lead to larger references (which may differentiate better!)
@@ -531,7 +721,9 @@ class Checklist {
                 (Math.sign(arc) * Math.round(arc * curscale) + " aus " + curscale + meaning_arc);
 
             // Note: If the risk is negative, it corresponds to an increase!
-            const rrc = Math.abs(arc / group_risks[0][1]); // relative risk change.
+            // For an increase report the multiple!
+            const rrc = arc > 0 ? Math.abs(arc / group_risks[0][1]) : group_risks[1][1]/group_risks[0][1];
+            // relative risk change.
             // How many times higher is the risk in the treatment group?
 
             const rrr = Math.round(rrc * 1000) / 1000;
@@ -549,11 +741,12 @@ class Checklist {
         }
 
         const eff_risks = get_risk_set(eff_group_risks);
+        console.log(eff_risks);
 
         // Assign the information to the objects in results page:
-        $("#risk-treat").text(this.outcome.verb[0] + " " + eff_risks.risk_treat_nh);
-        $("#risk-control").text(this.outcome.verb[0] + " " + eff_risks.risk_control_nh);
-        $("#abs-change").html(`Absolute${eff_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe ${this.outcome.verb[0]} <span class="risk-info" id="arr">${eff_risks.arr_p}</span>`);
+        $("#risk-treat").html(this.outcome.verb.aux + "<br>" + eff_risks.risk_treat_nh + " " + this.outcome.verb.main);
+        $("#risk-control").html(this.outcome.verb.aux + "<br>" + eff_risks.risk_control_nh + " " + this.outcome.verb.main);
+        $("#abs-change").html(`Absolute${eff_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe ${this.outcome.verb.aux} <span class="risk-info" id="arr">${eff_risks.arr_p} ${this.outcome.verb.main}</span>`);
         $("#rel-change").html(`Relative${eff_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${eff_risks.rrr_p}</span>`);
         // Rounding can eventually be improved!
 
@@ -561,11 +754,14 @@ class Checklist {
         console.log(cur2x2_eff);
 
         // Handle side effects:
+        // Handle side effects:
         const side_risks = get_risk_set(side_group_risks);
+        console.log("Side risks");
+        console.log(side_group_risks);
         // Assign the information to the objects in results page:
-        $("#risk-treat-side").text(side_risks.risk_treat_nh);
-        $("#risk-control-side").text(side_risks.risk_control_nh);
-        $("#abs-change-side").html(`Absolute${side_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe erleiden <span class="risk-info" id="arr">${side_risks.arr_p}</span> Nebenwirkungen`);
+        $("#risk-treat-side").html(this.outcome_side.verb.aux + "<br>" + side_risks.risk_treat_nh + " " + this.outcome_side.verb.main);
+        $("#risk-control-side").html(this.outcome_side.verb.aux + "<br>" + side_risks.risk_control_nh + " " + this.outcome_side.verb.main);
+        $("#abs-change-side").html(`Absolute${side_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe ${this.outcome_side.verb.aux} <span class="risk-info" id="arr">${side_risks.arr_p}</span> ${this.outcome_side.verb.main}`);
         $("#rel-change-side").html(`Relative${side_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${side_risks.rrr_p}</span>`);
 
         const cur2x2_side = side_group_risks.map((x) => x.map((y) => Math.round(y * N_scale)));
@@ -610,7 +806,7 @@ class Checklist {
                 // If the current value is defined and non-empty:
 
                 // Evaluate entry (curval in, checked val out):
-                const checked_val = evaluate_entry(curval, cur_q_key);
+                let checked_val = evaluate_entry(curval, cur_q_key);
                 // this.is_error = cureval !== "noerr";  // log if an error occurred.
                 //
                 // // Save value to table object:
@@ -621,9 +817,14 @@ class Checklist {
                     console.log(`Update objects ${cur_q_key}:`);
                     console.log(number_dict[cur_q_key]);
 
-                    console.log(`Side keys: ${side_keys.includes(cur_q_key)}, eff keys: ${eff_keys.includes(cur_q_key)}`)
+                    console.log(`Side keys: ${side_keys.includes(cur_q_key)}, eff keys: ${eff_keys.includes(cur_q_key)}; VALUE: ${checked_val}`)
 
                     if (eff_keys.includes(cur_q_key)) {
+                        // Change effectivity as a function of prevention vs. achievement:
+                        if (cur_q_key === "rrr" && this.outcome.direction === "achieve") {
+                            console.log("Update relative value:");
+                            checked_val = 2 - checked_val;
+                        }
                         this.check_risk.update_by_arr(number_dict[cur_q_key], checked_val);
                     }
 
@@ -726,11 +927,20 @@ class Checklist {
  */
 function handle_missing_input(ev, missing_entries) {
 
-    const input_field = $("#" + missing_entries[0]);  // Get input field for reference (may be improved).
-    const thispos = input_field.position();  // get position of current question.
+    const input_field = $("#" + missing_entries[0]);  // Get FIRST input field for reference (may be improved).
+
+    console.log(input_field.parent("td"));
+    console.log(input_field.parents("table"));
+
+    // Take the input field as reference if one element or if inside of table take the table, to ensure non-overlap:
+    const thispos = input_field.parent("td").length === 0 ? input_field.position() : input_field.parents("table").position();  // get position of current question.
+    console.log(input_field);
     console.log(thispos);
 
-    missing_entries.forEach((id) => $("#" + id).addClass("missing-input").addClass("selected-blur"));
+    console.log("MISSING ENTRIES ARE:");
+    console.log(missing_entries);
+    // Only assign blur class to last missing item; for the rest assign decreasing z-indices (above the blurred item though):
+    missing_entries.forEach((id, ix) => $("#" + id).addClass("missing-input").addClass(ix + 1 === missing_entries.length ? "selected-blur" : "").css("z-index", 9997 - ix));
 
     // Change the popup text here:
     const cur_popup = $("#noentry-popup");
@@ -739,9 +949,12 @@ function handle_missing_input(ev, missing_entries) {
     const popup_pad = cur_popup.innerHeight() - popup_height;
     const num_height = input_field.height();
 
+    console.log(`Popup height (pad): ${popup_height} (${popup_pad}), Highlight height: ${num_height}, 
+            Highlight pos (top, bottom) ${thispos.top}, ${thispos.left}`);
+
     cur_popup
         .css({
-            top: thispos.top - popup_height - num_height - popup_pad * 2,
+            top: thispos.top - popup_height - popup_pad * 2,
             left: thispos.left,
             position: 'absolute'
         })
@@ -773,26 +986,47 @@ function handle_missing_input(ev, missing_entries) {
  * @param e Calling event
  * @param info_arr ordered array with icon info
  * @param curid Current ID for replacement
+ * @param col_arr Array of colors
  */
-function zoom_canvas(e, info_arr, curid, col_arr) {
+function zoom_canvas(e, info_arr, ncol, curid, col_arr) {
     // console.log(obj.attr("id"));
     $(".zoomed-canvas").hide();
 
     // const cur_type = obj.attr("id").replace("dotdisplay-", "");
+    const n_dots = info_arr.reduce((d, i) => d + i);
 
     // $(this).clone().appendTo(".canvas-zoom");
     create_icon_array(
         info_arr,  // control group.
         curid,
         // obj.attr("id") + '-zoom',
-        undefined,
-        col_arr);
+        ncol,
+        col_arr,
+        (n_dots > 100 ? 25 : 40));
 
-    const mindim = Math.min(window.innerWidth, window.innerHeight);
+    // Determine plotting area:
+    // Create an array of types:
+    const block = [10, -1];  // current blocking constant!
+    // Determine number of rows:
+    let nrows = Math.ceil(n_dots / ncol);
+    nrows = nrows + (block[0] > 0 ? Math.floor(nrows / block[0]) : 0);
+    let ncols = ncol + (block[1] > 0 ? Math.floor(ncol / block[1]) : 0);
+
+    const hw_arr = [window.innerHeight, window.innerWidth];
+
+    const height_is_min = hw_arr[0] <= hw_arr[1];
+    const minpx = hw_arr[(height_is_min ? 0 : 1)] - 10;
+
+    // Use the minimal dimension to determine the ratio!
+    let zoom_hi = height_is_min ? minpx : minpx * nrows / ncols;
+    let zoom_wd = height_is_min ? minpx * ncols / nrows : minpx;
+
+    console.log(`height is min: ${height_is_min}, hi, wd: ${zoom_hi}, ${zoom_wd}, nrows/ncols: ${nrows}, ${ncols},
+    window hi/wd: ${hw_arr.toString()}`);
 
     $(".canvas-zoom")
-        .width(mindim)
-        .height(mindim)
+        .height(zoom_hi)
+        .width(zoom_wd)
         .css("display", "flex");
     $("#" + curid).show();
 
@@ -813,10 +1047,12 @@ function zoom_canvas(e, info_arr, curid, col_arr) {
  */
 const q_order = [
     "start",
+    "select-outcome",
     "rel-risk-reduction",
     // "any-control",
     "n-treat-control",
     "n-total", "p-treat",
+    "p-case",
     "n-case",
     // "or-case",
     // "side",
@@ -832,6 +1068,7 @@ const q_order = [
  */
 const q_inputs = Object.fromEntries(q_order.map((x) => [x, [x]]));
 q_inputs["n-case"] = ["n-case-impf", "n-case-control"];
+q_inputs["p-case"] = ["p-case-impf", "p-case-control"];
 q_inputs["n-treat-control"] = ["n-impf", "n-control"];
 q_inputs["n-side"] = ["n-side-impf", "n-side-control"];
 q_inputs["p-side"] = ["p-side-impf", "p-side-control"];
@@ -847,6 +1084,10 @@ const id_to_num_dict = {
     "n-impf": "msumx1",
     "n-control": "msumx0",
     "p-treat": "mpx1",
+    "p-case-impf": "mtx1",
+    // careful! Vaccinated are now column 2 (index 1)!
+    // cases are second row (index 1)
+    "p-case-control": "mtx0",  // cases among untreated (cases: 1, treatment: 0)
     "n-case-impf": "n11",
     // careful! Vaccinated are now column 2 (index 1)!
     // cases are second row (index 1)
@@ -863,7 +1104,8 @@ const eff_keys = ["N_tot",
     "msum0x", "msum1x",
     "rrr",
     "p00", "p01", "p10", "p11",
-    "mpx0", "mpx1"
+    "mpx0", "mpx1",
+    "mtx0", "mtx1"
 ]
 
 const side_keys = ["N_tot",
@@ -912,6 +1154,8 @@ const number_dict = {
     "p11": ["ptab", "tab", "tab2x2", 1, 1],
     "mpx0": [],
     "mpx1": ["ptab", "msums2", 1],
+    "mtx0": ["mtab2", "tab", "tab2x2", 0, 1],
+    "mtx1": ["mtab2", "tab", "tab2x2", 1, 1],
     // Side-effect info:
     "n10s": ["ntab", "tab", "tab2x2", 1, 0],
     "n11s": ["ntab", "tab", "tab2x2", 1, 1],
@@ -951,8 +1195,12 @@ const int_keys = ["N_tot",
 const float_keys = ["rrr",
     "p00", "p01", "p10", "p11",
     "mpx0",
+    "mtx0", "mtx1",
     "mtx0s", "mtx1s"]
-const perc_keys = ["rrr", "mpx1", "mtx0s", "mtx1s"]
+const perc_keys = ["rrr", "mpx1",
+    "mtx0", "mtx1",
+    "mtx0s", "mtx1s",
+    "p00", "p01", "p10", "p11"]
 
 
 // FUNCTIONS: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -155,7 +155,20 @@ const info_data = {
         "Geimpften nur 270 von 1000 erkranken.<br><a href=\"https://www.hardingcenter.de/de/impfungen/mrna-schutzimpfung-gegen-covid-19-fuer-erwachsene-unter-60-jahren\">https://www.hardingcenter.de/de/impfungen/mrna-schutzimpfung-gegen-covid-19-fuer-erwachsene-unter-60-jahren</a>"],
         "popup": ["<p><a href=\"risk_wiki.html#wiki-nh\">Natürliche Häufigkeiten</a> sind sehr transparent, um Risiken auszudrücken. " +
         "Achten Sie aber darauf, dass die Referenz (d.h., 1 in 1000 oder 1 in 10000) jeweils für alle Risiken konstant ist.</p>"],
-        "maintext": "<p>Im Unterschied zu <a href='#wiki-freq'>Häufigkeiten</a> haben <a href=\"#wiki-nh\">natürliche Häufigkeiten</a> eine Bezugsgruppe(?).</p>"
+        "maintext": "<p>Im Unterschied zu <a href='#wiki-freq'>Häufigkeiten</a> haben <a href=\"#wiki-nh\">natürliche Häufigkeiten</a> eine Bezugsgruppe(?).</p>" +
+            "<p>Die größe dieser Bezugsgruppe sollte unbedingt für alle zu vergleichenden Angaben konstant sein." +
+            "Das heißt, dass \"1 aus 100 erkranken in Gruppe A, während in Gruppe B 10 aus 10000 erkranken\" vermieden werden sollten.</p>" +
+            "<p>Das hat unter anderem den Grund, dass die Vergleichbarkeit eingeschränkt ist. " +
+            "Zudem neigen Personen dazu, den Nenner zu ignorieren, so dass 10 aus 10000 möglicherweise " +
+            "als größer wahrgenommen wird als 1 aus 100. " +
+            "Zuletzt berücksichtigen Personen den Nenner in ihrer Wahrnehmung, so dass auch 1 aus 1000 fälschlicherweise als größer" +
+            "als 1 aus 100 wahrgenommen werden kann.</p>" +
+            "<p>Daraus folgt auch, dass keine grundsätzliche Überlegenheit gegenüber " +
+            "<a href='risk_wiki.html#wiki-prozent'>Prozentzahlen</a> abgeleitet werden kann. " +
+            "Lediglich bei Prozentangaben kleiner als ein Prozent (z.B., 0,2 %) sind natürliche Häufigkeiten zu bevorzugen, " +
+            "da so Kommazahlen vermieden werden können. " +
+            "Dennoch kann eine generelle Verwendung natürlicher Häufigkeiten als Daumenregel verwendet werden, " +
+            "da sie Prozentzahlen im allgemeinen zumindest nicht unterlegen sind [REF].</p>"
     },
     "rel": {
         "heading": "Relative Angaben",  // the heading.
@@ -173,7 +186,7 @@ const info_data = {
             "<p><i class=\"fa fa-exclamation-triangle annote-text-icon\"></i>&nbsp;Relative Angaben sind oft intransparent.</p>" +
             "<ul>" +
             // "<li>sie führen häufig zu einer <a href=\"risk_wiki.html#wiki-error-rel\">Überschätzung des Risikos</a></li>" +
-            "<li>Achten Sie darauf, dass die <a href='base-prob'>Basiswahrscheinlichkeit (bzw. das Basisrisiko)</a> angegeben wurde, auf die sich die Veränderung bezieht.</li>" +
+            "<li>Achten Sie darauf, dass die <a href='risk_wiki.html#wiki-baseprob'>Basiswahrscheinlichkeit (bzw. das Basisrisiko)</a> angegeben wurde, auf die sich die Veränderung bezieht.</li>" +
             "</ul>"
         ],
         "maintext": "<h4>Verwendung</h4>" +

@@ -99,7 +99,6 @@ Content ideas:
 
 */
 
-
 // Trigger the functionality:
 $(document).ready(function () {
 
@@ -111,7 +110,7 @@ $(document).ready(function () {
          * Array of units that should not be considered further
          * @type {string[]}
          */
-        let units_exc = ["age", "currency", "time", "date", "year", "dur", "legal", "medical", "enum", "misc", "rank"];
+        let units_exc = ["age", "currency", "time", "date", "year", "dur", "legal", "medical", "enum", "misc", "rank", "phone"];
 
         /**
          * Object that is looped over to check for units.
@@ -185,6 +184,9 @@ $(document).ready(function () {
             "date": {
                 "regex": /(?<date>\d{1,2}\.\d{1,2}\.(18|19|20)\d{2}(?![|.\w]))/dg
             },
+            "month": {
+                "regex": RegExp("(?<date>\\d{1,2}\\.? (" + collapse_regex_or(month_names) + ")( \\d{4})?)", "dg")
+            },
             "datemon": {
                 "regex": /(?<date>\d{1,2}\.\d{1,2}\.(18|19|20)\d{2}(?![|.\w]))/dg
             },
@@ -198,15 +200,13 @@ $(document).ready(function () {
                 "regex": /(?<year>(?<!(,|\.|Jahr |Anfang |Ende |Mitte |Nach ))(19|20)\d{2}(?![|.\w]))/dg  // 20th and 21st century.
             },
             "monyear": {
-                "regex": RegExp("(?<date>\\d{1,2}\\.? (" + collapse_regex_or(["Januar", "Februar", "März", "April", "Mai", "Juni",
-                    "Juli", "August", "September", "Oktober", "November",
-                    "Dezember"]) + "))", "dg")
+                "regex": RegExp("(?<year>" + collapse_regex_or(month_names) + " \\d{4})", "dg")
             },
             "yearrange": {
                 "regex": /(?<year>(zwischen|von) (18|19|20)\d{2}(?![|.\w]) (und|bis) (18|19|20)?\d{2}(?![|.\w]))/dg
             },
             "dur": {
-                "regex": /(?<dur>[0-9]+(-stündig|-tägig| Minuten?| Stunden?| Tagen?| Wochen?| Monate?))/dg
+                "regex": /(?<dur>[0-9]+(-stündig|-tägig|-monatig| Minuten?| Stunden?| Tagen?| Wochen?| Monate?))/dg
             },
             "dur2": {
                 "regex": regex_dur2
@@ -228,9 +228,16 @@ $(document).ready(function () {
             "carry_forward_post": {
                 "regex": RegExp("(?<ucarryforward>" + pat_num + " (waren|sind) es)", "dg")
             },
+            "phone": {
+                "regex": /(?<phone>[+]?[0-9]* ?([(]?[0-9]{0,3}[)])?[-\s.]?[0-9]{3,4}[-\s.]?[0-9]{3,4}[-\s.]?[0-9]{1,6})/dg
+            },
             "misc": {
                 // MIscellaneous numbers to be excluded!
-                "regex": RegExp("(?<misc>(" + pat_num + " bis )?" + pat_num + "\\.? (Grad|Staat|Schritt))", "dg")
+                "regex": RegExp("(?<misc>(" + pat_num + " bis )?" + pat_num + "\\.? (Grad|Staat|Schritt|Kommentare|.[gC](?= .)))", "dg")
+            },
+            "degree": {
+                // MIscellaneous numbers to be excluded!
+                "regex": RegExp("(?<misc>(" + pat_num + " bis )?" + pat_num + "\\.?(.[gC](?= .)))", "dg")
             },
             // Enumeration:
             "enum": {
@@ -248,6 +255,8 @@ $(document).ready(function () {
             }
 
         }
+
+        const person_all = ["Proband", "[Tt]eilnehme", "[Pp]erson", "Menschen", "Frauen", "Männer", "Kinder", "Erwachsene"]
 
         /**
          * Object that can be looped over to check numbers for number types taht are specific to their units in "number_unit".
@@ -278,7 +287,9 @@ $(document).ready(function () {
                     [RegExp(collapse_regex_or(["weniger"])),
                         RegExp(collapse_regex_or(["lebt?en"]))],
                     [RegExp(collapse_regex_or(["Sterblichkeitslücke"])),
-                        RegExp(collapse_regex_or(["vergrößert"]))]
+                        RegExp(collapse_regex_or(["vergrößert"]))],
+                    [RegExp(collapse_regex_or(["Demenz", "Krankheit"])),
+                        RegExp(collapse_regex_or(["verlangsamt"]))]
                 ]
             },
             // Total nuber of cases/incidents:
@@ -290,7 +301,7 @@ $(document).ready(function () {
                     [RegExp("Fälle|Verläufe"), RegExp("insgesamt|nach|Studie")],
                     [RegExp("[Ee]rkrankt|[Bb]etroffen")],
                     [RegExp("Todesfälle")],
-                    [RegExp("(ver)?st[aeo]rben"), RegExp("Person|Teilnehm|[Gg]ruppe")],
+                    [RegExp("(ver)?st[aeo]rben"), RegExp(collapse_regex_or(person_all))],
                     // Reporting certain effects in study:
                     [RegExp("berichte(te)?n|entwickel|beobacht"), RegExp("Unwohlsein|Nebenwirkungen")],
                     [RegExp("berichte(te)?n"), RegExp("wohl"), RegExp("fühlen")]
@@ -299,14 +310,14 @@ $(document).ready(function () {
             "ntot": {
                 "number_unit": ["freq"],
                 "keyset": [
-                    [RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder|Erwachsene"),
+                    [RegExp(collapse_regex_or(person_all)),
                         RegExp(collapse_regex_or(["insgesamt", "nahmen", "erh(a|ie)lten", "befragt", "ausgewählt", "umfass(t|en)"])),
                         RegExp(collapse_regex_or(["Studie", "Untersuchung", "Erhebung"]))],
                     [RegExp(collapse_regex_or(["Daten", "[Bb]efragt"])),
                         RegExp(collapse_regex_or(["von", "über"])),
-                        RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder")],
+                        RegExp(collapse_regex_or(person_all))],
                     // 2nd set:
-                    [RegExp("Proband|[Tt]eilnehme|[Pp]erson|Menschen|Frauen|Männer|Kinder|Erwachsene"),
+                    [RegExp(collapse_regex_or(person_all)),
                         RegExp("Analyse")]
                 ]
             }
@@ -385,8 +396,16 @@ $(document).ready(function () {
                 "medical": ["BMI"]
             },
             "rel": {
-                "abs": ["[Qq]uote", "Anteil"],  // quotas should always be absolute.
+                "abs": ["[Qq]uote", "Anteil", "mehr_als"],  // quotas should always be absolute.
                 "rel": ["Wirksamkeit", "Impfschutz", "Schutzwirkung"]
+            },
+            "reference": {
+                // TODO!
+                "tot": ["(der|aller)_(Studien)?[Tt]eilnehm"],
+                "sub": ["Kontroll-?.*[Gg]ruppe", "Placebo-?.*[Gg]ruppe",
+                    "Vergleichs-?.*[Gg]ruppe",
+                    "Prävention.*wenigsten.*befolgte",
+                    "kein.*Medika"]
             }
 
         }
@@ -668,10 +687,34 @@ $(document).ready(function () {
 
         // Column for percentages <1%:
         // Translate number words:
+        console.log("~~~~~~~~~~~~~~ TRANSLATING NUMBER WORDS ~~~~~~~~~~~~~~");
         const num_arr = Array.from(Array(13).keys());
-        token_dat.add_column(token_dat.token
-            .map((x, ix) => token_dat.is_num[ix] && token_dat.is_nw[ix] ? (num_arr[num_arr
-                .filter((ixn) => RegExp(numwords[ixn], "dg").test(x))]).toString() : x), "trnum");
+        // token_dat.add_column(token_dat.token
+        //     .map((x, ix) => token_dat.is_num[ix] && token_dat.is_nw[ix] ? (num_arr[num_arr
+        //         .filter((ixn) => RegExp(numwords[ixn] + " (?!\\d)", "dg").test(x))]).toString() : x), "trnum");
+        token_dat.add_column([...token_dat.token], "trnum");
+        for (let ix = 0; ix < token_dat.nrow - 1; ix++) {
+            if (token_dat.is_num[ix] && token_dat.is_nw[ix]) {
+
+                if (!token_dat.is_num[ix + 1]) {
+                    const token = token_dat.token[ix];
+                    console.log(`+++ Current token is ${token}`);
+                    const num_ix = num_arr
+                        .filter((ixn) => RegExp(numwords[ixn], "dg").test(token))
+                    // Excludes numbers that occur directly after the number word.
+                    if (num_ix !== undefined && num_ix.length > 0) {
+                        token_dat.trnum[ix] = num_arr[num_ix].toString();
+                    }
+                } else {
+                    // Revoke status as number, if the next token after a potential number word is number itself.
+                    token_dat.is_num[ix] = false;
+                    token_dat.is_nw[ix] = false;
+                }
+
+            }
+
+
+        }
 
         token_dat.add_column(token_dat.unit.map((x, ix) => x === "perc" && token_dat.is_num[ix] ?
             token_dat.trnum[ix].match(regex_num)[0].replace(",", ".") < 1 : -1), "smperc");
@@ -707,7 +750,8 @@ $(document).ready(function () {
         token_dat.numtype = token_dat.numtype
             .map((x, ix) => token_dat.unit[ix] === "freq" && [-1, "other"].includes(x) && token_dat.gtype[ix] === "sub" ? "ncase" : x);
 
-        // Reference information for absolute percentages:
+        // Reference information for absolute percentages and subgroups:
+        // +++ HERE +++
         token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.reference), "reference");
 
         // Display for testing: ~~~~~~~~~~~~~~~~~~
@@ -900,12 +944,15 @@ $(document).ready(function () {
             },
         };
 
-        const curcomp = token_dat.topics.filter(x => /comp_/.test(x));
+        // Get the topics:
+        let curcomp = token_dat.topics.filter(x => /comp_/.test(x));
+        // Determine the set of texts and tooltips:
+        // Handle multiple comparison types by giving precedence for treatment for now!
+        curcomp = curcomp.includes("comp_treat") ? "comp_treat" : [curcomp].flat()[0];
+        // Use the default or th topic:
         const curfeats = (curcomp === undefined || curcomp.length === 0) ? feature_aliases["comp_default"] : feature_aliases[curcomp];
 
         console.log(curcomp);
-
-        //
 
 
         // Notes about features (presence of effectivity and harm; reporting of comparison group):
@@ -997,12 +1044,23 @@ $(document).ready(function () {
         };
 
         // This collection allows to hint at communicating about differences between reporting about effectivity and side effects (mismatched framing).
-        // +++ HERE +++
-        let mismatched_framing = false;
+        let mismatched_framing = "none";
         if (txtfeat_dict.eff_num && txtfeat_dict.side_num) {
 
-            mismatched_framing = check_any_arr(risknum_rows, ["side", "abs"]) && !check_any_arr(risknum_rows, ["side", "rel"]) &&
-                !check_any_arr(risknum_rows, ["eff", "abs"]) && check_any_arr(risknum_rows, ["eff", "rel"]);
+            // Array of relevant indicators:
+            const mismatch_arr = [check_any_arr(risknum_rows, ["side", "abs"]), check_any_arr(risknum_rows, ["side", "rel"]),
+                check_any_arr(risknum_rows, ["eff", "abs"]), check_any_arr(risknum_rows, ["eff", "rel"])]
+
+            if ([true, false, false, true].every((x, ix) => mismatch_arr[ix] === x)) {
+                mismatched_framing = "side_rel"
+            } else if ([false, true, true, false].every((x, ix) => mismatch_arr[ix] === x)) {
+                mismatched_framing = "eff_rel"
+            }
+
+
+            // // The less likely case:
+            // check_any_arr(risknum_rows, ["side", "rel"]) && !check_any_arr(risknum_rows, ["side", "abs"]) &&
+            // !check_any_arr(risknum_rows, ["eff", "rel"]) && check_any_arr(risknum_rows, ["eff", "abs"]);
         }
 
         console.log("~~~~~~~~~~~~ Text features: ~~~~~~~~~~~~~~~~");
@@ -1033,6 +1091,10 @@ $(document).ready(function () {
         const feature_set = {
             "eff_side": {
                 "fset": ["eff", "side"],
+                "tool":
+                    "Nur indem Lesende vollständig über die Wirksamkeit und mögliche Nebeneffekte informiert werden, " +
+                    "können sie sich ein unabhängiges Urteil über die erwünschten und unerwünschten Folgen " +
+                    "bilden und eine informierte Entscheidung treffen.",
                 "zumzur": "zum "
             },
             "damage": {
@@ -1041,6 +1103,9 @@ $(document).ready(function () {
             },
             "treat_contr": {
                 "fset": ["treat", "contr"],
+                "tool": "Nur indem die Lesenden die Risiken (Wahrscheinlichkeiten) mit und ohne Intervention kennen, " +
+                    "können Sie sich ein unabhängiges Urteil über das Ausmaß von Nutzen und Schaden bilden " +
+                    "und eine informierte Entscheidung treffen.",
                 "zumzur": "zur "
             }
         }
@@ -1077,8 +1142,8 @@ $(document).ready(function () {
             // Get present features:
             let feats_present = value.fset.filter((feat) => feature_arr.includes(feat));
             let feats_missing = value.fset.filter((feat) => !feature_arr.includes(feat));
-            feats_present = feats_present.map((key) => feature_dict[key]);
-            feats_missing = feats_missing.map((key) => feature_dict[key]);
+            feats_present = feats_present.map((k) => feature_dict[k]);
+            feats_missing = feats_missing.map((k) => feature_dict[k]);
             console.log(`Features present and missing are:`);
             console.log(feats_present);
             console.log(feats_missing);
@@ -1091,15 +1156,28 @@ $(document).ready(function () {
             } else if (key === "damage") {
                 feature_str += " konnte kein Gesundheitsrisiko erkannt werden. " +
                     "Wenn der Text ein Gesundheitsrisiko behandelt, kontaktieren Sie uns bitte, damit wir den Fehler beheben können.";
-            } else if (feats_missing.length === 1) {
-                feature_str = "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i>" + feature_str;
-                feature_str += " werden nur Informationen " + value.zumzur + feats_present.toString() +
-                    " berichtet. Es sollten auch Informationen " + value.zumzur + feats_missing + " berichtet werden.";
             } else {
-                feature_str = "<i class=\"fa fa-thumbs-down in-text-icon error\"></i>" + feature_str;
-                feature_str += " werden weder Informationen " + value.zumzur +
-                    value.fset.map((key) => feature_dict[key]).join(" noch " + value.zumzur) + " berichtet."
-                // "<br>NOTE: In Wiki mention the reasons and that one should mention if the evidence is not based on a group comparison";
+                if (feats_missing.length === 1) {
+                    feature_str = "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i>" + feature_str;
+                    feature_str += " werden nur Informationen " + value.zumzur + feats_present.toString() +
+                        " berichtet. Es sollten auch Informationen " + value.zumzur + feats_missing + " berichtet werden.";
+                } else {
+                    feature_str = "<i class=\"fa fa-thumbs-down in-text-icon error\"></i>" + feature_str;
+                    feature_str += " werden weder Informationen " + value.zumzur +
+                        value.fset.map((key) => feature_dict[key]).join(" noch " + value.zumzur) + " berichtet."
+                    // "<br>NOTE: In Wiki mention the reasons and that one should mention if the evidence is not based on a group comparison";
+                }
+
+                // Add tooltip why this a problem:
+                // "<div id=\"eff-tt\" class=\"tooltip\">" +
+                // "<span class=\"tooltiptext tooltip-overview\">Wirksamkeit einer Behandlung oder Impfung" +
+                // "(z.B., verhinderte Erkranungen, Genesung, Vermeidung von Todesfällen).<br>" +
+                // "Sollte immer mit Zahlen belegt werden.</span>" +
+                // "<a href='risk_wiki.html#wiki-effside'>Nutzen</a></div>"
+                feature_str = feature_str + "<div id=\"" + key + "-tt\" class=\"tooltip\">" +
+                    "<span class=\"tooltiptext tooltip-overview\" style='width: 100%'>" +
+                    value.tool +
+                    "</span>(Warum ist das ein Problem?)</div>";
             }
 
 
@@ -1117,9 +1195,9 @@ $(document).ready(function () {
                 (!feature_arr.includes("damage") && feature_set?.damage ? "" :
                     "zu den genannten " +
                     "<div id=\"risk-tt\" class=\"tooltip\">" +
-                    "<span class=\"tooltiptext tooltip-overview\">Anders der umgangssprachliche Risikobegriff gleichbedeutend mit \"Wahrscheinlichkeit\"" +
+                    "<span class=\"tooltiptext tooltip-overview\">Anders der umgangssprachliche Risikobegriff gleichbedeutend mit \"Wahrscheinlichkeit\" " +
                     "(häufig etwa Wahrscheinlichkeit zu erkranken oder versterben; aber auch positiv, z.B., Wahrscheinlichkeit länger zu leben).</span>" +
-                    "<a href='risk_wiki.html#wiki-risk'>Risiken</a></div> ") +
+                    "<a target=\"_blank\" href='risk_wiki.html#wiki-risk'>Risiken</a></div> ") +
                 "zu berichten.";
 
             // +++ HERE!
@@ -1141,14 +1219,24 @@ $(document).ready(function () {
                 if (eff_num && side_num) {
                     feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> " +
                         "Sowohl zum Nutzen, als auch zum Schaden wurden Zahlen angegeben."
-                } else if (eff_num || side_num) {
-                    feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> " +
-                        "Zahlen nur zu" +
-                        (eff_num ? "m Nutzen" : " Schaden") +
-                        " angegeben."
                 } else {
-                    feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> " +
-                        "Die Zahlen scheinen sich leider weder auf Nutzen noch auf Schaden zu beziehen."
+                    if (eff_num || side_num) {
+                        feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> " +
+                            "Zahlen nur zu" +
+                            (eff_num ? "m Nutzen" : " Schaden") +
+                            " angegeben."
+                    } else {
+                        feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> " +
+                            "Die Zahlen scheinen sich leider weder auf Nutzen noch auf Schaden zu beziehen."
+                    }
+
+                    // Add explanatory popup:
+                    feature_num += "<div id=\"noeffnum-tt\" class=\"tooltip\">" +
+                        "<span class=\"tooltiptext tooltip-overview\">" +
+                        "Nur wenn sowohl der Nutzen, als auch der Schaden mit transprarenten Zahlen belegt werden, " +
+                        "ist eine informierte Beurteilung möglich, wie groß der Nutzen im Vergleich zu anderen " +
+                        "Interventionen und zum Schaden ist" +
+                        "</span> (Warum ist das ein Problem?)</div>";
                 }
 
                 feature_num += "</li><li>";
@@ -1156,13 +1244,30 @@ $(document).ready(function () {
                 // Die Wirksamkeit wird (nicht) mit Zahlen aus Behandlungs- und Kontrollgruppe belegt.
                 // Nebenwirkungen werden nicht für Behandlungs- und Kontrollgruppe angegeben
                 let arr_eff_both = feature_arr.includes("eff_treat_num") && feature_arr.includes("eff_contr_num") ?
-                    ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>", "nicht erkennbar "];
+                    ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", "", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>",
+                        "nicht erkennbar ",
+                        "<div id=\"noeffnum-tt\" class=\"tooltip\">" +
+                        "<span class=\"tooltiptext tooltip-overview\">" +
+                        "Nur indem die Lesenden die Größe des Nutzens mit und ohne Intervention kennen, " +
+                        "können Sie sich ein unabhängiges Urteil über das Ausmaß des Nutzens bilden " +
+                        "und eine informierte Entscheidung treffen." +
+                        "</span> (Warum ist das ein Problem?)</div>"
+                    ];
                 let arr_side_both = feature_arr.includes("side_treat_num") && feature_arr.includes("side_contr_num") ?
-                    ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>", "nicht erkennbar "];
+                    ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", "", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>",
+                        "nicht erkennbar ",
+                        "<div id=\"nosidenum-tt\" class=\"tooltip\">" +
+                        "<span class=\"tooltiptext tooltip-overview\">" +
+                        "Nur indem die Lesenden die Größe des Schadens mit und ohne Intervention kennen, " +
+                        "können Sie sich ein unabhängiges Urteil über das Ausmaß des Schadens bilden " +
+                        "und eine informierte Entscheidung treffen." +
+                        "</span> (Warum ist das ein Problem?)</div>"];
 
 
-                feature_num += arr_eff_both[0] + " Der Nutzen wird " + arr_eff_both[1] + "mit Zahlen für Behandlungs- und Kontrollgruppe belegt</li><li>";
-                feature_num += arr_side_both[0] + " Die Schadenwirkung wird " + arr_side_both[1] + "mit Zahlen für Behandlungs- und Kontrollgruppe belegt";
+                feature_num += arr_eff_both[0] + " Der Nutzen wird " + arr_eff_both[1] +
+                    "mit Zahlen für Behandlungs- und Kontrollgruppe belegt</li>" + arr_eff_both[2] + "<li>";
+                feature_num += arr_side_both[0] + " Die Schadenwirkung wird " + arr_side_both[1] +
+                    "mit Zahlen für Behandlungs- und Kontrollgruppe belegt" + arr_side_both[2];
                 // Rather "Nur für" oä.
             } else if (token_dat.topics.includes("comp_time")) {
 
@@ -1196,7 +1301,7 @@ $(document).ready(function () {
             // ONLY NUMBERS: ~~~~~~~~~~~~~~~~~~~~~~~~
             feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> " +
                 "Der Text scheint keine Zahlen zu den Risiken zu berichten. " +
-                "Rein verbale Beschreibungen sollten vermieden werden. [LINK WIKI!]" +
+                "Rein verbale Beschreibungen sollten vermieden werden." +
                 "Bitte versuchen Sie Zahlen zu berichten.";
         }
 
@@ -1211,20 +1316,43 @@ $(document).ready(function () {
 
 
         // Output topics:
-        $("#text-note-general").html("<p id=\"text-note-general\">" + key_topics_str + "</p>");
+        // $("#text-note-general").html("<p id=\"text-note-general\">" + key_topics_str + "</p>");
+        // General information:
+        $("#text-note-general").html("<p id=\"text-note-general\" class='note-par'>" +
+            "Fahren Sie über die hervorgehobenen Ausdrücke, um weitere Informationen zu erhalten. " +
+            "Klicken Sie auf die Links, um ins Wiki zu gelangen." +
+            "</p>" +
+            key_topics_str
+        );
 
 
         // Add mismatched framing:
-        if (mismatched_framing) {
-            arr_li.add('Achtung: Sie haben in Behandlungsgruppe relative Zahlen und in der Vergleichsgruppe absolute Zahlen verwendet.' +
+        if (["side_rel", "eff_rel"].includes(mismatched_framing)) {
+
+            let mismatch_inf = [["relative Zahlen", "größer"], ["absolute Zahlen", "kleiner"]];
+            if (mismatched_framing === "eff_rel") {
+                mismatch_inf.reverse()
+            }
+
+            arr_li.add('Achtung: Sie haben für den Nutzen ' +
+                mismatch_inf[0][0] +
+                ' und für die Schadenwirkung ' +
+                mismatch_inf[1][0] +
+                ' verwendet. ' +
                 'Dieses "' +
-                '<div id=\\"eff-tt\\" class=\\"tooltip\\">' +
-                '                <span class="tooltiptext tooltip-overview">Beschreibt die Verwendung relativer und absoluter Maße ' +
-                'für Nutzen und Schadenwirkung. Da relative Angaben meist überschätzt werden, ' +
+                '<div id="eff-mmf" class="tooltip">' +
+                '<span class="tooltiptext tooltip-overview">Verwendung relativer Maße ' +
+                'für den Nutzen und absoluter Maße für die Schadenwirkung (auch umgekehrt möglich). ' +
+                'Da relative Angaben meist überschätzt werden, ' +
                 'stellt mismatched framing eine intransparente Verzerrung dar und sollte vermieden werden.</span>' +
-                '<a href=\'risk_wiki.html#wiki-mismatch\'>mismatched framing</a></div>' +
-                '" sollte vermieden werden, ' +
-                'da es <a>[LINK]Die Wirksamkeit größer und den Schaden kleiner [ODER ANDERSHERUM!] erscheinen lässt</a>');
+                '<a target=\"_blank\" href=\'risk_wiki.html#wiki-mismatch\'>mismatched framing</a></div>' +
+                '" sollte vermieden werden. '
+                // 'da es <a target=\"_blank\" href="risk_wiki.html#wiki-effside">Die Wirksamkeit ' +
+                // mismatch_inf[0][1] +
+                // ' und den Schaden ' +
+                // mismatch_inf[1][1] +
+                // ' erscheinen lässt</a>'
+            );
         }
 
         // List of notes on number types:
@@ -1284,7 +1412,7 @@ $(document).ready(function () {
 
 
         // Alternative tooltip as popup:
-        $(".tooltip").on("click", function (e) {
+        $(".highlight-num").on("click", function (e) {
 
 
             const cur_num = $(this);
@@ -1316,7 +1444,7 @@ $(document).ready(function () {
             const curinfo = info_tree.traverse(col_info);
 
             const addinfo_perc = "<p>" +
-                (token_dat.smperc[token_id] === true ? "<br>Die Prozentzahl ist < 1%. Greifen Sie bitte auf <a href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> " +
+                (token_dat.smperc[token_id] === true ? "<br>Die Prozentzahl ist < 1%. Greifen Sie bitte auf <a target=\"_blank\" href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> " +
                     "(z.B., 1 aus 100 oder 1 aus 1000) zurück." : "") +
                 // Alternativ: Wir konnten
                 "</p>";  // z.B., relative/absolute Prozentzahl.
@@ -1364,7 +1492,7 @@ $(document).ready(function () {
                 .css({
                     top: top_fixed - popup_height,  // add 2 pixels.
                     // If the popup goes out of bounds, correct.
-                    left: (thispos.left + popup_width > right_bound) ? thispos.left - popup_width/2 : thispos.left
+                    left: (thispos.left + popup_width > right_bound) ? thispos.left - popup_width / 2 : thispos.left
                     // position: 'absolute'
                 })
                 // Redo some calculatios after positioning.
@@ -1375,15 +1503,15 @@ $(document).ready(function () {
                     // left: (thispos.left + popup_width > correction_left) ? thispos.left / 2 : thispos.left
                     // position: 'absolute'
                 })
-                // .addClass("selected-blur")
+            // .addClass("selected-blur")
 
             // TODO: Fix issue with rightmost numbers!
 
-                        console.log(`top of txt element: ${txt_ele_top}; 
+            console.log(`top of txt element: ${txt_ele_top}; 
             top of parent: ${txt_ele.parent().position().top}, 
             popup top: ${cur_popup.position().top}`);
 
-                cur_popup
+            cur_popup
                 // Redo some calculatios after positioning.
                 .css({
                     // check if the top of the popup overlaps considerably
@@ -1469,12 +1597,12 @@ Other formats to detect: Odds ratio, ARR/RRR, NNT...
 */
 
 // Constants:
+const month_names = ["Januar", "Februar", "März", "April", "Mai", "Juni",
+    "Juli", "August", "September", "Oktober", "November",
+    "Dezember"];
 const pat_num = "(?:(?<![\\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,:][0-9]+)?))(?!\\\.[0-9A-Za-zÄÖÜäöüß]|[a-zA-Z0-9ÄÖÜäöüß])"
-const numwords = ["[Kk]eine", "(?<![Kk])[Ee]ine?r?", "[Zz]wei(?!fe)", "[Dd]rei", "[Vv]ier", "[Ff]ünf", "[Ss]echs",
+const numwords = ["[Kk]einen?", "(?<![Kk])[Ee]ine?r?(?![gnz])", "[Zz]wei(?!fe)", "[Dd]rei", "[Vv]ier", "[Ff]ünf", "[Ss]echs",
     "[Ss]ieben", "[Aa]cht(?!e)", "[Nn]eun(?!k)", "[Zz]ehn", "[Ee]lf", "[Zz]wölf"]
-
-// TODO: DIctionary to translate:
-const numword_dict = {};
 
 const regex_num = new RegExp("(?<unknown>" + pat_num + "( Millionen| Milliarden)?)", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
 const regex_numwords = new RegExp("(?<unknown>(" + collapse_regex_or(numwords) + ") (Person(en)?|F[aä]lle?))", "dg");
@@ -1525,33 +1653,35 @@ const unit_note_dict = {
                 types = type_arr.join("en und ") + "en";
             } else {
                 const last = type_arr.pop();
-                types = type_arr.join("en, ") + " und " + last + "en";
+                types = type_arr.join("en, ") + "en und " + last + "en";
             }
 
             let txt_out = "Der Text verwendet ";
 
             if (type_arr.includes("relative Prozentzahl")) {
                 if (type_arr.length === 1) {
-                    txt_out += "nur " + types + ". <a href=\"risk_wiki.html#wiki-rel\">Relative Angaben</a> ohne Basisrisiko sollten vermieden werden.";
+                    txt_out += "nur " + types + ". <a target=\"_blank\" href=\"risk_wiki.html#wiki-rel\">Relative Angaben</a> ohne Basisrisiko sollten vermieden werden.";
                 } else {
                     txt_out += types + ". ";
                 }
 
+                console.log(`+++++++ CURRENT TEXT SNIP: ${type_arr.join()}`);
+
                 txt_out = txt_out.replace(/(relative Prozentzahl(en)?)/g,
                     "<div id=\"relnote\" class=\"highlight-other highlight-warning tooltip\">" +
-                    "<a href=\"risk_wiki.html#wiki-rel\">$1</a>" +
+                    "<a target=\"_blank\" href=\"risk_wiki.html#wiki-rel\">$1</a>" +
                     "<span class=\"tooltiptext tooltip-overview\">" +
                     "Achten Sie darauf, dass Sie auch die <strong>" +
                     "absoluten Wahrscheinlichkeiten" +
                     " in der Behandlungs- und Vergleichsgruppe berichten</strong> &ndash; " +
-                    "am besten als <a href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> (d.h., 3 aus 1000 oä.).</span></div>");
+                    "am besten als <a target=\"_blank\" href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> (d.h., 3 aus 1000 oä.).</span></div>");
 
 
                 // txt_out += "Achten Sie darauf, dass Sie auch die <strong>absoluten Wahrscheinlichkeiten in den Gruppen berichten</strong> -- " +
-                //     "am besten als <a href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> (d.h., 3 aus 1000 oä.).";
+                //     "am besten als <a target=\"_blank\" href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> (d.h., 3 aus 1000 oä.).";
 
             } else {
-                txt_out += `${types}. Achten Sie darauf, dass klar ist auf welche Größe sich die <a href=\"risk_wiki.html#wiki-prozent\">Prozentangabe</a> bezieht.`
+                txt_out += `${types}. Achten Sie darauf, dass klar ist auf welche Größe sich die <a target=\"_blank\" href=\"risk_wiki.html#wiki-prozent\">Prozentangabe</a> bezieht.`
             }
 
             return txt_out;
@@ -1564,7 +1694,7 @@ const unit_note_dict = {
         },
         "note": function (type_arr) {
             return "Der Text enthält " +
-                "<a href=\"risk_wiki.html#wiki-nh\">Natürliche Häufigkeiten.</a> " +
+                "<a target=\"_blank\" href=\"risk_wiki.html#wiki-nh\">Natürliche Häufigkeiten.</a> " +
                 "Sehr gut! Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
         }
     },
@@ -1577,15 +1707,23 @@ const unit_note_dict = {
             "contr": "Anzahl in der Kontrollgruppe"
         },
         "note": function (type_arr) {
-            return "Der Text enthält <a href='risk_wiki.html#wiki-freq'>Anzahlen von Fällen</a>. "
+            return "Der Text enthält " +
+                "<div id=\"case-tt\" class=\"tooltip\">" +
+                "<span class=\"tooltiptext tooltip-overview\">" +
+                "<p>" +
+                "Fallzahlen können sehr transparent sein und sind oft leichter verständlich, als z.B. Prozentzahlen. " +
+                "Wichtig ist aber, dass klar ist, wie groß die Gruppe oder Grundgesamtheit ist, in der die Fälle auftreten." +
+                "</p></span>" +
+                "<a target=\"_blank\" href='risk_wiki.html#wiki-freq'>Anzahlen von Fällen</a>" +
+                "</div>. "
             // "Achten Sie auf einheitliche Bezugsgrößen (z.B., 1 aus 100, 1,000 oder 10,000)."
         }
     },
     "mult": {
         "tooltip": {"other": "Relative Angabe"},
         "note": function (type_arr) {
-            return "Der Text enthält <a href='risk_wiki.html#wiki-rel'>relative Vergleiche</a> (10-mal so groß, halb so groß)." +
-                "Bitte achten Sie darauf, auch die <a href='risk_wiki.html#wiki-abs'>absoluten Risiken</a> in jeder Gruppe anzugeben &ndash; am besten als <a href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> " +
+            return "Der Text enthält <a target=\"_blank\" href='risk_wiki.html#wiki-rel'>relative Vergleiche</a> (10-mal so groß, halb so groß)." +
+                "Bitte achten Sie darauf, auch die <a target=\"_blank\" href='risk_wiki.html#wiki-abs'>absoluten Risiken</a> in jeder Gruppe anzugeben &ndash; am besten als <a target=\"_blank\" href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> " +
                 "(z.B., unter denen ohne Impfung steckten sich 2 aus 1000 an unter den geimpften nur 1 aus 1000)."
         }
     },
@@ -1599,14 +1737,14 @@ const unit_note_dict = {
                 "<p>Typischerweise wird ein p-Wert kleiner als 0.05 als \"statistisch signifikant\" bezeichtnet, was eine akzeptable Unischerheit ausdrückt.</p>" +
                 "<p>Ein besseres Maß für Unsicherheit sind Zahlenspannen (z.B., Credibilitätsintervalle oder Konfidenzintervalle." +
                 "z.B., die Anzahl an vermiedenen Todensfällen unter den Behandelten liegt zwischen 5 und 10)</p></span>" +
-                "<a href='risk_wiki.html#wiki-pval'>p-Werte</a></div>. Diese sind leicht missverständlich und sollten vermieden werden. "
+                "<a target=\"_blank\" href='risk_wiki.html#wiki-pval'>p-Werte</a></div>. Diese sind leicht missverständlich und sollten vermieden werden. "
         }
     },
     "nyear": {
         "tooltip": {
-            "other": "<a href='risk_wiki.html#wiki-lifex'>Lebenserwartungen</a> in Jahren",
-            "incr": "Unterschiede in der <a href='risk_wiki.html#wiki-lifex'>Lebenserwartung</a>",
-            "decr": "Unterschiede in der <a href='risk_wiki.html#wiki-lifex'>Lebenserwartung</a>"
+            "other": "<a target=\"_blank\" href='risk_wiki.html#wiki-lifex'>Lebenserwartungen</a> in Jahren",
+            "incr": "Unterschiede in der <a target=\"_blank\" href='risk_wiki.html#wiki-lifex'>Lebenserwartung</a>",
+            "decr": "Unterschiede in der <a target=\"_blank\" href='risk_wiki.html#wiki-lifex'>Lebenserwartung</a>"
         },
         "note": function (type_arr) {
             // console.log("~~~~~~~~~~~~~ HANDLE NUMBERS OF YEARS ~~~~~~~~~~~~~~~~~~");
@@ -1675,13 +1813,13 @@ class OutputNode {
 //     "pval_other": "pval"
 
 const popup_perc = function (rel) {
-    return "<p>Diese <a href='risk_wiki.html#wiki-prozent'>Prozentzahl</a> scheint " +
+    return "<p>Diese <a target=\"_blank\" href='risk_wiki.html#wiki-prozent'>Prozentzahl</a> scheint " +
         (rel === "rel" ? "relativ" : "absolut") + " zu sein.</p>"
 };
 
 const popup_freq = function (sample) {
     return "<p>Diese Häufigkeit scheint eine " +
-        (sample === "ntot" ? "<a href='risk_wiki.html#wiki-sample'>Stichprobengröße</a>" : "<a href='risk_wiki.html#wiki-freq'>Anzahl von Fällen</a>") + " zu sein.</p>"
+        (sample === "ntot" ? "<a target=\"_blank\" href='risk_wiki.html#wiki-sample'>Stichprobengröße</a>" : "<a target=\"_blank\" href='risk_wiki.html#wiki-freq'>Anzahl von Fällen</a>") + " zu sein.</p>"
 };
 
 // In the future we might try to have more sophisticated methods to allow the passing of specific parameters!
@@ -1957,19 +2095,20 @@ function get_token_data(text) {
         token_i = text_tokens[i];
 
         // Regex for token to ensure exact matching:
-        if (["\\n\\*", ".", ":", ";", ",", "?", "!", "(", ")", "\"", "'", "/", "\u2018", "\u2019", "\u201c", "\u201d"].includes(token_i) ||
+        if (["\\n\\*", ".", ":", ";", ",", "?", "!", "(", ")", "\"", "'", "/", "\-", "\u2018", "\u2019", "\u201c", "\u201d"].includes(token_i) ||
             /\++/g.test(token_i)  // also test plus signs (and potentially other quantifiers)
         ) {
             // Punctuation follows somewhat different rules.
             // NOTE: Overlaps with other entities, likely because of the lack of spaces.
 
             // Escape and add lookahead or behind.
-            if (["("].includes(token_i)) {
-                token_pat = "(?<=\\s|\\n|^)" + token_i.replace(/([.?()/])/dgm, "\\$1");
+            if (["(", ")"].includes(token_i)) {
+                token_pat = token_i.replace(/([.?()/])/dgm, "\\$1");
+                // was: token_pat = "(?<=\\s|\\n|^)" + token_i.replace(/([.?()/])/dgm, "\\$1");
             } else if (["\"", "'", "\u2018", "\u2019", "\u201c", "\u201d"].includes(token_i)) {
                 token_pat = token_i;  // no requirement to escape?
             } else {
-                token_pat = token_i.replace(/([.?()/+])/dgm, "\\$1") + "(?=\\s|\\n|$|\\.|,|[\"'\u2018\u2019\u201c\u201d])";
+                token_pat = token_i.replace(/([.?()/+\-])/dgm, "\\$1") + "(?=\\s|\\n|$|\\.|,|-|[\"'\u2018\u2019\u201c\u201d])";
             }
 
         } else {
@@ -1979,6 +2118,7 @@ function get_token_data(text) {
         // console.log(token_rex);
 
         // Set index to search from to previous index:
+        // NOTE: In this place the debugger often stops on unhandled expressions!
         token_rex.lastIndex = tpos_end[tpos_end.length - 1];  // tpos_start[ix_prev] + text_tokens[ix_prev].length;
         curpos = token_rex.exec(text).index;
 
@@ -2004,11 +2144,24 @@ function get_token_data(text) {
 let testcount = 0;
 
 // ~~~~~~~~~~~~~~~~~~~ PROCESSING FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~
+// Entry of keyset
+// "number_unit": ["perc", "mult", "nyear"],  // add in other types eventually! 30-fach etc.
+//                 "keyset": [
+//                     // A first entry to a domain-general keyset for risk:
+//                     [RegExp(collapse_regex_or(["[Rr]isiko", "[Ww]ahrscheinlich", "Inzidenz", "Todesfälle"])),
+//                         RegExp(collapse_regex_or(["höher", "erhöht"]))],
+//                     [RegExp(collapse_regex_or(["[Uu]nterschied", "höher", "vergrößerte"])),
+//                         RegExp(collapse_regex_or(["Lebenserwartung", "Abstand"]))]
+//
+//                 ]
 /**
  * Tries to detect the type of each number by using its unit and additional context information
  * @return {Array}     An array of number types for numeric token data
  * @param token_data {Object} A token data object with information about numbers.
  * @param txt {String} The text corresponding to the token data, allowing to detect matches.
+ * @param numtype_dict {Object} Object with numtypes as keys. Field "number_unit" must contain units that are eligible for this number type.
+ Field keyset contains an array of arrays containing RegEx. If all RegEx in any inner array are true, the number type is assigned.
+ * @returns {any[]}
  */
 function detect_number_type(token_data, txt, numtype_dict) {
 

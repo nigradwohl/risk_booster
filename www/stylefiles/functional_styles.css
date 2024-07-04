@@ -46,7 +46,7 @@
 .tooltip {
     position: relative;
     overflow: visible;
-    opacity: 0.9;
+    opacity: 1;
     display: inline-block; /* vorher: inline */  
     border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
 }
@@ -60,12 +60,22 @@
 .tooltip .tooltiptext.tooltip-overview {
     width: 15em;
     text-align: left;
-    padding: 0.5em;
-    background-color: #fff;
-    color: black;
-    opacity: 1;
+    padding: 0.6em;
+    /*Option 1*/
+    /*background-color: #fff; */
+    /*color: black;*/
+    /*border: 1px solid #0077be;*/
+    /*Option 2*/
+    background-color: steelblue;
+    color: white;
     border: 1px solid #0077be;
+    font-weight: normal;
+    opacity: 1;
     border-radius: 2px;
+}
+
+.tooltip .tooltiptext.tooltip-overview > p {
+    color: white;
 }
 
 .tooltip .tooltiptext.tooltip-overview::after {
@@ -84,7 +94,7 @@
 
     /* Position the tooltip text */
     position: absolute;
-    z-index: 9999;
+    z-index: 9997;
     bottom: 125%;
     left: 50%;
     margin-left: -70px;
@@ -196,13 +206,14 @@
 .canvas-zoom {
     position: absolute;
     justify-content: center;
-    top: 2.5%;
-    left: 15%;
+    top: 5px;  /*slight space to top.*/
+    left: 33%;
     height: 90%;
     width: 90%;
     display: none;
     background-color: whitesmoke;
     border: 1px darkgrey solid;
+    z-index: 9998;
 }
 
 /*#quit-zoom{*/
@@ -241,6 +252,7 @@ canvas {
 .zoomed-canvas {
     width: 95%;
     height: 95%;
+    z-index: 9998;
 }
 
 .split-content {
@@ -295,6 +307,7 @@ canvas {
     font-size: 1.2em;
     padding: 5px;
     max-width: 6em;
+    position: relative;
 }
 
 .checklist-button {
@@ -311,6 +324,22 @@ canvas {
 .checklist-content {
     margin: 1em auto;
     width: 800px;
+}
+
+.edit-note {
+    display: none;
+    resize: none;
+    width: 102%;
+    overflow: hidden;
+    /*height: 100%;*/
+    font-size: 0.8em;
+    position: relative;
+    z-index: 9998;
+    -webkit-appearance: none;  /*to render properly*/
+}
+
+#edit-text-popup {
+    display: none;
 }
 
 .error-note {
@@ -376,3 +405,4 @@ canvas {
 .missing-input {
     border: 2px solid darkred;
 }
+

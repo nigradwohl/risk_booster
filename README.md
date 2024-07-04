@@ -22,19 +22,10 @@ Features are sorted by importance and are further split by features that should 
 
 ## Text-checking tool 
 
-
-* handle the unhandled numbers
-* life-expectancy: in wiki; at least social engineering
-* Feedback button
-* instructions on which risk information we can handle (not years -- longer living etc.) 
-
-
 * Increase the number of test-texts that are successfully handled
-    + also handle number words
     + detect absolute risk reductions (e.g., smaller percentages, percentage points): distinguish from unidentified percentages (and mention if they are likely relative)
 * detect if numbers have a reference (e.g., is only the number of infections or percentages in groups reported? 
 Do we also have the group sizes?)
-* Handle margins for tooltips 
 
 ### Nice to have
 
@@ -47,8 +38,10 @@ Do we also have the group sizes?)
 * look for articles and press releases to process (SciMedia center; JAMA network open!; BMJ, JAMA, Lancet, Annals of internal medicine, NEJM; Tim, get endpoints and superordinate terms; Cochrane?)
 * Superordinate statement: "Das uns interessierende **Ereignis**"
 * allow to show only 1 icon array
-* Implement additional questions as needed (e.g., AR or ARR for side effects)
+* Implement additional questions as needed (e.g., OR, AR or ARR for side effects)
 * Calculation from AR in 1 group (+ rel) possible?
+* Handle case control studies
+* Handle ORs
 
 ### Nice to have
 
@@ -57,5 +50,7 @@ Do we also have the group sizes?)
 ## Wiki
 
 * Decide on the central entries and fill them with information 
+* Make main texts extendable?
+* Implement navigation on the side
 
 ### Nice to have
