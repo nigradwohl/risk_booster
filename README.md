@@ -23,7 +23,6 @@ Features are sorted by importance and are further split by features that should 
 
 ## Text-checking tool 
 
-* migrate info about the presence of numbers 
 * Increase the number of test-texts that are successfully handled
     + detect absolute risk reductions (e.g., smaller percentages, percentage points): distinguish from unidentified percentages (and mention if they are likely relative)
 * detect if numbers have a reference (e.g., is only the number of infections or percentages in groups reported? 

@@ -1186,22 +1186,24 @@ $(document).ready(function () {
         }
 
         // Flag out the use of numbers: ~~~~~~~~~~~~~~~~~~~~~~~
-        let feature_num = "</ul><p>Welche Zahleninformation wird berichtet?</p><ul><li>";
+        let feature_num = "";
         const any_risk_num = txtfeat_dict.any_risknum;  // ["perc", "freq", "nh", "mult", "nyear"].filter((x) => token_dat.unit.includes(x));
         // console.log("Any risk num:");
         // console.log(token_dat.unit);
         if (txtfeat_dict.any_risknum) {
-            feature_num += "<i class=\"fa fa-check in-text-icon good\"></i> Der Text scheint Zahlen " +
+            feature_num += "<li><i class=\"fa fa-check in-text-icon good\"></i> Der Text scheint Zahlen " +
                 (!feature_arr.includes("damage") && feature_set?.damage ? "" :
                     "zu den genannten " +
                     "<div id=\"risk-tt\" class=\"tooltip\">" +
                     "<span class=\"tooltiptext tooltip-overview\">Anders der umgangssprachliche Risikobegriff gleichbedeutend mit \"Wahrscheinlichkeit\" " +
                     "(häufig etwa Wahrscheinlichkeit zu erkranken oder versterben; aber auch positiv, z.B., Wahrscheinlichkeit länger zu leben).</span>" +
                     "<a target=\"_blank\" href='risk_wiki.html#wiki-risk'>Risiken</a></div> ") +
-                "zu berichten.";
+                "zu berichten.</li>";
 
             // +++ HERE!
             // TODO: Remove/adjust Nutzen/Schaden terminology for other kinds of topics (e.g., comparison of risks).
+
+            feature_num += "</li></ul><p>Welche Zahleninformation wird berichtet?</p><ul><li>";
 
             // Differentiate numbers for control and treat group:
             // Do numbers apply to treat and contr group
@@ -1299,10 +1301,10 @@ $(document).ready(function () {
 
         } else {
             // ONLY NUMBERS: ~~~~~~~~~~~~~~~~~~~~~~~~
-            feature_num += "<i class=\"fa fa-close in-text-icon error\"></i> " +
+            feature_num += "<li><i class=\"fa fa-close in-text-icon error\"></i> " +
                 "Der Text scheint keine Zahlen zu den Risiken zu berichten. " +
                 "Rein verbale Beschreibungen sollten vermieden werden." +
-                "Bitte versuchen Sie Zahlen zu berichten.";
+                "Bitte versuchen Sie Zahlen zu berichten.</li>";
         }
 
         // Only talks about numbers if the text talks about risK:
