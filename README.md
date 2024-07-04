@@ -37,6 +37,7 @@ Do we also have the group sizes?)
 
 ## Checklist
 
+* Screenings as case (sensitivity/specificity) 
 * look for articles and press releases to process (SciMedia center; JAMA network open!; BMJ, JAMA, Lancet, Annals of internal medicine, NEJM; Tim, get endpoints and superordinate terms; Cochrane?)
 * Superordinate statement: "Das uns interessierende **Ereignis**"
 * allow to show only 1 icon array
