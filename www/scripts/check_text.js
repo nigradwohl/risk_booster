@@ -1150,7 +1150,7 @@ $(document).ready(function () {
 
 
             if (feats_missing.length === 0) {
-                feature_str = "<i class=\"fa fa-thumbs-up in-text-icon good\"></i>" + feature_str;
+                feature_str = "<i class=\"fa fa-check in-text-icon good\"></i>" + feature_str;
                 feature_str += " werden Informationen " + value.zumzur + feats_present.join(" und ") +
                     " berichtet.";
             } else if (key === "damage") {
@@ -1158,11 +1158,11 @@ $(document).ready(function () {
                     "Wenn der Text ein Gesundheitsrisiko behandelt, kontaktieren Sie uns bitte, damit wir den Fehler beheben können.";
             } else {
                 if (feats_missing.length === 1) {
-                    feature_str = "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i>" + feature_str;
+                    feature_str = "<i class=\"fa fa-exclamation-triangle in-text-icon warning\"></i>" + feature_str;
                     feature_str += " werden nur Informationen " + value.zumzur + feats_present.toString() +
                         " berichtet. Es sollten auch Informationen " + value.zumzur + feats_missing + " berichtet werden. ";
                 } else {
-                    feature_str = "<i class=\"fa fa-thumbs-down in-text-icon error\"></i>" + feature_str;
+                    feature_str = "<i class=\"fa fa-close in-text-icon error\"></i>" + feature_str;
                     feature_str += " werden weder Informationen " + value.zumzur +
                         value.fset.map((key) => feature_dict[key]).join(" noch " + value.zumzur) + " berichtet. "
                     // "<br>NOTE: In Wiki mention the reasons and that one should mention if the evidence is not based on a group comparison";
@@ -1191,7 +1191,7 @@ $(document).ready(function () {
         // console.log("Any risk num:");
         // console.log(token_dat.unit);
         if (txtfeat_dict.any_risknum) {
-            feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> Der Text scheint Zahlen " +
+            feature_num += "<i class=\"fa fa-check in-text-icon good\"></i> Der Text scheint Zahlen " +
                 (!feature_arr.includes("damage") && feature_set?.damage ? "" :
                     "zu den genannten " +
                     "<div id=\"risk-tt\" class=\"tooltip\">" +
@@ -1217,16 +1217,16 @@ $(document).ready(function () {
                 const side_num = feature_arr.includes("side_num");
 
                 if (eff_num && side_num) {
-                    feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> " +
+                    feature_num += "<i class=\"fa fa-check in-text-icon good\"></i> " +
                         "Sowohl zum Nutzen, als auch zum Schaden wurden Zahlen angegeben."
                 } else {
                     if (eff_num || side_num) {
-                        feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> " +
+                        feature_num += "<i class=\"fa fa-exclamation-triangle in-text-icon warning\"></i> " +
                             "Zahlen nur zu" +
                             (eff_num ? "m Nutzen" : " Schaden") +
                             " angegeben."
                     } else {
-                        feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> " +
+                        feature_num += "<i class=\"fa fa-close in-text-icon error\"></i> " +
                             "Die Zahlen scheinen sich leider weder auf Nutzen noch auf Schaden zu beziehen."
                     }
 
@@ -1244,7 +1244,7 @@ $(document).ready(function () {
                 // Die Wirksamkeit wird (nicht) mit Zahlen aus Behandlungs- und Kontrollgruppe belegt.
                 // Nebenwirkungen werden nicht für Behandlungs- und Kontrollgruppe angegeben
                 let arr_eff_both = feature_arr.includes("eff_treat_num") && feature_arr.includes("eff_contr_num") ?
-                    ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", "", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>",
+                    ["<i class=\"fa fa-check in-text-icon good\"></i>", "", ""] : ["<i class=\"fa fa-close in-text-icon error\"></i>",
                         "nicht erkennbar ",
                         "<div id=\"noeffnum-tt\" class=\"tooltip\">" +
                         "<span class=\"tooltiptext tooltip-overview\">" +
@@ -1254,7 +1254,7 @@ $(document).ready(function () {
                         "</span>(Warum ist das ein Problem?)</div>"
                     ];
                 let arr_side_both = feature_arr.includes("side_treat_num") && feature_arr.includes("side_contr_num") ?
-                    ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", "", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>",
+                    ["<i class=\"fa fa-check in-text-icon good\"></i>", "", ""] : ["<i class=\"fa fa-close in-text-icon error\"></i>",
                         "nicht erkennbar ",
                         "<div id=\"nosidenum-tt\" class=\"tooltip\">" +
                         "<span class=\"tooltiptext tooltip-overview\">" +
@@ -1277,15 +1277,15 @@ $(document).ready(function () {
                 const contr_num = feature_arr.includes("contr_num");
 
                 if (treat_num && contr_num) {
-                    feature_num += "<i class=\"fa fa-thumbs-up in-text-icon good\"></i> " +
+                    feature_num += "<i class=\"fa fa-check in-text-icon good\"></i> " +
                         "Sowohl zum Untersuchungszeitpunkt, als auch zum Vergleichszeitpunkt wurden Zahlen angegeben."
                 } else if (treat_num || contr_num) {
-                    feature_num += "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i> " +
+                    feature_num += "<i class=\"fa fa-exclamation-triangle in-text-icon warning\"></i> " +
                         "Zahlen nur zum " +
                         (treat_num ? "Untersuchungszeitpunkt" : "Vergleichszeitpunkt") +
                         " angegeben."
                 } else {
-                    feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> " +
+                    feature_num += "<i class=\"fa fa-close in-text-icon error\"></i> " +
                         "Die Zahlen scheinen sich leider nicht auf die absoluten Risiken zum Untersuchungs- oder Vergleichszeitpunkt zu beziehen."
                 }
             }
@@ -1299,7 +1299,7 @@ $(document).ready(function () {
 
         } else {
             // ONLY NUMBERS: ~~~~~~~~~~~~~~~~~~~~~~~~
-            feature_num += "<i class=\"fa fa-thumbs-down in-text-icon error\"></i> " +
+            feature_num += "<i class=\"fa fa-close in-text-icon error\"></i> " +
                 "Der Text scheint keine Zahlen zu den Risiken zu berichten. " +
                 "Rein verbale Beschreibungen sollten vermieden werden." +
                 "Bitte versuchen Sie Zahlen zu berichten.";

@@ -6,8 +6,9 @@
 }
 
 .in-text-icon.warning {
-    color: #8CA000;
-    rotate: -90deg;
+    color: goldenrod;
+    /*color: #8CA000;*/
+    /*rotate: -90deg;*/
 }
 
 .in-text-icon.error {
