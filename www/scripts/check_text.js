@@ -1160,11 +1160,11 @@ $(document).ready(function () {
                 if (feats_missing.length === 1) {
                     feature_str = "<i class=\"fa fa-thumbs-down in-text-icon warning\"></i>" + feature_str;
                     feature_str += " werden nur Informationen " + value.zumzur + feats_present.toString() +
-                        " berichtet. Es sollten auch Informationen " + value.zumzur + feats_missing + " berichtet werden.";
+                        " berichtet. Es sollten auch Informationen " + value.zumzur + feats_missing + " berichtet werden. ";
                 } else {
                     feature_str = "<i class=\"fa fa-thumbs-down in-text-icon error\"></i>" + feature_str;
                     feature_str += " werden weder Informationen " + value.zumzur +
-                        value.fset.map((key) => feature_dict[key]).join(" noch " + value.zumzur) + " berichtet."
+                        value.fset.map((key) => feature_dict[key]).join(" noch " + value.zumzur) + " berichtet. "
                     // "<br>NOTE: In Wiki mention the reasons and that one should mention if the evidence is not based on a group comparison";
                 }
 
@@ -1177,7 +1177,7 @@ $(document).ready(function () {
                 feature_str = feature_str + "<div id=\"" + key + "-tt\" class=\"tooltip\">" +
                     "<span class=\"tooltiptext tooltip-overview\" style='width: 100%'>" +
                     value.tool +
-                    "</span>(Warum ist das ein Problem?)</div>";
+                    "</span> (Warum ist das ein Problem?)</div>";
             }
 
 
@@ -1235,7 +1235,7 @@ $(document).ready(function () {
                         "<span class=\"tooltiptext tooltip-overview\">" +
                         "Nur wenn sowohl der Nutzen, als auch der Schaden mit transprarenten Zahlen belegt werden, " +
                         "ist eine informierte Beurteilung möglich, wie groß der Nutzen im Vergleich zu anderen " +
-                        "Interventionen und zum Schaden ist" +
+                        "Interventionen und zum Schaden ist " +
                         "</span> (Warum ist das ein Problem?)</div>";
                 }
 
@@ -1250,8 +1250,8 @@ $(document).ready(function () {
                         "<span class=\"tooltiptext tooltip-overview\">" +
                         "Nur indem die Lesenden die Größe des Nutzens mit und ohne Intervention kennen, " +
                         "können Sie sich ein unabhängiges Urteil über das Ausmaß des Nutzens bilden " +
-                        "und eine informierte Entscheidung treffen." +
-                        "</span> (Warum ist das ein Problem?)</div>"
+                        "und eine informierte Entscheidung treffen. " +
+                        "</span>(Warum ist das ein Problem?)</div>"
                     ];
                 let arr_side_both = feature_arr.includes("side_treat_num") && feature_arr.includes("side_contr_num") ?
                     ["<i class=\"fa fa-thumbs-up in-text-icon good\"></i>", "", ""] : ["<i class=\"fa fa-thumbs-down in-text-icon error\"></i>",
@@ -1261,13 +1261,13 @@ $(document).ready(function () {
                         "Nur indem die Lesenden die Größe des Schadens mit und ohne Intervention kennen, " +
                         "können Sie sich ein unabhängiges Urteil über das Ausmaß des Schadens bilden " +
                         "und eine informierte Entscheidung treffen." +
-                        "</span> (Warum ist das ein Problem?)</div>"];
+                        "</span>(Warum ist das ein Problem?)</div>"];
 
 
                 feature_num += arr_eff_both[0] + " Der Nutzen wird " + arr_eff_both[1] +
                     "mit Zahlen für Behandlungs- und Kontrollgruppe belegt</li>" + arr_eff_both[2] + "<li>";
                 feature_num += arr_side_both[0] + " Die Schadenwirkung wird " + arr_side_both[1] +
-                    "mit Zahlen für Behandlungs- und Kontrollgruppe belegt" + arr_side_both[2];
+                    "mit Zahlen für Behandlungs- und Kontrollgruppe belegt " + arr_side_both[2];
                 // Rather "Nur für" oä.
             } else if (token_dat.topics.includes("comp_time")) {
 
