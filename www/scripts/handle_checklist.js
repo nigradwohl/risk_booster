@@ -471,7 +471,7 @@ class Checklist {
     increment_or_skip() {
         // Check whether input can be skipped: ~~~~~~~~~~~~
         console.log("+++ CHECK IF SKIPPABLE +++");
-        const skiplist = ["n-total", "p-treat", "n-side", "p-side"];  // Make p-side or n-side skippable, if both were provided!
+        const skiplist = ["n-total", "p-treat", "n-case", "p-case", "n-side", "p-side"];  // Make p-side or n-side skippable, if both were provided!
         const cur_entry = q_order[this.entry_ix];
         let next_entry;
 
