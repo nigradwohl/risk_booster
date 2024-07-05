@@ -1,4 +1,3 @@
-
 /* NOTES
 * On Odds Ratios in case control studies: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7850067/
 * * Case-control studies sample based on outcome status: https://en.wikipedia.org/wiki/Case%E2%80%93control_study
@@ -129,7 +128,39 @@ class RiskCollection {
             this.mtab2 = mtab2;
         }
 
+        this.prev_content = this.save_current_content;  // for saving previous content
 
+
+    }
+
+    // Saving previous content:
+    save_current_content() {
+        this.prev_content = JSON.stringify(this);
+    }
+
+    // Retrieving previous content:
+    retrieve_previous_content() {
+
+        // Translate stringified save to Object (replace "null" with NaN):
+        const content_reset = JSON.parse(this.prev_content,
+            (key, value) =>
+                value === null ? NaN : value);
+
+        // Create the tables:
+        const prev_ntab = new Basetable(content_reset.ntab.tab.tab2x2, content_reset.ntab.msums1, content_reset.ntab.msums2, content_reset.ntab.N);
+        const prev_ptab = new Basetable(content_reset.ptab.tab.tab2x2, content_reset.ptab.msums1, content_reset.ptab.msums2, 1);
+        const prev_mtab1 = new Margintable(content_reset.mtab1.tab.tab2x2,
+            content_reset.mtab1.rel1, content_reset.mtab1.rel2,
+            content_reset.mtab1.diff1, content_reset.mtab1.diff2);
+        const prev_mtab2 = new Margintable(content_reset.mtab2.tab.tab2x2,
+            content_reset.mtab2.rel1, content_reset.mtab2.rel2,
+            content_reset.mtab2.diff1, content_reset.mtab2.diff2);
+
+        // Re assign:
+        this.ntab = prev_ntab;
+        this.ptab = prev_ptab;
+        this.mtab1 = prev_mtab1;
+        this.mtab2 = prev_mtab2;
     }
 
     // Method to combine information in ntab and ptab:
@@ -604,7 +635,7 @@ class Margintable {
         console.log(JSON.stringify(this));
     }
 
-    complete_tab(){
+    complete_tab() {
         const curtab = this.tab.tab2x2;
 
         // Note: Currently ONLY for dim1 in margin table!

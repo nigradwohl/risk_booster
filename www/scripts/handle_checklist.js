@@ -404,8 +404,10 @@ class Checklist {
                 console.log("++++ Getting inputs and complete ++++");
 
                 // Save the previous instances:
-                const risk_prev = JSON.stringify(this.check_risk);
-                const side_prev = JSON.stringify(this.check_side);
+                // const risk_prev = JSON.stringify(this.check_risk);
+                // const side_prev = JSON.stringify(this.check_side);
+                this.check_risk.save_current_content();
+                this.check_side.save_current_content();
 
                 // If it is not a round where inputs should be skipped:
                 const inp_test = this.get_current_input(curid, q_inputs[curid], id_to_num_dict);
@@ -416,41 +418,10 @@ class Checklist {
                     this.check_side.try_completion(0);
                 } catch (e) {
                     console.error("Non-matching entries! " + e);
-                    // Revert the tables:
-                    console.log(JSON.parse(risk_prev,
-                        (key, value) =>
-                            value === null ? NaN : value));
-                    console.log(JSON.parse(side_prev,
-                        (key, value) =>
-                            value === null ? NaN : value));
 
-                    // Get the copied tables and update the tables:
-                    const risk_reset = JSON.parse(risk_prev,
-                        (key, value) =>
-                            value === null ? NaN : value);
-                    const side_reset = JSON.parse(side_prev,
-                        (key, value) =>
-                            value === null ? NaN : value);
-
-                    const risk_ntab = new Basetable(risk_reset.ntab.tab.tab2x2, risk_reset.ntab.msums1, risk_reset.ntab.msums2, risk_reset.ntab.N);
-                    const risk_ptab = new Basetable(risk_reset.ptab.tab.tab2x2, risk_reset.ptab.msums1, risk_reset.ptab.msums2, 1);
-                    const risk_mtab1 = new Margintable(risk_reset.mtab1.tab.tab2x2,
-                        risk_reset.mtab1.rel1, risk_reset.mtab1.rel2,
-                        risk_reset.mtab1.diff1, risk_reset.mtab1.diff2);
-                    const risk_mtab2 = new Margintable(risk_reset.mtab2.tab.tab2x2,
-                        risk_reset.mtab2.rel1, risk_reset.mtab2.rel2,
-                        risk_reset.mtab2.diff1, risk_reset.mtab2.diff2);
-
-                    this.check_risk = new RiskCollection(risk_ntab, risk_ptab, risk_mtab1, risk_mtab2);
-
-                    const side_ntab = new Basetable(side_reset.ntab.tab.tab2x2, side_reset.ntab.msums1, side_reset.ntab.msums2);
-                    const side_ptab = new Basetable(side_reset.ptab.tab.tab2x2, side_reset.ptab.msums1, side_reset.ptab.msums2);
-                    const side_mtab1 = new Margintable(side_reset.mtab1.tab.tab2x2, side_reset.mtab1.rel1, side_reset.mtab1.rel2,
-                        side_reset.mtab1.diff1, side_reset.mtab1.diff2);
-                    const side_mtab2 = new Margintable(side_reset.mtab2.tab.tab2x2, side_reset.mtab2.rel1, side_reset.mtab2.rel2,
-                        side_reset.mtab2.diff1, side_reset.mtab2.diff2);
-
-                    this.check_side = new RiskCollection(side_ntab, side_ptab, side_mtab1, side_mtab2);
+                    // Reset the values to before getting entries and trying to complete:
+                    this.check_risk.retrieve_previous_content();
+                    this.check_side.retrieve_previous_content();
 
                     // After reset:
                     console.log("AFTER RESET");
