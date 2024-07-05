@@ -400,14 +400,54 @@ class Checklist {
             // For all subsequent pages:
             // 1. Get the inputs on current page: ~~~~~~~~~~~~~~~~~~~~~~~~
             if (!skip_misses) {
+
+                console.log("++++ Getting inputs and complete ++++");
+
+                // Save the previous instances:
+                const risk_prev = JSON.stringify(this.check_risk);
+                const side_prev = JSON.stringify(this.check_side);
+
                 // If it is not a round where inputs should be skipped:
                 const inp_test = this.get_current_input(curid, q_inputs[curid], id_to_num_dict);
                 // After trying to get the inputs, try completing the table:
+
                 try {
                     this.check_risk.try_completion(0);
                     this.check_side.try_completion(0);
                 } catch (e) {
                     console.error("Non-matching entries! " + e);
+                    // Revert the tables:
+                    console.log(JSON.parse(risk_prev));
+                    console.log(JSON.parse(side_prev));
+
+                    // Get the copied tables and update the tables:
+                    const risk_reset = JSON.parse(risk_prev);
+                    const side_reset = JSON.parse(side_prev);
+
+                    const risk_ntab = new Basetable(risk_reset.ntab.tab.tab2x2, risk_reset.ntab.msums1, risk_reset.ntab.msums2);
+                    const risk_ptab = new Basetable(risk_reset.ptab.tab.tab2x2, risk_reset.ptab.msums1, risk_reset.ptab.msums2);
+                    const risk_mtab1 = new Margintable(risk_reset.mtab1.tab.tab2x2, risk_reset.mtab1.rel1, risk_reset.mtab1.rel2,
+                        risk_reset.mtab1.diff1, risk_reset.mtab1.diff2);
+                    const risk_mtab2 = new Margintable(risk_reset.mtab2.tab.tab2x2, risk_reset.mtab2.rel1, risk_reset.mtab2.rel2,
+                        risk_reset.mtab2.diff1, risk_reset.mtab2.diff2);
+
+                    this.check_risk = new RiskCollection(risk_ntab, risk_ptab, risk_mtab1, risk_mtab2);
+
+                    const side_ntab = new Basetable(side_reset.ntab.tab.tab2x2, side_reset.ntab.msums1, side_reset.ntab.msums2);
+                    const side_ptab = new Basetable(side_reset.ptab.tab.tab2x2, side_reset.ptab.msums1, side_reset.ptab.msums2);
+                    const side_mtab1 = new Margintable(side_reset.mtab1.tab.tab2x2, side_reset.mtab1.rel1, side_reset.mtab1.rel2,
+                        side_reset.mtab1.diff1, side_reset.mtab1.diff2);
+                    const side_mtab2 = new Margintable(side_reset.mtab2.tab.tab2x2, side_reset.mtab2.rel1, side_reset.mtab2.rel2,
+                        side_reset.mtab2.diff1, side_reset.mtab2.diff2);
+
+                    this.check_side = new RiskCollection(side_ntab, side_ptab, side_mtab1, side_mtab2);
+
+                    // After reset:
+                    console.log("AFTER RESET");
+                    console.log(this.check_risk);
+                    console.log(this.check_side);
+
+                    // Show that inputs were incompatible:
                     $("#incompatible-popup").show().addClass("selected-blur");
                     this.is_error = true;
                 }
@@ -528,8 +568,9 @@ class Checklist {
         $("#" + q_order[this.entry_ix] + "-q").css('display', 'flex');
         $("#" + cur_entry + "-q").hide();
 
-        // Removal of higlighting classes:
+        // Removal of popups and higlighting classes:
         $("#noentry-popup").hide();
+        $("#incompatible-popup").hide();
         $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
 
         // Show back button:
@@ -722,7 +763,7 @@ class Checklist {
 
             // Note: If the risk is negative, it corresponds to an increase!
             // For an increase report the multiple!
-            const rrc = arc > 0 ? Math.abs(arc / group_risks[0][1]) : group_risks[1][1]/group_risks[0][1];
+            const rrc = arc > 0 ? Math.abs(arc / group_risks[0][1]) : group_risks[1][1] / group_risks[0][1];
             // relative risk change.
             // How many times higher is the risk in the treatment group?
 
@@ -1227,17 +1268,17 @@ function evaluate_entry(curval, cur_q_key) {
     if (int_keys.includes(cur_q_key)) {
         // Check integer entries:
         if (!is_num) {
-            alert("KEINE ZAHL!");
+            // alert("KEINE ZAHL!");
             cur_error = "err_nonum";
         } else if (!Number.isInteger(checked_val)) {
-            alert("KEINE GANZE ZAHL!");
+            // alert("KEINE GANZE ZAHL!");
             cur_error = "err_noint";
         }
     } else if (float_keys.includes(cur_q_key)) {
 
         // Check float entries:
         if (!is_num) {
-            alert("KEINE ZAHL!");
+            // alert("KEINE ZAHL!");
             cur_error = "err_nonum";
         }
 
@@ -1251,7 +1292,7 @@ function evaluate_entry(curval, cur_q_key) {
 
             // Check the percentage
             if (checked_val < 1) {
-                alert("Prozentzahl kleiner 0; Absicht?");
+                // alert("Prozentzahl kleiner 0; Absicht?");
             }
 
             checked_val = checked_val / 100;  // percentage to floating point number.
