@@ -330,6 +330,7 @@ class Checklist {
 
         this.is_skip = false;
         this.is_error = false;
+        this.is_incompatible = false;
         this.is_reload = false;
 
         this.skip_misses = false;
@@ -345,7 +346,7 @@ class Checklist {
     continue_page(ev) {
 
         // 0. Initialize variables: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        this.is_error = false;
+        this.is_error = this.is_incompatible;
         // this.is_reload = false;
         this.missing_entries = [];
 
@@ -416,6 +417,9 @@ class Checklist {
                 try {
                     this.check_risk.try_completion(0);
                     this.check_side.try_completion(0);
+
+                    // Reset flag if no error is cought:
+                    this.is_incompatible = false;
                 } catch (e) {
                     console.error("Non-matching entries! " + e);
 
@@ -431,6 +435,7 @@ class Checklist {
                     // Show that inputs were incompatible:
                     $("#incompatible-popup").show().addClass("selected-blur");
                     this.is_error = true;
+                    this.is_incompatible = true;
                 }
 
                 if (this.is_error) {
@@ -446,7 +451,7 @@ class Checklist {
             // TODO: Check for errors!
 
             // 2. Handle missing entries:
-            if (this.missing_entries.length > 0) {
+            if (this.missing_entries.length > 0 && !this.is_incompatible) {
                 // alert("Sie haben nichts eingegeben! Absicht?");
                 // Show popup that can be skipped!
                 this.is_skip = true;
@@ -549,7 +554,7 @@ class Checklist {
         $("#" + q_order[this.entry_ix] + "-q").css('display', 'flex');
         $("#" + cur_entry + "-q").hide();
 
-        // Removal of popups and higlighting classes:
+        // Removal of popups and highlighting classes:
         $("#noentry-popup").hide();
         $("#incompatible-popup").hide();
         $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
