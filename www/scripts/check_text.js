@@ -203,7 +203,7 @@ $(document).ready(function () {
                 "regex": RegExp("(?<year>" + collapse_regex_or(month_names) + " \\d{4})", "dg")
             },
             "yearrange": {
-                "regex": /(?<year>(zwischen|von) (18|19|20)\d{2}(?![|.\w]) (und|bis) (18|19|20)?\d{2}(?![|.\w]))/dg
+                "regex": /(?<year>(für|zwischen|von) (18|19|20)\d{2}(?![|.\w]) (und|bis) (18|19|20)?\d{2}(?![|.\w]))/dg
             },
             "dur": {
                 "regex": /(?<dur>[0-9]+(-stündig|-tägig|-monatig| Minuten?| Stunden?| Tagen?| Wochen?| Monate?))/dg
