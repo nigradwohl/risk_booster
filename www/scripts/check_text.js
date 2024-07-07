@@ -1357,6 +1357,9 @@ $(document).ready(function () {
             );
         }
 
+        // Add note on risk calculator:
+        // TODO: Link to appropriate risk calculator (vaccination/treatment...)
+
         // List of notes on number types:
         for (const [key, value] of Object.entries(unit_note_dict)) {
 
