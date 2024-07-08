@@ -18,9 +18,9 @@
     ---navbar-bg: #f1f1f1f;
     ---navbar-text: #444;
     ---navbar-hover-bg: #ddd;
-    ---navbar-hover-text: black;
+    ---navbar-hover-text: #f1f1f1f;
     ---footer-bg: #ddd;
-    ---footer-text: black;
+    ---footer-text: #f1f1f1f;
     ---footer-hover-bg: #5e676c;
     ---footer-hover-text: lightgrey;
     ---dropdown-content-bg: #f1f1f1;
@@ -31,7 +31,8 @@
     ---colum-bg-tertiary: #f1f1f1f;
     ---checklist-question-bg: #f1f1f1f;
     ---checklist-shadow: #5e676c;
-    ---button-primary: #004d9b;
+    /*---button-primary: #004d9b;*/
+    ---button-primary: #90AFC5;
     ---button-secondary: lightgrey;
     ---wiki-bg: #f1f1f1f;
     ---wiki-example-bg: lightgrey;
@@ -378,8 +379,9 @@ body {
     font-size: 1em;
     text-align: center;
     background-color: var(---button-primary);
-    color: #f1f1f1;
-    font-weight: 600;
+    color: #f1f1f1f;
+    font-weight: 500;
+    border: none;
     border-radius: 5px;
     cursor: pointer;
     float: right;
@@ -429,12 +431,12 @@ body {
     }
 
 }
+
 @media screen and (max-width: 400px) {
     .wiki-toc {
         position: relative;
     }
 }
-
 
 
 .container {
