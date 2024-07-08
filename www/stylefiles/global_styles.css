@@ -322,6 +322,10 @@ body {
     background-color: var(---wiki-bg);
 }
 
+.wiki-intro {
+        width: 80%;
+}
+
 .wiki-examples {
     /*border: 1px solid var(---wiki-border);*/
     margin: 1em 0;
@@ -772,18 +776,33 @@ h3 {
     color: white;
 }
 
+.wiki-row {
+    max-height: 800px;
+    min-height: 500px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
 #entry-list {
-    margin-left: 25%;
+    /*margin-left: 25%;*/
+    width: 75%;
+    /*overflow: hidden;*/
+    overflow: hidden;
+    overflow-y: scroll;
+    flex-grow: 4;
 }
 
 /* Page content. The value of the margin-left property should match the value of the sidebar's width property */
 div.wiki-toc {
     margin: 1em;
-    /*height: 100%;*/
+    height: 480px;
+    flex-basis: 20%;
     width: 20%;
     padding: 10px 16px;
-    position: fixed;
-    z-index: 1;
+    /*position: fixed;*/
+    z-index: 0;
+    position: relative;
     /*top: 0;*/
     /*left: 0;*/
     border-radius: 5px;

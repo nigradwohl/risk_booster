@@ -8,6 +8,16 @@ It consists of 3 parts:
 3. A Wiki that summarizes the  [guidelines for transparent, evidence-based health communication](https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.ebm-netzwerk.de/de/medien/pdf/leitlinie-evidenzbasierte-gesundheitsinformation-fin.pdf&ved=2ahUKEwj4qPyDqpKGAxVE_7sIHXAMDNsQFnoECBIQAQ&usg=AOvVaw2JvtJWGC4VuUWCM1IMnl11)
 and is liked from the other parts.
 
+# Main ToDoS
+
+a. imprint
+b. final brush-up for wiki: finalize the texts, then add links, also to sources (guidelines);
+c. finalize the feedback elements;
+d. testing and handling a few more texts -- together with Tim;
+e. maybe: improve detection of number references (percentages and cases)
+f. maybe: screening case in risk calculator
+
+
 # Future features 
 
 Features are sorted by importance and are further split by features that should be implemented soon and those that may be implemented at a later point in time.
@@ -16,12 +26,19 @@ Features are sorted by importance and are further split by features that should 
 
 * Design of landing page
 * Handle treatment case  
+* Typos!
 
 ### Nice to have 
 
 * Life-risks 
 
 ## Text-checking tool 
+
+* Zahlen zu Risiken raus!
+* "scheint": Einschränkung raus 
+* Design durch Absetzungen 
+* Risikorechner verlinken!
+
 
 * Increase the number of test-texts that are successfully handled
     + detect absolute risk reductions (e.g., smaller percentages, percentage points): distinguish from unidentified percentages (and mention if they are likely relative)
