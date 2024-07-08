@@ -323,7 +323,7 @@ body {
 }
 
 .wiki-intro {
-        width: 80%;
+    width: 80%;
 }
 
 .wiki-examples {
@@ -396,8 +396,13 @@ body {
     padding: 0.5em;
 }
 
+#open-toc {
+    display: none;
+}
+
+
 /* Responsive layout - when the screen is less than 700px wide, make the two columns stack on top of each other instead of next to each other */
-@media screen and (max-width: 980px) {
+@media screen and (max-width: 1025px) {
     .wiki-entry {
         width: 90%;
     }
@@ -436,9 +441,40 @@ body {
 
 }
 
-@media screen and (max-width: 400px) {
+/*320px to 480px mobile devices*/
+@media screen and (max-width: 480px) {
     .wiki-toc {
-        position: relative;
+        display: none;
+        position: absolute;
+        background: #0077be;
+    }
+
+    #entry-list {
+        margin: 0;
+        width: 100%;
+    }
+
+    body {
+        margin: 0;
+    }
+
+    #open-toc {
+        display: block;
+        position: absolute;
+        margin: 5px;
+        padding: 5px;
+        left: 5%;
+        top: 0;
+        background-color: lightgrey;
+    }
+
+    div.wiki-toc {
+        position: absolute;
+        background-color: var(---wiki-bg);
+    }
+
+    #open-toc:hover + .wiki-toc {
+        display: block;
     }
 }
 
@@ -802,7 +838,7 @@ div.wiki-toc {
     padding: 10px 16px;
     /*position: fixed;*/
     z-index: 0;
-    position: relative;
+    /*position: relative;*/
     /*top: 0;*/
     /*left: 0;*/
     border-radius: 5px;

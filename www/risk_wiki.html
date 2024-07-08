@@ -39,8 +39,15 @@
 <!--</div>-->
 
 <div class="row current-theme wiki-row">
+
     <!-- The sidebar -->
-    <div id="wiki-nav-list" class="wiki-toc"><a href="risk_wiki.html#wiki-risk">Risiko</a><a
+    <div id="open-toc">
+        <i class="fa fa-bars" style="font-size:24px"></i>
+    </div>
+    <div id="wiki-nav-list" class="wiki-toc">
+
+
+        <a href="risk_wiki.html#wiki-risk">Risiko</a><a
             href="risk_wiki.html#wiki-effside">Nutzen und Schaden</a><a
             href="risk_wiki.html#wiki-prozent">Prozentzahlen</a><a href="risk_wiki.html#wiki-freq">Häufigkeiten</a><a
             href="risk_wiki.html#wiki-nh">Natürliche Häufigkeiten (auch: relative Häufigkeiten)</a><a
@@ -480,6 +487,11 @@
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--Space for scripts-->
+<script>
+    $("#open-toc").on("click", function(){
+        $("wiki-nav-list").show();
+    })
+</script>
 
 </body>
 

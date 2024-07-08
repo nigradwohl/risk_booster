@@ -47,7 +47,7 @@ $(document).ready(function () {
         wiki_text += "</div>";
 
         // Sidebar:
-        sidebar_text += `<a href="risk_wiki.html#wiki-${entry}">${curinfo.heading}</a>`;
+        sidebar_text += `<a href="risk_wiki.html#wiki-${entry}">${curinfo.heading}</a>\n`;
     }
 
     $("#entry-list").html(wiki_text);
