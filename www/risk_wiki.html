@@ -41,9 +41,9 @@
 <div class="row current-theme wiki-row">
 
     <!-- The sidebar -->
-    <div id="open-toc">
-        <i class="fa fa-bars" style="font-size:24px"></i>
-    </div>
+<!--    <div id="open-toc">-->
+<!--        <i class="fa fa-bars" style="font-size:24px"></i>-->
+<!--    </div>-->
     <div id="wiki-nav-list" class="wiki-toc">
 
 
@@ -62,6 +62,9 @@
     </div>
 
     <div id="entry-list">
+        <div id="open-toc">
+            <i class="fa fa-bars" style="font-size:24px"></i>
+        </div>
 
         <div class="full-column wiki-intro">
             <h1>Wiki</h1>
@@ -488,8 +491,12 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--Space for scripts-->
 <script>
-    $("#open-toc").on("click", function(){
-        $("wiki-nav-list").show();
+    $("#open-toc").on("click", function () {
+        $("#wiki-nav-list").toggle();
+    })
+
+    $("#wiki-nav-list > a").on("click", function () {
+        $("#wiki-nav-list").hide();
     })
 </script>
 
