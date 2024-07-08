@@ -315,7 +315,7 @@ body {
 .wiki-entry {
     /*margin: 1em auto;*/ /* centering.*/
     margin: 1em 0;
-    width: 70%;
+    width: 80%;
     border-radius: 5px;
     border: 1px solid var(---wiki-border);
     background-color: var(---wiki-bg);
@@ -391,6 +391,12 @@ body {
 }
 
 /* Responsive layout - when the screen is less than 700px wide, make the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 980px) {
+    .wiki-entry {
+        width: 90%;
+    }
+}
+
 @media screen and (max-width: 700px) {
     .row, .navbar {
         flex-direction: column;
@@ -423,6 +429,12 @@ body {
     }
 
 }
+@media screen and (max-width: 400px) {
+    .wiki-toc {
+        position: relative;
+    }
+}
+
 
 
 .container {
@@ -744,16 +756,33 @@ h3 {
     color: white;
 }
 
+#entry-list {
+    margin-left: 25%;
+}
+
 /* Page content. The value of the margin-left property should match the value of the sidebar's width property */
 div.wiki-toc {
-    margin-left: 1em;
-    width: 12%;
-    padding: 1px 16px;
-    /*position: fixed;*/
+    margin: 1em;
+    /*height: 100%;*/
+    width: 20%;
+    padding: 10px 16px;
+    position: fixed;
+    z-index: 1;
+    /*top: 0;*/
+    /*left: 0;*/
     border-radius: 5px;
     border: 1px solid var(---wiki-border);
     background-color: var(---wiki-bg);
     /*height: 1000px;*/
+    overflow-y: scroll;
+    /*top: 0;*/
+    /*bottom: 0;*/
+}
+
+.wiki-toc a {
+    padding: 5px 3px;
+    display: block;
+    overflow: hidden;
 }
 
 /* On screens that are less than 700px wide, make the sidebar into a topbar */
@@ -770,6 +799,11 @@ div.wiki-toc {
 
     div.content {
         margin-left: 0;
+    }
+
+    #entry-list {
+        margin: 1em;
+        width: 85%;
     }
 }
 

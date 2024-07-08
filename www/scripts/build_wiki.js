@@ -1,7 +1,8 @@
-const wiki_order = ["risk", "effside", "prozent", "freq", "nh",
+const wiki_order = ["risk", "effside",
+    "prozent", "freq", "nh",
     "rel", "baseprob", "sample_size",
     "cprob", "pval", "confint",
-    "causal", "rct", "treat", "teval", "control", "placebo", "tcomp"]
+    "causal", "rct", "treat", "control", "placebo", "teval", "tcomp"]
 
 
 $(document).ready(function () {
@@ -46,13 +47,13 @@ $(document).ready(function () {
         wiki_text += "</div>";
 
         // Sidebar:
-        sidebar_text += `<a href="${entry}">${curinfo.heading}</a>`;
+        sidebar_text += `<a href="risk_wiki.html#${entry}">${curinfo.heading}</a>`;
     }
 
     $("#entry-list").html(wiki_text);
 
     // Add sidebar:
-    $(".sidebar").html(sidebar_text);
+    $(".wiki-toc").html(sidebar_text);
 
 
 })

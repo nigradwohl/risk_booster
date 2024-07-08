@@ -316,7 +316,7 @@ const info_data = {
         "subheading": "",  // placeholder for a potential subheading.
         "aliases": ["Impfgruppe"],  // list of other names.
         "annotation": "",  // internal annotations; should be eventually ""
-        "overview": ["Gruppe die eine Behandlung erhält oder bei der ein Einfluss vorliegt (im Unterschied zur <a href\"#wiki-control\">Verlgeichs- oder Kontrollgruppe</a>",
+        "overview": ["Gruppe die eine Behandlung erhält oder bei der ein Einfluss vorliegt (im Unterschied zur <a href=\"#wiki-control\">Verlgeichs- oder Kontrollgruppe</a>",
             "Der Vergleich von Behandlungs- und Vergleichsgruppe erlaubt Aussagen über den Effekt (und dessen Größe), also z.B., ob ein Medikament wirksam Symptome lindert."],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": [],  // array of list items with examples.
         "popup": [],
@@ -327,12 +327,12 @@ const info_data = {
         "subheading": "",  // placeholder for a potential subheading.
         "aliases": ["Impfgruppe"],  // list of other names.
         "annotation": "",  // internal annotations; should be eventually ""
-        "overview": ["Zeitpunkt zu dem Daten gesammelt werden, die mit Daten zu einem <a href\"#wiki-tcomp\">Vergleichszeitpunkt</a> verglichen werden.",
+        "overview": ["Zeitpunkt zu dem Daten gesammelt werden, die mit Daten zu einem <a href=\"#wiki-tcomp\">Vergleichszeitpunkt</a> verglichen werden.",
             "Der Vergleich von Untersuchungs- und Vergleichszeitpunkt erlaubt Aussagen über Veränderungen über die Zeit (und deren Größe), " +
             "also z.B., ob es Menschen besser oder schlechter geht (nur aufgrund der Zeit sind üblicherweise keine Aussagen über die Wirkmechanismen möglich)."],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": [],  // array of list items with examples.
-        "popup": ["Zeitpunkt zu dem eine Untersuchung stattfindet und der mit einem <a href\"#wiki-tcomp\">Vergleichszeitpunkt</a> verglichen wird."],
-        "maintext": "Ähnlich zur <a href\"#wiki-treat\">Behandlungsgruppe</a> etwa in Medikamentenstudien."   // string of main text for wiki.
+        "popup": ["Zeitpunkt zu dem eine Untersuchung stattfindet und der mit einem <a href=\"#wiki-tcomp\">Vergleichszeitpunkt</a> verglichen wird."],
+        "maintext": "Ähnlich zur <a href=\"#wiki-treat\">Behandlungsgruppe</a> etwa in Medikamentenstudien."   // string of main text for wiki.
     },
     "control": {
         "heading": "Vergleichsgruppe",  // the heading.
@@ -343,18 +343,18 @@ const info_data = {
             "Gruppe, in der eine Behandlung oder ein Einfluss nicht vorliegt, um den Effekt des Einflusses zu bestimmen."],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": ["Placebogruppe bei Impf- und medikamentenstudien"],  // array of list items with examples.
         "popup": [],
-        "maintext": "<p>Erfolgt die Zuteilung in <a href\"#wiki-treat\">Behandlungs-</a> und Kontrollgruppe zufällig, spricht man von einem Experiment.</p>"   // string of main text for wiki.
+        "maintext": "<p>Erfolgt die Zuteilung in <a href=\"#wiki-treat\">Behandlungs-</a> und Kontrollgruppe zufällig, spricht man von einem Experiment.</p>"   // string of main text for wiki.
     },
     "tcomp": {
         "heading": "Vergleichszeitpunkt",
         "subheading": "",  // placeholder for a potential subheading.
         "aliases": ["Impfgruppe"],  // list of other names.
         "annotation": "",  // internal annotations; should be eventually ""
-        "overview": ["Zeitpunkt mit dem Daten zu einem <a href\"#wiki-teval\">Untersuchungszeitpunkt</a> verglichen werden.",
+        "overview": ["Zeitpunkt mit dem Daten zu einem <a href=\"#wiki-teval\">Untersuchungszeitpunkt</a> verglichen werden.",
             "Der Vergleich von Untersuchungs- und Vergleichszeitpunkt erlaubt Aussagen über Veränderungen über die Zeit (und deren Größe), " +
             "also z.B., ob es Menschen besser oder schlechter geht (nur aufgrund der Zeit sind üblicherweise keine Aussagen über die Wirkmechanismen möglich)."],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": [],  // array of list items with examples.
-        "popup": ["Zeitpunkt mit dem Daten zu einem <a href\"#wiki-teval\">Untersuchungszeitpunkt</a> verglichen werden."],
+        "popup": ["Zeitpunkt mit dem Daten zu einem <a href=\"#wiki-teval\">Untersuchungszeitpunkt</a> verglichen werden."],
         "maintext": ""   // string of main text for wiki.
     },
     "placebo": {
