@@ -455,6 +455,11 @@ body {
     min-height: 19em;
 }
 
+.card-land {
+    height: 100%;
+
+}
+
 .card > * {
     flex-grow: 1;
     flex-shrink: 1;
@@ -495,13 +500,22 @@ body {
 .content-icon {
     color: var(---text-color-primary);
     position: relative;
-    top: 0;
+    bottom: 0;
     left: 0;
 }
 
 .content-text {
     visibility: hidden;
     position: absolute;
+}
+
+.card-land .content-text {
+    bottom: 0;
+}
+
+.card-land .content-icon {
+    height: 10em;
+    width: 10em;
 }
 
 .card:hover .content-icon {
