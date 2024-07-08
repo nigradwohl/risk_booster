@@ -36,6 +36,21 @@
             LEITLINIE]
         </p>
     </div>
+</div>
+
+<div class="row current-theme">
+    <!-- The sidebar -->
+    <div id="wiki-nav-list" class="wiki-toc"><a href="risk_wiki.html#risk">Risiko</a><a href="risk_wiki.html#effside">Nutzen
+        und Schaden</a><a href="risk_wiki.html#prozent">Prozentzahlen</a><a
+            href="risk_wiki.html#freq">Häufigkeiten</a><a href="risk_wiki.html#nh">Natürliche Häufigkeiten (auch:
+        relative Häufigkeiten)</a><a href="risk_wiki.html#rel">Relative Angaben</a><a href="risk_wiki.html#baseprob">Basisirisiko
+        (Basiswahrscheinlichkeit)</a><a href="risk_wiki.html#sample_size">Stichprobengröße</a><a
+            href="risk_wiki.html#cprob">Bedingte Wahrscheinlichkeit</a><a
+            href="risk_wiki.html#pval"><i>p</i>-Werte</a><a href="risk_wiki.html#confint">Konfidenzintervall</a><a
+            href="risk_wiki.html#causal">Aussagen über Wirkung und Ursache (Kausalität)</a><a href="risk_wiki.html#rct">Randomized
+        Controlled Trial</a><a href="risk_wiki.html#treat">Behandlungsgruppe</a><a href="risk_wiki.html#control">Vergleichsgruppe</a><a
+            href="risk_wiki.html#placebo">Placebo</a><a href="risk_wiki.html#teval">Untersuchungszeitpunkt</a><a
+            href="risk_wiki.html#tcomp">Vergleichszeitpunkt</a></div>
 
     <div id="entry-list">
         <div class="wiki-entry full-column" id="wiki-risk"><h2>Risiko</h2>
@@ -158,11 +173,12 @@
                     dazu, den Nenner zu ignorieren, so dass 10 aus 10000 möglicherweise als größer wahrgenommen wird als
                     1 aus 100. Zuletzt berücksichtigen Personen den Nenner in ihrer Wahrnehmung, so dass auch 1 aus 1000
                     fälschlicherweise als größerals 1 aus 100 wahrgenommen werden kann.</p>
-                <p>Daraus folgt auch, dass keine grundsätzliche Überlegenheit gegenüber<a href="risk_wiki.html#prozent">Prozentzahlen</a>
-                    abgeleitet werden kann. Lediglich bei Prozentangaben kleiner als ein Prozent (z.B., 0,2 %) sind
-                    natürliche Häufigkeiten zu bevorzugen, da so Kommazahlen vermieden werden können. Dennoch kann eine
-                    generelle Verwendung natürlicher Häufigkeiten als Daumenregel verwendet werden, da sie Prozentzahlen
-                    im allgemeinen zumindest nicht unterlegen sind [REF].</p></div>
+                <p>Daraus folgt auch, dass keine grundsätzliche Überlegenheit gegenüber <a
+                        href="risk_wiki.html#wiki-prozent">Prozentzahlen</a> abgeleitet werden kann. Lediglich bei
+                    Prozentangaben kleiner als ein Prozent (z.B., 0,2 %) sind natürliche Häufigkeiten zu bevorzugen, da
+                    so Kommazahlen vermieden werden können. Dennoch kann eine generelle Verwendung natürlicher
+                    Häufigkeiten als Daumenregel verwendet werden, da sie Prozentzahlen im allgemeinen zumindest nicht
+                    unterlegen sind [REF].</p></div>
         </div>
         <div class="wiki-entry full-column" id="wiki-rel"><h2>Relative Angaben</h2>
             <div class="wiki-overview">
@@ -361,28 +377,12 @@
         <div class="wiki-entry full-column" id="wiki-treat"><h2>Behandlungsgruppe</h2>
             <div class="wiki-overview">
                 <ul>
-                    <li>Gruppe die eine Behandlung erhält oder bei der ein Einfluss vorliegt (im Unterschied zur <a href"#wiki-control"="">Verlgeichs-
-                        oder Kontrollgruppe</a></li>
+                    <li>Gruppe die eine Behandlung erhält oder bei der ein Einfluss vorliegt (im Unterschied zur <a
+                            href="#wiki-control">Verlgeichs- oder Kontrollgruppe</a></li>
                     <li>Der Vergleich von Behandlungs- und Vergleichsgruppe erlaubt Aussagen über den Effekt (und dessen
                         Größe), also z.B., ob ein Medikament wirksam Symptome lindert.
                     </li>
                 </ul>
-            </div>
-        </div>
-        <div class="wiki-entry full-column" id="wiki-teval"><h2>Untersuchungszeitpunkt</h2>
-            <div class="wiki-overview">
-                <ul>
-                    <li>Zeitpunkt zu dem Daten gesammelt werden, die mit Daten zu einem <a href"#wiki-tcomp"="">Vergleichszeitpunkt</a>
-                        verglichen werden.
-                    </li>
-                    <li>Der Vergleich von Untersuchungs- und Vergleichszeitpunkt erlaubt Aussagen über Veränderungen
-                        über die Zeit (und deren Größe), also z.B., ob es Menschen besser oder schlechter geht (nur
-                        aufgrund der Zeit sind üblicherweise keine Aussagen über die Wirkmechanismen möglich).
-                    </li>
-                </ul>
-            </div>
-            <div class="wiki-text">Ähnlich zur <a href"#wiki-treat"="">Behandlungsgruppe</a> etwa in
-                Medikamentenstudien.
             </div>
         </div>
         <div class="wiki-entry full-column" id="wiki-control"><h2>Vergleichsgruppe</h2>
@@ -399,8 +399,8 @@
                     <li>Placebogruppe bei Impf- und medikamentenstudien</li>
                 </ul>
             </div>
-            <div class="wiki-text"><p>Erfolgt die Zuteilung in <a href"#wiki-treat"="">Behandlungs-</a> und
-                Kontrollgruppe zufällig, spricht man von einem Experiment.</p></div>
+            <div class="wiki-text"><p>Erfolgt die Zuteilung in <a href="#wiki-treat">Behandlungs-</a> und Kontrollgruppe
+                zufällig, spricht man von einem Experiment.</p></div>
         </div>
         <div class="wiki-entry full-column" id="wiki-placebo"><h2>Placebo</h2>
             <div class="wiki-overview">
@@ -416,10 +416,25 @@
                 waren.
             </div>
         </div>
+        <div class="wiki-entry full-column" id="wiki-teval"><h2>Untersuchungszeitpunkt</h2>
+            <div class="wiki-overview">
+                <ul>
+                    <li>Zeitpunkt zu dem Daten gesammelt werden, die mit Daten zu einem <a href="#wiki-tcomp">Vergleichszeitpunkt</a>
+                        verglichen werden.
+                    </li>
+                    <li>Der Vergleich von Untersuchungs- und Vergleichszeitpunkt erlaubt Aussagen über Veränderungen
+                        über die Zeit (und deren Größe), also z.B., ob es Menschen besser oder schlechter geht (nur
+                        aufgrund der Zeit sind üblicherweise keine Aussagen über die Wirkmechanismen möglich).
+                    </li>
+                </ul>
+            </div>
+            <div class="wiki-text">Ähnlich zur <a href="#wiki-treat">Behandlungsgruppe</a> etwa in Medikamentenstudien.
+            </div>
+        </div>
         <div class="wiki-entry full-column" id="wiki-tcomp"><h2>Vergleichszeitpunkt</h2>
             <div class="wiki-overview">
                 <ul>
-                    <li>Zeitpunkt mit dem Daten zu einem <a href"#wiki-teval"="">Untersuchungszeitpunkt</a> verglichen
+                    <li>Zeitpunkt mit dem Daten zu einem <a href="#wiki-teval">Untersuchungszeitpunkt</a> verglichen
                         werden.
                     </li>
                     <li>Der Vergleich von Untersuchungs- und Vergleichszeitpunkt erlaubt Aussagen über Veränderungen
@@ -430,6 +445,7 @@
             </div>
         </div>
     </div>
+
 </div>
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ EOF MAIN CONTENT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 

@@ -1078,13 +1078,13 @@ const q_order = [
     "rel-risk-reduction",
     // "any-control",
     "n-treat-control",
-    "n-total", "p-treat",
-    "p-case",
+    "n-total",
+    "p-treat", "p-case",
     "n-case",
     // "or-case",
     // "side",
-    "n-side",
     "p-side",
+    "n-side",
     "results"
 ];
 // ORDER WILL BE FLEXIBLE!

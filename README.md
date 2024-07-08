@@ -40,7 +40,6 @@ Do we also have the group sizes?)
 * Screenings as case (sensitivity/specificity) 
 * look for articles and press releases to process (SciMedia center; JAMA network open!; BMJ, JAMA, Lancet, Annals of internal medicine, NEJM; Tim, get endpoints and superordinate terms; Cochrane?)
 * Superordinate statement: "Das uns interessierende **Ereignis**"
-* allow to show only 1 icon array
 * Implement additional questions as needed (e.g., OR, AR or ARR for side effects)
 * Calculation from AR in 1 group (+ rel) possible?
 * Handle case control studies
@@ -48,12 +47,14 @@ Do we also have the group sizes?)
 
 ### Nice to have
 
+* allow to show only 1 icon array
 * Make assumptions in case of missing information
 
 ## Wiki
 
-* Decide on the central entries and fill them with information 
-* Make main texts extendable?
-* Implement navigation on the side
+* Decide on the central entries and fill them with information
+* Implement navigation on the side (in progress)
 
 ### Nice to have
+
+* Make main texts extendable?
