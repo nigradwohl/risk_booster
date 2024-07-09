@@ -45,6 +45,9 @@ Features are sorted by importance and are further split by features that should 
 * detect if numbers have a reference (e.g., is only the number of infections or percentages in groups reported? 
 Do we also have the group sizes?)
 * Additional topic: alcohol abuse, vaccination against ticks, Unstatistik as source
+    + HPV: https://www.rki.de/SharedDocs/FAQ/Impfen/HPV/FAQ-Liste_HPV_Impfen.html 
+    + https://www.tagesschau.de/wissen/gesundheit/hpv-impfung-102.html
+    + https://www.sciencemediacenter.de/alle-angebote/research-in-context/details/news/virusverbreitung-bei-hpv-geimpften/
 
 ### Nice to have
 
