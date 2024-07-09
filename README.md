@@ -38,6 +38,7 @@ Features are sorted by importance and are further split by features that should 
 * "scheint": Einschränkung raus 
 * Design durch Absetzungen 
 * Risikorechner verlinken!
+* Zahlenformate raus; Warnungen (z.B., mismatched framing behalten) 
 
 
 * Increase the number of test-texts that are successfully handled
