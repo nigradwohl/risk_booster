@@ -568,7 +568,7 @@ $(document).ready(function () {
         // console.log(" +++ detecting missing units +++");
         const no_unit_ix = token_dat.id.filter((d, ix) => token_dat.is_num[ix] && token_dat.unit[ix] === "unknown");
         // console.log(no_unit_ix);
-        const new_units = investigate_context(token_dat, no_unit_ix, window_keys.units);
+        const new_units = investigate_context(token_dat, no_unit_ix, window_keys.units, false);
         // console.log(new_units);
         // Replace the missing units:
         let ix = -1;
@@ -626,7 +626,7 @@ $(document).ready(function () {
         const perc_ix = token_dat.id.filter((d, ix) => ["perc", "mult"].includes(token_dat.unit[ix]));
 
         // Identify if numbers are total counts or refer to a subgroup:
-        token_dat.add_column(investigate_context(token_dat, allnum_ix, window_keys.grouptype), "gtype");
+        token_dat.add_column(investigate_context(token_dat, allnum_ix, window_keys.grouptype, false), "gtype");
         // Percentages MUST be subgroups by definition:
         token_dat.gtype = token_dat.gtype.map((x, ix) => token_dat.unit[ix] === "perc" ? "sub" : token_dat.gtype[ix]);
 
@@ -634,7 +634,7 @@ $(document).ready(function () {
         const n_subgroup_ix = token_dat.id.filter((d, ix) => token_dat.is_num[ix] &&
             token_dat.gtype[ix] !== "total" && token_dat.gtype[ix] !== -1);
         console.log("---------- Get treatment and control: -----------");
-        token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.treat_contr), "group");
+        token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.treat_contr, false), "group");
         console.log(token_dat.group.toString());
 
 
@@ -642,14 +642,14 @@ $(document).ready(function () {
         if (token_dat.topics.includes("comp_treat")) {
             window_keys.effside.eff = window_keys.effside.eff.concat(targetconds);
         }
-        token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.effside), "effside");
+        token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.effside, false), "effside");
         // Note: Nutzen muss bei Verhaltensrisiken ggf. nicht unbedingt benannt werden (wenn es keinen ersichtlichen gibt)
         console.log(token_dat.effside.toString());
 
 
         // Get information about the underlyeing conditions (morbidity, mortality...):
         console.log("---------- Get information about the underlying conditions (morbidity, mortality...): -----------");
-        token_dat.add_column(investigate_context(token_dat, freq_ix, window_keys.conditions), "ftype");
+        token_dat.add_column(investigate_context(token_dat, freq_ix, window_keys.conditions, false), "ftype");
 
         // Update missing information: ~~~~~~~~~~~
         // Absolute percentages (for now code as remainder that is not relative and see if it fails).
@@ -679,7 +679,7 @@ $(document).ready(function () {
         // const rel_context = investigate_context(token_dat, n_change_ix, window_keys.treat_contr);
 
         // Column for relative and absolute:
-        token_dat.add_column(investigate_context(token_dat, perc_ix, window_keys.rel), "relabs");
+        token_dat.add_column(investigate_context(token_dat, perc_ix, window_keys.rel, true), "relabs");
         console.log(token_dat.relabs.toString());
         // was: token_dat.add_column(token_dat.numtype.map((x) => !["incr", "decr", -1].includes(x) ? "abs" : x), "relabs");
         token_dat.relabs = token_dat.relabs.map((x, ix) => ["incr", "decr"].includes(token_dat.numtype[ix]) && x !== "abs" ? "rel" : x);
@@ -754,7 +754,7 @@ $(document).ready(function () {
 
         // Reference information for absolute percentages and subgroups:
         // +++ HERE +++
-        token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.reference), "reference");
+        token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.reference, false), "reference");
 
         // Display for testing: ~~~~~~~~~~~~~~~~~~
         console.log("~~~~~ Updated token data: ~~~~~~");
@@ -1952,7 +1952,7 @@ class TokenData {
         // Also check for equal types per column!
 
         // Add global properties like number of rows (and columns) as properties:
-        this.global_keys = ["global_keys", "nrow", "ncol", "colnames", "topics", "change the "];
+        this.global_keys = ["global_keys", "nrow", "ncol", "colnames", "topics", "par_minmax"];
         this.colnames = Object.keys(this).filter((x) => !this.global_keys.includes(x));
         this.topics = [];  // initialize empty topic set.
 
@@ -2427,10 +2427,15 @@ function detect_number_type(token_data, txt, numtype_dict) {
  * @param token_data {Object} A token data object with information about numbers.
  * @param index_arr {Array} An array of indices corresponding to the token data, indicating which elements should be considered.
  * @param keyset {Object} An object with named keysets determining the classes assigned.
+ * @param only_pars {Boolean} Flag, if only paragraphs should be checked for context.
  */
-function investigate_context(token_data, index_arr, keyset) {
+function investigate_context(token_data, index_arr, keyset, only_pars) {
 
     let context_info = Array(token_data.nrow).fill(-1);  // was: "none"
+
+    if (only_pars === undefined) {
+        only_pars = true;
+    }
 
     // Back to text level:
     /*
@@ -2501,13 +2506,14 @@ function investigate_context(token_data, index_arr, keyset) {
         let testcounter = 0;  // testcounter to avoid infinite loops!
 
         // Define the absolute maximum:
-        // const min_start = 0;
-        // const max_end = token_data.nrow;  // could also be sentence end!
-
-        // Limit search to paragraph:
-        const curpar = token_data.par[token_ix];  // get current paragraph.
-        const min_start = par_minmax[curpar][0];
-        const max_end = par_minmax[curpar][1];  // could also be sentence end!
+        let min_start = 0;
+        let max_end = token_data.nrow;
+        if (only_pars) {
+            // Limit search to paragraph:
+            const curpar = token_data.par[token_ix];  // get current paragraph.
+            min_start = par_minmax[curpar][0];
+            max_end = par_minmax[curpar][1];  // could also be sentence end!
+        }
 
         // Note: One could additionally implement a list of "locks":
         let lock_start = token_ix;  // 0;
