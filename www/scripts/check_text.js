@@ -672,18 +672,18 @@ $(document).ready(function () {
 
 
         // Detect whether a change is relative:
+        console.log("---------- Detect relative changes: -----------");
         // Some context detection:
         const n_change_ix = token_dat.id.filter((d, ix) => token_dat.is_num[ix] &&
             ["incr", "decr"].includes(token_dat.numtype[ix]));
-        const rel_context = investigate_context(token_dat, n_change_ix, window_keys.treat_contr);
-        console.log("rel_context");
+        // const rel_context = investigate_context(token_dat, n_change_ix, window_keys.treat_contr);
 
         // Column for relative and absolute:
         token_dat.add_column(investigate_context(token_dat, perc_ix, window_keys.rel), "relabs");
-        // console.log(token_dat.relabs.toString());
+        console.log(token_dat.relabs.toString());
         // was: token_dat.add_column(token_dat.numtype.map((x) => !["incr", "decr", -1].includes(x) ? "abs" : x), "relabs");
         token_dat.relabs = token_dat.relabs.map((x, ix) => ["incr", "decr"].includes(token_dat.numtype[ix]) && x !== "abs" ? "rel" : x);
-        // console.log(token_dat.relabs.toString());
+        console.log(token_dat.relabs.toString());
 
         // Column for percentages <1%:
         // Translate number words:
@@ -740,6 +740,8 @@ $(document).ready(function () {
             // Assign the result:
             token_dat.relabs[ix] = out;
         }
+
+        console.log(token_dat.relabs.toString());
 
         // Code remaining percentages as absolute:
         token_dat.relabs = token_dat.relabs.map((x, ix) => token_dat.unit[ix] === "perc" && [-1, "unknown"].includes(x) ? "abs" : x);
@@ -2463,8 +2465,8 @@ function investigate_context(token_data, index_arr, keyset) {
     // For each number query:
     for (const token_ix of index_arr) {
 
-        console.log("-------- NEW TOKEN --------");
-        console.log(`+++ Token number ${token_ix}: ${token_data.token[token_ix]} +++`);
+        // console.log("-------- NEW TOKEN --------");
+        // console.log(`+++ Token number ${token_ix}: ${token_data.token[token_ix]} +++`);
 
         // PREPARE THE WINDOW: ~~~~~~~~~~~~~~
         let testcounter = 0;  // testcounter to avoid infinite loops!
@@ -2625,7 +2627,7 @@ function investigate_context(token_data, index_arr, keyset) {
             }
 
             // Fix a maximum number of iterations to avoid breakdown!
-            if (testcounter > 50) {
+            if (testcounter > 50 || (lock_end === max_end && lock_start === min_start)) {
                 console.log("BREAK DESCRIPTION");
                 description_complete = true;
                 // console.log(numberfeats);
@@ -2954,7 +2956,7 @@ function word_tokenizer(txt) {
 
     // console.log(txt);
     // Define abbreviations and replace the point temporarily:
-    const abbrevs = ["mind", "z.B", "etc", "oä"];
+    const abbrevs = ["mind", "z.B", "etc", "oä", "bzw"];
     txt = txt.replaceAll(RegExp("(?<=" + collapse_regex_or(abbrevs) + ")(\\.)", "gm"), "xABBREVx");
 
     // Split the text into its tokens:
