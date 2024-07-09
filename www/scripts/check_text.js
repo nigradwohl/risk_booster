@@ -1931,7 +1931,7 @@ class TextObj {
  */
 class TokenData {
 
-    constructor(tokens, tpos_start, tpos_end, sentence_id) {
+    constructor(tokens, tpos_start, tpos_end, sentence_id, paragraph_id) {
         this.token = tokens;
 
         this.nrow = this.token.length;
@@ -1942,12 +1942,17 @@ class TokenData {
         this.start = tpos_start;
         this.end = tpos_end;
         this.sent = sentence_id;
+        this.par = paragraph_id;
+        this.par_minmax = [...Array(paragraph_id[this.nrow - 1] + 1).keys()]
+            .map(par => [paragraph_id.indexOf(par), paragraph_id.lastIndexOf(par)]);
+        console.log("Paragraph boundaries:");
+        console.log(this.par_minmax);
 
         // Also check for equal length in the future!
         // Also check for equal types per column!
 
         // Add global properties like number of rows (and columns) as properties:
-        this.global_keys = ["global_keys", "nrow", "ncol", "colnames", "topics"];
+        this.global_keys = ["global_keys", "nrow", "ncol", "colnames", "topics", "change the "];
         this.colnames = Object.keys(this).filter((x) => !this.global_keys.includes(x));
         this.topics = [];  // initialize empty topic set.
 
@@ -2094,7 +2099,18 @@ function get_token_data(text) {
     let curpos;
 
     let sentence_ids = [];
+    let paragraph_ids = [];
     let cur_sentence_id = 0;
+    let cur_paragraph_id = 0;
+
+    // get paragraphs:
+    console.log("PARAGRAPHS");
+    let paragraph_array = [];
+    for (const mtc of text.matchAll(/\n\n/dg)) {
+        console.log(mtc.index)
+        paragraph_array = paragraph_array.concat(mtc.index);
+    }
+    console.log(paragraph_array);
 
     // Assign each token its beginning index:
     for (let i = 0; i < text_tokens.length; i++) {
@@ -2139,9 +2155,15 @@ function get_token_data(text) {
             cur_sentence_id++
         }  // increment the id when a punctuation token is found
 
+        // Assign paragraph ID:
+        if (curpos > paragraph_array[cur_paragraph_id]) {
+            cur_paragraph_id++
+        }  // increment the id when a punctuation token is found
+        paragraph_ids = paragraph_ids.concat(cur_paragraph_id);
+
     }
 
-    return new TokenData(text_tokens, tpos_start, tpos_end, sentence_ids);
+    return new TokenData(text_tokens, tpos_start, tpos_end, sentence_ids, paragraph_ids);
 }
 
 
@@ -2461,6 +2483,13 @@ function investigate_context(token_data, index_arr, keyset) {
     }
     // console.log(keyset);
 
+    // Get paragraph minimum and maximum:
+    // let par_minmax = [];
+    // console.log(par_minmax);
+    // for(const par of [...Array(token_data.par[token_data.nrow - 1] + 1).keys()]){
+    //     token_data.id.filter((tok, ix) => )
+    // }
+    const par_minmax = token_data.par_minmax;
 
     // For each number query:
     for (const token_ix of index_arr) {
@@ -2472,8 +2501,13 @@ function investigate_context(token_data, index_arr, keyset) {
         let testcounter = 0;  // testcounter to avoid infinite loops!
 
         // Define the absolute maximum:
-        const min_start = 0;
-        const max_end = token_data.nrow;  // could also be sentence end!
+        // const min_start = 0;
+        // const max_end = token_data.nrow;  // could also be sentence end!
+
+        // Limit search to paragraph:
+        const curpar = token_data.par[token_ix];  // get current paragraph.
+        const min_start = par_minmax[curpar][0];
+        const max_end = par_minmax[curpar][1];  // could also be sentence end!
 
         // Note: One could additionally implement a list of "locks":
         let lock_start = token_ix;  // 0;
@@ -2980,6 +3014,19 @@ function word_tokenizer(txt) {
     // Punctuation list: !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
     // return split.filter(x => !/(?<!\w)[.,/#!$%^&*;:{}=_`~()](?!\w)/g.test(x));
     return out.filter(x => x);
+}
+
+
+/**
+ * Splits a text into an array of paragraphs
+ * @return {Array}     An array of paragraphs
+ * @param txt {String} A text, in which paragraphs are delimited by \n\n.
+ */
+function paragraph_tokenizer(txt) {
+    const split = txt.split(/\n\n/g);
+
+    // Remove empty tokens:
+    return split.filter(x => x);
 }
 
 
