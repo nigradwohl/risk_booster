@@ -86,12 +86,12 @@ const info_data = {
             "konsistent angewendet werden, um Verwirrung zu vermeiden.</p>"   // string of main text for wiki.
     },
     "baseprob": {
-        "heading": "Basisirisiko (Basiswahrscheinlichkeit)",  // the heading.
+        "heading": "Basisirisiko",  // the heading.
         "subheading": "",  // placeholder for a potential subheading.
         "aliases": ["Basiswahrscheinlichkeit", "Prävalenz"],  // list of other names.
         "annotation": "",  // internal annotations; should be eventually ""
         "overview": [
-            "Risiko in einer <a href='#wiki-control'>Vergleichsgruppe</a> ohne Intervention (z.B. ohne Impfung oder Medikation, aber auch ohne ein riskantes Verhalten)",
+            "Absolutes Risiko in einer <a href='#wiki-control'>Vergleichsgruppe</a> ohne Intervention (z.B. ohne Impfung oder Medikation, aber auch ohne ein riskantes Verhalten)",
             "Dient als Vergleichsmaßstab für Interventionen, die die Wahrscheinlichkeit negativer Folgen, wie von Erkrankung oder Tod verringern sollen."],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": ["Die Wahrscheinlichkeit unter den Ungeimpften zu Erkranken liegt bei 2%",
             "In der Placebogruppe erkrankten 5 von 1000"],  // array of list items with examples.
@@ -111,7 +111,7 @@ const info_data = {
             "Eine Verdoppelung eines Risikos kann bedeuten, dass von 10,000 Personen anstelle von 2 Personen 4 Personen erkranken" +
             "(Veränderung von 0.02% auf 0.04%)" +
             "oder dass von 10,000 Personen anstelle von 200 Personen 400 Personen erkranken (Veränderung von 2% auf 4%)" +
-            "Daher muss immer (auch) die [LINK]<a>absolute Reduktion</a> kommuniziert werden (mindestens als absolute Prozentzahlen in den " +
+            "Daher muss immer (auch) die <a href='#wiki-arr'>absolute Reduktion</a> kommuniziert werden (mindestens als absolute Prozentzahlen in den " +
             "Gruppen, die verglichen werden)." +
             "</p>" +
             "<p>Es kann sinnvoll sein, Situationen für niedriges und hohes Basisrisiko darzustellen." +
@@ -321,21 +321,22 @@ const info_data = {
         ],
         "maintext":
             "<h4 id='wiki-relrisk'>Absolutes Risiko</h4>" +
-            "Absolute Risiken sollten möglichst immer berichtet werden, da [LEITLINIE?]." +
-            "<p>Ein Bei einer Erkrankung, die 1 Person unter 10.000 betrifft, " +
-            "" +
-            "bedeutet ein solcher Anstieg aber nur, dass unter denjenigen mit dem Risikofaktor " +
-            "(z.B., mit einer bestimmten Ernährungsweise) anstelle von einer Person (0.01%), 5 Personen in 10.000 (0.05%)," +
-            "Ein solcher Anstieg korrespondiert zu einem relativen Risikoanstieg um das 5-fache." +
+            "Absolute Risiken sollten möglichst immer berichtet werden, da sie realistischere Risikoeinschätzungen ermöglichen." +
+            "<p>Absolute Risiken meinen die Wahrscheinlichkeit in einer Gruppe (mit oder ohne Exposition gegenüber einem Risikofaktor oder einer Itervention) " +
+            "Bei einer Erkrankung, die durch Ernährung wahrscheinlicher wird könnte unter denjeningen ohne das problematische Ernährungsverhalten" +
+            "1 Person unter 10.000 erkranken (absolutes Risiko in der <a href='#wiki-contr'>Vergleichsgruppe</a>)" +
+            "während unter denjeningen mit dem problematischen Ernährungsverhalten 5 Personen in 10.000 (0,05%) erkranken " +
+            "(absolutes Risiko in der <a href='#wiki-treat'>Untersuchungsgruppe</a>)." +
             "</p>" +
             "" +
             "<h4 id='wiki-arr'>Absolute Risioveränderung</h4>" +
-            "<p>Absolute Risikoveränderungen bienten eine Möglichkeit weitgehend unabhängig von der Basiswahrscheinlichkeit " +
-            "den Effekt von Risikofaktoren oder Interventionen zu beurteilen." +
-            "</p>" +
-            "<p>" +
-            "Eine absoluten Risikoreduktion um 0.9% (von 1% auf 0.1%) entspricht zum Beispiel einer " +
-            "<a href='#wiki-rrr'>relativen Risikoreduktion</a> von 90%. "
+            "<p>Die absolute Risikoveränderung wird als die Differenz zwischen den absoluten Risiken gebildet. " +
+            "Im obigen Beispiel wäre das eine Veränderung von 4 erkrankten Personen in 10.000 (oder 0,04%). " +
+            "Ein solcher Anstieg entspricht hier einem relativen Risikoanstieg um das 5-fache, der recht groß wirkt. " +
+            "Wobei in Anbtracht der absoluten Veränderung von 0,04% nicht klar ist, ob es tatsächich ein großer Effekt ist" +
+            "(dies hängt schlussendlich von der Schwere der Erkrankung ab -- ist dies binnen kurzer Zeit tödlich, kann eine " +
+            "solche Reduktion bereits substantiell sein)." +
+            "</p>"
     },
     "reference": {
         "heading": "Bezugsgröße",  // the heading.
