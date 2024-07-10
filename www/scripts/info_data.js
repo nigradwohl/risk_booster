@@ -112,21 +112,32 @@ const info_data = {
         "subheading": "",  // placeholder for a potential subheading.
         "aliases": [""],  // list of other names.
         "annotation": "",  // internal annotations; should be eventually ""
-        "overview": ["Wenn es sich nicht um die Gesamtzahl handelt, sollte klar werden auf welche Gesamtzahl sich die Häufigkeit bezieht (z.B., 100 Erkrankte von wie vielen?)"],  // array of list items overview of most important points, displayed in wiki and text checker.
+        "overview": ["Häufigkeiten sind natürliche Zahlen, die die Anzahl von Personen, Ereignissen (z.B. Krankhietsfällen) oder sonstigen Dingen oder Dingen beschreiben.",
+            "Wenn es sich nicht um die eine Gesamtzahl handelt, sollte klar angegeben werden auf welche Gesamtzahl sich die Häufigkeit bezieht (z.B., 100 Erkrankte von wie vielen Personen insgesamt?)"
+     ],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": ["100 Personen", "10.000 Studienteilnehmende", "3456 Todesfälle", "12 Geimpfte", "21 Äpfel"],  // array of list items with examples.
         "popup": ["<ul>" +
-        "<li>Wenn es sich nicht um die Gesamtzahl in einer Gruppe handelt, achten Sie darauf diese Gesamtzahl immer (z.B., Anzahl der Geimpften) anzugeben.</li>" +
-        "<li>Transparenter für die Kommunkation von Risiken sind <a href=\"risk_wiki.html#wiki-rel\">natürliche Häufigkeiten</a> (z.B., 15 aus 1000).</li>" +
+        "<li>Wenn es sich nicht um die Gesamtzahl in einer Gruppe handelt, achten Sie darauf diese Gesamtzahl immer anzugeben (z.B., Anzahl der Geimpften).</li>" +
+        "<li>Transparenter für die Kommunkation von Risiken sind <a href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> mit einer konstanten Referenz (z.B., 15 aus 1000).</li>" +
         "</ul>"],
-        "maintext": "<p>Häufigkeiten sind natürliche Zahlen, die die Anzahl von Personen oder Dingen beschreiben.</p>" +
-            "<p>Im Kontext medizinischer Berichterstattung handelt es sich häufig um die Anzahl von Erkrankungsfällen oder " +
-            "die Anzahl von Personen mit Nebenwirkungen in einer Studie.</p>" +
-            "<p>Auch die Gesamtzahl an untersuchten Personen (in einer Studie) sind eine Häufigkeit.</p>" +
-            "<p>Aus Häufigkeiten in Gruppen lassen sich Risiken ableiten: der Anteil der Erkrankten mit Impfung und der Anteil der Erkrankten ohne Impfung " +
-            "bilden die Risiken in den jeweiligen Gruppen ab. " +
+        "maintext": "<p>Im Kontext medizinischer Berichterstattung werden Häufigkeiten oft verwendet um die Anzahl von " +
+            "Erkrankungs- oder Todesfällen oder die Anzahl von Personen mit Nebenwirkungen in einer Studie darzustellen.</p>" +
+            "<p>Aus Häufigkeiten in Gruppen lassen sich Risiken ableiten: " +
+            "der Anteil der Erkrankten mit Impfung und der Anteil der Erkrankten ohne Impfung bilden die Risiken " +
+            "(d.h. Erkrankungswahrscheinlichkeiten) in den jeweiligen Gruppen ab. " +
             "Gleichermaßen bildet der Anteil derer mit starken Symptomen in einer Gruppe mit Medikamenten und der " +
-            "Anteil in einer Placebogruppe die Risiken für Symptome unter Erkrankten ab.</p>"   // array of paragraphs as main text for wiki.
-    },
+            "Anteil in einer Placebogruppe die Risiken für Symptome in den beiden Gruppen ab.</p>" +
+            "<p>Wichtig für eine transparente Risikokommunikation ist, dass Fälle von Erkrankungen oder Todesfällen nicht " +
+            "für sich alleine stehen sollten. Alleine sind Fallzahlen nicht aussagekräftig, da dieselbe hohe Fallzahl " +
+            "in einer großen Gruppe ein geringeres Risiko ausdrückt, als in einer kleineren Gruppe. " +
+            "Verursacht beispielsweise eine Krankheit 1000 Todesfälle innerhalb eines Jahres, stellt das bezogen auf " +
+            "die deutsche Gesamtbevölkerung von rund 80 Millionen ein eher kleines Risiko dar (etwas mehr als 1 Tod pro 100.000). " +
+            "Dieselbe Anzahl von Todesfällen in Wanne-Eickel (mit etwa 330.000 Personen), " +
+            "legt ein erheblich größeres Risiko nahe (303 in 100.000)." +
+            "<p>Da Fallzahlen für sich alleine nicht aussagekräftig sind, sollte immer die Größe der zugrundeliegenden " +
+            "Gruppen berichtet werden. Eine gute Alternative ist das Berichten von Risiken als " +
+            "<a href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> mit einheitlicher Bezugsgröße.</p>"
+        },
     "sample_size": {
         "heading": "Stichprobengröße",  // the heading.
         "subheading": "",  // placeholder for a potential subheading.
