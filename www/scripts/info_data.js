@@ -39,13 +39,51 @@ const info_data = {
         "aliases": [""],  // list of other names.
         "annotation": "",  // internal annotations; should be eventually ""
         "overview": [
-            "Die meisten Medikamente und Impfungen haben nicht nur einen Nutzen, sondern können auch das Risiko für negative Folgen (Nebenwirkungen) erhöhen.",
-            "Bei allen Interventionen müssen sowohl Nutzen als auch Schaden thematisiert werden."
+            "Die meisten Medikamente und Impfungen haben nicht nur einen Nutzen, indem sie z.B. den Gesundheitszustand " +
+            "verbessern, Symptome abmildern, Todesfälle verhindern oder als Impfung Erkrankungen, sondern können auch " +
+            "das Risiko für Schadenwirkungen erhöhen (z.B., Nebenwirkungen, wie Fieber oder andere Erkrankungen).",
+            "Bei allen Interventionen und Behandlungen müssen sowohl die Risiken (Wahrscheinlichkeiten) für Nutzen als " +
+            "auch Schaden thematisiert werden, damit Lesende eine informierte Entscheidung darüber treffen können, " +
+            "ob die Wirksamkeit einer Intervention groß genug ist, um die möglichen Nebenwirkungen zu rechtfertigen.",
+            "Die Risiken für Nutzen und Schaden sollten dabei mit Zahleninformation belegt werden und jeweils mit der " +
+            "gleichen Bezugsgröße dargestellt werden (z.B. x aus 1000)"
         ],  // array of list items overview of most important points, displayed in wiki and text checker.
-        "examples": ["Während in der Placebogruppe etwa 5 aus 1000 verstarben, verstarben in der Behandlungsgruppe nur etwa 2 aus 1000. " +
-        "Nebenwirkungen, wie Kopfschmerz oder Schwindel traten in der Placebogruppe bei 1% auf, in der Behandlungsgruppe waren es 2%."],  // array of list items with examples.
-        "popup": [],
-        "maintext": ""   // string of main text for wiki.
+        "examples": [
+            "Während in der Placebogruppe etwa 5 aus 1000 verstarben, verstarben in der Behandlungsgruppe nur etwa 2 aus 1000. Nebenwirkungen, wie Kopfschmerz oder Schwindel traten in der Placebogruppe bei 1% auf, in der Behandlungsgruppe waren es 2%.",
+            "Das Medikament verbessert den Gesundheitszustand. Mit dem Medikament berichteten 60 von 100 Personen ein erhöhtes Wohlbefinden. Unter Personen, die ein Placebo erhielten, berichteten nur 20 von 100 ein erhöhtes Wohlbefinden. " +
+            "Nebenwirkungen waren leicht erhöhter Blutdruck bei 2 von 100 Personen mit dem Medikament, verglichen mit einer Person mit 1 von 100 Personen in der Placebogruppe."],  // array of list items with examples.
+        "popup": ["TODO!"],
+        "maintext": "<p>Der Nutzen einer Maßnahme (z.B. einer Behandlung oder einer Verhaltensänderung) kann in " +
+            "positiven Auswirkungen oder in der Vermeidung negativer Auswirkungen bestehen. So kann ein Medikament die " +
+            "Lebenserwartung erkrankter Personen verlängern (positiv) oder eine Impfung kann Erkrankung verhindern " +
+            "(ein negatives Ergebnis vermeiden).</p>" +
+            "<p>Analog kann der Schaden einer Maßnahme in Nebenwirkungen (z.B. einem erhöhten Risiko für andere Erkrankungen) " +
+            "oder anderen Einschränkungen in der gesundheitsbezogenen Lebensqualität bestehen. Mögliche Ergebnisse sind " +
+            "also Erkrankungen (Morbidität), Todesfälle (Mortalität), oder auch Veränderungen in der gesundheitsbezogenen " +
+            "Lebensqualität oder Lebensdauer.</p>" +
+            "<p>Um informierte Entscheidungen zu ermöglichen, müssen unbedingt immer sowohl der Nutzen einer Maßnahme " +
+            "und der Schaden dargestellt werden. Sprich, es sollte zum einen dargelegt werden, wie sich das Risiko für " +
+            "negative Folgen verringert oder die Wahrscheinlichkeit für positive Ergebnisse erhöht. Zum anderen muss " +
+            "auch dargelegt werden, ob sich durch die Intervention das Risiko für negative Folgen erhöht. Bekommen " +
+            "behandelte Personen zum Beispiel wahrscheinlicher Fieber oder erleiden bestimmte Entzündungen?</p>" +
+            "<p>Die Leitllinie für evidenzbasierte Gesundheitsmedizin legt dabei nahe, " +
+            "dass Risiken, Nutzen und Schaden nicht nur verbal beschrieben werden sollten " +
+            "(z.B., das Medikament ist wirksam und sicher, Nebenwirkungen sind unwahrscheinlich). " +
+            "Dies liegt daran, dass verbale Darstellungen häufig zu Fehleinschätzungen von Risiken führen. " +
+            "Eine numerische Darstellung sorgt hingegen für ein besseres Verständnis und ermöglicht eine realistischere " +
+            "Risikoabschätzung, wodurch die Intention, eine Maßnahme durchzuführen, höher ist. " +
+            "Studien zur Akzeptanz zeigen zudem eine klare Präferenz für numerische Darstellungen, da diese als glaubwürdiger " +
+            "wahrgenommen werden. Zudem zeigt sich, dass numerische Darstellungen attraktiver sind, was zu einer höheren " +
+            "Zufriedenheit führt (vgl. Leitlininien für evidenzbasierte Gesundheitskommunikation) [LINK] </p>" +
+            "<p>Bei der numerischen Darstellung ist dringend zu beachten, dass Nutzen und Schaden mit der gleichen " +
+            "Bezugsgröße dargestellt werden sollten. Einheitliche Bezugsgrößen " +
+            "(z.B. x von 1000) erleichtern das Verständnis im Vergleich zu wechselnden Bezugsgrößen " +
+            "(z.B. x von 100; x von 1000; x von 10000). Die Verwendung unterschiedlicher Bezugsgrößen kann die " +
+            "Wahrnehmung beeinflussen und zu einer Über- bzw. Unterschätzung des Nutzens oder Risikos führen. " +
+            "Das zeigt sich besonders deutlich beim so genannten \"<a href='wiki-mismatch'>mismatched Framing[LINK!]</a>\"." +
+            "Abweichungen von der einheitlichen Bezugsgröße sollten gut begründet und transpararent dargelegt werden. " +
+            "Eine Darstellung in <a href='wiki-prozent'>Prozent</a> ist ebenfalls möglich, sollte jedoch klar und " +
+            "konsistent angewendet werden, um Verwirrung zu vermeiden.</p>"   // string of main text for wiki.
     },
     "baseprob": {
         "heading": "Basisirisiko (Basiswahrscheinlichkeit)",  // the heading.
@@ -299,8 +337,8 @@ const info_data = {
         "annotation": "",  // internal annotations; should be eventually ""
         "overview": [
             "Kausalität bezeichnet die Beziehung zwischen zwei Ereignissen, bei der das eine Ereignis (die Ursache) direkt das andere Ereignis (die Wirkung) hervorruft.",
-        "Aussagen über Ursache und Wirkung sollten nur gemacht werden, wenn alternative Erklärungen (z.B. das Verstreichen von Zeit) zuverlässig ausgeschlossen werden können; " +
-        "dies ist in der Regel nur durch kontrollierte <a href='risk_wiki.html#wiki-rct'>Experimente</a> möglich"
+            "Aussagen über Ursache und Wirkung können nur gemacht werden, wenn alternative Erklärungen (z.B. das Verstreichen von Zeit) zuverlässig ausgeschlossen werden können; " +
+            "dies ist in der Regel nur durch kontrollierte <a href='#wiki-expe'>Experimente</a> möglich"
         ],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": ["Die Impfung verringert das Risiko einer Erkrankung um 50%.",
             "Rauchen verursacht Lungenkrebs"],  // array of list items with examples.
@@ -332,17 +370,24 @@ const info_data = {
             "zur Verfügung stellt und parallel diese Personen und Personen ohne das Programm beobachtet.</p>"
         // string of main text for wiki.
     },
-    "rct": {
-        "heading": "Randomized Controlled Trial",  // the heading.
+    "expe": {
+        "heading": "Experiment",  // the heading.
         "subheading": "",  // placeholder for a potential subheading.
         "aliases": [],  // list of other names.
         "annotation": "",  // internal annotations; should be eventually ""
-        "overview": ["Personen werden zufällig einer Behandlung oder einer Vergleichsbehandlung (häufig mit einem <a href='#wiki-placebo'>Placebo</a>) " +
-        "zugewiesen",
-            "Durch die zufällige Zuweisung werden systematische Unterschiede zwischen den Gruppen vermieden, so dass man Kausalaussagen machen kann."],  // array of list items overview of most important points, displayed in wiki and text checker.
+        "overview": [
+            "Im Experiment weren durch zufällige Zuweisung auf eine Experimental- und eine Kontrollgruppe " +
+            "systematische Unterschiede zwischen den Gruppen ausgeschlossen, " +
+            "so dass (anders als bei der Beobachtung von Gruppen oder Zeitpunkten) " +
+            "<a href='#wiki-causal'>Kausalaussagen</a> möglich sind.",
+            "In der Medizin ist en typisches Experiment der \"Randomized Controlled Trial\" (RCT): " +
+            "Personen werden zufällig einer Behandlung oder einer Vergleichsbehandlung " +
+            "(häufig mit einem <a href='#wiki-placebo'>Placebo</a>) zugewiesen"
+        ],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": [],  // array of list items with examples.
-        "popup": [],
-        "maintext": ""   // string of main text for wiki.
+        "popup": ["TODO!"],
+        "maintext": "" +
+            "<h3 id='wiki-rct'>Randomized Controlled Trial (RCT)</h3>"   // string of main text for wiki.
     },
     "treat": {
         "heading": "Behandlungsgruppe",  // the heading.
@@ -376,7 +421,7 @@ const info_data = {
             "Gruppe, in der eine Behandlung oder ein Einfluss nicht vorliegt, um den Effekt des Einflusses zu bestimmen."],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": ["Placebogruppe bei Impf- und medikamentenstudien"],  // array of list items with examples.
         "popup": [],
-        "maintext": "<p>Erfolgt die Zuteilung in <a href=\"#wiki-treat\">Behandlungs-</a> und Kontrollgruppe zufällig, spricht man von einem Experiment.</p>"   // string of main text for wiki.
+        "maintext": "<p>Erfolgt die Zuteilung in <a href=\"#wiki-treat\">Behandlungs-</a> und Kontrollgruppe zufällig, spricht man von einem <a href='#wiki-expe'>Experiment</a>.</p>"   // string of main text for wiki.
     },
     "tcomp": {
         "heading": "Vergleichszeitpunkt",
