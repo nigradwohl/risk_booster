@@ -193,44 +193,58 @@ const info_data = {
             "<emph>falsche</emph> Ergebnisse, aber die Ergebnisse sind typischerweise weniger verlässlich.</p>"   // array of paragraphs as main text for wiki.
     },
     "nh": {
-        "heading": "Natürliche Häufigkeiten (auch: relative Häufigkeiten)",
-        "subheading": "",  // placeholder for a potential subheading.
+        "heading": "Natürliche Häufigkeiten",
+        "subheading": "(auch: relative Häufigkeiten)",  // placeholder for a potential subheading.
         "aliases": [""],  // list of other names.
         "annotation": "",
-        "overview": ["Häufigkeiten, die Anteile von Gruppen sind",
-            "Bezugsgröße sollte konstant sein.",
-            "Absolute Ereigniswahrscheinlichkeiten sind relativen Angaben vorzuziehen"],
-        "examples": ["440 von 1000 Personen ohne Auffrischungsimpfung gegen COVID-19 erkranken, während unter den " +
-        "Geimpften nur 270 von 1000 erkranken.<br><a href=\"https://www.hardingcenter.de/de/impfungen/mrna-schutzimpfung-gegen-covid-19-fuer-erwachsene-unter-60-jahren\">https://www.hardingcenter.de/de/impfungen/mrna-schutzimpfung-gegen-covid-19-fuer-erwachsene-unter-60-jahren</a>"],
-        "popup": ["<p><a href=\"risk_wiki.html#wiki-nh\">Natürliche Häufigkeiten</a> sind sehr transparent, um Risiken auszudrücken. " +
-        "Achten Sie aber darauf, dass die Referenz (d.h., 1 in 1000 oder 1 in 10000) jeweils für alle Risiken konstant ist.</p>"],
-        "maintext": "<p>Im Unterschied zu <a href='#wiki-freq'>Häufigkeiten</a> haben <a href=\"#wiki-nh\">natürliche Häufigkeiten</a> eine Bezugsgruppe(?).</p>" +
-            "<p>Die größe dieser Bezugsgruppe sollte unbedingt für alle zu vergleichenden Angaben konstant sein." +
-            "Das heißt, dass \"1 aus 100 erkranken in Gruppe A, während in Gruppe B 10 aus 10000 erkranken\" vermieden werden sollten.</p>" +
-            "<p>Das hat unter anderem den Grund, dass die Vergleichbarkeit eingeschränkt ist. " +
-            "Zudem neigen Personen dazu, den Nenner zu ignorieren, so dass 10 aus 10000 möglicherweise " +
-            "als größer wahrgenommen wird als 1 aus 100. " +
-            "Zuletzt berücksichtigen Personen den Nenner in ihrer Wahrnehmung, so dass auch 1 aus 1000 fälschlicherweise als größer" +
-            "als 1 aus 100 wahrgenommen werden kann.</p>" +
-            "<p>Daraus folgt auch, dass keine grundsätzliche Überlegenheit gegenüber " +
-            "<a href='risk_wiki.html#wiki-prozent'>Prozentzahlen</a> abgeleitet werden kann. " +
-            "Lediglich bei Prozentangaben kleiner als ein Prozent (z.B., 0,2 %) sind natürliche Häufigkeiten zu bevorzugen, " +
-            "da so Kommazahlen vermieden werden können. " +
-            "Dennoch kann eine generelle Verwendung natürlicher Häufigkeiten als Daumenregel verwendet werden, " +
-            "da sie Prozentzahlen im allgemeinen zumindest nicht unterlegen sind [REF].</p>"
+        "overview": [
+            "Drücken Risiken als anteilige Häufigkeiten, aus (z.B. x von 100)",
+            "Die Bezugsgröße sollte konstant sein (also für alle zu vergleichenden Risiken x von 100 oder x von 1000, x von 10.000 etc.)",
+            "Besonders bei Wahrscheinlichkeiten kleiner als 1 sollten natürliche Häufigkeiten verwendet werden"
+],
+        "examples": [
+            "440 von 1000 Personen ohne Auffrischungsimpfung gegen COVID-19 erkranken, während unter den " +
+            "Geimpften nur 270 von 1000 erkranken.<br>" +
+            "<a href=\"https://www.hardingcenter.de/de/impfungen/mrna-schutzimpfung-gegen-covid-19-fuer-erwachsene-unter-60-jahren\">https://www.hardingcenter.de/de/impfungen/mrna-schutzimpfung-gegen-covid-19-fuer-erwachsene-unter-60-jahren</a>"],
+        "popup": [
+            "<p><a href=\"risk_wiki.html#wiki-nh\">Natürliche Häufigkeiten</a> sind sehr transparent, um Risiken auszudrücken. " +
+            "Achten Sie aber darauf, dass die Referenz (d.h., 1 in 1000 oder 1 in 10000) jeweils für alle Risiken konstant ist.</p>"],
+        "maintext": "<p>Natürliche Häufigkeiten sind eine transparente Art, um Risiken darzustellen, da sich " +
+            "Individuen die zugrundeliegenden Gruppen gut vorstellen können. Während Lesende bei anderen Zahlenformaten " +
+            "möglicherweise eine Perspektive auf den Einzelfall annehmen, bleibt bei natürlichen Häufigkeiten eher klar, " +
+            "dass sich die Aussage über das Risiko auf über Personen hinweg bezieht. So wird eher deutlich, dass es " +
+            "etwa auch unter Geimpften Erkrankungen geben kann. Eine Verwechslung mit anteiliger Zeit " +
+            "(z.B., dass ein Risiko von 70% bedeutet, dass eine Krankheit 70% der Zeit besteht) wird dadurch ebenfalls " +
+            "unwahrscheinlicher.</p>" +
+            "<p>Nutzen und Schaden sollten mit der gleichen Bezugsgröße dargestellt werden. Einheitliche Bezugsgrößen " +
+            "(z.B. x von 1000) erleichtern das Verständnis im Vergleich zu wechselnden Bezugsgrößen " +
+            "(z.B. x von 100; x von 1000; x von 10.000). Die Verwendung unterschiedlicher Bezugsgrößen kann die " +
+            "Wahrnehmung beeinflussen und zu einer Über- bzw. Unterschätzung des Nutzens oder Risikos führen. </p>" +
+            "<p>Abweichungen von der einheitlichen Bezugsgröße sollten gut begründet und transparent dargelegt werden. " +
+            "Eine Darstellung in <a href='#wiki-prozent'>Prozent</a> ist ebenfalls möglich, sollte jedoch klar und " +
+            "konsistent angewendet werden, " +
+            "um Verwirrung zu vermeiden. " +
+            "Dabei sollten Prozentzahlen kleiner als eins durch den Einsatz natürlicher Häufigkeiten vermieden werden.</p>"
     },
     "rel": {
-        "heading": "Relative Angaben",  // the heading.
+        "heading": "Relative Risiken",  // the heading.
         "subheading": "",  // placeholder for a potential subheading.
         "aliases": [""],  // list of other names.
         "annotation": "",  // internal annotations; should be eventually ""
-        "overview": ["<i class=\"fa fa-exclamation-triangle annote-text-icon\"></i>Vorsicht vor relativen Angaben! Relativ zu was?",
-            "Leicht missverständlich, führen häufig zur Überschätzung uns sind daher nicht transparent",
-            // "Relative Angaben sollten daher niemals ohne absolute Wahrscheinlichkeiten verwendet werden.",
-            "Immer mindestens das Basisrisiko (die Basiswahrscheinlichkeit) in der <a>[LINK]Kontrollgruppe</a> berichten."
-// "Falls nur relative Angaben verwendet werden können, müssen sie gleichermaßen für Nutzen und Schaden der Impfung, des Medikamentes oder des Verhaltens verwendet werden."
+        "overview": [
+            "Können relative Vergleiche von Risiken wie Vielfache (3-mal mehr, halb so groß), aber auch relative Reduktionen (90% weniger) sein",
+            "sind leicht missverständlich, führen häufig zur Überschätzung und sind daher nicht transparent",
+            "sollten niemals alleine ohne absolute Risiken oder absolute Risikoveränderungen angegeben werden",
+            "Es sollte immer mindestens das Basisrisiko (die Basiswahrscheinlichkeit)[LINK] in der [LINK]Vergleichsgruppe berichtet werden"
         ],  // array of list items overview of most important points, displayed in wiki and text checker.
-        "examples": ["20-mal so viel", "Impfwirksamkeit[LINK] von 90%"],  // array of list items with examples.
+        "examples": [
+            "Das relative Risiko, dass häufig Rauchende an Lungenkrebs erkranken ist 20-mal so groß, wie unter Nichtrauchenden",
+            "Bei Personen über 60 Jahren ohne Corona Infektion ist das Risiko innerhalb eines Jahres zu versterben halb so groß " +
+            "wie bei Gleichaltrigen, ohne Infektion",
+            // "[https://www.aerzteblatt.de/nachrichten/120400/Berechnung-Sterberisiko-durch-Corona-bei-Aelteren-mehr-als-verdoppelt]\n" +
+            "Der Impfstoff hat eine Wirksamkeit[LINK] von 90% (typischerweise eine relative Risikoreduktion, s. Text)",
+            "Bewegung reduziert die Wahrscheinlichkeit von Herz-Kreislauferkrankungen um x% (nicht zwingend relativ)"
+        ],  // array of list items with examples.
         "popup": [
             "<p><i class=\"fa fa-exclamation-triangle annote-text-icon\"></i>&nbsp;Relative Angaben sind oft intransparent.</p>" +
             "<ul>" +
@@ -238,36 +252,90 @@ const info_data = {
             "<li>Achten Sie darauf, dass die <a href='risk_wiki.html#wiki-baseprob'>Basiswahrscheinlichkeit (bzw. das Basisrisiko)</a> angegeben wurde, auf die sich die Veränderung bezieht.</li>" +
             "</ul>"
         ],
-        "maintext": "<h4>Verwendung</h4>" +
-            "<p></p>" +
-            "<h4>Relative Angaben können missverständlich sein.</h4>" +
-            "<p>Ein relativer Risikoanstieg um das 5-fache klingt viel. Bei einer Erkrankung die nur 1 Person unter 10.000 betrifft, " +
-            "bedeutet ein solcher Anstieg aber nur dass unter denjenigen mit dem Risikofaktor (z.B., mit einer bestimmten Ernährungsweise)" +
-            "anstelle von einer Person (0.01%), 5 Personen in 10.000 (0.05%), erkranken.</p>" +
-            "<p>Ähnlich verhält es sich mit der <span class='rrr'>relativen Risikoreduktion</span>, wie sie häufig zur angaben von Impfwirksamkeiten verwendet wird." +
-            "Eine Impfwirksamkeit von 90% etwa bedeutet dass unter den Geimpften 90% weniger Personen erkranken." +
-            "Erkranken in der nicht geimpften Gruppe zum Beispiel 10 aus 1000, so erkrankt in der geimpften Gruppe" +
-            "1 aus 1000." +
+        "maintext":
+            "<h4 id='wiki-relrisk'>Relatives Risiko</h4>" +
+            "<p>Ein relativer Risikoanstieg um das 5-fache klingt erheblich. Bei einer Erkrankung die nur 1 Person " +
+            "unter 10.000 betrifft, bedeutet ein solcher Anstieg aber nur, dass unter denjenigen mit dem Risikofaktor " +
+            "(z.B., mit einer bestimmten Ernährungsweise) anstelle von einer Person (0.01%), 5 Personen in 10.000 (0.05%), " +
+            "erkranken. </p>" +
+            "" +
+            "<h4 id='wiki-rrr'>Relative Risikoreduktion</h4>" +
+            "<p>Ähnlich verhält es sich mit der relativen Risikoreduktion, wie sie häufig zur Angabe von Impfwirksamkeiten verwendet wird. " +
+            "Dabei handelt es sich um eine relative Risikoreduktion, die eine Antwort auf die Frage liefert, um wie viel Prozent das " +
+            "Risiko geriner ist. Eine Impfwirksamkeit von 90% bedeutet etwa, dass unter den Geimpften 90% weniger Personen erkranken. " +
+            "Erkranken in der nicht geimpften Gruppe zum Beispiel 10 aus 1000, so erkrankt in der geimpften Gruppe 1 aus 1000." +
             "</p>" +
             "<p>" +
-            "Das entspricht einer absoluten Risikoreduktion um 0.9% (von 1% auf 0.1%)." +
-            "[CHECK!]" +
-            "Dieser Effekt wirkt erheblich kleiner als die relativen 90%." +
-            "<span id=\"wiki-error-rel\">Da relative Angaben oft zu einer Fehleinschätzung führen</span>, sollten sie" +
-            "vermieden werden." +
-            "Wenn sie verwendet werden, sollten sie gemeinsam mit <a>absoluten Risikoangaben[TODO]</a> verwendet" +
-            "werden, um so eine transparente Einschätzung des Risikos zu gewährleisten." +
+            "Das entspricht einer absoluten Risikoreduktion um 0.9% (von 1% auf 0.1%). " +
+            "Dieser Effekt wirkt erheblich kleiner als die relativen 90%. " +
+            "<span id=\"wiki-error-rel\">Da relative Angaben oft zu einer Fehleinschätzung führen</span>" +
+            "sollten sie gemeinsam mit <a href='wiki-arr'>absoluten Risikoangaben</a>[TODO] verwendet werden, um eine transparente " +
+            "Einschätzung des Risikos zu gewährleisten." +
             "</p>" +
-            "<h4>Verwendung derselben Zahlentypen für Nutzen und Schaden</h4>" +
-            "[MAKE REFERENCEABLE?]" +
+            "<p>Um relative Risiken beurteilen zu können, sind also absolute Risiken erforderlich. Nehmen wir als weiteres Beispiel " +
+            "den Zusammenhang zwischen verarbeitetem Fleisch und Darmkrebs: Angenommen, im Laufe des Lebens an Darmkrebs zu erkranken, " +
+            "beträgt 5,6% (das bedeutet 56 Personen von 1000 erkranken). Was bedeutet in diesem Zusammenhang ein 18%iger Anstieg des " +
+            "Darmkrebsrisikos? Wenn das relative Risiko um 18% steigt, bedeutet dies, dass das Basisrisiko um 18% erhöht wird. " +
+            "Das entspricht einem absoluten Risikoanstieg[LINK] um 1% (0,056 * 0,18 * 100 = 1,008%).  Somit würde das absolute " +
+            "Risiko von 56 von 1000 Personen auf  66 von 1000 (oder 6,6%) ansteigen.</p>" +
+            "" +
+            "<h4 id='wiki-mismatch'>Verwendung derselben Zahlentypen für Nutzen und Schaden</h4>" +
             "<p>" +
-            "Falls nur relative Angaben verwendet werden, sollten sie gleichermaßen für Nutzen und Schaden" +
-            "des Medikamentes oder des Verhaltens verwendet werden." +
-            "<br>" +
-            "Wenn der Nutzen relativ ausgedrückt wird, wird er häufig überschätzt (<a href=\"#wiki-error-rel\">s." +
-            "oben</a>)" +
-            "[BEISPIEL!]" +
+            "Wenn <a href='#wiki-eff_side'>Nutzen und Schaden</a> berichtet werden, sollten niemals relative Risiken für " +
+            "das eine und absolute Risiken für das andere verwendet werden. Wenn der Nutzen relativ ausgedrückt wird, " +
+            "wird dieser häufig überschätzt (siehe auch <a href='#wiki-base_risk'>Basisrisiko</a>), da relative " +
+            "Veränderungen meist größer sind. " +
+            "Dies führt dann zum so genannten \"mismatched framing\": Der Nutzen wird durch das relative " +
+            "Risiko überschätzt, während der Schaden durch die Angabe absoluter Risiken unterschätzt wird. " +
+            "Die Aussage \"eine Impfung bietet einen Impfschutz von 75%, bei 4% der Versuchspersonen traten Nebenwirkungen auf\"," +
+            "ist beispielsweise intransparent. Der Nutzen scheint sehr groß, während die Wahrscheinlichkeit von Nebenwirkungen " +
+            "sehr gering scheint, obwohl die Situation auch sein könnte, dass die Krankheit 4 von 100 Ungeimpften betrifft und " +
+            "1 von 100 Geimpften (also 3 von 100 weniger). Wenn unter den Ungeimpften keine Nebenwirkungen berichtet wurden, " +
+            "erleiden folglich mehr Personen Nebenwirkungen (4 von 100), als Personen vor der Erkrankung geschützt werden. " +
+            "Ohne das Risiko einer Erkrankung unter den Ungeimpften (oder auch unter den Geimpften) ist die Information also nahezu " +
+            "wertlos, um Nutzen und Schaden zu vergleichen und kann zu stark verzerrter Wahrnehmung führen. " +
+            "Daher sollte ein solches \"mismatched framing\" vermieden werden, indem für Schaden und Nutzen absolute Risiekn berichtet werden." +
             "</p>"
+    },
+    "abs": {
+        "heading": "Absolute Risiken",  // the heading.
+        "subheading": "",  // placeholder for a potential subheading.
+        "aliases": [""],  // list of other names.
+        "annotation": "",  // internal annotations; should be eventually ""
+        "overview": [
+            "Die absolute Wahrscheinlichkeit eines Ereignisses (z.B., Erkrankung, Genesung, Tod) in einer Gruppe",
+            "Ist relativen Angaben vorzuziehen und sollte immer für alle zu Vergleichenden Gruppen oder Zeitpunkte berichtet werden",
+            "Kann durch <a href='#wiki-prozent'>Prozentzahlen oder <a href='#wiki-nh'>natürliche Häufigkeiten</a> " +
+            "ausgedrückt werden"
+        ],  // array of list items overview of most important points, displayed in wiki and text checker.
+        "examples": [
+            "Das Risiko an Darmkrebs zu erkranken steigt durch Fleichskonsum um 1% von 5,6% auf 6,6%",
+            "Bewegung reduziert die Wahrscheinlichkeit von Herz-Kreislauferkrankungen um x% (nicht zwingend absolut)"
+        ],  // array of list items with examples.
+        "popup": [
+            "<p><i class=\"fa fa-exclamation-triangle annote-text-icon\"></i>&nbsp;Relative Angaben sind oft intransparent.</p>" +
+            "<ul>" +
+            // "<li>sie führen häufig zu einer <a href=\"risk_wiki.html#wiki-error-rel\">Überschätzung des Risikos</a></li>" +
+            "<li>Achten Sie darauf, dass die <a href='risk_wiki.html#wiki-baseprob'>Basiswahrscheinlichkeit (bzw. das Basisrisiko)</a> angegeben wurde, auf die sich die Veränderung bezieht.</li>" +
+            "</ul>"
+        ],
+        "maintext":
+            "<h4 id='wiki-relrisk'>Absolutes Risiko</h4>" +
+            "Absolute Risiken sollten möglichst immer berichtet werden, da [LEITLINIE?]." +
+            "<p>Ein Bei einer Erkrankung, die 1 Person unter 10.000 betrifft, " +
+            "" +
+            "bedeutet ein solcher Anstieg aber nur, dass unter denjenigen mit dem Risikofaktor " +
+            "(z.B., mit einer bestimmten Ernährungsweise) anstelle von einer Person (0.01%), 5 Personen in 10.000 (0.05%)," +
+            "Ein solcher Anstieg korrespondiert zu einem relativen Risikoanstieg um das 5-fache." +
+            "</p>" +
+            "" +
+            "<h4 id='wiki-arr'>Absolute Risioveränderung</h4>" +
+            "<p>Absolute Risikoveränderungen bienten eine Möglichkeit weitgehend unabhängig von der Basiswahrscheinlichkeit " +
+            "den Effekt von Risikofaktoren oder Interventionen zu beurteilen." +
+            "</p>" +
+            "<p>" +
+            "Eine absoluten Risikoreduktion um 0.9% (von 1% auf 0.1%) entspricht zum Beispiel einer " +
+            "<a href='#wiki-rrr'>relativen Risikoreduktion</a> von 90%. "
     },
     "reference": {
         "heading": "Bezugsgröße",  // the heading.
