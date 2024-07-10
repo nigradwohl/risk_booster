@@ -293,21 +293,43 @@ const info_data = {
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Non-numeric entries: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     "causal": {
-        "heading": "Aussagen über Wirkung und Ursache (Kausalität)",  // the heading.
+        "heading": "Ursache und Wirkung (Kausalität)",  // the heading.
         "subheading": "",  // placeholder for a potential subheading.
         "aliases": ["Kausalität"],  // list of other names.
         "annotation": "",  // internal annotations; should be eventually ""
-        "overview": [""],  // array of list items overview of most important points, displayed in wiki and text checker.
+        "overview": [
+            "Kausalität bezeichnet die Beziehung zwischen zwei Ereignissen, bei der das eine Ereignis (die Ursache) direkt das andere Ereignis (die Wirkung) hervorruft.",
+        "Aussagen über Ursache und Wirkung sollten nur gemacht werden, wenn alternative Erklärungen (z.B. das Verstreichen von Zeit) zuverlässig ausgeschlossen werden können; " +
+        "dies ist in der Regel nur durch kontrollierte <a href='risk_wiki.html#wiki-rct'>Experimente</a> möglich"
+        ],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": ["Die Impfung verringert das Risiko einer Erkrankung um 50%.",
             "Rauchen verursacht Lungenkrebs"],  // array of list items with examples.
         "popup": [],
-        "maintext": "<p>Veränderungen zwischen Zeitpunkten oder nicht experimentellen[MAKE ENTRY] Gruppen können zwar" +
-            "auf Ursachen Hinweisen, können aber auch durch andere Veränderungen über die Zeit oder andere systematische Unterschiede" +
-            "zwischen den Gruppen erklärt werden [GUTES BEISPIEL?]." +
-            "Daher sind solche Vergleiche nicht schlussgültig aussagekräftig, welche Ursache ettwas hat.</p>" +
-            "Nur ein Experiment (z.B., <a href='#wiki-rct'>randomized controlled trial (RCT)</a>) erlaubt kausale Schlüsse." +
-            "Dabei werden Personen zufällig auf die zu vergleichenden Gruppen aufgeteilt (z.B., Medikament und Placebo), so dass Unterschiede zwischen den Gruppen " +
-            "nicht systematisch sind und damit beobachtete Unterschiede auf die Intervention zurückzuführen sind."
+        "maintext": "<p>Aussagen über Ursache und Wirkung sind häufig nicht einfach zu treffen. " +
+            "Oft gibt es Alternativerklärungen dafür, dass auf eine Ursache kausal eine Wirkung folgt. " +
+            "Ist es beim Drücken eines Lichtschalters recht eindeutig, dass das Licht gewissermaßen eine Wirkung des Drückens ist, " +
+            "ist dies bei Medikamenten typischerweise deutlich komplexer. " +
+            "So muss zum Beispiel ausgeschlossen werden, dass die vermeintliche Heilung durch ein Medikament eigentlich " +
+            "durch einfaches Abwarten zustande gekommen ist.</p>" +
+            "<p>Nur <a href='risk_wiki.html#wiki-rct'>Experimente</a> (z.B., randomized controlled trial, RCT) " +
+            "erlauben es zuverlässig kausale Schlüsse zu ziehen. Dabei werden Personen zufällig auf die zu " +
+            "vergleichenden Gruppen aufgeteilt (z.B., Medikament und Placebo), " +
+            "so dass Unterschiede zwischen den Gruppen nicht systematisch sind und damit beobachtete " +
+            "Unterschiede auf die Intervention zurückgeführt werden können. " +
+            "So kann zum Beispiel auch ausgeschlossen werden, dass behandelte Personen auch einfach so genesen wären.</p>" +
+            "<p>Veränderungen zwischen Zeitpunkten oder nicht experimentellen (beobachteten) Gruppen " +
+            "können zwar auf Ursachen hinweisen, können aber auch durch andere Veränderungen über die Zeit oder " +
+            "andere systematische Unterschiede zwischen den Gruppen erklärt werden .</p>" +
+            "<p>Eine fiktive Studie, die den Zusammenhang zwischen Einführung eines neuen Fitnessprogramms und dem " +
+            "allgemeinen Gesundheitszustand der Bevölkerung untersucht zeigt, dass der Anteil gesunder Personen " +
+            "nach der Einführung des Fitnessprogrammes steigt. " +
+            "Dies könnte nun auf das Fitnessprogramm zurückgeführt werden. " +
+            "Es könnte jedoch auch durch andere Faktoren wie eine gleichzeitige Ernährungsinitiative, " +
+            "saisonale Veränderungen oder einen allgemeinen Trend hin zu gesünderem Lebensstil in der Bevölkerung erklärt werden. " +
+            "Daher sind solche Vergleiche nicht schlussgültig aussagekräftig darüber, welche Ursache etwas hat. " +
+            "Aus diesem Grunde sind experimentelle Untersuchungen unerlässlich. " +
+            "Im Beispiel könnte man dies erreichen, indem man das Fitnessprogramm einer zufälligen Stichprobe an Personen " +
+            "zur Verfügung stellt und parallel diese Personen und Personen ohne das Programm beobachtet.</p>"
         // string of main text for wiki.
     },
     "rct": {
