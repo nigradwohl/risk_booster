@@ -91,18 +91,20 @@ const info_data = {
         "aliases": ["Basiswahrscheinlichkeit", "Prävalenz"],  // list of other names.
         "annotation": "",  // internal annotations; should be eventually ""
         "overview": [
-            "Absolutes Risiko in einer <a href='#wiki-control'>Vergleichsgruppe</a> ohne Intervention (z.B. ohne Impfung oder Medikation, aber auch ohne ein riskantes Verhalten)",
-            "Dient als Vergleichsmaßstab für Interventionen, die die Wahrscheinlichkeit negativer Folgen, wie von Erkrankung oder Tod verringern sollen."],  // array of list items overview of most important points, displayed in wiki and text checker.
+            "<a href='#wiki-abs'>Absolutes Risiko</a> in einer <a href='#wiki-control'>Vergleichsgruppe</a> ohne Intervention (z.B. ohne Impfung oder Medikation, aber auch ohne ein riskantes Verhalten)",
+            "Dient als Vergleichsmaßstab für Interventionen, die die Wahrscheinlichkeit negativer Folgen, wie von Erkrankung oder Tod verringern oder positive Ergebnisse (z.B. Wohlbefinden) erhöhen sollen."],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": ["Die Wahrscheinlichkeit unter den Ungeimpften zu Erkranken liegt bei 2%",
-            "In der Placebogruppe erkrankten 5 von 1000"],  // array of list items with examples.
+            "In der Placebogruppe erkrankten 5 von 1000",
+            "Unter nicht rauchenden Männern beträgt das Risiko für Lungenkrebs etwa 2 in 1000",
+            "Unter Personen, die nicht regelmäßig Sport treiben, ist das Risiko von Herz-Kreislauferkrankungen bei x%"],  // array of list items with examples.
         "popup": [],
-        "maintext": "<p>Das Basisrisiko ist zentral, um die Wirksamkeit einer Intervention (Impfung, Medikament etc.) zu beurteilen " +
-            "oder um zu bestimmen, ob ein bestimmtes Verhalten schädlich ist." +  // string of main text for wiki.
-            "Es beschreibt die Wahrscheinlichkeit mit der ein Ereignis auftritt, wenn keine Behandlung stattgefunden hat " +
-            "(z.B., in der ungeimpften Allgemeinbevölkerung oder unter nichtrauchenden personen)." +
+        "maintext": "<p>Das Basisrisiko ist zentral, um die Wirksamkeit einer Intervention (Impfung, Medikament etc.) " +
+            "zu beurteilen oder um zu bestimmen, ob ein bestimmtes Verhalten schädlich ist. Es beschreibt die " +
+            "Wahrscheinlichkeit, mit der ein Ereignis auftritt, wenn keine Behandlung stattgefunden hat " +
+            "(z.B. in der ungeimpften Allgemeinbevölkerung oder unter nichtrauchenden Personen)." +
             " </p>" +
             "<p>" +
-            "Eine Impfung oder ein Medikament ist nur dann wirksam, wenn das Basisrisiko unter den Geimpften geringer ist. " +
+            "Eine Impfung oder ein Medikament sind nur dann wirksam, wenn das Basisrisiko unter den behandelten Personen geringer ist. " +
             "Gleichermaßen ist ein Verhalten nur dann schädlich, wenn die Wahrscheinlichkeit für negative Folgen wie Krankheit oder Tod " +
             "unter denjenigen, die das Verhalten zeigen größer ist." +
             "</p>" +
@@ -114,9 +116,10 @@ const info_data = {
             "Daher muss immer (auch) die <a href='#wiki-arr'>absolute Reduktion</a> kommuniziert werden (mindestens als absolute Prozentzahlen in den " +
             "Gruppen, die verglichen werden)." +
             "</p>" +
-            "<p>Es kann sinnvoll sein, Situationen für niedriges und hohes Basisrisiko darzustellen." +
-            "Beispielsweise verhindert eine Impfung mit einer Wirksamkeit von 80%" +
-            "für ein relativ niedriges Risiko von 10 in 1000 nur 8 von 1000 Infektionen (da sich die meisten Personen ohnehin nicht infiziert hätten)," +
+            "<p>Da das Basisrisiko aufgrund anderer Faktoren (z.B., Alter, Geschlecht, andere Erkrankungen, aber auch ein dynamisches Infektionsgeschehen) variieren kann," +
+            "kann es dabei sinnvoll sein, Situationen für niedriges und hohes Basisrisiko darzustellen." +
+            "Beispielsweise verhindert eine Impfung mit einer Wirksamkeit von 80% " +
+            "bei einem relativ niedrigen Risiko von 10 in 1000 nur 8 von 1000 Infektionen (da sich die meisten Personen ohnehin nicht infiziert hätten)," +
             "während sie für ein höheres Risiko von 50 in 1000 etwa 40 von 1000 Infektionen verhindert.</p>"
 
     },
@@ -182,15 +185,19 @@ const info_data = {
         "aliases": [""],  // list of other names.
         "annotation": "",  // internal annotations; should be eventually ""
         "overview": ["Die Anzahl der Personen die in einer Untersuchung oder Studie beobachtet wurden",
-            "Auf der Grundlage von größeren Stichproben können zuverlässigere Aussagen getroffen werden",
-            "Die Stichprobengröße sollte möglichst immer angegeben werden, da so Rückschlüsse auf die Verlässlichkeit der Ergebnisse gezogen werden können."],  // array of list items overview of most important points, displayed in wiki and text checker.
+            "Größere Stichproben ermöglichen zuverlässigere Aussagen",
+            "Die Stichprobengröße sollten stets angegeben werden, da so Rückschlüsse auf die Verlässlichkeit der Ergebnisse gezogen werden können."],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": ["10.000 Studienteilnehmende", "1000 Probanden", "insgesamt 5000 Versuchsteilnehmer"],  // array of list items with examples.
         "popup": [
-            "<p>Hilfreiche Angabe. Die <a href='#wiki-sample'>Stichprobengröße</a> hilft, die Zuverlässigkeit der Daten zu beurteilen und kann als Referenz dienen.</p>"],
+            "<p>Hilfreiche Angabe. Die <a href='#wiki-sample'>Stichprobengröße</a> hilft, die Zuverlässigkeit der Daten zu beurteilen und kann als Bezugsgröße dienen.</p>"],
         "maintext": "<p></p>" +
-            "<p>Die Größe einer Stichprobe ist aber oft von den verfügbaren Ressourcen geleitet. " +
-            "Kleine Stichproben liefern nicht zwingend " +
-            "<emph>falsche</emph> Ergebnisse, aber die Ergebnisse sind typischerweise weniger verlässlich.</p>"   // array of paragraphs as main text for wiki.
+            "<p>DDie Größe einer Stichprobe ist aber wird oft von den durch die verfügbaren Ressourcen geleitet begrenzt. " +
+            "leine Stichproben liefern nicht zwingend falsche Ergebnisse, aber die Ergebnisse sind typischerweise weniger " +
+            "verlässlich und können weniger generalisierbar sein. Daher ist bei Studien mit sehr kleinen Stichproben " +
+            "generell Vorsicht geboten (was eine kleine Stichprobe ist, hängt von der Fragestellung, den Basiswahrscheinlichkeiten und dem erwarteten Unterschied ab. " +
+            "Im Kontext medizinischer interventionen sind die Basiswahrscheinlichkeiten und Unterschiede häufig eher gering, so dass Stichproben oft recht groß sein müssen. " +
+            "Eine eindeutige Empfehlung kann hier nciht gegeben werden. " +
+            "Als Faustregel kann man möglicherweise für viele Fälle festhalten, dass Stichproben von 1.000 Personen bereits fragwürdig sein können).</p>"   // array of paragraphs as main text for wiki.
     },
     "nh": {
         "heading": "Natürliche Häufigkeiten",
