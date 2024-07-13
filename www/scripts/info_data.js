@@ -155,7 +155,7 @@ const info_data = {
         "annotation": "",  // internal annotations; should be eventually ""
         "overview": ["Häufigkeiten sind natürliche Zahlen, die die Anzahl von Personen, Ereignissen (z.B. Krankhietsfällen) oder sonstigen Dingen oder Dingen beschreiben.",
             "Wenn es sich nicht um die eine Gesamtzahl handelt, sollte klar angegeben werden auf welche Gesamtzahl sich die Häufigkeit bezieht (z.B., 100 Erkrankte von wie vielen Personen insgesamt?)"
-     ],  // array of list items overview of most important points, displayed in wiki and text checker.
+        ],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": ["100 Personen", "10.000 Studienteilnehmende", "3456 Todesfälle", "12 Geimpfte", "21 Äpfel"],  // array of list items with examples.
         "popup": ["<ul>" +
         "<li>Wenn es sich nicht um die Gesamtzahl in einer Gruppe handelt, achten Sie darauf diese Gesamtzahl immer anzugeben (z.B., Anzahl der Geimpften).</li>" +
@@ -178,7 +178,7 @@ const info_data = {
             "<p>Da Fallzahlen für sich alleine nicht aussagekräftig sind, sollte immer die Größe der zugrundeliegenden " +
             "Gruppen berichtet werden. Eine gute Alternative ist das Berichten von Risiken als " +
             "<a href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> mit einheitlicher Bezugsgröße.</p>"
-        },
+    },
     "sample_size": {
         "heading": "Stichprobengröße",  // the heading.
         "subheading": "",  // placeholder for a potential subheading.
@@ -208,7 +208,7 @@ const info_data = {
             "Drücken Risiken als anteilige Häufigkeiten, aus (z.B. x von 100)",
             "Die Bezugsgröße sollte konstant sein (also für alle zu vergleichenden Risiken x von 100 oder x von 1000, x von 10.000 etc.)",
             "Besonders bei Wahrscheinlichkeiten kleiner als 1 sollten natürliche Häufigkeiten verwendet werden"
-],
+        ],
         "examples": [
             "440 von 1000 Personen ohne Auffrischungsimpfung gegen COVID-19 erkranken, während unter den " +
             "Geimpften nur 270 von 1000 erkranken.<br>" +
@@ -357,28 +357,6 @@ const info_data = {
         "maintext": "<p>Die Bezugsgröße erlaubt einzuschätzen, ob eine Anzahl oder ein relativer Prozentanteil</p>"   // string of main text for wiki.
     },
     // Other kinds of numbers:
-    "pval": {
-        "heading": "<i>p</i>-Werte",  // the heading.
-        "subheading": "",  // placeholder for a potential subheading.
-        "aliases": [""],  // list of other names.
-        "annotation": "",  // internal annotations; should be eventually ""
-        "overview": ["<a href='risk_wiki.html#wiki-cprob'>Bedingte Wahrscheinlichkeit</a> diese oder extremere Daten in einer Stichprobe zu beobachten",
-            "Der p-Wert wird häufig missverstanden und sollte nicht verwendet werden"],  // array of list items overview of most important points, displayed in wiki and text checker.
-        "examples": [],  // array of list items with examples.
-        "popup": ["<p>Der <a href='wiki-pval'>p-Wert</a> wird in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +
-        "<p>Typischerweise wird ein p-Wert kleiner als 0.05 als \"statistisch signifikant\" bezeichtnet, was eine akzeptable Unischerheit ausdrückt.</p>" +
-        "<p>Da der p-Wert auch von Expert*innen häufig missverstanden wird, sollte er in journalistische Publikationen eher nicht verwendet werden.</p>"],
-        "maintext": "<p>Der p-Wert wird in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +
-            "<p>Typischerweise wird ein p-Wert kleiner als 0.05 als \"statistisch signifikant\" bezeichtnet, was eine akzeptable Unischerheit ausdrückt.</p>" +
-            "<p>Der p-Wert ist die <a href='wiki-cprob'>bedingte Wahrscheinlichkeit</a> diese oder extremere Daten in einer Stichprobe zu beobachten, " +
-            "wenn es in der Population eigentlich <emph>keinen</emph> Unterschied gibt.</p>" +
-            "<p>Nehmen wir an, dass in einer fiktiven Untersuchung eines neune Medikamentes unter den Behandelten 2 aus 1000 erkranken, " +
-            "während unter den Unbehandelten 5 aus 1000 erkranken. Der p-Wert is 0,01. " +
-            "Das bedeutet, dass die Wahrscheinlichkeit, eine absolute Risikoreduktion von 3 in 1000 zu beobachten, " +
-            "wenn es eigentlich keinen Unterschied gibt, bei 1% liegt.</p>" +
-            "<p>Da der p-Wert auch von Expert*innen häufig missverstanden wird, sollte er in journalistische Publikationen eher nicht verwendet werden.</p>" +
-            "<p>Zudem ist er bei Untersuchungen mit sehr vielen Versuchspersonen nicht informativ, da er für große Stichproben typischerweise sehr klein wird.</p>"
-    },
     "confint": {
         "heading": "Konfidenzintervall",  // the heading.
         "subheading": "",  // placeholder for a potential subheading.
@@ -397,14 +375,113 @@ const info_data = {
         "aliases": [""],  // list of other names.
         "annotation": "",  // internal annotations; should be eventually ""
         "overview": ["Die Wahrscheinlichkeit eines Ereignisses, wenn eine Bedingung wahr ist (z.B., dass jemand zur Gruppe der Erkrankten gehört)",
-            "Bedingte Wahrscheinlcihkeiten sollten bevorzugt als <a href='#wiki-nh'>natürliche Häufigkeiten</a> ausgedrückt werden."],  // array of list items overview of most important points, displayed in wiki and text checker.
+            "Bedingte Wahrscheinlichkeiten sollten bevorzugt als <a href='#wiki-nh'>natürliche Häufigkeiten</a> ausgedrückt werden."],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": ["Unter den Erkrankten erhalten 90 aus 100 ein positives Testergebnis",
             "Unter den Geimpften erkranken 6 aus 1000",
             "Die Sensitivität des Tests beträgt 99%"],  // array of list items with examples.
         "popup": ["TODO: Sensitivität, Spezifität etc.!"],
-        "maintext": "[TODO] Stichworte: Sensitivität, Spezifität, PPV, NPV"   // string of main text for wiki.
+        "maintext": "<p>Bedingte Wahrscheinlichkeiten treten in vielen Fällen auf. Im Kontext von medizinischen Tests " +
+            "und Screeningverfahren beispielsweise können Wahrscheinlichkeiten für ein positives Testergebnises " +
+            "angegeben werden, wenn eine Erkrankung tatsächlich vorliegt bzw. ein negatives Testergebnis, wenn " +
+            "keine Erkrankung vorliegt (Sensitivität und Spezifität). Umgekehrt könne auch die bedingten Wahrscheinlichkeiten dafür angegeben werden, " +
+            "dass bei einem positiven bzw. negativen Testergebnis tatsächleich eine Erkrankung bzw. keine Erkrankung vorliegt " +
+            "(positiver Vorhersagewert und negativer Vorhersagewert; s. <a href='wiki-sens-spec'>Testgenauigkeit</a> unten). " +
+            "Auch das Risiko innerhalb einer Gruppe " +
+            "ist eine bedingte Wahrscheinlichkeit, da es die Wahrscheinlichkeit angibt beispielsweise zu erkranken " +
+            "oder zu versterben, wenn eine bestimmte Gruppenzugehörigkeit vorliegt (z.B., <a href='#wiki-baseprob'>Basisrisiko</a> in der " +
+            "<a href='#wiki-treat-control'>Untersuchungs- oder Vergleichsgruppe</a>). " +
+            "Ein weiteres Beispiel sind <a href='#wiki-pval'>p-Werte (s. unten)</a>, die angeben wie wahrrscheinlich es ist in einer " +
+            "Stichprobe Daten zu beobachten, in denen sich Gruppen so stark oder stärker als in der Stichprobe unterscheiden, " +
+            "wenn es in der Population eigentlich keinen Unterschied gibt.</p>" +
+            "<p>Wie insbesondere das Beispiel der TEstgenauigkeit illustriert, ist es wichtig dass bei bedingten Wahrscheinlichkeiten kar ist, " +
+            "auf welche Gruppe oder welches Ereignis sich diese beziehen.</p>" +
+            "" +
+            "<h2 id='wiki-sens-spec'>Beispiel: Testgenaugkeit</h2>" +
+            "<p>Gerade bei medizinischen Tests gibt es einige wichtige bedingte Wahrscheinlichkeiten. " +
+            "Die Sensitivität gibt an, welcher Anteil der Erkrankten ein Test korrekt erkennt und ein positives Ergebnis " +
+            "ausgibt (typischerweise in <a href='#wiki-prozent'>Prozent</a>). Die Spezifität gibt an, wie viele Personen, " +
+            "die nicht erkrankt sind, ein korrektes, negatives Testergebnis erhalten. " +
+            "Mit diesen Angaben werden Tests beschrieben, insbesondere da diese in der Regel an einer Gruppe von Erkranken und " +
+            "nicht Erkrankten auf seine Güte geprüft werden.</p>" +
+            "<p>Sensitivität und Spezifität sind aber häufig nicht die interessierenden Werte: " +
+            "Typischerweise interessieren sich die Getesteten dafür, wie wahrscheinlich sie erkrankt sind, wenn sie ein " +
+            "positives Testergebnis erhalten haben. Dies hängt zusätzlich zur Güte des Tests von der Prävalenz, also dem " +
+            "Risiko der Erkrankung der Person ab. Das Risiko nach einem positiven Testergebnis tatsächlich erkrankt zu sein, wird " +
+            "als positiver prädiktiver Wert (PPV) bezeichnet.</p>" +
+            "<p>So der Test nicht perfekt ist, bleibt das Risiko insbesondere bei seltenen Erkrankungen auch nach dem Test möglicherweise relativ niedrig. " +
+            "Ein Test mit einer Sensitivität von 90% und einer Spezifität von 80% etwa, wird bei einer Krankheit, die " +
+            "10 von 100 Personen betrifft 9 von 100 erkrankten Personen und 72 von 90 gesunden Personen korrekt erkennen, " +
+            "aber auch eine Person verpassen und 18 Personen fälschlich als erkrankt ausweisen. Ein positiver Test kann " +
+            "also auch fälschlich zustande kommen. Der positive Vorhersagewert ist in diesem Fall also etwa 33% (und nicht nahe 90%, wie die Sensitivität möglicherweise suggeriert)" +
+            "(27 Personen erhalten ein positives Ergebnis, für 9, also ein Drittel, ist dies auch korrekt).</p>" +
+            "<p>Analog gilt dies für den negativen Vorhersagewert (NPV). Ein negatives Testergebnis schließt eine " +
+            "Erkrankung nicht vollständig aus. Es passt lediglich die Schätzung des Risikos an. In unserem Beispiel " +
+            "erhält eine erkrankte Person ein negatives Testergebnis und 72 nicht Erkrankte erhalten ein negatives " +
+            "Testergebnis. Das heißt etwa 89% aller negativen Testergebnisse sind korrekt. Ist die Erkrankung relativ häufig, " +
+            "verringert dies den negativen Vorhersagewert (im Extremfall, in dem alle erkrankt sind, liegt dieser selbst bei einem perfekten Test bei null).</p>" +
+            "<p>Der Fall von Testergebnissen illustriert, dass es bei bedingten Wahrscheinlichkeiten wichtig ist " +
+            "darauf zu achten, dass die Wahrscheinlichkeit auf die korrekte Gruppe bezogen ist.</p>" +
+            "" +
+            "<h2 id='wiki-pval'>Beispiel: p-Werte</h2>" +
+            "<p>Der p-Wert ist die Bedingte Wahrscheinlichkeit in einer möglichen Stichprobe Daten zu beobachten, in denen sich " +
+            "Gruppen so stark oder stärker als in der beobachteten Stichprobe unterscheiden, wenn es in der Population " +
+            "eigentlich keinen Unterschied gibt. " +
+            "Der p-Wert wird in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern. " +
+            "Da der p-Wert auch von Expert*innen häufig missverstanden wird und den Lesenden wenig Mehrwert bieten dürfte, " +
+            "sollte er in journalistische Publikationen eher nicht verwendet werden.</p>" +
+            "<p>Angenommen, in einer fiktiven Untersuchung eines neuen Medikamentes wird eine Stichprobe von 2.000 Personen untersucht. " +
+            "Unter den Behandelten genesen nach 5 Tagen " +
+            "30 aus 1000, während unter den Unbehandelten 10 aus 1.000 genesen. In diesem Fall wäre der <i>p</i>-Wert 0,005. Das bedeutet, " +
+            "dass die Wahrscheinlichkeit, eine <a href='#wiki-arr'>absolute Risikoveränderung</a> von 20 in 1.000 oder mehr zu beobachten, wenn es " +
+            "eigentlich keinen Unterschied gibt, bei 0,5% liegt. Würde man aus einer Population ohne Unterschied " +
+            "10.000 verschiedene Stichproben von 2.000 Personen ziehen, würde man nur in 50 aus 10.000 (0,5%) einen " +
+            "Unterschied finden, der so groß oder größer, als in der beobachteten Stichprobe ist.</p>" +
+            "<p>In einem solchen Falle geht man typischerweise von einer akzeptablen Unsicherheit aus, da die beobachteten Unterschiede " +
+            "wenig wahrscheinlich auf Zufällige Unterschiede zurückgeführet werden können." +
+            "Konventionell werden Unterschiede mit einem <i>p</i>-Wert kleiner als 0,05 (d.h. 5%) als statistisch Signifikant bezeichnet " +
+            "und die Annahme, dass kein Effekt besteht (auch: Nullhypothese) verworfen.</p>" +
+            "<p>Wichtig ist, dass der <i>p</i>-Wert <emph>keine</emph> Aussage darüber macht, wie groß die Wahrscheinlichkeit " +
+            "eines tatsächlichen Unterschiedes ist.</p>" +
+            "<p>Zudem ist er bei Untersuchungen mit sehr vielen Versuchspersonen nicht informativ, da er für große Stichproben " +
+            "auch für sehr geringe Unterschiede typischerweise sehr klein wird.</p>"   // string of main text for wiki.
     },
-
+    "pval": {
+        "heading": "<i>p</i>-Werte",  // the heading.
+        "subheading": "",  // placeholder for a potential subheading.
+        "aliases": [""],  // list of other names.
+        "annotation": "",  // internal annotations; should be eventually ""
+        "overview": [
+            "<a href='risk_wiki.html#wiki-cprob'>Bedingte Wahrscheinlichkeit</a> in einer Stichprobe Daten zu " +
+            "beobachten, in denen sich Gruppen so stark oder stärker als in der Stichprobe unterscheiden, wenn es in der Population eigentlich keinen Unterschied gibt",
+            "Der p-Wert wird auch von Expert*innen häufig missverstanden und bringt daher vermutlich keinen Mehrwert für journalistische Artikel"
+        ],  // array of list items overview of most important points, displayed in wiki and text checker.
+        "examples": [],  // array of list items with examples.
+        "popup": ["<p>Der <a href='wiki-pval'>p-Wert</a> wird in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +
+        "<p>Typischerweise wird ein p-Wert kleiner als 0.05 als \"statistisch signifikant\" bezeichtnet, was eine akzeptable Unischerheit ausdrückt.</p>" +
+        "<p>Da der p-Wert auch von Expert*innen häufig missverstanden wird, sollte er in journalistische Publikationen eher nicht verwendet werden.</p>"],
+        "maintext": "" +
+            "<p>Der p-Wert ist die Bedingte Wahrscheinlichkeit in einer möglichen Stichprobe Daten zu beobachten, in denen sich " +
+            "Gruppen so stark oder stärker als in der beobachteten Stichprobe unterscheiden, wenn es in der Population " +
+            "eigentlich keinen Unterschied gibt. " +
+            "Der p-Wert wird in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern. " +
+            "Da der p-Wert auch von Expert*innen häufig missverstanden wird und den Lesenden wenig Mehrwert bieten dürfte, " +
+            "sollte er in journalistische Publikationen eher nicht verwendet werden.</p>" +
+            "<p>Angenommen, in einer fiktiven Untersuchung eines neuen Medikamentes wird eine Stichprobe von 2.000 Personen untersucht. " +
+            "Unter den Behandelten genesen nach 5 Tagen " +
+            "30 aus 1000, während unter den Unbehandelten 10 aus 1.000 genesen. In diesem Fall wäre der <i>p</i>-Wert 0,005. Das bedeutet, " +
+            "dass die Wahrscheinlichkeit, eine <a href='#wiki-arr'>absolute Risikoveränderung</a> von 20 in 1.000 oder mehr zu beobachten, wenn es " +
+            "eigentlich keinen Unterschied gibt, bei 0,5% liegt. Würde man aus einer Population ohne Unterschied " +
+            "10.000 verschiedene Stichproben von 2.000 Personen ziehen, würde man nur in 50 aus 10.000 (0,5%) einen " +
+            "Unterschied finden, der so groß oder größer, als in der beobachteten Stichprobe ist.</p>" +
+            "<p>In einem solchen Falle geht man typischerweise von einer akzeptablen Unsicherheit aus, da die beobachteten Unterschiede " +
+            "wenig wahrscheinlich auf Zufällige Unterschiede zurückgeführet werden können." +
+            "Konventionell werden Unterschiede mit einem <i>p</i>-Wert kleiner als 0,05 (d.h. 5%) als statistisch Signifikant bezeichnet " +
+            "und die Annahme, dass kein Effekt besteht (auch: Nullhypothese) verworfen.</p>" +
+            "<p>Wichtig ist, dass der <i>p</i>-Wert <emph>keine</emph> Aussage darüber macht, wie groß die Wahrscheinlichkeit " +
+            "eines tatsächlichen Unterschiedes ist.</p>" +
+            "<p>Zudem ist er bei Untersuchungen mit sehr vielen Versuchspersonen nicht informativ, da er für große Stichproben " +
+            "auch für sehr geringe Unterschiede typischerweise sehr klein wird.</p>"   // string of main text for wiki.
+    },
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Non-numeric entries: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     "causal": {
         "heading": "Ursache und Wirkung (Kausalität)",  // the heading.
