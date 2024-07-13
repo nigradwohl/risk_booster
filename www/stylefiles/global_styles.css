@@ -124,6 +124,41 @@ body {
     box-sizing: border-box;
 }
 
+
+blockquote {
+    /*font-size: 18px;*/
+    font-size: 0.9em;
+    font-style: italic;
+    margin: 0.25em 0;
+    padding: 0.35em 40px;
+    line-height: 1.45;
+    position: relative;
+    color: #383838;
+}
+
+blockquote:before {
+    display: block;
+    padding-left: 10px;
+    content: "\201C";
+    font-size: 80px;
+    position: absolute;
+    left: -20px;
+    top: -20px;
+    color: #7a7a7a;
+}
+
+blockquote cite {
+    color: #999999;
+    font-size: 14px;
+    display: block;
+    margin-top: 5px;
+}
+
+blockquote cite:before {
+    content: "\2014 \2009";
+}
+
+
 .header-container {
     display: flex;
     flex-wrap: wrap;
@@ -322,6 +357,10 @@ body {
     background-color: var(---wiki-bg);
 }
 
+.wiki-intro {
+    width: 80%;
+}
+
 .wiki-examples {
     /*border: 1px solid var(---wiki-border);*/
     margin: 1em 0;
@@ -392,50 +431,8 @@ body {
     padding: 0.5em;
 }
 
-/* Responsive layout - when the screen is less than 700px wide, make the two columns stack on top of each other instead of next to each other */
-@media screen and (max-width: 980px) {
-    .wiki-entry {
-        width: 90%;
-    }
-}
-
-@media screen and (max-width: 700px) {
-    .row, .navbar {
-        flex-direction: column;
-        font-size: 0.9em;
-    }
-
-    .navbar .nav-container {
-        padding: 4px 10px;
-    }
-
-    .tile-row {
-        width: 95%;
-    }
-
-    .content-container {
-        width: 100%;
-    }
-
-    .text-input {
-        flex: 30em;
-        /*100%;*/
-    }
-
-    #tooltip-popup {
-        max-width: 90%;
-    }
-
-    .wiki-entry {
-        width: 100%;
-    }
-
-}
-
-@media screen and (max-width: 400px) {
-    .wiki-toc {
-        position: relative;
-    }
+#open-toc {
+    display: none;
 }
 
 
@@ -582,23 +579,6 @@ h3 {
     padding: 0.5em 0.8em 1em;
     /*width: 10em;*/
     /*height: 3em;*/
-}
-
-
-@media screen and (max-width: 700px) {
-
-    #tooltip-popup {
-        max-width: 70%;
-    }
-
-}
-
-@media screen and (max-width: 350px) {
-
-    #tooltip-popup {
-        max-width: 90%;
-    }
-
 }
 
 #tooltip-popup > h4 {
@@ -772,23 +752,38 @@ h3 {
     color: white;
 }
 
+.wiki-row {
+    max-height: 800px;
+    min-height: 500px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
 #entry-list {
-    margin-left: 25%;
+    /*margin-left: 25%;*/
+    width: 75%;
+    /*overflow: hidden;*/
+    overflow: hidden;
+    overflow-y: scroll;
+    flex-grow: 4;
 }
 
 /* Page content. The value of the margin-left property should match the value of the sidebar's width property */
 div.wiki-toc {
     margin: 1em;
-    /*height: 100%;*/
-    width: 20%;
+    height: 480px;
+    flex-basis: 20%;
+    /*width: 20%;*/
     padding: 10px 16px;
-    position: fixed;
-    z-index: 1;
+    /*position: fixed;*/
+    z-index: 0;
+    /*position: relative;*/
     /*top: 0;*/
     /*left: 0;*/
     border-radius: 5px;
     border: 1px solid var(---wiki-border);
-    background-color: var(---wiki-bg);
+    /*background-color: var(---wiki-bg);*/
     /*height: 1000px;*/
     overflow-y: scroll;
     /*top: 0;*/
@@ -824,9 +819,113 @@ div.wiki-toc {
 }
 
 /* On screens that are less than 400px, display the bar vertically, instead of horizontally */
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 480px) {
     .sidebar a {
         text-align: center;
         float: none;
     }
+}
+
+/* Responsive layout - when the screen is less than 700px wide, make the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 1025px) {
+    .wiki-entry {
+        width: 90%;
+    }
+}
+
+@media screen and (max-width: 700px) {
+    .row, .navbar {
+        flex-direction: column;
+        font-size: 0.9em;
+    }
+
+    .navbar .nav-container {
+        padding: 4px 10px;
+    }
+
+    .tile-row {
+        width: 95%;
+    }
+
+    .content-container {
+        width: 100%;
+    }
+
+    .text-input {
+        flex: 30em;
+        /*100%;*/
+    }
+
+    #tooltip-popup {
+        max-width: 90%;
+    }
+
+    .wiki-entry {
+        width: 100%;
+    }
+
+}
+
+/*@media screen and (min-width: 480px) {*/
+/*    width: 20%;*/
+/*}*/
+
+/*320px to 480px mobile devices*/
+@media screen and (max-width: 480px) {
+    /*.wiki-toc {*/
+    /*    display: none;*/
+    /*    position: absolute;*/
+    /*    background: #0077be;*/
+    /*}*/
+
+    #entry-list {
+        margin: 0;
+        width: 100%;
+    }
+
+    body {
+        margin: 0;
+    }
+
+    #open-toc {
+        display: block;
+        position: absolute;
+        margin: 20px 5px;
+        padding: 5px;
+        right: 10%;
+        /*top: 5%;*/
+        z-index: 2;
+        background-color: lightgrey;
+        cursor: pointer;
+    }
+
+    div.wiki-toc {
+        position: absolute;
+        opacity: 1;
+        /*background-color: var(---wiki-bg);*/
+        /*background-color: #f1f1f1;*/
+        background: #f1f1f1;
+        z-index: 1;
+        width: 90%;
+    }
+
+    /*#open-toc:hover + .wiki-toc {*/
+    /*    display: block;*/
+    /*}*/
+}
+
+@media screen and (max-width: 700px) {
+
+    #tooltip-popup {
+        max-width: 70%;
+    }
+
+}
+
+@media screen and (max-width: 350px) {
+
+    #tooltip-popup {
+        max-width: 90%;
+    }
+
 }

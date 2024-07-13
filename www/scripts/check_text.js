@@ -133,6 +133,10 @@ $(document).ready(function () {
                 // "tooltip": "Ich bin eine \"natürliche\" Häufigkeit",
                 // "note": "Sie haben eine natürliche Häufigkeit verwendet. Das ist sehr gut. Am besten sollte der Nenner über Vergleiche der Gleiche sein (z.B. 1 aus 100 Geimpften erkrankt, während 3 aus 100 ungeimpften erkranken)."
             },
+            "nh2": {
+                "regex": regex_nh2,
+            },
+
             // multtude of something (e.g. 20-fach).
             "mult": {
                 "regex": regex_mult
@@ -270,7 +274,9 @@ $(document).ready(function () {
                     [RegExp(collapse_regex_or(["[Rr]isiko", "[Ww]ahrscheinlich", "Inzidenz", "Todesfälle"])),
                         RegExp(collapse_regex_or(["höher", "erhöht"]))],
                     [RegExp(collapse_regex_or(["[Uu]nterschied", "höher", "vergrößerte"])),
-                        RegExp(collapse_regex_or(["Lebenserwartung", "Abstand"]))]
+                        RegExp(collapse_regex_or(["Lebenserwartung", "Abstand"]))],
+                    [RegExp(collapse_regex_or(["Anstieg"]))]
+
 
                 ]
             },
@@ -568,7 +574,7 @@ $(document).ready(function () {
         // console.log(" +++ detecting missing units +++");
         const no_unit_ix = token_dat.id.filter((d, ix) => token_dat.is_num[ix] && token_dat.unit[ix] === "unknown");
         // console.log(no_unit_ix);
-        const new_units = investigate_context(token_dat, no_unit_ix, window_keys.units);
+        const new_units = investigate_context(token_dat, no_unit_ix, window_keys.units, false);
         // console.log(new_units);
         // Replace the missing units:
         let ix = -1;
@@ -626,7 +632,7 @@ $(document).ready(function () {
         const perc_ix = token_dat.id.filter((d, ix) => ["perc", "mult"].includes(token_dat.unit[ix]));
 
         // Identify if numbers are total counts or refer to a subgroup:
-        token_dat.add_column(investigate_context(token_dat, allnum_ix, window_keys.grouptype), "gtype");
+        token_dat.add_column(investigate_context(token_dat, allnum_ix, window_keys.grouptype, false), "gtype");
         // Percentages MUST be subgroups by definition:
         token_dat.gtype = token_dat.gtype.map((x, ix) => token_dat.unit[ix] === "perc" ? "sub" : token_dat.gtype[ix]);
 
@@ -634,7 +640,7 @@ $(document).ready(function () {
         const n_subgroup_ix = token_dat.id.filter((d, ix) => token_dat.is_num[ix] &&
             token_dat.gtype[ix] !== "total" && token_dat.gtype[ix] !== -1);
         console.log("---------- Get treatment and control: -----------");
-        token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.treat_contr), "group");
+        token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.treat_contr, false), "group");
         console.log(token_dat.group.toString());
 
 
@@ -642,14 +648,14 @@ $(document).ready(function () {
         if (token_dat.topics.includes("comp_treat")) {
             window_keys.effside.eff = window_keys.effside.eff.concat(targetconds);
         }
-        token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.effside), "effside");
+        token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.effside, false), "effside");
         // Note: Nutzen muss bei Verhaltensrisiken ggf. nicht unbedingt benannt werden (wenn es keinen ersichtlichen gibt)
         console.log(token_dat.effside.toString());
 
 
         // Get information about the underlyeing conditions (morbidity, mortality...):
         console.log("---------- Get information about the underlying conditions (morbidity, mortality...): -----------");
-        token_dat.add_column(investigate_context(token_dat, freq_ix, window_keys.conditions), "ftype");
+        token_dat.add_column(investigate_context(token_dat, freq_ix, window_keys.conditions, false), "ftype");
 
         // Update missing information: ~~~~~~~~~~~
         // Absolute percentages (for now code as remainder that is not relative and see if it fails).
@@ -672,18 +678,18 @@ $(document).ready(function () {
 
 
         // Detect whether a change is relative:
+        console.log("---------- Detect relative changes: -----------");
         // Some context detection:
         const n_change_ix = token_dat.id.filter((d, ix) => token_dat.is_num[ix] &&
             ["incr", "decr"].includes(token_dat.numtype[ix]));
-        const rel_context = investigate_context(token_dat, n_change_ix, window_keys.treat_contr);
-        console.log("rel_context");
+        // const rel_context = investigate_context(token_dat, n_change_ix, window_keys.treat_contr);
 
         // Column for relative and absolute:
-        token_dat.add_column(investigate_context(token_dat, perc_ix, window_keys.rel), "relabs");
-        // console.log(token_dat.relabs.toString());
+        token_dat.add_column(investigate_context(token_dat, perc_ix, window_keys.rel, true), "relabs");
+        console.log(token_dat.relabs.toString());
         // was: token_dat.add_column(token_dat.numtype.map((x) => !["incr", "decr", -1].includes(x) ? "abs" : x), "relabs");
         token_dat.relabs = token_dat.relabs.map((x, ix) => ["incr", "decr"].includes(token_dat.numtype[ix]) && x !== "abs" ? "rel" : x);
-        // console.log(token_dat.relabs.toString());
+        console.log(token_dat.relabs.toString());
 
         // Column for percentages <1%:
         // Translate number words:
@@ -741,6 +747,8 @@ $(document).ready(function () {
             token_dat.relabs[ix] = out;
         }
 
+        console.log(token_dat.relabs.toString());
+
         // Code remaining percentages as absolute:
         token_dat.relabs = token_dat.relabs.map((x, ix) => token_dat.unit[ix] === "perc" && [-1, "unknown"].includes(x) ? "abs" : x);
 
@@ -752,7 +760,7 @@ $(document).ready(function () {
 
         // Reference information for absolute percentages and subgroups:
         // +++ HERE +++
-        token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.reference), "reference");
+        token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.reference, false), "reference");
 
         // Display for testing: ~~~~~~~~~~~~~~~~~~
         console.log("~~~~~ Updated token data: ~~~~~~");
@@ -1605,14 +1613,15 @@ Other formats to detect: Odds ratio, ARR/RRR, NNT...
 const month_names = ["Januar", "Februar", "März", "April", "Mai", "Juni",
     "Juli", "August", "September", "Oktober", "November",
     "Dezember"];
-const pat_num = "(?:(?<![\\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,:][0-9]+)?))(?!\\\.[0-9A-Za-zÄÖÜäöüß]|[a-zA-Z0-9ÄÖÜäöüß])"
-const numwords = ["[Kk]einen?", "(?<![Kk])[Ee]ine?r?(?![gnz])", "[Zz]wei(?!fe)", "[Dd]rei", "[Vv]ier", "[Ff]ünf", "[Ss]echs",
-    "[Ss]ieben", "[Aa]cht(?!e)", "[Nn]eun(?!k)", "[Zz]ehn", "[Ee]lf", "[Zz]wölf"]
+const pat_num = "(?:(?<![\\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,:][0-9]+)?))(?!\\\.[0-9A-Za-zÄÖÜäöüß]|[a-zA-Z0-9ÄÖÜäöüß])";
+const numwords = ["[Kk]einen?", "(?<![Kk])[Ee]ine?[rm]?(?![gnz])", "[Zz]wei(?!fe)", "[Dd]rei", "[Vv]ier", "[Ff]ünf", "[Ss]echs",
+    "[Ss]ieben", "[Aa]cht(?!e)", "[Nn]eun(?!k)", "[Zz]ehn", "[Ee]lf", "[Zz]wölf"];
 
 const regex_num = new RegExp("(?<unknown>" + pat_num + "( Millionen| Milliarden)?)", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
 const regex_numwords = new RegExp("(?<unknown>(" + collapse_regex_or(numwords) + ") (Person(en)?|F[aä]lle?))", "dg");
-const regex_perc = new RegExp("(?<perc>" + pat_num + " ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.?!])" + ")", "dg");
+const regex_perc = new RegExp("(?<perc>(" + pat_num + " bzw\\. )?" + pat_num + " ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.?!])" + ")", "dg");
 const regex_nh = new RegExp("(?<nh>" + pat_num + " (?!%|[Pp]rozent)(\\w+ )?(von|aus|in) (\\w+ )?" + pat_num + ")", "dg");  // TODO: Handle numberwords here.
+const regex_nh2 = new RegExp("(?<nh>(" + collapse_regex_or(numwords) + ") (?!%|[Pp]rozent)(\\w+ )?(von|aus|in) (\\w+ )?" + pat_num + ")", "dg");
 const regex_mult = new RegExp("(?<mult>" + pat_num + "[ \\-]?([Mm]al|[Ff]ach) (so )?( ?viele|gr[oö]ß(er)?|hoch|niedrig(er)?|besser|erhöht|höher)(?=[\\s.?!])" + ")", "dg");
 const regex_dur2 = /(?<dur>\d+([,.]\d+)?-?\d*([,.]\d+)?(Minuten?| Stunden?| Tagen?| Wochen?))/dg;
 // Note: in regex_nh we may also try to get the denominator as a group or as its own entity.
@@ -1929,7 +1938,7 @@ class TextObj {
  */
 class TokenData {
 
-    constructor(tokens, tpos_start, tpos_end, sentence_id) {
+    constructor(tokens, tpos_start, tpos_end, sentence_id, paragraph_id) {
         this.token = tokens;
 
         this.nrow = this.token.length;
@@ -1940,12 +1949,17 @@ class TokenData {
         this.start = tpos_start;
         this.end = tpos_end;
         this.sent = sentence_id;
+        this.par = paragraph_id;
+        this.par_minmax = [...Array(paragraph_id[this.nrow - 1] + 1).keys()]
+            .map(par => [paragraph_id.indexOf(par), paragraph_id.lastIndexOf(par)]);
+        console.log("Paragraph boundaries:");
+        console.log(this.par_minmax);
 
         // Also check for equal length in the future!
         // Also check for equal types per column!
 
         // Add global properties like number of rows (and columns) as properties:
-        this.global_keys = ["global_keys", "nrow", "ncol", "colnames", "topics"];
+        this.global_keys = ["global_keys", "nrow", "ncol", "colnames", "topics", "par_minmax"];
         this.colnames = Object.keys(this).filter((x) => !this.global_keys.includes(x));
         this.topics = [];  // initialize empty topic set.
 
@@ -2092,7 +2106,18 @@ function get_token_data(text) {
     let curpos;
 
     let sentence_ids = [];
+    let paragraph_ids = [];
     let cur_sentence_id = 0;
+    let cur_paragraph_id = 0;
+
+    // get paragraphs:
+    console.log("PARAGRAPHS");
+    let paragraph_array = [];
+    for (const mtc of text.matchAll(/\n\n/dg)) {
+        console.log(mtc.index)
+        paragraph_array = paragraph_array.concat(mtc.index);
+    }
+    console.log(paragraph_array);
 
     // Assign each token its beginning index:
     for (let i = 0; i < text_tokens.length; i++) {
@@ -2137,9 +2162,15 @@ function get_token_data(text) {
             cur_sentence_id++
         }  // increment the id when a punctuation token is found
 
+        // Assign paragraph ID:
+        if (curpos > paragraph_array[cur_paragraph_id]) {
+            cur_paragraph_id++
+        }  // increment the id when a punctuation token is found
+        paragraph_ids = paragraph_ids.concat(cur_paragraph_id);
+
     }
 
-    return new TokenData(text_tokens, tpos_start, tpos_end, sentence_ids);
+    return new TokenData(text_tokens, tpos_start, tpos_end, sentence_ids, paragraph_ids);
 }
 
 
@@ -2403,10 +2434,15 @@ function detect_number_type(token_data, txt, numtype_dict) {
  * @param token_data {Object} A token data object with information about numbers.
  * @param index_arr {Array} An array of indices corresponding to the token data, indicating which elements should be considered.
  * @param keyset {Object} An object with named keysets determining the classes assigned.
+ * @param only_pars {Boolean} Flag, if only paragraphs should be checked for context.
  */
-function investigate_context(token_data, index_arr, keyset) {
+function investigate_context(token_data, index_arr, keyset, only_pars) {
 
     let context_info = Array(token_data.nrow).fill(-1);  // was: "none"
+
+    if (only_pars === undefined) {
+        only_pars = true;
+    }
 
     // Back to text level:
     /*
@@ -2459,19 +2495,32 @@ function investigate_context(token_data, index_arr, keyset) {
     }
     // console.log(keyset);
 
+    // Get paragraph minimum and maximum:
+    // let par_minmax = [];
+    // console.log(par_minmax);
+    // for(const par of [...Array(token_data.par[token_data.nrow - 1] + 1).keys()]){
+    //     token_data.id.filter((tok, ix) => )
+    // }
+    const par_minmax = token_data.par_minmax;
 
     // For each number query:
     for (const token_ix of index_arr) {
 
-        console.log("-------- NEW TOKEN --------");
-        console.log(`+++ Token number ${token_ix}: ${token_data.token[token_ix]} +++`);
+        // console.log("-------- NEW TOKEN --------");
+        // console.log(`+++ Token number ${token_ix}: ${token_data.token[token_ix]} +++`);
 
         // PREPARE THE WINDOW: ~~~~~~~~~~~~~~
         let testcounter = 0;  // testcounter to avoid infinite loops!
 
         // Define the absolute maximum:
-        const min_start = 0;
-        const max_end = token_data.nrow;  // could also be sentence end!
+        let min_start = 0;
+        let max_end = token_data.nrow;
+        if (only_pars) {
+            // Limit search to paragraph:
+            const curpar = token_data.par[token_ix];  // get current paragraph.
+            min_start = par_minmax[curpar][0];
+            max_end = par_minmax[curpar][1];  // could also be sentence end!
+        }
 
         // Note: One could additionally implement a list of "locks":
         let lock_start = token_ix;  // 0;
@@ -2625,7 +2674,7 @@ function investigate_context(token_data, index_arr, keyset) {
             }
 
             // Fix a maximum number of iterations to avoid breakdown!
-            if (testcounter > 50) {
+            if (testcounter > 50 || (lock_end === max_end && lock_start === min_start)) {
                 console.log("BREAK DESCRIPTION");
                 description_complete = true;
                 // console.log(numberfeats);
@@ -2954,7 +3003,7 @@ function word_tokenizer(txt) {
 
     // console.log(txt);
     // Define abbreviations and replace the point temporarily:
-    const abbrevs = ["mind", "z.B", "etc", "oä"];
+    const abbrevs = ["mind", "z.B", "etc", "oä", "bzw"];
     txt = txt.replaceAll(RegExp("(?<=" + collapse_regex_or(abbrevs) + ")(\\.)", "gm"), "xABBREVx");
 
     // Split the text into its tokens:
@@ -2978,6 +3027,19 @@ function word_tokenizer(txt) {
     // Punctuation list: !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
     // return split.filter(x => !/(?<!\w)[.,/#!$%^&*;:{}=_`~()](?!\w)/g.test(x));
     return out.filter(x => x);
+}
+
+
+/**
+ * Splits a text into an array of paragraphs
+ * @return {Array}     An array of paragraphs
+ * @param txt {String} A text, in which paragraphs are delimited by \n\n.
+ */
+function paragraph_tokenizer(txt) {
+    const split = txt.split(/\n\n/g);
+
+    // Remove empty tokens:
+    return split.filter(x => x);
 }
 
 
