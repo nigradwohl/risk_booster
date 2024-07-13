@@ -89,9 +89,9 @@
                 Darstellungen im Hinblick auf Wirksamkeit und auch auf mögliche adverse Effekte hin zu überprüfen.
             </blockquote>
             <p>
-            Das vorliegende Tool und Wiki sollen Sie dabei unterstützen, die Krierien klarer und effektiver
-            Kommunikation
-            kennenzulernen und in der Praxis anzuwenden.
+                Das vorliegende Tool und Wiki sollen Sie dabei unterstützen, die Krierien klarer und effektiver
+                Kommunikation
+                kennenzulernen und in der Praxis anzuwenden.
             </p>
         </div>
         <div class="wiki-entry full-column" id="wiki-risk"><h2>Risiko</h2>
@@ -808,13 +808,19 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--Space for scripts-->
 <script>
+
     $("#open-toc").on("click", function () {
         $("#wiki-nav-list").toggle();
     })
 
     $("#wiki-nav-list > a").on("click", function () {
-        $("#wiki-nav-list").hide();
+        console.log(window.matchMedia("(max-width: 480px)"));
+        if (window.matchMedia("(max-width: 480px)").matches) {
+            $("#wiki-nav-list").hide();
+        }
     })
+
+
 </script>
 
 </body>
