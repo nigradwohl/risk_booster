@@ -22,15 +22,20 @@ const info_data = {
         "subheading": "",  // placeholder for a potential subheading.
         "aliases": ["Wahrscheinlichkeit"],  // list of other names.
         "annotation": "",  // internal annotations; should be eventually ""
-        "overview": ["Das Risiko beschreibt wie wahrscheinlich es ist, dass ein bestimmtes Ereignis eintritt (im medizinischen Kontext häufig eine Erkrankung)",
-            "Der Begriff ist nicht deckungsgleich mit dem Alltagsverständnis",
+        "overview": ["Risiko beschreibt wie wahrscheinlich es ist, dass ein bestimmtes Ereignis eintritt (im medizinischen Kontext häufig eine Erkrankung, aber auch eine Genesung)",
+            "Der Begriff ist nicht deckungsgleich mit dem Alltagsverständnis, das sich typischerweise eher auf negative Ereignisse beschränkt",
             "Der Risikobegriff im Kontext der Risikokommunikation kann meist durch \"Wahrscheinlichkeit\" ersetzt werden."],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": ["Das Risiko, sich mit einer Erkrankung anzustecken",
             "Symptome auszubilden",
             "an einer Erkrankung zu versterben, oder",
             "sich bei einer Sportart zu verletzen"],  // array of list items with examples.
         "popup": [],
-        "maintext": "<p>Erwähnen: Relative risiken.</p>"
+        "maintext": "<p>Risiko beschreibt wie wahrscheinlich es ist, dass ein bestimmtes Ereignis eintritt. " +
+            "Risikoinformation kann mit Worten oder Zahlen kommuniziert werden. Die Leitlinein für evidezbasierte Gesundheitskommunikation " +
+            "empfehlen Risiken nicht nur verbal anzugeben sondern immer auch zahlen zu berichten. " +
+            "Diese Zahlen können <a href='#wiki-abs'>absolut</a> oder <a href='#wiki-rel'>relativ sein</a>, " +
+            "sprich, die Wahrscheinlichkeit für eine Population oder Gruppe angeben oder die Wahrscheinlichkeiten für " +
+            "verschiedne Gruppen als Vielefache vergleichen.</p>"
 
     },
     "effside": {
@@ -130,17 +135,21 @@ const info_data = {
         "aliases": [""],  // list of other names.
         "annotation": "",
         "overview": [
+            "Drücken einen Anteil von 100 aus",
             "Absolute Ereigniswahrscheinlichkeiten sind relativen Angaben vorzuziehen",
             "Für <a href=\"risk_wiki.html#wiki-rel\">relative Angaben</a>" +
             " (z.B., eine Erhöhung von 50%, eine Impfstoffwirksamkeit von 90%) sollten unbedingt die Basisrisiken berichtet werden",
-            "Prozentzahlen sollten nur für Zahlenwerte größer 1% verwendet werden (ansonsten sind <a href=\"#wiki-nh\">natürliche Häufigkeiten</a> vorzuziehen)."],
+            "Prozentzahlen sind eine Alternative zu natürlichen Häufigkeiten und bedeuten dasselbe wie 1 von 100",
+            "•\tProzentzahlen sollten nur für Zahlenwerte größer 1% verwendet werden, ansonsten sollten  <a href=\"#wiki-nh\">natürliche Häufigkeiten</a> verwendet werden."],
         "examples": ["Die Wahrscheinlichkeit zu erkranken, wenn man auf eine infizierte Person getroffen ist liegt bei 2% (absolut).",
             "Das Infektionsrisiko war in der Kontrollgruppe 50% höher (relativ).",
             "52% der Versuchsteilnehmer*innen waren weiblich (absolut)."],
         "popup": ["<ul><li>Achten Sie darauf anzugeben, auf welche Gruppe sich der Prozentanteil bezieht</li></ul>"],
         "maintext": // "<p>Prozentzahlen sollten nur bei Angaben größer als 1% verwendet werden.</p>" +
-            "<p>Besser als <a href=\"\">Prozentzahlen</a> sind typischerweise <a href=\"#wiki-nh\">natürliche Häufigkeiten</a> (z.B., 1 aus 100 oder 1 aus 1000). " +
-            "Diese werden häufig besser verstanden, insbesondere, für Prozentzahlen < 1%.</p>" +
+            "<p>Prozentzahlen drücken aus, auf welchen Anteil von 100 eine Aussage zutrifft " +
+            "(lat.-it. per cento: von Hundert). Damit haben Sie eine feste Bezugsgröße.</p>" +
+            "<p>Häufig robuster als Prozentzahlen sind natürliche Häufigkeiten (z.B., 1 aus 100 oder 1 aus 1000). " +
+            "Diese werden häufig besser verstanden. Insbesondere, für Prozentzahlen kleiner als 1% können so Kommazahlen vermieden werden.</p>" +
             "<p>1% einspricht den <a href='#wiki-nh'>natürlichen Häufigkeiten</a> 1 von 100 oder 10 von 1000. " +
             "Folglich entspricht 0,1% (oder ein Promille) 1 in 1000 und 0,01% entspricht 1 in 10,000." +
             "Nach derselben Logik entsprechen 15 von 100 und 150 von 1000 15%.</p>"
@@ -261,6 +270,14 @@ const info_data = {
         ],
         "maintext":
             "<h4 id='wiki-relrisk'>Relatives Risiko</h4>" +
+            "<p>Relatives Risiko: beschreibt das Verhältnis der Wahrscheinlichkeit, dass ein Ereignis in einer " +
+            "exponierten Gruppe im Vergleich zu dem gleichen Ereignis in einer nicht-exponierten Gruppe auftritt. " +
+            "Zum Beispiel könnten Menschen, die regelmäßig rauchen (exponierte Gruppe) im Vergleich zu Menschen, " +
+            "die nicht rauchen (nicht exponierte Gruppe), einem höheren Risiko für Lungenkrebs ausgesetzt sein.</p>" +
+            "<p>Ein relatives Risiko von 1 spricht für keinen Effekt, also ist das Risiko für exponierte und " +
+            "nicht-exponierte Gruppe gleich hoch. Wenn das relative Risiko >1 ist, spricht es für ein " +
+            "erhöhtes Risiko der exponierten Gruppe gegenüber der nicht-exponierten Gruppe. Bei einem Wert <1, " +
+            "ist es genau das Gegenteil, d.h. ein erhöhtes Risiko der nicht-exponierten Gruppe gegenüber der nicht-exponierten Gruppe. </p>" +
             "<p>Ein relativer Risikoanstieg um das 5-fache klingt erheblich. Bei einer Erkrankung die nur 1 Person " +
             "unter 10.000 betrifft, bedeutet ein solcher Anstieg aber nur, dass unter denjenigen mit dem Risikofaktor " +
             "(z.B., mit einer bestimmten Ernährungsweise) anstelle von einer Person (0.01%), 5 Personen in 10.000 (0.05%), " +
@@ -328,7 +345,12 @@ const info_data = {
         ],
         "maintext":
             "<h4 id='wiki-relrisk'>Absolutes Risiko</h4>" +
-            "Absolute Risiken sollten möglichst immer berichtet werden, da sie realistischere Risikoeinschätzungen ermöglichen." +
+            "<p>Das Absolute Risikoist die Wahrscheinlichkeit in der exponierten (oder nicht-exponierten) " +
+            "Gruppe zu erkranken. Es wird häufig über die Inzidenzrate (also die Anzahl an Neuerkrankungen) ausgedrückt. " +
+            "Eine Population habe die Größe von 100 Raucher*innen und 75 erkranken an einem Lungenkarzinom. " +
+            "Demnach 25 nicht. Das absolute Risiko wäre demnach die Inzidenzrate der Raucher*innen, die an einem " +
+            "Lugenkarzinom erkrankt sind. Dies wäre: 75 / (75 + 25) = 0,75. </p>" +
+            "Absolute Risiken sollten möglichst immer berichtet werden, da sie im Vergleich zu absoluten Risiken realistischere Risikoeinschätzungen ermöglichen." +
             "<p>Absolute Risiken meinen die Wahrscheinlichkeit in einer Gruppe (mit oder ohne Exposition gegenüber einem Risikofaktor oder einer Itervention) " +
             "Bei einer Erkrankung, die durch Ernährung wahrscheinlicher wird könnte unter denjeningen ohne das problematische Ernährungsverhalten" +
             "1 Person unter 10.000 erkranken (absolutes Risiko in der <a href='#wiki-contr'>Vergleichsgruppe</a>)" +
@@ -362,12 +384,22 @@ const info_data = {
         "subheading": "",  // placeholder for a potential subheading.
         "aliases": [""],  // list of other names.
         "annotation": "",  // internal annotations; should be eventually ""
-        "overview": ["Intervall, in dem der wahre Wert in 95% aller Experimente liegen würde, wenn man dasselbe Experiment sehr oft wiederholt."],  // array of list items overview of most important points, displayed in wiki and text checker.
-        "examples": [],  // array of list items with examples.
+        "overview": [
+            "Drückt die Unsicherheit um ein Ergebnis (z.B., ein Risiko oder einen Unterschied zwischen Risiken) aus, " +
+            "als wie zuverlässig das Ergebnis ist",
+            "Intervall, in dem der wahre Wert in 95% aller Experimente liegen würde, wenn man dasselbe Experiment sehr oft wiederholt oder man sehr oft eine " +
+            "Stichprobe aus der Selben Population zieht."],  // array of list items overview of most important points, displayed in wiki and text checker.
+        "examples": ["Die Schutzwirkung beträgt 97,4 % (95 % KI: 91,4 – 99,2)."],  // array of list items with examples.
         "popup": ["<p><a href='wiki-confint'>Konfidenzintervalle</a> werden in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +
         "<p>Typischerweise werden Konfidenzintervalle, die <emph>nicht</emph> null einschließen, was eine akzeptable Unischerheit ausdrückt.</p>"],
         "maintext": "<p>Konfidenzintervalle werden in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +
-            "<p>Typischerweise werden Konfidenzintervalle, die <emph>nicht</emph> null einschließen, was eine akzeptable Unischerheit ausdrückt.</p>"
+            "<p>Schließt das Konfidenzintervall eines Unterschiedes nicht den Wer null ein, wird die Unsicherheit, dass ein Effekt, " +
+            "der nicht null ist, vorliegt als akzeptabel angesehen. Man spricht dann häufig auch von \"statistischer Signifikanz\".</p>" +
+            "<p>Typischerweise werden Konfidenzintervalle meist für 90% oder 95% gewählt. Die genaue Interpretation ist relativ schwierig " +
+            "und führt auch bei Expert*innen häufig zu Fehlern. Ein 90% Konfidenzintervall etwa bedeutet, dass der " +
+            "tatsächliche Mittelwert nach unendlich vielen Stichproben aus einer Population in 90% der Konfidenzintervalle " +
+            "enthalten ist. Im Wissenschaftskontext wird es meist anstelle von oder in Verbindung mit dem <a href='#wiki-pval'>p-Wert</a> " +
+            "verwendet und macht ähnliche Aussagen.</p>"
     },
     "cprob": {
         "heading": "Bedingte Wahrscheinlichkeit",  // the heading.
@@ -502,7 +534,8 @@ const info_data = {
             "ist dies bei Medikamenten typischerweise deutlich komplexer. " +
             "So muss zum Beispiel ausgeschlossen werden, dass die vermeintliche Heilung durch ein Medikament eigentlich " +
             "durch einfaches Abwarten zustande gekommen ist.</p>" +
-            "<p>Nur <a href='risk_wiki.html#wiki-rct'>Experimente</a> (z.B., randomized controlled trial, RCT) " +
+            "<p>Nur <a href='risk_wiki.html#wiki-expe'>Experimente</a>" +
+            "(z.B., <a href='risk_wiki.html#wiki-rct'>randomized controlled trials</a>, RCT) " +
             "erlauben es zuverlässig kausale Schlüsse zu ziehen. Dabei werden Personen zufällig auf die zu " +
             "vergleichenden Gruppen aufgeteilt (z.B., Medikament und Placebo), " +
             "so dass Unterschiede zwischen den Gruppen nicht systematisch sind und damit beobachtete " +
@@ -529,41 +562,92 @@ const info_data = {
         "aliases": [],  // list of other names.
         "annotation": "",  // internal annotations; should be eventually ""
         "overview": [
-            "Im Experiment weren durch zufällige Zuweisung auf eine Experimental- und eine Kontrollgruppe " +
+            "Personen werden zufällig einer Behandlung oder einer Vergleichsbehandlung (häufig mit einem Placebo) zugewiesen",
+            "Durch die zufällige Zuweisung werden systematische Unterschiede zwischen den Gruppen vermieden, " +
+            "so dass man <a href='#wiki-causal'>Kausalaussagen</a> machen kann."
+
+        ],  // array of list items overview of most important points, displayed in wiki and text checker.
+        "examples": [
+            "Randomized Controlled Trial (RCT; z.B., werden 1.00 Personen zufällig in zwei Gruppen aufgeteilt: " +
+            "500 Personen erhalten das Medikament und die anderen 500 Personen erhalten eine Vergleichsbehandlung oder ein Placebo.)"
+        ],  // array of list items with examples.
+        "popup": ["Im Experiment weren durch zufällige Zuweisung auf eine Experimental- und eine Kontrollgruppe " +
             "systematische Unterschiede zwischen den Gruppen ausgeschlossen, " +
             "so dass (anders als bei der Beobachtung von Gruppen oder Zeitpunkten) " +
             "<a href='#wiki-causal'>Kausalaussagen</a> möglich sind.",
             "In der Medizin ist en typisches Experiment der \"Randomized Controlled Trial\" (RCT): " +
             "Personen werden zufällig einer Behandlung oder einer Vergleichsbehandlung " +
-            "(häufig mit einem <a href='#wiki-placebo'>Placebo</a>) zugewiesen"
-        ],  // array of list items overview of most important points, displayed in wiki and text checker.
-        "examples": [],  // array of list items with examples.
-        "popup": ["TODO!"],
-        "maintext": "" +
-            "<h3 id='wiki-rct'>Randomized Controlled Trial (RCT)</h3>"   // string of main text for wiki.
+            "(häufig mit einem <a href='#wiki-placebo'>Placebo</a>) zugewiesen"],
+        "maintext":
+            "<p>Im Allgemeinen besteht ein Experiment darin, das Versuchspersonen zufällig auf verschiedenen Behandlungen " +
+            "verteilt werden. So werden systematische Unterschiede ausgeschlossen und Kausalaussagen ermöglicht. " +
+            "Ein in der medizin verbreitetes Experiment " +
+            "</p>" +
+            "<h3 id='wiki-rct'>Randomized Controlled Trial (RCT)</h3>" +  // string of main text for wiki.
+        "   <p>Werden 1000 Personen zufällig auf zwei Gruppen (z.B., Medikament mit Wirkstoff und Placebo) " +
+            "verteilt, so ist bekannt, dass sich die beiden Gruppen nicht systematisch in anderen Eigenschaften, " +
+            "wie zum Beispiel Geschlecht oder Gesundheitsverhalten (z.B., Rauchen) unterscheiden. Dies ist selbst " +
+            "dann wahr, wenn es gewissen Unterschiede zwischen den Gruppen gibt (es z.B., ein paar mehr Raucher in " +
+            "der einen Gruppe gibt als in der anderen). Diese Unterschiede sind nur dann problematisch, wenn es Gründe " +
+            "gibt, dass die Randomisierung fehlgeschlagen ist. Das kann beispielsweise der Fall sein, wenn für eine " +
+            "Gruppe systematisch mehr Personen vor Kneipen rekrutiert wurden.</p>" +
+            "<p>Die Abwesenheit anderer systematischer Unterschiede ist für den Vergleich essenziell. Stellen wir uns " +
+            "ein Medikament gegen Lungenprobleme vor. Gibt es in der Gruppe, die das Medikament erhält, mehr Raucher, " +
+            "so wird die Wirkung möglicherweise unterschätzt, da zusätzliche Lungenerkrankungen durch das Rauchen " +
+            "auftreten. Umgekehrt könnte ein systematisch höherer Anteil an Rauchenden in der Placebogruppe dazu führen, " +
+            "dass das Medikament als wirksam eingestuft wird, obwohl der höhere Anteil an Erkrankungen auf das " +
+            "Rauchen zurückzuführen ist und nicht auf die Genesungen in der Medikamentengruppe.</p>" +
+            "<p>Sind die Unterschiede in anderen Eigenschaften aber zufällig (und die Stichprobe hinreichend groß), " +
+            "können wir davon ausgehen, dass die Unterschiede zwischen den Gruppen auf das Medikament und nicht auf " +
+            "andere Eigenschaften (wie etwa das Rauchverhalten) zurückzuführen ist.</p>" +
+            "<p>Die Zuteilung sollte idealerweise nicht nur zufällig sein, sondern auch blind oder doppelblind. " +
+            "Das bedeutet, dass die Versuchspersonen während der Untersuchung nicht wissen in welcher Gruppe sie sind. " +
+            "Bei doppelblinden Studien wissen zusätzlich diejeningen, die mit den Versuchspersonen interagieren nicht, " +
+            "in welcher Bedingung diese sind. Diese Verhindert zum Beispiel, dass das Wissen, dass die Scheinbehandlung wirkungslos ist, " +
+            "die Ergebnisse zugunsten eine zu hohen Wirksamkeit beeinflusst.</p>"
     },
-    "treat": {
-        "heading": "Behandlungsgruppe",  // the heading.
+    "treat-control": {
+        "heading": "Untersuchungs- und Vergleichsgruppe",  // the heading.
         "subheading": "",  // placeholder for a potential subheading.
         "aliases": ["Impfgruppe"],  // list of other names.
         "annotation": "",  // internal annotations; should be eventually ""
-        "overview": ["Gruppe die eine Behandlung erhält oder bei der ein Einfluss vorliegt (im Unterschied zur <a href=\"#wiki-control\">Verlgeichs- oder Kontrollgruppe</a>",
-            "Der Vergleich von Behandlungs- und Vergleichsgruppe erlaubt Aussagen über den Effekt (und dessen Größe), also z.B., ob ein Medikament wirksam Symptome lindert."],  // array of list items overview of most important points, displayed in wiki and text checker.
-        "examples": [],  // array of list items with examples.
+        "overview": ["Untersuchungsgruppe: Gruppe, die eine Behandlung erhält oder bei der ein Einfluss vorliegt",
+            "Vergleichsgruppe: Gruppe, in der eine Behandlung oder ein Einfluss nicht vorliegt, um den Effekt des Einflusses zu bestimmen.",
+            "Der Vergleich von Behandlungs- und Vergleichsgruppe erlaubt Aussagen über den Effekt (und dessen Größe), also z.B., ob ein Medikament wirksam Symptome lindert" +
+            "oder ein Verhalten den Gesundheitszustand verbessert oder verschlechtert.",
+            "Bei zufälliger Zuteilung im <a href='#wiki-expe'>Experiment</a> können Aussagen über <a href='#wiki-causal'>Ursache und Wirkung</a> gemacht werden."],  // array of list items overview of most important points, displayed in wiki and text checker.
+        "examples": ["Behandlungsgruppe: Gruppe, die tatsächlich ein Medikament erhält; Gruppe, die einem Risikofaktor " +
+        "(z.B., Luftverschmutzung) ausgestzt war; Gruppe, die ein Gesundheitsverhalten (z.B., regelmäßigen Sport) zeigt",
+        "Vergleichsgruppe: Placebogruppe bei Impf- und Medikamentenstudien, Gruppe, die einem Risikofaktor (z.B., Luftverschmutzung) " +
+        "nicht ausgesetzt war; Gruppe, die ein Gesundheitsverhalten (z.B., regelmäßigen Sport) nicht zeigt"],  // array of list items with examples.
         "popup": [],
-        "maintext": ""   // string of main text for wiki.
+        "maintext": "<p>Der Vergleich von Gruppen bei denen ein Merkmal (z.B. eine Behandlung oder ein Umwelteinfluss) vorliegt " +
+            "ermöglicht es, zu verstehen, das Merkmal einen Unterschied hervorruft. " +
+            "Ein solcher Vergleich ermöglicht nicht notwendigerweise Aussagen über <a href='#wiki-causal'>Ursache und Wirkung</a>, " +
+            "da beim Vergleich von Gruppen auch andere Unterschiede eine Rolle spielen können.</p>" +
+            "<p>Erfolgt die Zuteilung in Behandlungs- und Kontrollgruppe zufällig, spricht man von einem <a href='#wiki-expe'>Experiment</a>. " +
+            "Typischerweise wissen die Versuchspersonen nicht, in welcher Gruppe sie sind (sie sind „blind“), so dass z.B. " +
+            "Berichte über verbesserungen des Gesundheitszustandes oder Nebenwirkungen nicht systematisch auf " +
+            "Erwartungseffekte zurückgeführt werden können (s. <a href='#wiki-palceebo'>Placebo</a>). " +
+            "Versuchspersonen müssen nach einer Studie aufgeklärt werden, in welcher Gruppe sie waren.</p>"   // string of main text for wiki.
     },
-    "teval": {
-        "heading": "Untersuchungszeitpunkt",
+    "teval-comp": {
+        "heading": "Untersuchungs- und Vergleichszeitpunkt",
         "subheading": "",  // placeholder for a potential subheading.
         "aliases": ["Impfgruppe"],  // list of other names.
         "annotation": "",  // internal annotations; should be eventually ""
-        "overview": ["Zeitpunkt zu dem Daten gesammelt werden, die mit Daten zu einem <a href=\"#wiki-tcomp\">Vergleichszeitpunkt</a> verglichen werden.",
-            "Der Vergleich von Untersuchungs- und Vergleichszeitpunkt erlaubt Aussagen über Veränderungen über die Zeit (und deren Größe), " +
-            "also z.B., ob es Menschen besser oder schlechter geht (nur aufgrund der Zeit sind üblicherweise keine Aussagen über die Wirkmechanismen möglich)."],  // array of list items overview of most important points, displayed in wiki and text checker.
+        "overview": ["Untersuchungszeitpunkt: Zeitpunkt, zu dem Daten gesammelt werden, die mit Daten zu einem Vergleichszeitpunkt verglichen werden.",
+            "Vergleichszeitpunkt: Zeitpunkt mit dem Daten zu einem Untersuchungszeitpunkt verglichen werden.",
+        "Der Vergleich von Untersuchungs- und Vergleichszeitpunkt erlaubt Aussagen über Veränderungen über die Zeit " +
+        "(und deren Größe), also z.B., ob es Menschen besser oder schlechter geht (nur aufgrund der Zeit sind üblicherweise keine Aussagen über die Wirkmechanismen möglich)."],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": [],  // array of list items with examples.
         "popup": ["Zeitpunkt zu dem eine Untersuchung stattfindet und der mit einem <a href=\"#wiki-tcomp\">Vergleichszeitpunkt</a> verglichen wird."],
-        "maintext": "Ähnlich zur <a href=\"#wiki-treat\">Behandlungsgruppe</a> etwa in Medikamentenstudien."   // string of main text for wiki.
+        "maintext": "<p>Der Untersuchungszeitpunkt ist ähnlich zur Untersuchungsgruppe etwa in Medikamentenstudien, während der Vergleichszeitpunkt der Kontrollgruppe ähnlich ist. " +
+            "Ein entscheidender Unterschied ist, dass Personen nicht zufällig auf Zeitpunkte zugewiesen werden können. " +
+            "Daher können Zeitpunkte nicht für ein <a href='#wiki-expe'>Experiment</a> verwendet werden und Aussagen über <a href='#wiki-causal'>Ursache und Wirkung</a>" +
+            "sind folglich in der Regel nicht möglich. " +
+            "Neben dem Verstreichen von Zeit können verschiedene Einflüsse eine Rolle spielen, so dass der Vergleich von Zeitpunkten " +
+            "zunächst nur Aufschluss über die Existenz möglicher Veränderungen geben kann.</p>"
     },
     "control": {
         "heading": "Vergleichsgruppe",  // the heading.
@@ -595,9 +679,16 @@ const info_data = {
         "annotation": "",  // internal annotations; should be eventually ""
         "overview": ["Eine Scheinbehandlung, bei der ein Präparat ohne Wirkstoff verabreicht wird.",
             "Wird häufig als <a href='#wiki-control'>Kontrollgruppe</a> in medizinischen Studien verwendet, um den Wirkstoff eines Medikamentes über die von Patienten erwartete Wirkung hinaus zu untersuchen."],  // array of list items overview of most important points, displayed in wiki and text checker.
-        "examples": [],  // array of list items with examples.
+        "examples": ["Kochsalzlösung", "Zuckerpillen"],  // array of list items with examples.
         "popup": [],
-        "maintext": "Versuchspersonen müssen nach einer Studie aufgeklärt werden, in welcher Gruppe sie waren."   // string of main text for wiki.
+        "maintext": "Placebos sind Scheinbehandlungen. Anstelle eines Medikaments wird ein Präparat ohne Wirkstoff " +
+            "verabreicht (z.B., Kochsalzlösung bei einer Impfung, Zuckertabletten ohne Wirkstoff anstelle von Medikamenten). " +
+            "Zur Untersuchung der Wirksamkeit von Medikamenten ist dies wichtig, da so Erwartungseffekte ausgeschlossen " +
+            "werden können. Erwartungseffekte treten auf, da alleine die Erwartung, dass mit der Einnahme eines Medikamentes " +
+            "eine Besserung eintritt, dazu führen kann, dass eine Besserung wahrgenommen wird. Umgekehrt kann es auch " +
+            "die Erwartung von Nebenwirkungen wahrscheinlicher machen, dass tatsächlich Nebenwirkungen wahrgenommen und " +
+            "berichtet werden. Um Nutzen und Schaden des Wirkstoffes an sich festzustellen sollte daher ein Vergleich " +
+            "mit einem Placebo stattfinden."   // string of main text for wiki.
     }
 
 }
