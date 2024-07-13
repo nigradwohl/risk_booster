@@ -117,147 +117,57 @@ $(document).ready(function () {
          * @type {{date: {regex: RegExp}, dur: {regex: RegExp}, medical: {regex: RegExp}, mult: {regex: RegExp}, pval: {regex: RegExp}, currency_pre: {regex: RegExp}, year: {regex: RegExp}, yearrange: {regex: RegExp}, year2: {regex: RegExp}, year3: {regex: RegExp}, perc: {regex: RegExp}, freq_word: {regex: RegExp}, currency_post: {regex: RegExp}, legal: {regex: RegExp}, datemon: {regex: RegExp}, carry_forward_pre: {regex: RegExp}, yearnum: {regex: RegExp}, other_num: {regex: RegExp}, misc: {regex: RegExp}, medical_post: {regex: RegExp}, perc_word: {regex: RegExp}, enum: {regex: RegExp}, mult2: {regex: RegExp}, carry_forward_post: {regex: RegExp}, nh: {regex: RegExp}, confint: {regex: RegExp}, time: {regex: RegExp}, age: {regex: RegExp}, monyear: {regex: RegExp}, dur2: {regex: RegExp}}}
          */
         const check_numbers_dict = {
-            "perc": {
-                "regex": regex_perc,
-                // "tooltip": "Ich bin eine Prozentzahl und möchte gerne eine Referenz",
-                // "note": "Sie haben eine Prozentzahl verwendet. Stellen Sie sicher, dass eine Referenz vorhanden ist [mögliche Referenz ggf. ausflaggen!]. klicken Sie [HIER] um mehr zu erfahren."
-            },
-            "perc_word": {
-                "regex": RegExp("(?<perc>(" + collapse_regex_or(numwords) + ") ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.?!])" + ")", "dg")
-            },
-            "freq_word": {
-                "regex": regex_numwords
-            },
-            "nh": {
-                "regex": regex_nh,
-                // "tooltip": "Ich bin eine \"natürliche\" Häufigkeit",
-                // "note": "Sie haben eine natürliche Häufigkeit verwendet. Das ist sehr gut. Am besten sollte der Nenner über Vergleiche der Gleiche sein (z.B. 1 aus 100 Geimpften erkrankt, während 3 aus 100 ungeimpften erkranken)."
-            },
-            "nh2": {
-                "regex": regex_nh2,
-            },
-
+            "perc": regex_perc,
+            "perc_word": RegExp("(?<perc>(" + collapse_regex_or(numwords) + ") ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.?!])" + ")", "dg"),
+            "freq_word": regex_numwords,
+            "nh": regex_nh,
+            "nh2": regex_nh2,
             // multtude of something (e.g. 20-fach).
-            "mult": {
-                "regex": regex_mult
-            },
-            "mult2": {
-                "regex": /(?<mult>([Hh]alb|[Dd]oppelt|[Dd]reifach|[Dd]reimal) (so )?(viele|gr[oö]ß|hoch|niedrig|besser|erhöht|höher))/dg
-            },
-            "pval": {
-                "regex": RegExp("(?<pval>p ?[\\<\\=] ?" + pat_num + ")", "dg")
-            },
-            "confint": {
-                "regex": RegExp("(?<confint>" + pat_num + " ?% ?[CK]I:? \\[?" + pat_num + " ?[-\\u2013;,] ?" + pat_num + "\\]?)", "dg")
-            },
-            "yearnum": {
-                "regex": /(?<nyear>\d+([.|,]\d+)( Jahr[a-z]*))/dg  // require comma or point separator!
-                // "regex": /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
-            },
-            "yearnum2": {
-                "regex": /(?<nyear>\d+( Jahr[a-z]*) ([A-Za-z]+ )?(?=länger|steiger|reduzier))/dg  // require comma or point separator!
-                // "regex": /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
-            },
-            // "lifeexpectancy": {
-            //     "regex": RegExp("(?<nyear>Lebens(dauer|erwartung) (zwischen|von) " + pat_num + "( Jahr[a-z]*))", "dg")  // require comma or pouint separator!
-            //     // "regex": /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
-            // },
+            "mult": regex_mult,
+            "mult2": /(?<mult>([Hh]alb|[Dd]oppelt|[Dd]reifach|[Dd]reimal) (so )?(viele|gr[oö]ß|hoch|niedrig|besser|erhöht|höher))/dg,
+            "pval": RegExp("(?<pval>p ?[\\<\\=] ?" + pat_num + ")", "dg"),
+            "confint": RegExp("(?<confint>" + pat_num + " ?% ?[CK]I:? \\[?" + pat_num + " ?[-\\u2013;,] ?" + pat_num + "\\]?)", "dg"),
+            "yearnum": /(?<nyear>\d+([.|,]\d+)( Jahr[a-z]*))/dg,  // require comma or point separator!
+            "yearnum2": /(?<nyear>\d+( Jahr[a-z]*) ([A-Za-z]+ )?(?=länger|steiger|reduzier))/dg,  // require comma or point separator!
+            // "lifeexpectancy":
+            //     RegExp("(?<nyear>Lebens(dauer|erwartung) (zwischen|von) " + pat_num + "( Jahr[a-z]*))", "dg")  // require comma or pouint separator!
+            //     // /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
+            // ,
             // Currently excluded:
-            "rank": {
-                "regex": /(?<rank>(Rang|Pl[aä]tze) \d+( (und|bis) \d+)?)/dg
-                // "regex": /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
-            },
+            "rank": /(?<rank>(Rang|Pl[aä]tze) \d+( (und|bis) \d+)?)/dg,
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             // Simple matches:
-            "age": {
-                "regex": /(?<age>(?<![,.])(\d+-? (bis|und) )?\d+-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
-                // "regex": /(?<age>(\d+-? bis )*\d+([.|,]\d+)?-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg
-            },
-            // "age2": {
-            //     "regex": RegExp("(?<age>" + pat_num + "( Jahre|\-jährig)" + ")", "dg")
-            // },
-            "currency_post": {
-                "regex": RegExp("(?<currency>" + pat_num + " ?(EUR|€|Euro|Dollar)" + ")", "dg")
-            },
-            "currency_pre": {
-                "regex": RegExp("(?<currency>" + "(USD|\$) ?" + pat_num + ")", "dg")
-            },
-            "time": {
-                "regex": /(?<time>(\d{1,2}(\.\d{2})? Uhr)|(\d{1,2}:\d{2}))/dg
-            },
-            "date": {
-                "regex": /(?<date>\d{1,2}\.\d{1,2}\.(18|19|20)\d{2}(?![|.\w]))/dg
-            },
-            "month": {
-                "regex": RegExp("(?<date>\\d{1,2}\\.? (" + collapse_regex_or(month_names) + ")( \\d{4})?)", "dg")
-            },
-            "datemon": {
-                "regex": /(?<date>\d{1,2}\.\d{1,2}\.(18|19|20)\d{2}(?![|.\w]))/dg
-            },
-            "year": {
-                "regex": /(?<year>(Jahr|Anfang|Ende|Mitte|Nach) \d{4})/dg
-            },
-            "year2": {
-                "regex": /(?<year>(18|19|20)?\d{2}er)/dg
-            },
-            "year3": {
-                "regex": /(?<year>(?<!(,|\.|Jahr |Anfang |Ende |Mitte |Nach ))(19|20)\d{2}(?![|.\w]))/dg  // 20th and 21st century.
-            },
-            "monyear": {
-                "regex": RegExp("(?<year>" + collapse_regex_or(month_names) + " \\d{4})", "dg")
-            },
-            "yearrange": {
-                "regex": /(?<year>(zwischen|von) (18|19|20)\d{2}(?![|.\w]) (und|bis) (18|19|20)?\d{2}(?![|.\w]))/dg
-            },
-            "dur": {
-                "regex": /(?<dur>[0-9]+(-stündig|-tägig|-monatig| Minuten?| Stunden?| Tagen?| Wochen?| Monate?))/dg
-            },
-            "dur2": {
-                "regex": regex_dur2
-            },
-            "legal": {
-                "regex": /(?<legal>(Artikel|§|Absatz|Paragra(ph|f)) ?\d+)/dg
-            },
-            "medical": {
-                "regex": RegExp("(?<medical>(BMI|Diabetes Typ) ?" + pat_num + ")", "dg")
-            },
-            "medical_post": {
-                "regex": RegExp("(?<medical>" + pat_num + " (Gene))", "dg")
-            },
+            "age": /(?<age>(?<![,.])(\d+-? (bis|und) )?\d+-?( Jahr[a-z]*[ |.]?|-[Jj]ährig[a-z]*))/dg,
+            "currency_post": RegExp("(?<currency>" + pat_num + " ?(EUR|€|Euro|Dollar)" + ")", "dg"),
+            "currency_pre": RegExp("(?<currency>" + "(USD|\$) ?" + pat_num + ")", "dg"),
+            "time": /(?<time>(\d{1,2}(\.\d{2})? Uhr)|(\d{1,2}:\d{2}))/dg,
+            "date": /(?<date>\d{1,2}\.\d{1,2}\.(18|19|20)\d{2}(?![|.\w]))/dg,
+            "month": RegExp("(?<date>\\d{1,2}\\.? (" + collapse_regex_or(month_names) + ")( \\d{4})?)", "dg"),
+            "datemon": /(?<date>\d{1,2}\.\d{1,2}\.(18|19|20)\d{2}(?![|.\w]))/dg,
+            "year": /(?<year>(Jahr|Anfang|Ende|Mitte|Nach) \d{4})/dg,
+            "year2": /(?<year>(18|19|20)?\d{2}er)/dg,
+            "year3": /(?<year>(?<!(,|\.|Jahr |Anfang |Ende |Mitte |Nach ))(19|20)\d{2}(?![|.\w]))/dg,  // 20th and 21st century.
+            "monyear": RegExp("(?<year>" + collapse_regex_or(month_names) + " \\d{4})", "dg"),
+            "yearrange": /(?<year>(zwischen|von) (18|19|20)\d{2}(?![|.\w]) (und|bis) (18|19|20)?\d{2}(?![|.\w]))/dg,
+            "dur": /(?<dur>[0-9]+(-stündig|-tägig|-monatig| Minuten?| Stunden?| Tagen?| Wochen?| Monate?))/dg,
+            "dur2": regex_dur2,
+            "legal": /(?<legal>(Artikel|§|Absatz|Paragra(ph|f)) ?\d+)/dg,
+            "medical": RegExp("(?<medical>(BMI|Diabetes Typ) ?" + pat_num + ")", "dg"),
+            "medical_post": RegExp("(?<medical>" + pat_num + " (Gene))", "dg"),
             // Carry-forward match:
-            "carry_forward_pre": {
-                "regex": RegExp("(?<ucarryforward>((waren|sind) es|[Dd]avon[^.]*) (\\w+ ){0,2}" + pat_num + "(?=\\W))", "dg")
-                // (\w+ ){0,2} allows up to 2 more words.
-            },
-            "carry_forward_post": {
-                "regex": RegExp("(?<ucarryforward>" + pat_num + " (waren|sind) es)", "dg")
-            },
-            "phone": {
-                "regex": /(?<phone>[+]?[0-9]* ?([(]?[0-9]{0,3}[)])?[-\s.]?[0-9]{3,4}[-\s.]?[0-9]{3,4}[-\s.]?[0-9]{1,6})/dg
-            },
-            "misc": {
-                // MIscellaneous numbers to be excluded!
-                "regex": RegExp("(?<misc>(" + pat_num + " bis )?" + pat_num + "\\.? (Grad|Staat|Schritt|Kommentare|.[gC](?= .)))", "dg")
-            },
-            "degree": {
-                // MIscellaneous numbers to be excluded!
-                "regex": RegExp("(?<misc>(" + pat_num + " bis )?" + pat_num + "\\.?(.[gC](?= .)))", "dg")
-            },
+            "carry_forward_pre": RegExp("(?<ucarryforward>((waren|sind) es|[Dd]avon[^.]*) (\\w+ ){0,2}" + pat_num + "(?=\\W))", "dg"),
+            // (\w+ ){0,2} allows up to 2 more words.
+            "carry_forward_post": RegExp("(?<ucarryforward>" + pat_num + " (waren|sind) es)", "dg"),
+            "phone": /(?<phone>[+]?[0-9]* ?([(]?[0-9]{0,3}[)])?[-\s.]?[0-9]{3,4}[-\s.]?[0-9]{3,4}[-\s.]?[0-9]{1,6})/dg,
+            // MIscellaneous numbers to be excluded!
+            "misc": RegExp("(?<misc>(" + pat_num + " bis )?" + pat_num + "\\.? (Grad|Staat|Schritt|Kommentare|.[gC](?= .)))", "dg"),
+            "degree": RegExp("(?<misc>(" + pat_num + " bis )?" + pat_num + "\\.?(.[gC](?= .)))", "dg"),
             // Enumeration:
-            "enum": {
-                // MIscellaneous numbers to be excluded!
-                "regex": /(?<enum>\(\d{1,2}\))/dg
-            },
-            // "within_nums": {
-            //   "regex": RegExp("(?<misc>" +"\w*-?" + pat_num + ")", "dg")
-            // },
+            "enum": /(?<enum>\(\d{1,2}\))/dg,
+            // "within_nums":
+            //   RegExp("(?<misc>" +"\w*-?" + pat_num + ")", "dg")
             // Default number match:
-            "other_num": {
-                "regex": regex_num,
-                // "tooltip": "Ich weiß nicht, was ich für eine Zahl bin",
-                // "note": "Sie haben eine Zahl verwendet, für die wir nicht bestimmen konnten, was sie bedeutet. Stellen Sie sicher, dass die Bedeutung der Zahl klar ist."
-            }
-
+            "other_num": regex_num
         }
 
         const person_all = ["Proband", "[Tt]eilnehme", "[Pp]erson", "Menschen", "Frauen", "Männer", "Kinder", "Erwachsene"]
@@ -2232,27 +2142,12 @@ function detect_number_type(token_data, txt, numtype_dict) {
 
     // Detect matches that are indicative of certain data types:
     const relation_dict = {
-        "treatre_pre": {
-            "regex": /(?<treat>(\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,3}(auf die|unter den) ([a-zA-ZÄÖÜßäöü]+ ){0,2}geimpften (Proband\w+|Teilnehm\w+|Kind\w+|Behandelt)))/dg  // (\w+ ){0,2} are up to 2 more words.
-            // / (auf die tatsächlich geimpften (Proband\w+|Teilnehm\w+))/
-        },
-        "controlrel_pre": {
-            "regex": /(?<contr>\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,3}(in der|unter den (Teilnehme\w+ |Proband\w+){,2} der|auf die (Teilnehme\w+ |Proband\w+){,2}) (Kontroll|Placebo|Vergleichs)-?[Gg]ruppe)/dg
-        },
-        "treatre_post": {
-            "regex": /(?<treat>((auf die|unter den) ([a-zA-ZÄÖÜßäöü]+ ){0,2}(geimpften|behandelten) (Proband\w+|Teilnehm\w+)) ([a-zA-ZÄÖÜßäöü]+ ){1,2}\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,2})/dg  // (\w+ ){0,2} are up to 2 more words.
-            // / (auf die tatsächlich geimpften (Proband\w+|Teilnehm\w+))/
-        },
-        "treatre_post2": {
-            "regex": /(?<treat>((auf die|unter den) ([a-zA-ZÄÖÜßäöü]+ ){0,2}(Behandelt\w+)) ([a-zA-ZÄÖÜßäöü]+ ){1,2}\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,2})/dg  // (\w+ ){0,2} are up to 2 more words.
-            // / (auf die tatsächlich geimpften (Proband\w+|Teilnehm\w+))/
-        },
-        "controlrel_post1": {
-            "regex": /(?<contr>(auf die|unter den) (Teilnehme\w+ |Proband\w+){,2} ([a-zA-ZÄÖÜßäöü]+ ){1,2}(Kontroll|Placebo|Vergleichs)-?[Gg]ruppe ([a-zA-ZÄÖÜßäöü]+ ){1,2}\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,2})/dg
-        },
-        "controlrel_post2": {
-            "regex": /(?<contr>in der (Kontroll|Placebo|Vergleichs)[- ]?[Gg]ruppe ([a-zA-ZÄÖÜßäöü]+ ){1,2}\d+( [a-zA-ZÄÖÜßäöü]+){0,2})/dg
-        }
+        "treatre_pre": /(?<treat>(\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,3}(auf die|unter den) ([a-zA-ZÄÖÜßäöü]+ ){0,2}geimpften (Proband\w+|Teilnehm\w+|Kind\w+|Behandelt)))/dg,
+        "controlrel_pre": /(?<contr>\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,3}(in der|unter den (Teilnehme\w+ |Proband\w+){,2} der|auf die (Teilnehme\w+ |Proband\w+){,2}) (Kontroll|Placebo|Vergleichs)-?[Gg]ruppe)/dg,
+        "treatre_post": /(?<treat>((auf die|unter den) ([a-zA-ZÄÖÜßäöü]+ ){0,2}(geimpften|behandelten) (Proband\w+|Teilnehm\w+)) ([a-zA-ZÄÖÜßäöü]+ ){1,2}\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,2})/dg,
+        "treatre_post2": /(?<treat>((auf die|unter den) ([a-zA-ZÄÖÜßäöü]+ ){0,2}(Behandelt\w+)) ([a-zA-ZÄÖÜßäöü]+ ){1,2}\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,2})/dg,
+        "controlrel_post1": /(?<contr>(auf die|unter den) (Teilnehme\w+ |Proband\w+){,2} ([a-zA-ZÄÖÜßäöü]+ ){1,2}(Kontroll|Placebo|Vergleichs)-?[Gg]ruppe ([a-zA-ZÄÖÜßäöü]+ ){1,2}\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,2})/dg,
+        "controlrel_post2": /(?<contr>in der (Kontroll|Placebo|Vergleichs)[- ]?[Gg]ruppe ([a-zA-ZÄÖÜßäöü]+ ){1,2}\d+( [a-zA-ZÄÖÜßäöü]+){0,2})/dg
     }
 
     const ref_matches = detect_regex_match(txt, token_data, relation_dict);
@@ -2831,25 +2726,24 @@ function detect_unit(token_data) {
 }
 
 /**
- *
+ * Detect matches defined in an object in a regular expression.
+ * @param txt
+ * @param token_dat
+ * @param check_dict
+ * @returns {{arr_match: *[], match_id: any[], match_type: any[]}}
  */
 function detect_regex_match(txt, token_dat, check_dict) {
     let arr_match = [];
 
     // Array with precendence rules:
-    const arr_drop = [
-        {"set": ["age", "nyear"], "drop": "age"}  // which should be checked and which should be dropped?
-    ];
+    // const arr_drop = [
+    //     {"set": ["age", "nyear"], "drop": "age"}  // which should be checked and which should be dropped?
+    // ];
 
     // Loop over dictionary with rules:
     for (const [key, value] of Object.entries(check_dict)) {
-        // console.log(`${key} ${value["note"]}`); // "a 5", "b 7", "c 9"
-
         // Variant with exec:
-        const matches = get_regex_matches(txt, value["regex"]);
-
-        // console.log(`Raw matches for ${key}:`);
-        // console.log(matches);
+        const matches = get_regex_matches(txt, value);
         arr_match = arr_match.concat(matches);
 
     }
@@ -2857,7 +2751,6 @@ function detect_regex_match(txt, token_dat, check_dict) {
     // Clean up the matches from all for redundancy:
     console.log("Match objects:");
     console.log(JSON.stringify(arr_match));
-    // console.log(token_dat);
     // If a match is fully included in another, the match can be removed.
     // There is also some hierarchy (undefined numbers should only be output when
 
@@ -2869,19 +2762,14 @@ function detect_regex_match(txt, token_dat, check_dict) {
     let droplist = [];
 
     for (let match of arr_match) {
-        // console.log(match.start_end);
-
         // For a token to be part of a match, the following conditions must be fulfilled:
         // Match start must be greater or equal than token start and smaller than token end
         let match_start = token_dat.start.findIndex(x => x >= match.start_end[0] && x < match.start_end[1]);
         // Match end must be smaller or equal to token end and larger than token start
         // Search from the back!
         let match_end = token_dat.end.findLastIndex(x => x <= (match.start_end[1] - 1) && x > match.start_end[0]);
-        //
-        console.log("Match start and end: " + match_start + ", " + match_end);
+        console.log("Match start and end: " + match_start + ", " + match_end + ", " + match.type);
         console.log(match);
-        console.log(match.type);
-        // console.log(["unknown", "ucarryforward"].includes(match.type[0]));
         console.log(JSON.stringify(match_type));  // already found matches.
 
         // If one of the indices can be found:
@@ -2900,9 +2788,6 @@ function detect_regex_match(txt, token_dat, check_dict) {
             const n_ele = match_end - match_start + 1;
 
             // Check if the match has been defined already:
-            // console.log("Match start and end: " + match_start + ", " + match_end);
-            // console.log(token_match);
-            // console.log(match_type.toString());
             if (match_type[match_start] === -1 && match_type[match_end] === -1) {
 
                 console.log("Establish new match");
@@ -2914,11 +2799,8 @@ function detect_regex_match(txt, token_dat, check_dict) {
 
                 // console.log("Match type");
                 // console.log(match.type);
-                // Note: If we can establish a clear hierarchical structure, we could drop the match here:
-                // arr_match.splice(i);
                 droplist = droplist.concat(i);
                 let prev_ix = token_match[match_start]
-                // console.log(prev_ix);
 
                 const precedence_list = ["nyear", "age"];
                 // nyear has precedence over age, because it is more specific!
@@ -2944,9 +2826,7 @@ function detect_regex_match(txt, token_dat, check_dict) {
                     } else {
                         cur_type = prev_type;
                     }
-
                 }
-
 
             } else {
                 // console.log(`Drop match ${match.type}`);
@@ -2954,7 +2834,6 @@ function detect_regex_match(txt, token_dat, check_dict) {
             }
 
             if (cur_type !== -1) {
-
                 // Update the data when anything could be found:
                 // console.log(`Replacing ${n_ele} elements with matchtype ${cur_type}`);
                 token_match.splice(match_start, n_ele, Array(n_ele).fill(match_id));
@@ -2964,16 +2843,9 @@ function detect_regex_match(txt, token_dat, check_dict) {
             }
 
         }
-
         // Increment match ID:
         i++;
-
     }
-
-    console.log("Match data (raw):");
-    // console.log(token_match);
-    // console.log(match_type);
-    // console.log(droplist);
 
     // Remove the indices that have to be dropped:
     arr_match = arr_match.filter((ele, index) => !droplist.includes(index));
@@ -2982,15 +2854,9 @@ function detect_regex_match(txt, token_dat, check_dict) {
     // Sort the array by the starting position of each match:
     arr_match = arr_match.sort((a, b) => a.start_end[0] - b.start_end[0]);
 
-    console.log("Match data (cleaned):");
-    console.log(arr_match);
-    // console.log(token_match);
-    console.log(match_type);
-
     // Is it more efficient to check for the matches or the tokens?
     // Likely the matches, because there are fewer by design!
     return ({"arr_match": arr_match, "match_id": token_match, "match_type": match_type})
-
 }
 
 
@@ -3093,7 +2959,7 @@ function get_regex_matches(txt, regexp) {
         // console.log(key);
 
         const curmatch = {"type": [key[0]], "match": match.groups[key], "start_end": match.indices.groups[key]};
-        // console.log(curmatch);
+        console.log(curmatch);
         // NOTE: key[0] ensures that it is only one item.
         arr_out = arr_out.concat(curmatch);  // append match object to array.
 
