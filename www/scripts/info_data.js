@@ -79,15 +79,16 @@ const info_data = {
             "Risikoabschätzung, wodurch die Intention, eine Maßnahme durchzuführen, höher ist. " +
             "Studien zur Akzeptanz zeigen zudem eine klare Präferenz für numerische Darstellungen, da diese als glaubwürdiger " +
             "wahrgenommen werden. Zudem zeigt sich, dass numerische Darstellungen attraktiver sind, was zu einer höheren " +
-            "Zufriedenheit führt (vgl. Leitlininien für evidenzbasierte Gesundheitskommunikation) [LINK] </p>" +
+            "Zufriedenheit führt (vgl. <a target=\"blank\" href=\"https://www.leitlinie-gesundheitsinformation.de/\">Leitlinie evidenzbasierte" +
+            "Gesundheitsinformation</a>)</p>" +
             "<p>Bei der numerischen Darstellung ist dringend zu beachten, dass Nutzen und Schaden mit der gleichen " +
             "Bezugsgröße dargestellt werden sollten. Einheitliche Bezugsgrößen " +
             "(z.B. x von 1000) erleichtern das Verständnis im Vergleich zu wechselnden Bezugsgrößen " +
             "(z.B. x von 100; x von 1000; x von 10000). Die Verwendung unterschiedlicher Bezugsgrößen kann die " +
             "Wahrnehmung beeinflussen und zu einer Über- bzw. Unterschätzung des Nutzens oder Risikos führen. " +
-            "Das zeigt sich besonders deutlich beim so genannten \"<a href='wiki-mismatch'>mismatched Framing[LINK!]</a>\"." +
+            "Das zeigt sich besonders deutlich beim so genannten \"<a href='#wiki-mismatch'>mismatched Framing</a>\"." +
             "Abweichungen von der einheitlichen Bezugsgröße sollten gut begründet und transpararent dargelegt werden. " +
-            "Eine Darstellung in <a href='wiki-prozent'>Prozent</a> ist ebenfalls möglich, sollte jedoch klar und " +
+            "Eine Darstellung in <a href='#wiki-prozent'>Prozent</a> ist ebenfalls möglich, sollte jedoch klar und " +
             "konsistent angewendet werden, um Verwirrung zu vermeiden.</p>"   // string of main text for wiki.
     },
     "baseprob": {
@@ -251,14 +252,15 @@ const info_data = {
             "Können relative Vergleiche von Risiken wie Vielfache (3-mal mehr, halb so groß), aber auch relative Reduktionen (90% weniger) sein",
             "sind leicht missverständlich, führen häufig zur Überschätzung und sind daher nicht transparent",
             "sollten niemals alleine ohne absolute Risiken oder absolute Risikoveränderungen angegeben werden",
-            "Es sollte immer mindestens das Basisrisiko (die Basiswahrscheinlichkeit)[LINK] in der [LINK]Vergleichsgruppe berichtet werden"
+            "Es sollte immer mindestens das <a href='#wiki-baseprob'>Basisrisiko</a> (die Basiswahrscheinlichkeit) " +
+            "in der <a href='#wiki-treat-control'>Vergleichsgruppe</a> berichtet werden"
         ],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": [
             "Das relative Risiko, dass häufig Rauchende an Lungenkrebs erkranken ist 20-mal so groß, wie unter Nichtrauchenden",
             "Bei Personen über 60 Jahren ohne Corona Infektion ist das Risiko innerhalb eines Jahres zu versterben halb so groß " +
             "wie bei Gleichaltrigen, ohne Infektion",
             // "[https://www.aerzteblatt.de/nachrichten/120400/Berechnung-Sterberisiko-durch-Corona-bei-Aelteren-mehr-als-verdoppelt]\n" +
-            "Der Impfstoff hat eine Wirksamkeit[LINK] von 90% (typischerweise eine relative Risikoreduktion, s. Text)",
+            "Der Impfstoff hat eine Wirksamkeit von 90% (typischerweise eine <a href='#wiki-rrr'>relative Risikoreduktion</a>, s. Text)",
             "Bewegung reduziert die Wahrscheinlichkeit von Herz-Kreislauferkrankungen um x% (nicht zwingend relativ)"
         ],  // array of list items with examples.
         "popup": [
@@ -300,10 +302,10 @@ const info_data = {
             "den Zusammenhang zwischen verarbeitetem Fleisch und Darmkrebs: Angenommen, im Laufe des Lebens an Darmkrebs zu erkranken, " +
             "beträgt 5,6% (das bedeutet 56 Personen von 1000 erkranken). Was bedeutet in diesem Zusammenhang ein 18%iger Anstieg des " +
             "Darmkrebsrisikos? Wenn das relative Risiko um 18% steigt, bedeutet dies, dass das Basisrisiko um 18% erhöht wird. " +
-            "Das entspricht einem absoluten Risikoanstieg[LINK] um 1% (0,056 * 0,18 * 100 = 1,008%).  Somit würde das absolute " +
-            "Risiko von 56 von 1000 Personen auf  66 von 1000 (oder 6,6%) ansteigen.</p>" +
+            "Das entspricht einem <a href='#wiki-arr'>absoluten Risikoanstieg</a> um 1% (0,056 * 0,18 * 100 = 1,008%). " +
+            "Somit würde das absolute Risiko von 56 von 1000 Personen auf  66 von 1000 (oder 6,6%) ansteigen.</p>" +
             "" +
-            "<h4 id='wiki-mismatch'>Verwendung derselben Zahlentypen für Nutzen und Schaden</h4>" +
+            "<h4 id='wiki-mismatch'>Verwendung derselben Zahlentypen für Nutzen und Schaden (Vermeidung von mismatched framing)</h4>" +
             "<p>" +
             "Wenn <a href='#wiki-eff_side'>Nutzen und Schaden</a> berichtet werden, sollten niemals relative Risiken für " +
             "das eine und absolute Risiken für das andere verwendet werden. Wenn der Nutzen relativ ausgedrückt wird, " +
@@ -329,7 +331,7 @@ const info_data = {
         "overview": [
             "Die absolute Wahrscheinlichkeit eines Ereignisses (z.B., Erkrankung, Genesung, Tod) in einer Gruppe",
             "Ist relativen Angaben vorzuziehen und sollte immer für alle zu Vergleichenden Gruppen oder Zeitpunkte berichtet werden",
-            "Kann durch <a href='#wiki-prozent'>Prozentzahlen oder <a href='#wiki-nh'>natürliche Häufigkeiten</a> " +
+            "Kann durch <a href='#wiki-prozent'>Prozentzahlen</a> oder <a href='#wiki-nh'>natürliche Häufigkeiten</a> " +
             "ausgedrückt werden"
         ],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": [
@@ -344,7 +346,7 @@ const info_data = {
             "</ul>"
         ],
         "maintext":
-            "<h4 id='wiki-relrisk'>Absolutes Risiko</h4>" +
+            "<h4 id='wiki-absrisk'>Absolutes Risiko</h4>" +
             "<p>Das Absolute Risikoist die Wahrscheinlichkeit in der exponierten (oder nicht-exponierten) " +
             "Gruppe zu erkranken. Es wird häufig über die Inzidenzrate (also die Anzahl an Neuerkrankungen) ausgedrückt. " +
             "Eine Population habe die Größe von 100 Raucher*innen und 75 erkranken an einem Lungenkarzinom. " +
@@ -353,9 +355,9 @@ const info_data = {
             "Absolute Risiken sollten möglichst immer berichtet werden, da sie im Vergleich zu absoluten Risiken realistischere Risikoeinschätzungen ermöglichen." +
             "<p>Absolute Risiken meinen die Wahrscheinlichkeit in einer Gruppe (mit oder ohne Exposition gegenüber einem Risikofaktor oder einer Itervention) " +
             "Bei einer Erkrankung, die durch Ernährung wahrscheinlicher wird könnte unter denjeningen ohne das problematische Ernährungsverhalten" +
-            "1 Person unter 10.000 erkranken (absolutes Risiko in der <a href='#wiki-contr'>Vergleichsgruppe</a>)" +
+            "1 Person unter 10.000 erkranken (absolutes Risiko in der <a href='#wiki-treat-control'>Vergleichsgruppe</a>)" +
             "während unter denjeningen mit dem problematischen Ernährungsverhalten 5 Personen in 10.000 (0,05%) erkranken " +
-            "(absolutes Risiko in der <a href='#wiki-treat'>Untersuchungsgruppe</a>)." +
+            "(absolutes Risiko in der <a href='#wiki-treat-control'>Untersuchungsgruppe</a>)." +
             "</p>" +
             "" +
             "<h4 id='wiki-arr'>Absolute Risioveränderung</h4>" +
@@ -417,7 +419,7 @@ const info_data = {
             "angegeben werden, wenn eine Erkrankung tatsächlich vorliegt bzw. ein negatives Testergebnis, wenn " +
             "keine Erkrankung vorliegt (Sensitivität und Spezifität). Umgekehrt könne auch die bedingten Wahrscheinlichkeiten dafür angegeben werden, " +
             "dass bei einem positiven bzw. negativen Testergebnis tatsächleich eine Erkrankung bzw. keine Erkrankung vorliegt " +
-            "(positiver Vorhersagewert und negativer Vorhersagewert; s. <a href='wiki-sens-spec'>Testgenauigkeit</a> unten). " +
+            "(positiver Vorhersagewert und negativer Vorhersagewert; s. <a href='#wiki-sens-spec'>Testgenauigkeit</a> unten). " +
             "Auch das Risiko innerhalb einer Gruppe " +
             "ist eine bedingte Wahrscheinlichkeit, da es die Wahrscheinlichkeit angibt beispielsweise zu erkranken " +
             "oder zu versterben, wenn eine bestimmte Gruppenzugehörigkeit vorliegt (z.B., <a href='#wiki-baseprob'>Basisrisiko</a> in der " +
@@ -428,7 +430,7 @@ const info_data = {
             "<p>Wie insbesondere das Beispiel der TEstgenauigkeit illustriert, ist es wichtig dass bei bedingten Wahrscheinlichkeiten kar ist, " +
             "auf welche Gruppe oder welches Ereignis sich diese beziehen.</p>" +
             "" +
-            "<h2 id='wiki-sens-spec'>Beispiel: Testgenaugkeit</h2>" +
+            "<h4 id='wiki-sens-spec'>Beispiel: Testgenaugkeit</h4>" +
             "<p>Gerade bei medizinischen Tests gibt es einige wichtige bedingte Wahrscheinlichkeiten. " +
             "Die Sensitivität gibt an, welcher Anteil der Erkrankten ein Test korrekt erkennt und ein positives Ergebnis " +
             "ausgibt (typischerweise in <a href='#wiki-prozent'>Prozent</a>). Die Spezifität gibt an, wie viele Personen, " +
@@ -454,7 +456,7 @@ const info_data = {
             "<p>Der Fall von Testergebnissen illustriert, dass es bei bedingten Wahrscheinlichkeiten wichtig ist " +
             "darauf zu achten, dass die Wahrscheinlichkeit auf die korrekte Gruppe bezogen ist.</p>" +
             "" +
-            "<h2 id='wiki-pval'>Beispiel: p-Werte</h2>" +
+            "<h4 id='wiki-pval'>Beispiel: p-Werte</h4>" +
             "<p>Der p-Wert ist die Bedingte Wahrscheinlichkeit in einer möglichen Stichprobe Daten zu beobachten, in denen sich " +
             "Gruppen so stark oder stärker als in der beobachteten Stichprobe unterscheiden, wenn es in der Population " +
             "eigentlich keinen Unterschied gibt. " +
@@ -583,7 +585,7 @@ const info_data = {
             "verteilt werden. So werden systematische Unterschiede ausgeschlossen und Kausalaussagen ermöglicht. " +
             "Ein in der medizin verbreitetes Experiment " +
             "</p>" +
-            "<h3 id='wiki-rct'>Randomized Controlled Trial (RCT)</h3>" +  // string of main text for wiki.
+            "<h4 id='wiki-rct'>Randomized Controlled Trial (RCT)</h4>" +  // string of main text for wiki.
         "   <p>Werden 1000 Personen zufällig auf zwei Gruppen (z.B., Medikament mit Wirkstoff und Placebo) " +
             "verteilt, so ist bekannt, dass sich die beiden Gruppen nicht systematisch in anderen Eigenschaften, " +
             "wie zum Beispiel Geschlecht oder Gesundheitsverhalten (z.B., Rauchen) unterscheiden. Dies ist selbst " +
@@ -628,7 +630,7 @@ const info_data = {
             "<p>Erfolgt die Zuteilung in Behandlungs- und Kontrollgruppe zufällig, spricht man von einem <a href='#wiki-expe'>Experiment</a>. " +
             "Typischerweise wissen die Versuchspersonen nicht, in welcher Gruppe sie sind (sie sind „blind“), so dass z.B. " +
             "Berichte über verbesserungen des Gesundheitszustandes oder Nebenwirkungen nicht systematisch auf " +
-            "Erwartungseffekte zurückgeführt werden können (s. <a href='#wiki-palceebo'>Placebo</a>). " +
+            "Erwartungseffekte zurückgeführt werden können (s. <a href='#wiki-palcebo'>Placebo</a>). " +
             "Versuchspersonen müssen nach einer Studie aufgeklärt werden, in welcher Gruppe sie waren.</p>"   // string of main text for wiki.
     },
     "teval-comp": {
@@ -658,7 +660,7 @@ const info_data = {
             "Gruppe, in der eine Behandlung oder ein Einfluss nicht vorliegt, um den Effekt des Einflusses zu bestimmen."],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": ["Placebogruppe bei Impf- und medikamentenstudien"],  // array of list items with examples.
         "popup": [],
-        "maintext": "<p>Erfolgt die Zuteilung in <a href=\"#wiki-treat\">Behandlungs-</a> und Kontrollgruppe zufällig, spricht man von einem <a href='#wiki-expe'>Experiment</a>.</p>"   // string of main text for wiki.
+        "maintext": "<p>Erfolgt die Zuteilung in <a href=\"#wiki-treat-control\">Behandlungs-</a> und Kontrollgruppe zufällig, spricht man von einem <a href='#wiki-expe'>Experiment</a>.</p>"   // string of main text for wiki.
     },
     "tcomp": {
         "heading": "Vergleichszeitpunkt",
@@ -678,7 +680,7 @@ const info_data = {
         "aliases": [],  // list of other names.
         "annotation": "",  // internal annotations; should be eventually ""
         "overview": ["Eine Scheinbehandlung, bei der ein Präparat ohne Wirkstoff verabreicht wird.",
-            "Wird häufig als <a href='#wiki-control'>Kontrollgruppe</a> in medizinischen Studien verwendet, um den Wirkstoff eines Medikamentes über die von Patienten erwartete Wirkung hinaus zu untersuchen."],  // array of list items overview of most important points, displayed in wiki and text checker.
+            "Wird häufig als <a href='#wiki-treat-control'>Kontrollgruppe</a> in medizinischen Studien verwendet, um den Wirkstoff eines Medikamentes über die von Patienten erwartete Wirkung hinaus zu untersuchen."],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": ["Kochsalzlösung", "Zuckerpillen"],  // array of list items with examples.
         "popup": [],
         "maintext": "Placebos sind Scheinbehandlungen. Anstelle eines Medikaments wird ein Präparat ohne Wirkstoff " +
