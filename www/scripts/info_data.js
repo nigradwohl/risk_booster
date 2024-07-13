@@ -31,8 +31,8 @@ const info_data = {
             "sich bei einer Sportart zu verletzen"],  // array of list items with examples.
         "popup": [],
         "maintext": "<p>Risiko beschreibt wie wahrscheinlich es ist, dass ein bestimmtes Ereignis eintritt. " +
-            "Risikoinformation kann mit Worten oder Zahlen kommuniziert werden. Die Leitlinein für evidezbasierte Gesundheitskommunikation " +
-            "empfehlen Risiken nicht nur verbal anzugeben sondern immer auch zahlen zu berichten. " +
+            "Risikoinformation kann mit Worten oder Zahlen kommuniziert werden. Die Leitlinie für evidezbasierte Gesundheitsinformation " +
+            "empfiehlt Risiken nicht nur verbal anzugeben sondern immer auch zahlen zu berichten. " +
             "Diese Zahlen können <a href='#wiki-abs'>absolut</a> oder <a href='#wiki-rel'>relativ sein</a>, " +
             "sprich, die Wahrscheinlichkeit für eine Population oder Gruppe angeben oder die Wahrscheinlichkeiten für " +
             "verschiedne Gruppen als Vielefache vergleichen.</p>"
