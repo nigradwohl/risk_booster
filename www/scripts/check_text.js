@@ -1279,45 +1279,39 @@ $(document).ready(function () {
         // TODO: Link to appropriate risk calculator (vaccination/treatment...)
 
         // List of notes on number types:
+        const keepvals = ["pval"];
         for (const [key, value] of Object.entries(unit_note_dict)) {
 
             console.log(`Get number type info for ${key}:`);
             console.log(token_dat.unit.flat());
 
-            if (token_dat.unit.flat().includes(key)) {
-                console.log("Unit dict content:");
-                console.log(value);
+            // Only report some values (in addition to the more global feedback):
+            if (keepvals.includes(key)) {
+                if (token_dat.unit.flat().includes(key)) {
+                    console.log("Unit dict content:");
+                    console.log(value);
 
-                let numtypes = Object.keys(value.tooltip)
-                    .filter((inkey) => check_any_arr(risknum_rows, [key, inkey]))
-                    .map((x) => value.tooltip[x]);
-                console.log(numtypes);
+                    let numtypes = Object.keys(value.tooltip)
+                        .filter((inkey) => check_any_arr(risknum_rows, [key, inkey]))
+                        .map((x) => value.tooltip[x]);
+                    console.log(numtypes);
 
-                arr_li = arr_li.add(value.note(numtypes));
+                    arr_li = arr_li.add(value.note(numtypes));
+                }
+
             }
-
 
         }
 
 
         // If there are any entries:
         if (arr_li.size > 0) {
-
             let str_li = ""
-
-            // for (let i = 0; i < arr_li.size; i++) {
-            //     str_li += "<li>" + arr_li[i] + "</li>";
-            //
-            // }
-
             for (const note of arr_li) {
                 str_li += "<li>" + note + "</li>";
-
             }
-
             // Add the list entries:
-            notes_html += "<ul><li>Verwendete Zahlenformate:</li><ul>" + str_li + "</ul></ul>";
-
+            notes_html += "<ul><li>Weitere Anmerkungen:</li><ul>" + str_li + "</ul></ul>";
         }
 
 
