@@ -1035,7 +1035,7 @@ $(document).ready(function () {
         } else {
 
             key_topics_str += "<p class=\"note-par\">" +
-                "Der Text scheint keine Intervention (z.B., Medikamentenbehandlung) zu berichten, " +
+                "Der Text berichtet keine Intervention (z.B., Medikamentenbehandlung), " +
                 "die einen Vergleich zwischen einer Behandlungsgruppe und einer Vergleichsgruppe anstellt" +
                 (token_dat.topics.includes("comp_time") ? ", sondern scheint Zeitpunkte zu vergleichen. " : ". ") +
                 "Daher sind keine " +
@@ -1109,14 +1109,14 @@ $(document).ready(function () {
         // console.log("Any risk num:");
         // console.log(token_dat.unit);
         if (txtfeat_dict.any_risknum) {
-            feature_num += "<li><i class=\"fa fa-check in-text-icon good\"></i> Der Text scheint Zahlen " +
-                (!feature_arr.includes("damage") && feature_set?.damage ? "" :
-                    "zu den genannten " +
-                    "<div id=\"risk-tt\" class=\"tooltip\">" +
-                    "<span class=\"tooltiptext tooltip-overview\">Anders der umgangssprachliche Risikobegriff gleichbedeutend mit \"Wahrscheinlichkeit\" " +
-                    "(häufig etwa Wahrscheinlichkeit zu erkranken oder versterben; aber auch positiv, z.B., Wahrscheinlichkeit länger zu leben).</span>" +
-                    "<a target=\"_blank\" href='risk_wiki.html#wiki-risk'>Risiken</a></div> ") +
-                "zu berichten.</li>";
+            // feature_num += "<li><i class=\"fa fa-check in-text-icon good\"></i> Der Text scheint Zahlen " +
+            //     (!feature_arr.includes("damage") && feature_set?.damage ? "" :
+            //         "zu den genannten " +
+            //         "<div id=\"risk-tt\" class=\"tooltip\">" +
+            //         "<span class=\"tooltiptext tooltip-overview\">Anders der umgangssprachliche Risikobegriff gleichbedeutend mit \"Wahrscheinlichkeit\" " +
+            //         "(häufig etwa Wahrscheinlichkeit zu erkranken oder versterben; aber auch positiv, z.B., Wahrscheinlichkeit länger zu leben).</span>" +
+            //         "<a target=\"_blank\" href='risk_wiki.html#wiki-risk'>Risiken</a></div> ") +
+            //     "zu berichten.</li>";
 
             // +++ HERE!
             // TODO: Remove/adjust Nutzen/Schaden terminology for other kinds of topics (e.g., comparison of risks).
@@ -1147,7 +1147,7 @@ $(document).ready(function () {
                             " angegeben."
                     } else {
                         feature_num += "<i class=\"fa fa-close in-text-icon error\"></i> " +
-                            "Die Zahlen scheinen sich leider weder auf Nutzen noch auf Schaden zu beziehen."
+                            "Die verwendeten Zahlen beziehen sich leider weder auf Nutzen noch auf Schaden."
                     }
 
                     // Add explanatory popup:
@@ -1206,7 +1206,7 @@ $(document).ready(function () {
                         " angegeben."
                 } else {
                     feature_num += "<i class=\"fa fa-close in-text-icon error\"></i> " +
-                        "Die Zahlen scheinen sich leider nicht auf die absoluten Risiken zum Untersuchungs- oder Vergleichszeitpunkt zu beziehen."
+                        "Die Zahlen beziehen sich leider nicht auf die absoluten Risiken zum Untersuchungs- oder Vergleichszeitpunkt."
                 }
             }
 
@@ -1221,7 +1221,7 @@ $(document).ready(function () {
             // ONLY NUMBERS: ~~~~~~~~~~~~~~~~~~~~~~~~
             feature_num += "<li><i class=\"fa fa-close in-text-icon error\"></i> " +
                 "Der Text scheint keine Zahlen zu den Risiken zu berichten. " +
-                "Rein verbale Beschreibungen sollten vermieden werden." +
+                "Rein verbale Beschreibungen sollten vermieden werden. " +
                 "Bitte versuchen Sie Zahlen zu berichten.</li>";
         }
 
