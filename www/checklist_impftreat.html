@@ -336,12 +336,25 @@
                     <div class="checklist-question" id="p-treat-q">
                         <div class="question-content">
                             <p class="checklist-qtext">
-                                Welcher Anteil der Personen <span id="prev-treat">wurde<span
-                                        class="typeverb"></span></span>?
+                                Welcher Anteil der Personen wurde <span class="typeverb"></span>?
                             </p>
 
                             <!--                            ACHTUNG: Plausible Ganzzahlen ggf. umformulieren!-->
                             <input class="checklist-input" id="p-treat" type="text">&nbsp;%
+
+                            <!--                            <br>-->
+                            <!--                            <button class="checklist-button continue-btn">Weiter</button>-->
+                        </div>
+                    </div>
+
+                    <div class="checklist-question" id="prev-q">
+                        <div class="question-content">
+                            <p class="checklist-qtext">
+                                Welcher Anteil der Personen ist <span class="typeverb"></span> (Prävalenz)?
+                            </p>
+
+                            <!--                            ACHTUNG: Plausible Ganzzahlen ggf. umformulieren!-->
+                            <input class="checklist-input" id="prev" type="text">&nbsp;%
 
                             <!--                            <br>-->
                             <!--                            <button class="checklist-button continue-btn">Weiter</button>-->
@@ -388,7 +401,7 @@
                             <p class="checklist-qtext">
                                 Für welchen Anteil der Personen wurden unter den <span class="info-treat2"></span>en und
                                 der <span class="info-control2"></span> jeweils <span
-                                    class="outcome-noun">erkrankt</span>
+                                    class="outcome-noun">Erkrankungen</span>
                                 berichtet?
                             </p>
                             <p>Bitte geben Sie die Anteile in Prozent (d.h., Zahlen zwischen 0 und 100) an.</p>
@@ -396,8 +409,8 @@
                                 <tr>
                                     <td>
                                         <label for="p-case-impf">
-                                            <span id="sens"><span class="outcome-noun">Erkrankungen</span> unter den <span
-                                                class="info-treat2"></span>en</span>
+                                            <span class="outcome-noun">Erkrankungen</span> unter den <span
+                                                class="info-treat2"></span>en
                                         </label>
                                     </td>
                                     <td>
@@ -406,11 +419,45 @@
                                 </tr>
                                 <tr>
                                     <td><label for="p-case-control">
-                                        <span id="spec"><span class="outcome-noun">Erkrankungen</span> in der Vergleichsgruppe
-                                            (Placebogruppe/<span class="info-control2"></span>)</span>
+                                        <span class="outcome-noun">Erkrankungen</span> in der Vergleichsgruppe
+                                        (Placebogruppe/<span class="info-control2"></span>)
                                     </label></td>
                                     <td>
                                         <input class="checklist-input" id="p-case-control" name="p-case-control"
+                                               type="text">&nbsp;%
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </div>
+                    </div>
+
+                    <div class="checklist-question" id="p-sens-spec-q">
+                        <div class="question-content">
+                            <p class="checklist-qtext">
+                                Welche Testgütekriterien (Sensitivität und Spezifität) wurden berichtet?
+                            </p>
+                            <p>Bitte geben Sie die Anteile in Prozent (d.h., Zahlen zwischen 0 und 100) an.</p>
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label for="p-sens">
+                                            <span class="outcome-noun">Positive Tests</span> unter den <span
+                                                class="info-treat2">tatsächlich Erkrankten</span>
+                                            (Sensitivität)
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <input class="checklist-input" id="p-sens" name="p-sens" type="text">&nbsp;%
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="p-spec">
+                                        <span class="outcome-noun">Negative Tests</span> unter den tatsächlich Gesunden
+                                        (Spezifität)
+                                    </label></td>
+                                    <td>
+                                        <input class="checklist-input" id="p-spec" name="p-spec"
                                                type="text">&nbsp;%
                                     </td>
                                 </tr>

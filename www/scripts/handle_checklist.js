@@ -131,8 +131,16 @@ $(document).ready(function () {
     const cur_order = text === "test" ? q_order_test : q_order;
     const cur_checklist = new Checklist(cur_order, outcome_list);  // create a new checklist instance.
     // const check_risk = new RiskCollection();
+
+    // Set initial values:
+    if (text === "test") {
+        // Set the margin sums:
+        cur_checklist.check_risk.ntab.msums1 = [1000, 1000];
+    }
+
     console.log("CURENT CHECKLIST");
     console.log(cur_checklist);
+
 
     console.log("+++ Handle questions +++");
 
@@ -333,11 +341,24 @@ class Checklist {
 
         // Input map:
         this.q_inputs = Object.fromEntries(q_order.map((x) => [x, [x]]));
-        if(q_order.includes("n-case")){this.q_inputs["n-case"] = ["n-case-impf", "n-case-control"]}
-        if(q_order.includes("p-case")) {this.q_inputs["p-case"] = ["p-case-impf", "p-case-control"]}
-        if(q_order.includes("n-treat-control")) {this.q_inputs["n-treat-control"] = ["n-impf", "n-control"]}
-        if(q_order.includes("n-side")) {this.q_inputs["n-side"] = ["n-side-impf", "n-side-control"]}
-        if(q_order.includes("p-side")) {this.q_inputs["p-side"] = ["p-side-impf", "p-side-control"]}
+        if (q_order.includes("n-case")) {
+            this.q_inputs["n-case"] = ["n-case-impf", "n-case-control"]
+        }
+        if (q_order.includes("p-case")) {
+            this.q_inputs["p-case"] = ["p-case-impf", "p-case-control"]
+        }
+        if (q_order.includes("n-treat-control")) {
+            this.q_inputs["n-treat-control"] = ["n-impf", "n-control"]
+        }
+        if (q_order.includes("n-side")) {
+            this.q_inputs["n-side"] = ["n-side-impf", "n-side-control"]
+        }
+        if (q_order.includes("p-side")) {
+            this.q_inputs["p-side"] = ["p-side-impf", "p-side-control"]
+        }
+        if (q_order.includes("p-sens-spec")) {
+            this.q_inputs["p-sens-spec"] = ["p-sens", "p-spec"]
+        }
 
         this.outcome_list = outcome_list;
         this.outcome = "";
@@ -1114,8 +1135,8 @@ const q_order_test = [
     "start",
     // "n-treat-control",
     // "n-total",
-    "p-treat",  // prevalence.
-    "p-case",  // sens & spec.
+    "prev",  // prevalence.
+    "p-sens-spec",  // sens & spec.
     "n-case",
     "results"
 ];
@@ -1142,7 +1163,13 @@ const id_to_num_dict = {
     "n-side-impf": "n11s",
     "n-side-control": "n10s",
     "p-side-impf": "mtx1s",
-    "p-side-control": "mtx0s"
+    "p-side-control": "mtx0s",
+    // ~~~ TESTS ~~~
+    "prev": "mpx1",
+    "p-sens": "mtx1",
+    // careful! Vaccinated are now column 2 (index 1)!
+    // cases are second row (index 1)
+    "p-spec": "mtx00",  // cases among untreated (cases: 1, treatment: 0)
 }
 
 const eff_keys = ["N_tot",
@@ -1152,7 +1179,8 @@ const eff_keys = ["N_tot",
     "rrr",
     "p00", "p01", "p10", "p11",
     "mpx0", "mpx1",
-    "mtx0", "mtx1"
+    "mtx0", "mtx1",
+    "mtx00"
 ]
 
 const side_keys = ["N_tot",
@@ -1202,6 +1230,7 @@ const number_dict = {
     "mpx0": [],
     "mpx1": ["ptab", "msums2", 1],
     "mtx0": ["mtab2", "tab", "tab2x2", 0, 1],
+    "mtx00": ["mtab2", "tab", "tab2x2", 0, 0],
     "mtx1": ["mtab2", "tab", "tab2x2", 1, 1],
     // Side-effect info:
     "n10s": ["ntab", "tab", "tab2x2", 1, 0],
@@ -1245,7 +1274,7 @@ const float_keys = ["rrr",
     "mtx0", "mtx1",
     "mtx0s", "mtx1s"]
 const perc_keys = ["rrr", "mpx1",
-    "mtx0", "mtx1",
+    "mtx0", "mtx1", "mtx00",
     "mtx0s", "mtx1s",
     "p00", "p01", "p10", "p11"]
 
