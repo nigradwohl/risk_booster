@@ -384,9 +384,11 @@ $(document).ready(function () {
 
         // Text-level: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Detect topics: ------------
+        // One complete subarray of "key_list" must be met!
         token_dat.detect_topic("impf", [["(?<!(gl|sch))[Ii]mpf"]]);  // must be preceded
         token_dat.detect_topic("mask", [["Maske|FFP"]]);  // must be preceded
-        token_dat.detect_topic("protect", [["Schutzwirkung"], ["Ansteckungsgefahr", "nur"]]);  // must be preceded
+        token_dat.detect_topic("protect", [["Schutzwirkung"], ["Ansteckungsgefahr", "nur"],
+            ["besser", "geschützt"]]);  // must be preceded
         token_dat.detect_topic("lower_risk", [["mindern", "Risiko"],
             ["schützen|Schutz", "Infekt|Ansteck"]]);
         token_dat.detect_topic("cancer_risk", [["[Rr]isiko", "Krebs"]]);  // must be preceded
