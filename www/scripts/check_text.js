@@ -112,6 +112,8 @@ $(document).ready(function () {
          */
         let units_exc = ["age", "currency", "time", "date", "year", "dur", "legal", "medical", "enum", "misc", "rank", "phone"];
 
+        const largenums = ["Millionen", "Milliarden"]
+
         /**
          * Object that is looped over to check for units.
          * @type {{date: {regex: RegExp}, dur: {regex: RegExp}, medical: {regex: RegExp}, mult: {regex: RegExp}, pval: {regex: RegExp}, currency_pre: {regex: RegExp}, year: {regex: RegExp}, yearrange: {regex: RegExp}, year2: {regex: RegExp}, year3: {regex: RegExp}, perc: {regex: RegExp}, freq_word: {regex: RegExp}, currency_post: {regex: RegExp}, legal: {regex: RegExp}, datemon: {regex: RegExp}, carry_forward_pre: {regex: RegExp}, yearnum: {regex: RegExp}, other_num: {regex: RegExp}, misc: {regex: RegExp}, medical_post: {regex: RegExp}, perc_word: {regex: RegExp}, enum: {regex: RegExp}, mult2: {regex: RegExp}, carry_forward_post: {regex: RegExp}, nh: {regex: RegExp}, confint: {regex: RegExp}, time: {regex: RegExp}, age: {regex: RegExp}, monyear: {regex: RegExp}, dur2: {regex: RegExp}}}
@@ -155,12 +157,16 @@ $(document).ready(function () {
             "medical": RegExp("(?<medical>(BMI|Diabetes Typ) ?" + pat_num + ")", "dg"),
             "medical_post": RegExp("(?<medical>" + pat_num + " (Gene))", "dg"),
             // Carry-forward match:
-            "carry_forward_pre": RegExp("(?<ucarryforward>((waren|sind) es|[Dd]avon[^.\\d]*) (\\w+ ){0,2}" + pat_num + "(?=\\W))", "dg"),
+            "carry_forward_pre": RegExp("(?<ucarryforward>((waren|sind) es|[Dd]avon[^.\\d ]*) (\\w+ ){0,2}" + pat_num + "(?=\\W))", "dg"),
             // (\w+ ){0,2} allows up to 2 more words; What happens after "Davon" may not be a fullstop or a number..
             "carry_forward_post": RegExp("(?<ucarryforward>" + pat_num + " (waren|sind) es)", "dg"),
             "phone": /(?<phone>[+]?[0-9]* ?([(]?[0-9]{0,3}[)])?[-\s.]?[0-9]{3,4}[-\s.]?[0-9]{3,4}[-\s.]?[0-9]{1,6})/dg,
             // MIscellaneous numbers to be excluded!
             "misc": RegExp("(?<misc>(" + pat_num + " bis )?" + pat_num + "\\.? (Grad|Staat|Schritt|Kommentare|.[gC](?= .)))", "dg"),
+            "vaccdose": RegExp("(?<misc>(" + pat_num + "( (" + collapse_regex_or(largenums) + "))? bis )?" +
+                 pat_num + "( (" + collapse_regex_or(largenums) + "))?" + "\\.? \\w*[Dd]os[ei])", "dg"),
+            "vaccdose_word": RegExp("(?<misc>(" + collapse_regex_or(numwords) + "( (" + collapse_regex_or(largenums) + "))? bis )?" +
+                collapse_regex_or(numwords) + "( (" + collapse_regex_or(largenums) + "))?" + " \\w*[Dd]os[ei])", "dg"),
             "degree": RegExp("(?<misc>(" + pat_num + " bis )?" + pat_num + "\\.?(.[gC](?= .)))", "dg"),
             // Enumeration:
             "enum": /(?<enum>\(\d{1,2}\))/dg,
@@ -234,7 +240,7 @@ $(document).ready(function () {
                         RegExp(collapse_regex_or(person_all))],
                     // 2nd set:
                     [RegExp(collapse_regex_or(person_all)),
-                        RegExp("Analyse")]
+                        RegExp(collapse_regex_or(["Analyse", "rekrutiert"]))]
                 ]
             }
         }
@@ -264,6 +270,7 @@ $(document).ready(function () {
                     "gesündesten.*Lebensstil"],
                 // "all": ["insgesamt.*([Tt]eilnehmer|Probanden)"],
                 "all": ["(aller|insgesamt).*[Tt]eilnehmer|Probanden",
+                    "(Teilnehm|Proband).*rekrutiert",
                     "insgesamt.*(Fälle|Verläufe)", "(Fälle|Verläufe).*insgesamt",
                     "beiden.*Gruppen", "sowohl.*[Gg]ruppe"]  // problematic!
             },
