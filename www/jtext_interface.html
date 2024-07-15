@@ -38,27 +38,6 @@
 
 
     <div class="input-col text-input noprint">
-        <p>
-            Geben Sie hier Ihren Text ein (das Tool kann aktuell nur deutsche Texte verarbeiten).
-            Wenn Sie auf "Prüfe meinen Text" klicken, erhalten Sie einen Überblick,
-            ob wichtige Kriterien transparenter Berichterstattung als erfüllt klassifiziert werden können.
-            Die entsprechenden Stelen werden im Text hervorgehoben.
-            Der Fokus liegt dabei auf transparenten Zahlenformaten (s.
-            <a href="risk_wiki.html">Wiki</a>).
-        </p>
-        <p class="note-par">
-            Bitte beachten Sie: Das Tool wird manche Zahlen nicht korrekt identifizieren
-            (insbesondere, wenn Texte die keine Interventionen, wie Medikamente oder Impfungen behandeln eingegeben
-            werden).
-        </p>
-
-
-        <p class="note-par">
-            Falls etwas nicht funktioniert, können Sie uns <a id="mail-feedback"
-                                                              href="mailto:risk.boost@gmail.com">hier</a> eine kurze
-            Rückmeldung geben.
-            Dabei wird der Text per Email an risk.booster@gmail.com geschickt, damit wir den Fehler beheben können.
-        </p>
 
         <textarea class="longtext" name="description" id="text-query"></textarea>
         <br>
@@ -66,87 +45,27 @@
     </div>
 
     <div class="output-col text-notes noprint">
-        <h3>Übersicht</h3>
-        <div id="text-note-general">
-            <p>Geben Sie einen Text ein und klicken Sie auf "Prüfe meinen Text", um Anmerkungen zu
-                erhalten.
-                Ihr Text und Ihre Anmerkungen werden lokal verarbeitet und nicht auf Servern gespeichert.
-<!--                [Download-option des HTML anbieten (tabellarisch mit Tooltips als Anmerkungen am Rand?)-->
+        <div id="text-note-container">
+            <p>
+                Geben Sie hier Ihren Text ein (das Tool kann aktuell nur deutsche Texte verarbeiten).
+                Wenn Sie auf "Prüfe meinen Text" klicken, erhalten Sie einen Überblick,
+                ob wichtige Kriterien transparenter Berichterstattung (s.
+                <a href="risk_wiki.html">Wiki</a>) als erfüllt klassifiziert werden können.
+                Die entsprechenden Zahlen werden im Text hervorgehoben.
+            </p>
+            <p class="note-par">
+                Bitte beachten Sie: Das Tool wird manche Zahlen nicht korrekt identifizieren
+                (insbesondere, wenn Texte die keine Interventionen, wie Medikamente oder Impfungen behandeln eingegeben
+                werden).
+            </p>
+            <p class="note-par">Ihr Text und Ihre Anmerkungen werden lokal verarbeitet und nicht auf Servern
+                gespeichert.
+                <!--                [Download-option des HTML anbieten (tabellarisch mit Tooltips als Anmerkungen am Rand?)-->
             </p>
         </div>
-        <div id="text-notes-list">
-
-        </div>
-
-        <!--        For testing (generating a link does not (yet?) work properly.-->
-        <!--        <a href="risk_wiki.html">Prozentangabe</a>-->
-        <!--        <div id="notes-dummy">-->
-        <!--            <h4>Alternative:</h4>-->
-        <!--            <table>-->
-        <!--                <tr>-->
-        <!--                    <td style="background-color: #6AB187">-->
-
-        <!--                        <div class="tooltip">-->
-        <!--                            <i class="fa fa-thumbs-up in-text-icon good"></i> Nutzen und Schaden-->
-        <!--                            <span class="tooltiptext">-->
-        <!--                        Sehr gut! Sie haben Nutzen und Schaden thematisiert-->
-        <!--                        </span></div>-->
-        <!--                    </td>-->
-        <!--                    <td style="background-color: lightcoral">-->
-
-        <!--                        <div class="tooltip">-->
-        <!--                            <i class="fa fa-thumbs-up in-text-icon error"></i>-->
-        <!--                            Behandlungs- und Kontrollgruppe-->
-        <!--                            <span class="tooltiptext">-->
-        <!--                        Sie haben keine Informationen zu Behandlungs- und Kontrollgruppe thematisiert.-->
-        <!--                        </span></div>-->
-        <!--                    </td>-->
-        <!--                </tr>-->
-        <!--                <tr>-->
-        <!--                    <td>-->
-        <!--                        <div class="tooltip">-->
-        <!--                            <i class="fa fa-thumbs-up in-text-icon good"></i> Zahlen zum Nutzen-->
-        <!--                            <span class="tooltiptext">-->
-        <!--                        Sie haben den Nutzen mit Zahlen belegt.-->
-        <!--                        </span></div>-->
-        <!--                    </td>-->
-        <!--                    <td>-->
-        <!--                        <div class="tooltip">-->
-        <!--                            <i class="fa fa-thumbs-down in-text-icon error"></i>-->
-        <!--                            Nutzen in Behandlungs und Kontrollgruppe-->
-        <!--                            <span class="tooltiptext">-->
-        <!--                        Sie haben den Nutzen nicht mit Zahlen für Behandlungs- und Kontrollgruppe-->
-        <!--                                belegt.-->
-        <!--                        </span></div>-->
-        <!--                    </td>-->
-
-        <!--                </tr>-->
-        <!--                <tr>-->
-        <!--                    <td>-->
-
-        <!--                        <div class="tooltip">-->
-        <!--                            <i class="fa fa-thumbs-down in-text-icon error"></i> Zahlen zum Schaden-->
-        <!--                            <span class="tooltiptext">-->
-        <!--                                Sie haben den Schaden nicht mit Zahlen belegt.-->
-        <!--                                Das sollte immer gewährleistet sein.-->
-        <!--                                Klicken Sie-->
-        <!--                        <a href="risk_wiki.html">hier</a>,-->
-        <!--                                um mehr zu erfahren.-->
-        <!--                        </span></div>-->
-        <!--                    </td>-->
-        <!--                    <td>-->
-        <!--                        <div class="tooltip">-->
-        <!--                            <i class="fa fa-thumbs-down in-text-icon warning"></i>-->
-        <!--                            Schaden in Behandlungs und Kontrollgruppe-->
-        <!--                            <span class="tooltiptext">-->
-        <!--                        Sie haben den Schaden nur für die Behandlungsgruppe mit Zahlen belegt-->
-        <!--                                belegt.-->
-        <!--                        </span></div>-->
-        <!--                    </td>-->
-        <!--                </tr>-->
-        <!--            </table>-->
-        <!--        </div>-->
+        <div id="post-notes"></div>
     </div>
+
 
 </div>
 

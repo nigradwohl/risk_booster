@@ -79,7 +79,7 @@ const info_data = {
             "Risikoabschätzung, wodurch die Intention, eine Maßnahme durchzuführen, höher ist. " +
             "Studien zur Akzeptanz zeigen zudem eine klare Präferenz für numerische Darstellungen, da diese als glaubwürdiger " +
             "wahrgenommen werden. Zudem zeigt sich, dass numerische Darstellungen attraktiver sind, was zu einer höheren " +
-            "Zufriedenheit führt (vgl. <a target=\"blank\" href=\"https://www.leitlinie-gesundheitsinformation.de/\">Leitlinie evidenzbasierte" +
+            "Zufriedenheit führt (vgl. <a target=\"_blank\" href=\"https://www.leitlinie-gesundheitsinformation.de/\">Leitlinie evidenzbasierte" +
             "Gesundheitsinformation</a>)</p>" +
             "<p>Bei der numerischen Darstellung ist dringend zu beachten, dass Nutzen und Schaden mit der gleichen " +
             "Bezugsgröße dargestellt werden sollten. Einheitliche Bezugsgrößen " +
@@ -264,7 +264,7 @@ const info_data = {
             "Bewegung reduziert die Wahrscheinlichkeit von Herz-Kreislauferkrankungen um x% (nicht zwingend relativ)"
         ],  // array of list items with examples.
         "popup": [
-            "<p><i class=\"fa fa-exclamation-triangle annote-text-icon\"></i>&nbsp;Relative Angaben sind oft intransparent.</p>" +
+            "<p><a target='_blank' href='risk_wiki.html#wiki-rel'><i class=\"fa fa-exclamation-triangle annote-text-icon\"></i>&nbsp;Relative Angaben</a> sind oft intransparent.</p>" +
             "<ul>" +
             // "<li>sie führen häufig zu einer <a href=\"risk_wiki.html#wiki-error-rel\">Überschätzung des Risikos</a></li>" +
             "<li>Achten Sie darauf, dass die <a href='risk_wiki.html#wiki-baseprob'>Basiswahrscheinlichkeit (bzw. das Basisrisiko)</a> angegeben wurde, auf die sich die Veränderung bezieht.</li>" +

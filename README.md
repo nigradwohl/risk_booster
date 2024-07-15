@@ -24,7 +24,6 @@ Features are sorted by importance and are further split by features that should 
 
 ## General 
 
-* Design of landing page
 * Handle treatment case  
 * Typos!
 
@@ -34,12 +33,8 @@ Features are sorted by importance and are further split by features that should 
 
 ## Text-checking tool 
 
-* Zahlen zu Risiken raus!
-* "scheint": Einschränkung raus 
-* Design durch Absetzungen 
+* Design durch Absetzungen; decrease size of input 
 * Risikorechner verlinken!
-* Zahlenformate raus; Warnungen (z.B., mismatched framing behalten) 
-
 
 * Increase the number of test-texts that are successfully handled
     + detect absolute risk reductions (e.g., smaller percentages, percentage points): distinguish from unidentified percentages (and mention if they are likely relative)
