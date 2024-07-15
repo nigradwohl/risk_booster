@@ -1353,11 +1353,9 @@ $(document).ready(function () {
             );
         }
 
-        // Add note on risk calculator:
-        // TODO: Link to appropriate risk calculator (vaccination/treatment...)
 
         // List of notes on number types:
-        const keepvals = ["pval"];
+        const keepvals = ["pval", "perc"];
         for (const [key, value] of Object.entries(unit_note_dict)) {
 
             console.log(`Get number type info for ${key}:`);
@@ -1374,7 +1372,12 @@ $(document).ready(function () {
                         .map((x) => value.tooltip[x]);
                     console.log(numtypes);
 
-                    arr_li = arr_li.add(value.note(numtypes));
+                    // Get the current note and add if anaything is included:
+                    const curnote = value.note(numtypes);
+                    if(curnote.length > 0){
+                         arr_li = arr_li.add(value.note(numtypes));
+                    }
+
                 }
 
             }
@@ -1652,10 +1655,10 @@ const unit_note_dict = {
     "perc": {
         "tooltip": {
             "abs": "absolute Prozentzahl",
-            "rel": "relative Prozentzahl",
-            "incr": "Veränderung",
-            "decr": "Veränderung",
-            "other": "andere Prozentzahl"
+            "rel": "relative Prozentzahl"
+            // "incr": "Veränderung",
+            // "decr": "Veränderung",
+            // "other": "andere Prozentzahl"
         },
         "note": function (type_arr) {
 
@@ -1669,17 +1672,17 @@ const unit_note_dict = {
                 types = type_arr.join("en, ") + "en und " + last + "en";
             }
 
-            let txt_out = "Der Text verwendet ";
+            let txt_out = "";
 
-            if (type_arr.includes("relative Prozentzahl")) {
-                if (type_arr.length === 1) {
-
-                    txt_out += "nur " + types + ". <a target=\"_blank\" href=\"risk_wiki.html#wiki-rel\">Relative Angaben</a> ohne Basisrisiko sollten vermieden werden. "
-                } else {
-                    txt_out += types + ". ";
-                }
-
-                console.log(`+++++++ CURRENT TEXT SNIP: ${type_arr.join()}`);
+            if (type_arr.includes("relative Prozentzahl") && type_arr.length === 1) {
+                txt_out = "Der Text verwendet ";
+                // if (type_arr.length === 1) {
+                    txt_out += "nur " + types + ". Relative Angaben ohne " +
+                        "<a target=\"_blank\" href=\"risk_wiki.html#wiki-baseprob\">Basisrisiko<a target=\"_blank\" href=\"risk_wiki.html#wiki-rel\">basisrisiko</a> sollten vermieden werden. "
+                // }
+                // else {
+                //     txt_out += types + ". ";
+                // }
 
                 txt_out = txt_out.replace(/(relative Prozentzahl(en)?)/g,
                     "<div id=\"relnote\" class=\"highlight-other highlight-warning tooltip\">" +
@@ -1690,15 +1693,17 @@ const unit_note_dict = {
                     " in der Behandlungs- und Vergleichsgruppe berichten</strong> &ndash; " +
                     "am besten als <a target=\"_blank\" href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> (d.h., 3 aus 1000 oä.).</span></div>");
 
-
                 // txt_out += "Achten Sie darauf, dass Sie auch die <strong>absoluten Wahrscheinlichkeiten in den Gruppen berichten</strong> -- " +
                 //     "am besten als <a target=\"_blank\" href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> (d.h., 3 aus 1000 oä.).";
 
-            } else {
-                txt_out += `${types}. Achten Sie darauf, dass klar ist auf welche Größe sich die <a target=\"_blank\" href=\"risk_wiki.html#wiki-prozent\">Prozentangabe</a> bezieht.`
             }
 
             return txt_out;
+            // else {
+            //     txt_out += `${types}. Achten Sie darauf, dass klar ist auf welche Größe sich die <a target=\"_blank\" href=\"risk_wiki.html#wiki-prozent\">Prozentangabe</a> bezieht.`
+            // }
+
+            // return txt_out;
 
         }
     },
