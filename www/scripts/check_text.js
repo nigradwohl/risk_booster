@@ -384,13 +384,15 @@ $(document).ready(function () {
 
         // Text-level: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Detect topics: ------------
+        // One complete subarray of "key_list" must be met!
         token_dat.detect_topic("impf", [["(?<!(gl|sch))[Ii]mpf"]]);  // must be preceded
         token_dat.detect_topic("mask", [["Maske|FFP"]]);  // must be preceded
-        token_dat.detect_topic("protect", [["Schutzwirkung"], ["Ansteckungsgefahr", "nur"]]);  // must be preceded
+        token_dat.detect_topic("protect", [["Schutzwirkung"], ["Ansteckungsgefahr", "nur"],
+            ["besser", "geschützt"]]);  // must be preceded
         token_dat.detect_topic("lower_risk", [["mindern", "Risiko"],
             ["schützen|Schutz", "Infekt|Ansteck"]]);
         token_dat.detect_topic("cancer_risk", [["[Rr]isiko", "Krebs"]]);  // must be preceded
-        token_dat.detect_topic("cancer_drug", [["[Mm]edikament", "Krebs"]])
+        token_dat.detect_topic("drug", [["[Mm]edikament", "Krebs"], ["[Mm]edikament", "wirk"]])
         token_dat.detect_topic("lifex", [["Lebenserwartung"]])
 
         if (!token_dat.topics.includes("lifex")) {
@@ -453,7 +455,7 @@ $(document).ready(function () {
 
         // Detect if the text reports an intervention (experiment):
         // token_dat.detect_topic("comp_treat", ["veränder|erhöh", "zwischen \\d{4}"]);
-        if (["treatgroup", "controlgroup", "impf", "protect"].some(x => token_dat.topics.includes(x))) {
+        if (["treatgroup", "controlgroup", "impf", "protect", "drug"].some(x => token_dat.topics.includes(x))) {
             token_dat.topics = token_dat.topics.concat("comp_treat");
         }
 
@@ -931,7 +933,7 @@ $(document).ready(function () {
                 "treat": "<span class=\"tooltiptext tooltip-overview\">Gruppe, die die Behandlung erhalten hat oder einem Risiko ausgesetzt war.</span>" +
                     "<a href='risk_wiki.html#wiki-treat'>Behandlungsgruppe</a>",
                 "contr": "<span class=\"tooltiptext tooltip-overview\">Gruppe, die keine Behandlung erhalten hat oder einem Risiko nicht ausgesetzt war.</span>" +
-                    "<a href='risk_wiki.html#wiki-contr'>Kontrollgruppe/Vergleichsgruppe</a>"
+                    "<a href='risk_wiki.html#wiki-contr'>Vergleichsgruppe</a>"
             },
             "comp_default": {
                 "treat": "<span class=\"tooltiptext tooltip-overview\">Gruppe, in der sich etwas verändert hat (z.B., Zunahme oder Abnhame von Erkrankungen).</span>" +
@@ -1258,14 +1260,14 @@ $(document).ready(function () {
                         "<span class=\"tooltiptext tooltip-overview\">" +
                         "Nur indem die Lesenden die Größe des Schadens mit und ohne Intervention kennen, " +
                         "können Sie sich ein unabhängiges Urteil über das Ausmaß des Schadens bilden " +
-                        "und eine informierte Entscheidung treffen." +
+                        "und eine informierte Entscheidung treffen. " +
                         "</span>(Warum ist das ein Problem?)</div>"];
 
 
                 feature_num += arr_eff_both[0] + " Der Nutzen wird " + arr_eff_both[1] +
-                    "mit Zahlen für Behandlungs- und Kontrollgruppe belegt</li>" + arr_eff_both[2] + "<li>";
+                    "mit Zahlen für Behandlungs- und Vergleichsgruppe belegt</li>" + arr_eff_both[2] + "<li>";
                 feature_num += arr_side_both[0] + " Die Schadenwirkung wird " + arr_side_both[1] +
-                    "mit Zahlen für Behandlungs- und Kontrollgruppe belegt " + arr_side_both[2];
+                    "mit Zahlen für Behandlungs- und Vergleichsgruppe belegt " + arr_side_both[2];
                 // Rather "Nur für" oä.
             } else if (token_dat.topics.includes("comp_time")) {
 
@@ -1308,7 +1310,7 @@ $(document).ready(function () {
         // Only talks about numbers if the text talks about risK:
         if (!norisk && feature_num.length > 0) {
             console.warn(feature_num);
-            feature_list += "</li></ul><h4>Welche Zahleninformation wird berichtet?</h4><ul><li>" + feature_num + "</li>";
+            feature_list += "</li></ul><h4>Welche Zahleninformation wird berichtet?</h4><ul>" + feature_num + "</li>";
         }
 
 
@@ -1742,7 +1744,7 @@ const unit_note_dict = {
             "ntot": "Gesamtzahl an Personen",
             "ncase": "Gesamtzahl Betroffene (Erkrankte)",
             "treat": "Anzahl unter den Behandelten",
-            "contr": "Anzahl in der Kontrollgruppe"
+            "contr": "Anzahl in der Vergleichsgruppe"
         },
         "note": function (type_arr) {
             return "Der Text enthält " +
