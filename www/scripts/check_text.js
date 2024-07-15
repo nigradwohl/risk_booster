@@ -390,7 +390,7 @@ $(document).ready(function () {
         token_dat.detect_topic("lower_risk", [["mindern", "Risiko"],
             ["schützen|Schutz", "Infekt|Ansteck"]]);
         token_dat.detect_topic("cancer_risk", [["[Rr]isiko", "Krebs"]]);  // must be preceded
-        token_dat.detect_topic("cancer_drug", [["[Mm]edikament", "Krebs"]])
+        token_dat.detect_topic("drug", [["[Mm]edikament", "Krebs"], ["[Mm]edikament", "wirk"]])
         token_dat.detect_topic("lifex", [["Lebenserwartung"]])
 
         if (!token_dat.topics.includes("lifex")) {
@@ -453,7 +453,7 @@ $(document).ready(function () {
 
         // Detect if the text reports an intervention (experiment):
         // token_dat.detect_topic("comp_treat", ["veränder|erhöh", "zwischen \\d{4}"]);
-        if (["treatgroup", "controlgroup", "impf", "protect"].some(x => token_dat.topics.includes(x))) {
+        if (["treatgroup", "controlgroup", "impf", "protect", "drug"].some(x => token_dat.topics.includes(x))) {
             token_dat.topics = token_dat.topics.concat("comp_treat");
         }
 
@@ -1308,7 +1308,7 @@ $(document).ready(function () {
         // Only talks about numbers if the text talks about risK:
         if (!norisk && feature_num.length > 0) {
             console.warn(feature_num);
-            feature_list += "</li></ul><h4>Welche Zahleninformation wird berichtet?</h4><ul><li>" + feature_num + "</li>";
+            feature_list += "</li></ul><h4>Welche Zahleninformation wird berichtet?</h4><ul>" + feature_num + "</li>";
         }
 
 
