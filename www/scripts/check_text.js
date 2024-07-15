@@ -155,8 +155,8 @@ $(document).ready(function () {
             "medical": RegExp("(?<medical>(BMI|Diabetes Typ) ?" + pat_num + ")", "dg"),
             "medical_post": RegExp("(?<medical>" + pat_num + " (Gene))", "dg"),
             // Carry-forward match:
-            "carry_forward_pre": RegExp("(?<ucarryforward>((waren|sind) es|[Dd]avon[^.]*) (\\w+ ){0,2}" + pat_num + "(?=\\W))", "dg"),
-            // (\w+ ){0,2} allows up to 2 more words.
+            "carry_forward_pre": RegExp("(?<ucarryforward>((waren|sind) es|[Dd]avon[^.\\d]*) (\\w+ ){0,2}" + pat_num + "(?=\\W))", "dg"),
+            // (\w+ ){0,2} allows up to 2 more words; What happens after "Davon" may not be a fullstop or a number..
             "carry_forward_post": RegExp("(?<ucarryforward>" + pat_num + " (waren|sind) es)", "dg"),
             "phone": /(?<phone>[+]?[0-9]* ?([(]?[0-9]{0,3}[)])?[-\s.]?[0-9]{3,4}[-\s.]?[0-9]{3,4}[-\s.]?[0-9]{1,6})/dg,
             // MIscellaneous numbers to be excluded!
@@ -481,7 +481,7 @@ $(document).ready(function () {
         // console.log(token_dat.is_num);
 
         // Detect missing units:
-        // console.log(" +++ detecting missing units +++");
+        console.log(" +++ detecting missing units +++");
         const no_unit_ix = token_dat.id.filter((d, ix) => token_dat.is_num[ix] && token_dat.unit[ix] === "unknown");
         // console.log(no_unit_ix);
         const new_units = investigate_context(token_dat, no_unit_ix, window_keys.units, false);
@@ -2313,10 +2313,7 @@ function detect_number_type(token_data, txt, numtype_dict) {
                             //     numtype = "ABS";
                             // }
                         }
-
-
                     }
-
                 }
 
                 // Check number if numtype remained other:
@@ -2331,18 +2328,12 @@ function detect_number_type(token_data, txt, numtype_dict) {
                     if (ref_matches.match_type[num].length > 0) {
                         numtype = ref_matches.match_type[num];
                     }
-
                 }
 
                 // Assign the numtype to the corresponding number token!
                 num_types[curnum_id] = numtype;
-
-
             }
-
         }
-
-
         // Update last token:
         prev_token = final_token;
 
@@ -2651,6 +2642,9 @@ function detect_unit(token_data) {
     } else {
         unit_info = token_data.unit;
     }
+
+                console.log("INITIAL UNITS:");
+        console.log(JSON.stringify(token_data.unit));
 
     // Migrate later! Maybe to JSON
     // Lookup table:
