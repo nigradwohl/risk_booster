@@ -933,7 +933,7 @@ $(document).ready(function () {
                 "treat": "<span class=\"tooltiptext tooltip-overview\">Gruppe, die die Behandlung erhalten hat oder einem Risiko ausgesetzt war.</span>" +
                     "<a href='risk_wiki.html#wiki-treat'>Behandlungsgruppe</a>",
                 "contr": "<span class=\"tooltiptext tooltip-overview\">Gruppe, die keine Behandlung erhalten hat oder einem Risiko nicht ausgesetzt war.</span>" +
-                    "<a href='risk_wiki.html#wiki-contr'>Kontrollgruppe/Vergleichsgruppe</a>"
+                    "<a href='risk_wiki.html#wiki-contr'>Vergleichsgruppe</a>"
             },
             "comp_default": {
                 "treat": "<span class=\"tooltiptext tooltip-overview\">Gruppe, in der sich etwas verändert hat (z.B., Zunahme oder Abnhame von Erkrankungen).</span>" +
@@ -1260,14 +1260,14 @@ $(document).ready(function () {
                         "<span class=\"tooltiptext tooltip-overview\">" +
                         "Nur indem die Lesenden die Größe des Schadens mit und ohne Intervention kennen, " +
                         "können Sie sich ein unabhängiges Urteil über das Ausmaß des Schadens bilden " +
-                        "und eine informierte Entscheidung treffen." +
+                        "und eine informierte Entscheidung treffen. " +
                         "</span>(Warum ist das ein Problem?)</div>"];
 
 
                 feature_num += arr_eff_both[0] + " Der Nutzen wird " + arr_eff_both[1] +
-                    "mit Zahlen für Behandlungs- und Kontrollgruppe belegt</li>" + arr_eff_both[2] + "<li>";
+                    "mit Zahlen für Behandlungs- und Vergleichsgruppe belegt</li>" + arr_eff_both[2] + "<li>";
                 feature_num += arr_side_both[0] + " Die Schadenwirkung wird " + arr_side_both[1] +
-                    "mit Zahlen für Behandlungs- und Kontrollgruppe belegt " + arr_side_both[2];
+                    "mit Zahlen für Behandlungs- und Vergleichsgruppe belegt " + arr_side_both[2];
                 // Rather "Nur für" oä.
             } else if (token_dat.topics.includes("comp_time")) {
 
@@ -1744,7 +1744,7 @@ const unit_note_dict = {
             "ntot": "Gesamtzahl an Personen",
             "ncase": "Gesamtzahl Betroffene (Erkrankte)",
             "treat": "Anzahl unter den Behandelten",
-            "contr": "Anzahl in der Kontrollgruppe"
+            "contr": "Anzahl in der Vergleichsgruppe"
         },
         "note": function (type_arr) {
             return "Der Text enthält " +
