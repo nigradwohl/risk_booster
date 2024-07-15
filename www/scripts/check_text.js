@@ -1201,9 +1201,7 @@ $(document).ready(function () {
             // +++ HERE!
             // TODO: Remove/adjust Nutzen/Schaden terminology for other kinds of topics (e.g., comparison of risks).
 
-            feature_num += "</li></ul><h4>Welche Zahleninformation wird berichtet?</h4><ul><li>";
-
-            // Differentiate numbers for control and treat group:
+                        // Differentiate numbers for control and treat group:
             // Do numbers apply to treat and contr group
             // (or: affected and general population for other risks)
 
@@ -1273,6 +1271,8 @@ $(document).ready(function () {
 
                 feature_num += "<li>";
 
+                console.warning("TEST");
+
                 const treat_num = feature_arr.includes("treat_num");
                 const contr_num = feature_arr.includes("contr_num");
 
@@ -1290,7 +1290,7 @@ $(document).ready(function () {
                 }
             }
 
-            feature_num += "</li>";  // close the final list element.
+            // feature_num += "</li>";  // close the final list element.
 
             /*
             NOTE: Handle further cases!
@@ -1306,8 +1306,9 @@ $(document).ready(function () {
         }
 
         // Only talks about numbers if the text talks about risK:
-        if (!norisk) {
-            feature_list += feature_num;
+        if (!norisk && feature_num.length > 0) {
+            console.warn(feature_num);
+            feature_list += "</li></ul><h4>Welche Zahleninformation wird berichtet?</h4><ul><li>" + feature_num + "</li>";
         }
 
 
@@ -1373,7 +1374,7 @@ $(document).ready(function () {
 
 
         // List of notes on number types:
-        const keepvals = ["pval"];
+        const keepvals = ["pval", "nyear"];
         for (const [key, value] of Object.entries(unit_note_dict)) {
 
             console.log(`Get number type info for ${key}:`);
