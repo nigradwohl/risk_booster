@@ -855,7 +855,7 @@ div.wiki-toc {
     }
 
     .text-input {
-        flex: 30em;
+        flex: 100%;
         /*100%;*/
     }
 

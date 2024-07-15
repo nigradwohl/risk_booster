@@ -823,17 +823,8 @@ $(document).ready(function () {
                     console.log(col_info);
                     // console.log(info_tree.traverse(col_info)["tool"]);
 
-                    const cur_tooltip = info_tree.traverse(col_info)["tool"];
+                    const cur_tooltip = info_tree.traverse(col_info)["tool"];  // traverse the tree toobtain tooltips.
 
-
-                    // const cur_tooltip = unit_note_dict[cur_unit].tooltip[cur_numtype[0]];  // NOTE: currently first type only.
-
-                    // Token information:
-                    // console.log(token_dat.token[i] + "; Start: " + token_dat.start[i] + ", end: " + token_dat.end[i + match_len - 1] +
-                    //     ", match length: " + match_len + ", unit: " + cur_unit + ", numtype: " + cur_numtype);
-
-                    // console.log("Current number type is");
-                    // console.log(cur_numtype);
 
                     cur_ix = token_dat.end[i + match_len - 1] + 1;  // save index of final character to continue from there.
 
@@ -1323,6 +1314,27 @@ $(document).ready(function () {
         // General information:
         // $("#text-note-container").html("");
 
+        // Add purely relative information:
+        if (txtfeat_dict["rel_only"]) {
+
+            const whichrel = "Risiken";  // TODO: Identify multiples; risks etc.
+
+            arr_li.add(
+                "Der Text verwendet nur relative " +
+                whichrel +
+                ". " +
+                "<div id=\"relnote\" class=\"highlight-other highlight-warning tooltip\">" +
+                "<a target=\"_blank\" href=\"risk_wiki.html#wiki-rel\">Relative Risiken</a>" +
+                "<span class=\"tooltiptext tooltip-overview\">" +
+                "Achten Sie darauf, dass Sie auch die <strong>" +
+                "absoluten Wahrscheinlichkeiten" +
+                " in der Behandlungs- und Vergleichsgruppe berichten</strong> &ndash; " +
+                "am besten als <a target=\"_blank\" href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> (d.h., 3 aus 1000 oä.).</span></div>" +
+                " ohne " +
+                "<a target=\"_blank\" href=\"risk_wiki.html#wiki-baseprob\">Basisrisiko</a> sollten vermieden werden. "
+            );
+        }
+
 
         // Add mismatched framing:
         if (["side_rel", "eff_rel"].includes(mismatched_framing)) {
@@ -1355,7 +1367,7 @@ $(document).ready(function () {
 
 
         // List of notes on number types:
-        const keepvals = ["pval", "perc"];
+        const keepvals = ["pval"];
         for (const [key, value] of Object.entries(unit_note_dict)) {
 
             console.log(`Get number type info for ${key}:`);
@@ -1374,8 +1386,8 @@ $(document).ready(function () {
 
                     // Get the current note and add if anaything is included:
                     const curnote = value.note(numtypes);
-                    if(curnote.length > 0){
-                         arr_li = arr_li.add(value.note(numtypes));
+                    if (curnote.length > 0) {
+                        arr_li = arr_li.add(value.note(numtypes));
                     }
 
                 }
@@ -1677,8 +1689,8 @@ const unit_note_dict = {
             if (type_arr.includes("relative Prozentzahl") && type_arr.length === 1) {
                 txt_out = "Der Text verwendet ";
                 // if (type_arr.length === 1) {
-                    txt_out += "nur " + types + ". Relative Angaben ohne " +
-                        "<a target=\"_blank\" href=\"risk_wiki.html#wiki-baseprob\">Basisrisiko<a target=\"_blank\" href=\"risk_wiki.html#wiki-rel\">basisrisiko</a> sollten vermieden werden. "
+                txt_out += "nur " + types + ". Relative Angaben ohne " +
+                    "<a target=\"_blank\" href=\"risk_wiki.html#wiki-baseprob\">Basisrisiko<a target=\"_blank\" href=\"risk_wiki.html#wiki-rel\">basisrisiko</a> sollten vermieden werden. "
                 // }
                 // else {
                 //     txt_out += types + ". ";
