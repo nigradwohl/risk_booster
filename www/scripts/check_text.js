@@ -257,12 +257,11 @@ $(document).ready(function () {
             },
             "treat_contr": {
                 // Types of subgroups:
-                "contr": ["Kontroll-?.*[Gg]ruppe", "Placebo-?.*[Gg]ruppe",
-                    "Vergleichs-?.*[Gg]ruppe",
+                "contr": ["(Kontroll|Placebo|Vergleichs)-?.*[Gg]ruppe",
                     "Prävention.*wenigsten.*befolgte",
                     "kein.*Medika"],
                 "treat": ["[Gg]eimpfte?n?", "Impf-?.*[Gg]ruppe",
-                    "(?<!Kontroll|Vergleichs|Placebo).Gruppe",  // negative definition of treatment group.
+                    "(?<!Kontroll|Vergleichs|Placebo).*-?Gruppe",  // negative definition of treatment group.
                     "Behandlungsgruppe", "Behandelte",
                     "([Tt]eilnehmer|Probanden).*Impfung",
                     "erh(a|ie)lten.*(Präparat|Medikament)",
@@ -285,7 +284,7 @@ $(document).ready(function () {
                     // The following may only apply to vaccination? (But likely also to treatment!)
                     "schwer.*Verl[aä]uf",
                     "Verbesserung"],
-                "side": ["Nebenwirk", "Komplikation", "unerwünschte.*Effekt", "Herzmuskelentzündung"],  // more keywords?
+                "side": ["Nebenwirk", "Komplikation", "unerwünschte.*Effekt", "Herzmuskelentzündung", "Hirnblutung"],  // more keywords?
                 "damage": ["(Inzidenz|[Ee]rkank|Todesfäll|Risiko).*(erhöht|vielfach)",
                     "(erhöht|vielfach).*(Inzidenz|[Ee]rkank|Todesfäll|Risiko)",
                     "Risiko.*Erkrank",
@@ -2459,7 +2458,7 @@ function investigate_context(token_data, index_arr, keyset, only_pars) {
 
         // Initialize flag for having encountered stop-tokens:
         // const stop_token_set = ["\\n", ".", "?", "!", ":", "oder", "und", ";", ",", "-"];
-        let stop_tokens = ["\\n", ".", "?", "!", ":", "und", ";", ",", "oder", "-"];  // renew for each number!
+        let stop_tokens = ["\\n", ".", "?", "!", ":", "und", ";", "–", ",", "oder", "-"];  // renew for each number!
         let stop_token_start = false;
         let stop_token_end = false;
         let stop_update_count = 0;
