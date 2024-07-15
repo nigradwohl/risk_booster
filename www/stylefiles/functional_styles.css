@@ -138,6 +138,25 @@
 }
 
 
+/*Text info*/
+.text-notes-list{
+    border: 1px solid var(---wiki-border);
+    border-radius: 3px;
+    background-color: var(---wiki-bg);
+    padding: 0.4em 0.7em;
+    margin: 0 0.4em 0.5em 0.4em;
+}
+
+.text-notes-list h4 {
+    margin-bottom: 0.2em;
+    color: #666;
+}
+
+.text-notes-list ul {
+    margin-top: 0.5em;
+}
+
+
 /*.has-tooltip {*/
 /*  !*position: relative;*!*/
 /*  display: inline-block;*/

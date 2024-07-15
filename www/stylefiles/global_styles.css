@@ -140,7 +140,7 @@ blockquote:before {
     display: block;
     padding-left: 10px;
     content: "\201C";
-    font-size: 80px;
+    font-size: 60px;
     position: absolute;
     left: -20px;
     top: -20px;
@@ -312,12 +312,13 @@ blockquote cite:before {
 /* Sidebar/left column */
 .input-col {
     background-color: var(---column-bg-secondary);
-    padding: 20px;
+    padding: 5px 20px;
 }
 
 .output-col {
     background-color: var(---colum-bg-tertiary) te;
-    padding: 20px;
+    padding: 5px 20px;
+    /*margin: 1em;*/
     height: 100%;
     /*overflow: visible;*/
 }
@@ -371,7 +372,7 @@ blockquote cite:before {
 .text-input {
     display: flex;
     flex-direction: column;
-    flex: 55%;
+    flex: 35%;
     /*height: 20em;*/
 }
 
@@ -397,7 +398,7 @@ blockquote cite:before {
 
 .text-output {
     /*flex: 55%;*/
-    padding: 2em;
+    padding: 0.5em 2em;
     min-height: 20em;
     max-height: 50em;
     overflow-y: scroll;
@@ -405,7 +406,9 @@ blockquote cite:before {
 }
 
 .text-input > textarea {
-    flex: 1;
+    /*flex: 1;*/
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 0.8em;
     min-height: 15em;
     /*Removed due to display issues*/
 }
@@ -529,7 +532,7 @@ blockquote cite:before {
 /* CSS for paragraph */
 p {
     color: var(---text-color-secondary);
-    font-size: 1em;
+    font-size: 0.9em;
     line-height: 1.2;
     margin: 0 0 10px;
 }

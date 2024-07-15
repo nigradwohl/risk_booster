@@ -682,10 +682,10 @@ $(document).ready(function () {
         // --------------------------- USE THE DATA ----------------------------------------
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-                // Default for linking risks:
+        // Default for linking risks:
         const curtop = "?page=" + (token_dat.topics.includes("impf") ? "impf" : "treat");
-        const risk_link = "Verwenden Sie den <a target='_blank' href='checklist_impftreat.html" + curtop + "'>Risikorechner</a>, " +
-            "um eine transparente Darstellung zu erstellen, wenn die Zahlen es erlauben.";
+        const risk_link = "<p>Verwenden Sie den <a target='_blank' href='checklist_impftreat.html" + curtop + "'>Risikorechner</a>, " +
+            "um eine transparente Darstellung zu erstellen, wenn die Zahlen es erlauben.</p>";
 
         const info_tree = {
             // Levels:
@@ -919,7 +919,7 @@ $(document).ready(function () {
         //     norisk = true;
         // }
 
-        key_topics_str += "Berichtet der Text belastbare Informationen?";
+        key_topics_str += "<h4>Berichtet der Text belastbare Informationen?</h4>";
 
 
         // ~~~~~~~~~~ FEATURES ~~~~~~~~~~~~~~~~
@@ -1204,7 +1204,7 @@ $(document).ready(function () {
             // +++ HERE!
             // TODO: Remove/adjust Nutzen/Schaden terminology for other kinds of topics (e.g., comparison of risks).
 
-            feature_num += "</li></ul><p>Welche Zahleninformation wird berichtet?</p><ul><li>";
+            feature_num += "</li></ul><h4>Welche Zahleninformation wird berichtet?</h4><ul><li>";
 
             // Differentiate numbers for control and treat group:
             // Do numbers apply to treat and contr group
@@ -1319,14 +1319,9 @@ $(document).ready(function () {
 
 
         // Output topics:
-        // $("#text-note-general").html("<p id=\"text-note-general\">" + key_topics_str + "</p>");
+        // $("#text-note-container").html("<p id=\"text-note-container\">" + key_topics_str + "</p>");
         // General information:
-        $("#text-note-general").html("<p id=\"text-note-general\" class='note-par'>" +
-            "Fahren Sie über die hervorgehobenen Ausdrücke, um weitere Informationen zu erhalten. " +
-            "Klicken Sie auf die Links, um ins Wiki zu gelangen." +
-            "</p>" +
-            key_topics_str
-        );
+        // $("#text-note-container").html("");
 
 
         // Add mismatched framing:
@@ -1394,14 +1389,29 @@ $(document).ready(function () {
             }
 
             // Add the list entries:
-            notes_html += "<ul><li>Weitere Anmerkungen:</li><ul>" + str_li + "</ul></ul>" +
-                "<p>" + risk_link + "</p>"
+            notes_html += "<ul><li>Weitere Anmerkungen:</li><ul>" + str_li + "</ul>" +
+                "<li>" + risk_link + "</li>" +
+                "</ul>"
 
         }
 
 
         // Update the notes:
-        $("#text-notes-list").html(feature_list + notes_html);
+        // $("#text-notes-list")
+        $("#text-note-container")
+            .addClass("text-notes-list")
+            .html(key_topics_str + feature_list + notes_html);
+
+        $("#post-notes").html(
+            "<p class='note-par'>Fahren Sie mit dem Mauszeiger über die hervorgehobenen Ausdrücke, um weitere Informationen zu erhalten. " +
+            "Klicken Sie auf die Links, um ins Wiki zu gelangen.</p>" +
+            "<p class=\"note-par\">" +
+            "Falls etwas nicht funktioniert, können Sie uns <a id=\"mail-feedback\"" +
+            "href=\"mailto:risk.boost@gmail.com\">hier</a> eine kurze Rückmeldung geben. " +
+            "Dabei wird der Text per Email an risk.booster@gmail.com geschickt, damit wir den Fehler beheben können." +
+            "</p>")
+        ;
+
 
         // Update the text:
         $("#text-result").html('<h3>Ihr Text</h3>' +
