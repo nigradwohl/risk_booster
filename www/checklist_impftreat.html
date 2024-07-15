@@ -224,24 +224,24 @@
                             <p class="checklist-qtext">Welche Wirksamkeit oder Effektivität
                                 der <span class="typeword"></span>
                                 wurde angegeben? (Englisch:
-<!--                                Note: Link seems broken-->
-<!--                                <a href="https://www.who.int/news-room/feature-stories/detail/vaccine-efficacy-effectiveness-and-protection">-->
-                                    <span class="highlight-num tooltip">
+                                <!--                                Note: Link seems broken-->
+                                <!--                                <a href="https://www.who.int/news-room/feature-stories/detail/vaccine-efficacy-effectiveness-and-protection">-->
+                                <span class="highlight-num tooltip">
                                     efficacy
                                     <span class="tooltiptext tooltip-checklist">
                                         <i class="fa fa-exclamation-triangle"></i>
                                         Relative Risikoveränderung in einem Medikamententrial.
                                     </span>
                                     </span>
-                                    oder
-                                    <span class="highlight-num tooltip">
+                                oder
+                                <span class="highlight-num tooltip">
                                     effectiveness
                                     <span class="tooltiptext tooltip-checklist">
                                         <i class="fa fa-exclamation-triangle"></i>
                                         Relative Risikoveränderung in epidemiologischen Daten.
                                     </span>
                                     </span>
-<!--                                </a>-->
+                                <!--                                </a>-->
                                 )</p>
                             <p>
                                 Bitte geben Sie die
@@ -336,11 +336,12 @@
                     <div class="checklist-question" id="p-treat-q">
                         <div class="question-content">
                             <p class="checklist-qtext">
-                                Welcher Anteil der Personen wurde <span class="typeverb"></span>?
+                                Welcher Anteil der Personen <span id="prev-treat">wurde<span
+                                        class="typeverb"></span></span>?
                             </p>
 
                             <!--                            ACHTUNG: Plausible Ganzzahlen ggf. umformulieren!-->
-                            <input class="checklist-input" id="p-treat" type="text">
+                            <input class="checklist-input" id="p-treat" type="text">&nbsp;%
 
                             <!--                            <br>-->
                             <!--                            <button class="checklist-button continue-btn">Weiter</button>-->
@@ -386,7 +387,8 @@
                         <div class="question-content">
                             <p class="checklist-qtext">
                                 Für welchen Anteil der Personen wurden unter den <span class="info-treat2"></span>en und
-                                der <span class="info-control2"></span> jeweils <span class="outcome-noun">erkrankt</span>
+                                der <span class="info-control2"></span> jeweils <span
+                                    class="outcome-noun">erkrankt</span>
                                 berichtet?
                             </p>
                             <p>Bitte geben Sie die Anteile in Prozent (d.h., Zahlen zwischen 0 und 100) an.</p>
@@ -394,8 +396,8 @@
                                 <tr>
                                     <td>
                                         <label for="p-case-impf">
-                                            <span class="outcome-noun">Erkrankungen</span> unter den <span
-                                                class="info-treat2"></span>en
+                                            <span id="sens"><span class="outcome-noun">Erkrankungen</span> unter den <span
+                                                class="info-treat2"></span>en</span>
                                         </label>
                                     </td>
                                     <td>
@@ -404,8 +406,8 @@
                                 </tr>
                                 <tr>
                                     <td><label for="p-case-control">
-                                        <span class="outcome-noun">Erkrankungen</span> in der Vergleichsgruppe
-                                        (Placebogruppe/<span class="info-control2"></span>)
+                                        <span id="spec"><span class="outcome-noun">Erkrankungen</span> in der Vergleichsgruppe
+                                            (Placebogruppe/<span class="info-control2"></span>)</span>
                                     </label></td>
                                     <td>
                                         <input class="checklist-input" id="p-case-control" name="p-case-control"
@@ -518,12 +520,12 @@
                         <div class="check-results-navrow no-print">
                             <div id="edit-texts" class="navele">Text bearbeiten</div>
                             <div id="stop-edit" class="navele">Bearbeiten beenden</div>
-<!--                            <button class="button-print-or-save-document checklist-button no-print">-->
-                                <div class="button-print-or-save-document navele">
-                                    <i class="fa fa-print" aria-hidden="true"></i>
-                                    Ergebnis drucken
-                                </div>
-<!--                            </button>-->
+                            <!--                            <button class="button-print-or-save-document checklist-button no-print">-->
+                            <div class="button-print-or-save-document navele">
+                                <i class="fa fa-print" aria-hidden="true"></i>
+                                Ergebnis drucken
+                            </div>
+                            <!--                            </button>-->
                         </div>
 
                         <!--Container effectivitiy-->

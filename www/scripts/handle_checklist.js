@@ -98,6 +98,12 @@ $(document).ready(function () {
                 "noun": "Positive Diagnosen", "direction": "prevent"
             }
         ].concat(outcome_list.eff);
+    } else if (text === "test") {
+        $("#prev-treat").html("ist tatsächlich erkrankt (\"Prävalenz\")");
+        $("#sens").text("Positive Tests unter den Erkrankten (Sensitivität)");
+        $("#spec").text("Negative Tests unter den Gesunden (Spezifität)");
+        typeverb = "tatsächlich erkrankt";
+        typeword = "Diagnostischer Test";
     }
 
     $("#case-test").text(typeword);
@@ -122,9 +128,11 @@ $(document).ready(function () {
 
 
     // Preparations:
-    const cur_checklist = new Checklist(q_order, outcome_list);  // create a new checklist instance.
+    const cur_order = text === "test" ? q_order_test : q_order;
+    const cur_checklist = new Checklist(cur_order, outcome_list);  // create a new checklist instance.
     // const check_risk = new RiskCollection();
-    // console.log(check_risk);
+    console.log("CURENT CHECKLIST");
+    console.log(cur_checklist);
 
     console.log("+++ Handle questions +++");
 
@@ -322,6 +330,15 @@ $(document).ready(function () {
 class Checklist {
     constructor(q_order, outcome_list) {
         this.q_order = q_order;
+
+        // Input map:
+        this.q_inputs = Object.fromEntries(q_order.map((x) => [x, [x]]));
+        if(q_order.includes("n-case")){this.q_inputs["n-case"] = ["n-case-impf", "n-case-control"]}
+        if(q_order.includes("p-case")) {this.q_inputs["p-case"] = ["p-case-impf", "p-case-control"]}
+        if(q_order.includes("n-treat-control")) {this.q_inputs["n-treat-control"] = ["n-impf", "n-control"]}
+        if(q_order.includes("n-side")) {this.q_inputs["n-side"] = ["n-side-impf", "n-side-control"]}
+        if(q_order.includes("p-side")) {this.q_inputs["p-side"] = ["p-side-impf", "p-side-control"]}
+
         this.outcome_list = outcome_list;
         this.outcome = "";
         this.outcome_side = "";
@@ -385,7 +402,7 @@ class Checklist {
 
             // Show the new question and hide the previous one:
             this.entry_ix++;
-            $("#" + q_order[this.entry_ix] + "-q").css('display', 'flex');
+            $("#" + this.q_order[this.entry_ix] + "-q").css('display', 'flex');
             $("#select-outcome-q").hide();
 
             // Removal of higlighting classes:
@@ -411,7 +428,7 @@ class Checklist {
                 this.check_side.save_current_content();
 
                 // If it is not a round where inputs should be skipped:
-                const inp_test = this.get_current_input(curid, q_inputs[curid], id_to_num_dict);
+                const inp_test = this.get_current_input(curid, this.q_inputs[curid], id_to_num_dict);
                 // After trying to get the inputs, try completing the table:
 
                 try {
@@ -464,7 +481,7 @@ class Checklist {
             if (!this.is_error && this.missing_entries.length === 0) {
 
                 // Pages before results:
-                if (this.entry_ix < q_order.length) {
+                if (this.entry_ix < this.q_order.length) {
                     this.increment_or_skip();
                 }
 
@@ -498,7 +515,7 @@ class Checklist {
         // Check whether input can be skipped: ~~~~~~~~~~~~
         console.log("+++ CHECK IF SKIPPABLE +++");
         const skiplist = ["n-total", "p-treat", "n-case", "p-case", "n-side", "p-side"];  // Make p-side or n-side skippable, if both were provided!
-        const cur_entry = q_order[this.entry_ix];
+        const cur_entry = this.q_order[this.entry_ix];
         let next_entry;
 
         let skip = true;
@@ -508,7 +525,7 @@ class Checklist {
          */
         do {
             this.entry_ix++;  // Increment entry index.
-            next_entry = q_order[this.entry_ix];  // get the next entry.
+            next_entry = this.q_order[this.entry_ix];  // get the next entry.
             skip = false;  // set to false.
 
             console.log(`Next entry is ${next_entry}`);
@@ -518,7 +535,7 @@ class Checklist {
                 // Get the previous value for the field(s):
                 let prevvals = [];
 
-                for (const inp of q_inputs[next_entry]) {
+                for (const inp of this.q_inputs[next_entry]) {
 
                     console.log("Index array");
                     const ref_ix = id_to_num_dict[inp];
@@ -551,7 +568,7 @@ class Checklist {
 
 
         // Show the new question and hide the previous one:
-        $("#" + q_order[this.entry_ix] + "-q").css('display', 'flex');
+        $("#" + this.q_order[this.entry_ix] + "-q").css('display', 'flex');
         $("#" + cur_entry + "-q").hide();
 
         // Removal of popups and highlighting classes:
@@ -880,18 +897,18 @@ class Checklist {
         // console.log("Skipped inputs were:");
         this.skipped_inputs = this.skipped_inputs.filter(x => x < this.entry_ix);  // remove future skips!
         // console.log(this.skipped_inputs);
-        const skipped_ids = q_order.filter((x, ix) => this.skipped_inputs.includes(ix));
+        const skipped_ids = this.q_order.filter((x, ix) => this.skipped_inputs.includes(ix));
         // console.log(skipped_ids);
 
         // Loop over defined input fields:
-        for (const curid of q_order.slice(0, this.entry_ix)) {
+        for (const curid of this.q_order.slice(0, this.entry_ix)) {
 
             // Skip input fields that have been skipped previously!
             if (!skipped_ids.includes(curid)) {
                 console.log(`Current inputs for ID ${curid}:`);
-                console.log(q_inputs[curid]);
+                console.log(this.q_inputs[curid]);
 
-                this.get_current_input(curid, q_inputs[curid], id_to_num_dict);
+                this.get_current_input(curid, this.q_inputs[curid], id_to_num_dict);
 
                 console.log("Risk object after re-evaluating inputs until then");
                 this.check_risk.print();
@@ -920,16 +937,16 @@ class Checklist {
 
             // Decrementing the page:
             // TODO: Skip inputs that were previously skipped
-            // Get previously seen input (or skip, if q_order[this.entry_ix] in skiplist?)
+            // Get previously seen input (or skip, if this.q_order[this.entry_ix] in skiplist?)
             // Note: Also must ensure that elements from the skiplist are removed when they are passed upon a back-button click!
-            const calling_entry = q_order[this.entry_ix];
+            const calling_entry = this.q_order[this.entry_ix];
 
             // Decrement, while previous input has been skipped:
             do {
                 this.entry_ix--;
             } while (this.skipped_inputs.includes(this.entry_ix))
 
-            $("#" + q_order[this.entry_ix] + "-q").css('display', 'flex');
+            $("#" + this.q_order[this.entry_ix] + "-q").css('display', 'flex');
             $("#" + calling_entry + "-q").hide();
             $(".continue-btn").css('display', 'inline-block');
 
@@ -1090,16 +1107,19 @@ const q_order = [
 // ORDER WILL BE FLEXIBLE!
 
 /**
- * Inputs on each subpage to be looped over.
- * @type {{[p: string]: [string]}}
+ * Ordered array of question (subpage) IDs which can be reordered fo reach type.
+ * @type {string[]}
  */
-const q_inputs = Object.fromEntries(q_order.map((x) => [x, [x]]));
-q_inputs["n-case"] = ["n-case-impf", "n-case-control"];
-q_inputs["p-case"] = ["p-case-impf", "p-case-control"];
-q_inputs["n-treat-control"] = ["n-impf", "n-control"];
-q_inputs["n-side"] = ["n-side-impf", "n-side-control"];
-q_inputs["p-side"] = ["p-side-impf", "p-side-control"];
-console.log(q_inputs);
+const q_order_test = [
+    "start",
+    // "n-treat-control",
+    // "n-total",
+    "p-treat",  // prevalence.
+    "p-case",  // sens & spec.
+    "n-case",
+    "results"
+];
+
 
 /**
  * Dictionary to convert inputs to the numbers in the object. First index is condition, second index is treatment.
