@@ -24,7 +24,6 @@ Features are sorted by importance and are further split by features that should 
 
 ## General 
 
-* Design of landing page
 * Handle treatment case  
 * Typos!
 

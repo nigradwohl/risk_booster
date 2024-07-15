@@ -678,6 +678,88 @@ $(document).ready(function () {
         console.log(`${token_dat.nrow} rows and ${token_dat.ncol} columns`);
         token_dat.print(allnum_ix);  // print data from object.
 
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // --------------------------- USE THE DATA ----------------------------------------
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+                // Default for linking risks:
+        const curtop = "?page=" + (token_dat.topics.includes("impf") ? "impf" : "treat");
+        const risk_link = "Verwenden Sie den <a target='_blank' href='checklist_impftreat.html" + curtop + "'>Risikorechner</a>, " +
+            "um eine transparente Darstellung zu erstellen, wenn die Zahlen es erlauben.";
+
+        const info_tree = {
+            // Levels:
+            // "treelvs": ["relabs", "unit"],
+            "tree": {
+                // unit tree:
+                "perc": {
+                    "abs": new OutputNode("Absolute Prozentzahl", popup_perc("abs") + info_data.prozent.popup),
+                    "rel": new OutputNode("Relative Prozentzahl", popup_perc("rel") + info_data.rel.popup + risk_link),
+                    "default": new OutputNode("Prozentzahl", "Diese Prozentzahl konnte leider nicht näher identifiziert werden")
+                },  // Note: This is merely an addition; make its own tree or a condition within the perc-tree?
+                "nh": new OutputNode("Natürliche Häufigkeit.", info_data.nh.popup),
+                "freq": {
+                    "ncase": new OutputNode("Fallzahl", popup_freq("ncase") + info_data.freq.popup),
+                    "ntot": new OutputNode("Stichprobengröße", popup_freq("ntot") + info_data.sample_size.popup),
+                    "default": new OutputNode("Häufigkeit", "Diese Häufigkeit konnte leider nicht näher identifiziert werden")
+                },
+                "mult": new OutputNode("Relative Veränderung", info_data.rel.popup),
+                "pval": new OutputNode("p-Wert", info_data.pval.popup),
+                "confint": new OutputNode("Konfidenzintervall", info_data.confint.popup),
+                "nyear": {
+                    "decr": new OutputNode("Unterschied in der Lebenserwartung", "Kann zum Vergleich der Sterblichkeit verschiedener Gruppen dienen. " +
+                        "Achten Sie darauf, die Gesamtlebenserwartung anzugeben."),
+                    "incr": new OutputNode("Unterschied in der Lebenserwartung", "Kann zum Vergleich der Sterblichkeit verschiedener Gruppen dienen. " +
+                        "Achten Sie darauf, die Gesamtlebenserwartung anzugeben."),
+                    "other": new OutputNode("Lebenserwartung in Jahren", "Lebenserwartung kann zur Beurteilung der Sterblichkeit dienen."),
+                    "default": new OutputNode("Anzahl an Jahren", "Diese Anzahl an Jahren konnte leider nicht näher identifiziert werden")
+                },
+                "age": new OutputNode("Altersangabe", "Kann insbesondere hilfreich sein, um Unterschiede in der Lebenserwartung einzuordnen."),
+                "default": new OutputNode("Zahl.", "Diese Zahl konnte leider nicht näher identifiziert werden")
+            },
+            "traverse": function (arr) {
+
+                let curtree = this.tree;
+                let curdefault = this.tree.default;
+
+                console.log(curtree);
+                console.log(curdefault);
+
+                for (const i of arr) {
+                    console.log(i);
+                    const curentry = curtree[i];
+
+                    if (curentry !== undefined) {
+                        curtree = curentry;
+
+                        // Log the default for if the tree is undefined!
+                        curdefault = curtree["default"];
+
+                        console.log(curtree);
+                        console.log(curdefault);
+
+                        // When reaching an output node return:
+                        if (curtree instanceof OutputNode) {
+                            break;
+                        }
+
+                    }
+
+                }
+
+                // Replace undefined tree by last encountered default:
+                if (!(curtree instanceof OutputNode)) {
+                    curtree = curdefault;
+                }
+
+                console.log("Final tree:");
+                console.log(curtree);
+                console.log(curdefault);
+
+                return curtree;
+
+            }
+        }
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // -------------- HIGHLIGHTING --------------------
@@ -984,6 +1066,7 @@ $(document).ready(function () {
         console.log("~~~~~~~~~~~~ Text features: ~~~~~~~~~~~~~~~~");
         console.log(txtfeat_dict);
         console.log(addfeat_dict);
+
 
         // Turn keys into array:
         const feature_arr = Object.entries(txtfeat_dict)
@@ -1303,15 +1386,17 @@ $(document).ready(function () {
 
         }
 
-
         // If there are any entries:
         if (arr_li.size > 0) {
             let str_li = ""
             for (const note of arr_li) {
                 str_li += "<li>" + note + "</li>";
             }
+
             // Add the list entries:
-            notes_html += "<ul><li>Weitere Anmerkungen:</li><ul>" + str_li + "</ul></ul>";
+            notes_html += "<ul><li>Weitere Anmerkungen:</li><ul>" + str_li + "</ul></ul>" +
+                "<p>" + risk_link + "</p>"
+
         }
 
 
@@ -1578,7 +1663,8 @@ const unit_note_dict = {
 
             if (type_arr.includes("relative Prozentzahl")) {
                 if (type_arr.length === 1) {
-                    txt_out += "nur " + types + ". <a target=\"_blank\" href=\"risk_wiki.html#wiki-rel\">Relative Angaben</a> ohne Basisrisiko sollten vermieden werden.";
+
+                    txt_out += "nur " + types + ". <a target=\"_blank\" href=\"risk_wiki.html#wiki-rel\">Relative Angaben</a> ohne Basisrisiko sollten vermieden werden. "
                 } else {
                     txt_out += types + ". ";
                 }
@@ -1742,79 +1828,6 @@ const popup_freq = function (sample) {
 
 // In the future we might try to have more sophisticated methods to allow the passing of specific parameters!
 
-const info_tree = {
-    // Levels:
-    // "treelvs": ["relabs", "unit"],
-    "tree": {
-        // unit tree:
-        "perc": {
-            "abs": new OutputNode("Absolute Prozentzahl", popup_perc("abs") + info_data.prozent.popup),
-            "rel": new OutputNode("Relative Prozentzahl", popup_perc("rel") + info_data.rel.popup),
-            "default": new OutputNode("Prozentzahl", "Diese Prozentzahl konnte leider nicht näher identifiziert werden")
-        },  // Note: This is merely an addition; make its own tree or a condition within the perc-tree?
-        "nh": new OutputNode("Natürliche Häufigkeit.", info_data.nh.popup),
-        "freq": {
-            "ncase": new OutputNode("Fallzahl", popup_freq("ncase") + info_data.freq.popup),
-            "ntot": new OutputNode("Stichprobengröße", popup_freq("ntot") + info_data.sample_size.popup),
-            "default": new OutputNode("Häufigkeit", "Diese Häufigkeit konnte leider nicht näher identifiziert werden")
-        },
-        "mult": new OutputNode("Relative Veränderung", info_data.rel.popup),
-        "pval": new OutputNode("p-Wert", info_data.pval.popup),
-        "confint": new OutputNode("Konfidenzintervall", info_data.confint.popup),
-        "nyear": {
-            "decr": new OutputNode("Unterschied in der Lebenserwartung", "Kann zum Vergleich der Sterblichkeit verschiedener Gruppen dienen. " +
-                "Achten Sie darauf, die Gesamtlebenserwartung anzugeben."),
-            "incr": new OutputNode("Unterschied in der Lebenserwartung", "Kann zum Vergleich der Sterblichkeit verschiedener Gruppen dienen. " +
-                "Achten Sie darauf, die Gesamtlebenserwartung anzugeben."),
-            "other": new OutputNode("Lebenserwartung in Jahren", "Lebenserwartung kann zur Beurteilung der Sterblichkeit dienen."),
-            "default": new OutputNode("Anzahl an Jahren", "Diese Anzahl an Jahren konnte leider nicht näher identifiziert werden")
-        },
-        "age": new OutputNode("Altersangabe", "Kann insbesondere hilfreich sein, um Unterschiede in der Lebenserwartung einzuordnen."),
-        "default": new OutputNode("Zahl.", "Diese Zahl konnte leider nicht näher identifiziert werden")
-    },
-    "traverse": function (arr) {
-
-        let curtree = this.tree;
-        let curdefault = this.tree.default;
-
-        console.log(curtree);
-        console.log(curdefault);
-
-        for (const i of arr) {
-            console.log(i);
-            const curentry = curtree[i];
-
-            if (curentry !== undefined) {
-                curtree = curentry;
-
-                // Log the default for if the tree is undefined!
-                curdefault = curtree["default"];
-
-                console.log(curtree);
-                console.log(curdefault);
-
-                // When reaching an output node return:
-                if (curtree instanceof OutputNode) {
-                    break;
-                }
-
-            }
-
-        }
-
-        // Replace undefined tree by last encountered default:
-        if (!(curtree instanceof OutputNode)) {
-            curtree = curdefault;
-        }
-
-        console.log("Final tree:");
-        console.log(curtree);
-        console.log(curdefault);
-
-        return curtree;
-
-    }
-}
 
 // ~~~~~~~~~~~~~~~~~~~~~~~ CLASSES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /**
