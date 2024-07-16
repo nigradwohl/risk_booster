@@ -160,11 +160,13 @@ $(document).ready(function () {
             "carry_forward_pre": RegExp("(?<ucarryforward>((waren|sind) es|[Dd]avon[^.\\d ]*) (\\w+ ){0,2}" + pat_num + "(?=\\W))", "dg"),
             // (\w+ ){0,2} allows up to 2 more words; What happens after "Davon" may not be a fullstop or a number..
             "carry_forward_post": RegExp("(?<ucarryforward>" + pat_num + " (waren|sind) es)", "dg"),
+            "carry_back": RegExp("(?<ucarryback>" + pat_num + " (bzw\\.|und|bis))", "dg"),
+            // Units to exclude:
             "phone": /(?<phone>[+]?[0-9]* ?([(]?[0-9]{0,3}[)])?[-\s.]?[0-9]{3,4}[-\s.]?[0-9]{3,4}[-\s.]?[0-9]{1,6})/dg,
             // MIscellaneous numbers to be excluded!
             "misc": RegExp("(?<misc>(" + pat_num + " bis )?" + pat_num + "\\.? (Grad|Staat|Schritt|Kommentare|.[gC](?= .)))", "dg"),
             "vaccdose": RegExp("(?<misc>(" + pat_num + "( (" + collapse_regex_or(largenums) + "))? bis )?" +
-                 pat_num + "( (" + collapse_regex_or(largenums) + "))?" + "\\.? \\w*[Dd]os[ei])", "dg"),
+                pat_num + "( (" + collapse_regex_or(largenums) + "))?" + "\\.? \\w*[Dd]os[ei])", "dg"),
             "vaccdose_word": RegExp("(?<misc>(" + collapse_regex_or(numwords) + "( (" + collapse_regex_or(largenums) + "))? bis )?" +
                 collapse_regex_or(numwords) + "( (" + collapse_regex_or(largenums) + "))?" + " \\w*[Dd]os[ei])", "dg"),
             "degree": RegExp("(?<misc>(" + pat_num + " bis )?" + pat_num + "\\.?(.[gC](?= .)))", "dg"),
@@ -489,6 +491,7 @@ $(document).ready(function () {
         // console.log(token_dat.is_num);
 
         // Detect missing units:
+        // TODO: Move up?
         console.log(" +++ detecting missing units +++");
         const no_unit_ix = token_dat.id.filter((d, ix) => token_dat.is_num[ix] && token_dat.unit[ix] === "unknown");
         // console.log(no_unit_ix);
@@ -640,9 +643,11 @@ $(document).ready(function () {
 
         }
 
+        // Update information on small percentages:
         token_dat.add_column(token_dat.unit.map((x, ix) => x === "perc" && token_dat.is_num[ix] ?
             token_dat.trnum[ix].match(regex_num)[0].replace(",", ".") < 1 : -1), "smperc");
 
+        // Investigate change for relative or absolute:
         for (const ix of n_change_ix) {
 
             let out = "unclear";
@@ -672,13 +677,35 @@ $(document).ready(function () {
 
         // eof. detecting relative vs. absolute.
 
-        // Fix some issues:
+        // Fix some issues with numtype:
         token_dat.numtype = token_dat.numtype
             .map((x, ix) => token_dat.unit[ix] === "freq" && [-1, "other"].includes(x) && token_dat.gtype[ix] === "sub" ? "ncase" : x);
 
-        // Reference information for absolute percentages and subgroups:
+        // Reference information for absolute percentages and subgroups (WORK IN PROGRESS):
         // +++ HERE +++
         token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.reference, false), "reference");
+
+
+        // Carry backward number information:
+        // Get carryback (from 1 or 2 places before):
+        console.log("CARRYBACKWARD!");
+        for (const ix of allnum_ix) {
+            if (token_dat.unit[ix] === "ucarryback") {
+                // Check the next 2 tokens if they are numbers and return the first match (if any):
+                const ix_nxt = token_dat.id.slice(ix + 1, ix + 3).filter(ixx => token_dat.is_num[ixx]);
+                console.log(ix_nxt);
+                if (ix_nxt.length > 0) {
+                    token_dat.unit[ix] = token_dat.unit[ix_nxt[0]];
+                    token_dat.numtype[ix] = token_dat.numtype[ix_nxt[0]];
+                    token_dat.gtype[ix] = token_dat.gtype[ix_nxt[0]];
+                    token_dat.group[ix] = token_dat.group[ix_nxt[0]];
+                    token_dat.effside[ix] = token_dat.effside[ix_nxt[0]];
+                    token_dat.ftype[ix] = token_dat.ftype[ix_nxt[0]];
+                    token_dat.relabs[ix] = token_dat.relabs[ix_nxt[0]];
+                }
+            }
+        }
+
 
         // Display for testing: ~~~~~~~~~~~~~~~~~~
         console.log("~~~~~ Updated token data: ~~~~~~");
@@ -777,8 +804,11 @@ $(document).ready(function () {
         let cur_ix = 0;  // current index in original text.
         let procText = "";
 
-        // Get rid of unidentified carryforward units:
-        token_dat.unit = token_dat.unit.map((x) => x === "ucarryforward" ? -1 : x);
+
+        // Carry back anything that has not been identified so far:
+
+        // Get rid of unidentified carryforward and backward units:
+        token_dat.unit = token_dat.unit.map((x) => ["ucarryforward", "ucarryback"].includes(x) ? -1 : x);
 
         // Loop over all tokens:
         // TODO: Turn into a function eventually?
@@ -1203,7 +1233,7 @@ $(document).ready(function () {
             // +++ HERE!
             // TODO: Remove/adjust Nutzen/Schaden terminology for other kinds of topics (e.g., comparison of risks).
 
-                        // Differentiate numbers for control and treat group:
+            // Differentiate numbers for control and treat group:
             // Do numbers apply to treat and contr group
             // (or: affected and general population for other risks)
 
@@ -1642,7 +1672,9 @@ const numwords = ["[Kk]einen?", "(?<![Kk])[Ee]ine?[rm]?(?![gnz])", "[Zz]wei(?!fe
 
 const regex_num = new RegExp("(?<unknown>" + pat_num + "( Millionen| Milliarden)?)", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
 const regex_numwords = new RegExp("(?<unknown>(" + collapse_regex_or(numwords) + ") (Person(en)?|F[aä]lle?))", "dg");
-const regex_perc = new RegExp("(?<perc>(" + pat_num + " bzw\\. )?" + pat_num + " ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.?!])" + ")", "dg");
+const regex_perc = new RegExp("(?<perc>" +
+    // pat_num + " bzw\\. )?" +
+    pat_num + " ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.?!])" + ")", "dg");
 const regex_nh = new RegExp("(?<nh>" + pat_num + " (?!%|[Pp]rozent)(\\w+ )?(von|aus|in) (\\w+ )?" + pat_num + ")", "dg");  // TODO: Handle numberwords here.
 const regex_nh2 = new RegExp("(?<nh>(" + collapse_regex_or(numwords) + ") (?!%|[Pp]rozent)(\\w+ )?(von|aus|in) (\\w+ )?" + pat_num + ")", "dg");
 const regex_mult = new RegExp("(?<mult>" + pat_num + "[ \\-]?([Mm]al|[Ff]ach) (so )?( ?viele|gr[oö]ß(er)?|hoch|niedrig(er)?|besser|erhöht|höher)(?=[\\s.?!])" + ")", "dg");
@@ -2652,8 +2684,8 @@ function detect_unit(token_data) {
         unit_info = token_data.unit;
     }
 
-                console.log("INITIAL UNITS:");
-        console.log(JSON.stringify(token_data.unit));
+    console.log("INITIAL UNITS:");
+    console.log(JSON.stringify(token_data.unit));
 
     // Migrate later! Maybe to JSON
     // Lookup table:
@@ -2832,7 +2864,7 @@ function detect_regex_match(txt, token_dat, check_dict) {
                 cur_type = match.type;
 
                 // } else if (match.type[0] !== "unknown") {
-            } else if (!["unknown", "ucarryforward"].includes(match.type[0])) {  // now exclude both.
+            } else if (!["unknown", "ucarryforward", "ucarryback"].includes(match.type[0])) {  // now exclude both.
 
                 // console.log("Match type");
                 // console.log(match.type);
