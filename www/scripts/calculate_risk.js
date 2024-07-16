@@ -582,7 +582,7 @@ class Margintable {
     constructor(nested_list, rel1, rel2, diff1, diff2) {
         this.tab = new Table2x2(nested_list);
         // Relative risk changes:
-        this.rel1 = rel1;  // TODO: Really needed? We have 2 margin tables -- one for each?
+        this.rel1 = rel1;
         this.rel2 = rel2;
         // Absolute risk differences:
         this.diff1 = diff1;
@@ -596,8 +596,8 @@ class Margintable {
 
         // Potentially make more concise?
         // Add other dimensions?
-        console.log("Margintable before getting from relative information:");
-        console.log(JSON.stringify(this));
+        // console.log("Margintable before getting from relative information:");
+        // console.log(JSON.stringify(this));
 
         // Margins should be designed so that the arrays add up to 1.
 
@@ -609,16 +609,16 @@ class Margintable {
 
         this.complete_tab();
 
-        console.log("Margintable after getting from relative information:");
-        console.log(JSON.stringify(this));
+        // console.log("Margintable after getting from relative information:");
+        // console.log(JSON.stringify(this));
     }
 
     get_from_diff() {
 
         // Potentially make more concise?
         // Add other dimensions?
-        console.log("Margintable before getting fromdifference information:");
-        console.log(JSON.stringify(this));
+        // console.log("Margintable before getting fromd ifference information:");
+        // console.log(JSON.stringify(this));
 
         // Margins should be designed so that the arrays add up to 1.
 
@@ -631,8 +631,8 @@ class Margintable {
         this.complete_tab();
 
 
-        console.log("Margintable after getting from difference:");
-        console.log(JSON.stringify(this));
+        // console.log("Margintable after getting from difference:");
+        // console.log(JSON.stringify(this));
     }
 
     complete_tab() {
