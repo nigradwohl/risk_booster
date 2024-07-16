@@ -789,7 +789,7 @@ class Checklist {
         console.log(this.check_side);
 
         // Transpose the risks for testing case:
-        if(["test"].includes(this.type)){
+        if (["test"].includes(this.type)) {
             this.check_side.ntab.tab.tab2x2 = transpose(this.check_risk.ntab.tab.tab2x2);
         }
 
@@ -797,7 +797,11 @@ class Checklist {
         // TODO: Rather get from ptab/mtab -- this should be more flexible
         //  (e.g., if the risks in both groups were entered in percent).
         const eff_group_risks = this.check_risk.ntab.tab.margin2_mean();
-        const side_group_risks =   this.check_side.ntab.tab.margin2_mean();  // Get the margins.
+        let side_group_risks = this.check_side.ntab.tab.margin2_mean();  // Get the margins.
+        // For testing case switch negatively tested to show actually healthy:
+        if(["test"].includes(this.type)){
+            side_group_risks[0] = side_group_risks[0].reverse();
+        }
 
         console.log("Risks in each group:");
         console.log(eff_group_risks);
@@ -862,8 +866,7 @@ class Checklist {
         // Assign the information to the objects in results page:
         $("#risk-treat").html(this.outcome.verb.aux + "<br>" + eff_risks.risk_treat_nh + " " + this.outcome.verb.main);
         $("#risk-control").html(this.outcome.verb.aux + "<br>" + eff_risks.risk_control_nh + " " + this.outcome.verb.main);
-        $("#abs-change").html(`Absolute${eff_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe ${this.outcome.verb.aux} <span class="risk-info" id="arr">${eff_risks.arr_p} ${this.outcome.verb.main}</span>`);
-        $("#rel-change").html(`Relative${eff_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${eff_risks.rrr_p}</span>`);
+
         // Rounding can eventually be improved!
 
         const cur2x2_eff = eff_group_risks.map((x) => x.map((y) => Math.round(y * N_scale)));
@@ -873,15 +876,25 @@ class Checklist {
         // Handle side effects:
         const side_risks = get_risk_set(side_group_risks);
         console.log("Side risks");
+        console.log(side_risks);
         console.log(side_group_risks);
+        // Assign the information to the objects in results page:
+        $("#risk-treat-side").html(this.outcome_side.verb.aux + "<br>" + side_risks.risk_treat_nh + " " + this.outcome_side.verb.main);
+
+        let cur_side_control = side_risks.risk_control_nh;
+
         if (["test"].includes(this.type)) {
-            // Assign the information to the objects in results page:
-            $("#risk-treat-side").html(this.outcome_side.verb.aux + "<br>" + side_risks.risk_treat_nh + " " + this.outcome_side.verb.main);
-            $("#risk-control-side").html(this.outcome_side.verb.aux + "<br>" + side_risks.risk_control_nh + " " + this.outcome_side.verb.main);
+            cur_side_control = cur_side_control + " nicht";  // highlight the non-events!
+        } else {
+            // Add some information only in non-testing case:
+            $("#abs-change").html(`Absolute${eff_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe ${this.outcome.verb.aux} <span class="risk-info" id="arr">${eff_risks.arr_p} ${this.outcome.verb.main}</span>`);
+            $("#rel-change").html(`Relative${eff_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${eff_risks.rrr_p}</span>`);
             $("#abs-change-side").html(`Absolute${side_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe ${this.outcome_side.verb.aux} <span class="risk-info" id="arr">${side_risks.arr_p}</span> ${this.outcome_side.verb.main}`);
             $("#rel-change-side").html(`Relative${side_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${side_risks.rrr_p}</span>`);
-
         }
+
+        // Also assign the side effect risks in the control group (or among the nagtively tested):
+        $("#risk-control-side").html(this.outcome_side.verb.aux + "<br>" + cur_side_control + " " + this.outcome_side.verb.main);
 
         const cur2x2_side = side_group_risks.map((x) => x.map((y) => Math.round(y * N_scale)));
         console.log(cur2x2_side);
