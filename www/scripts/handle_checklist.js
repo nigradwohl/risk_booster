@@ -106,6 +106,8 @@ $(document).ready(function () {
         typeword = "Diagnostischer Test";
 
         // Change the results display:
+        $("#head1").text("Testgüte (Spezifität und Sensitivität)");
+        $("#head2").text("Vorhersagegüte (NPV und PPV)");
         $(".grid-subhead1").text("Unter den Gesunden");
         $(".grid-subhead2").text("Unter den Erkrankten");
         $(".grid-subhead1#subhead1-r2").text("Unter den negativ getesteten");
