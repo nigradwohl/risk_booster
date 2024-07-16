@@ -105,12 +105,26 @@ $(document).ready(function () {
         typeverb = "tatsächlich erkrankt";
         typeword = "Diagnostischer Test";
 
-        $("#results-2").html("");  // Second results are not needed for tests.
+        // Change the results display:
+        $(".grid-subhead1").text("Unter den Gesunden");
+        $(".grid-subhead2").text("Unter den Erkrankten");
+        $(".grid-subhead1#subhead1-r2").text("Unter den negativ getesteten");
+        $(".grid-subhead2#subhead2-r2").text("Unter den positiv getesteten");
+        // TODO: Switch perspective?
+        // $("#results-2").html("");  // Second results are not needed for tests.
 
+        // Define outcome information:
         outcome_list.eff = [
             {
                 "verb": new Verblist("bekommen ein positives Testergebnis", "werden", "positv getestet"),
                 "noun": "Positives Testergebnis", "direction": "achieve"
+            }
+        ]
+
+        outcome_list.side = [
+            {
+                "verb": new Verblist("sind tatsächlich erkrankt", "sind", "erkrankt"),
+                "noun": "Tatsächlich erkrankt", "direction": "achieve"
             }
         ]
     }
@@ -648,16 +662,11 @@ class Checklist {
         const risk_info = this.calculate_risks();
         console.log(risk_info);
         const cur2x2_eff = risk_info.cur2x2_eff;
-
-        // Get array information for each group:
+        const cur2x2_side = risk_info.cur2x2_side;
         const group_arrs_eff = {
             "treat": [cur2x2_eff[1][1], cur2x2_eff[1][0]],
             "control": [cur2x2_eff[0][1], cur2x2_eff[0][0]]
         }
-
-
-        const cur2x2_side = risk_info.cur2x2_side;
-
         const group_arrs_side = {
             "treat": [cur2x2_side[1][1], cur2x2_side[1][0]],
             "control": [cur2x2_side[0][1], cur2x2_side[0][0]]
@@ -702,33 +711,33 @@ class Checklist {
 
 
         // Side effects:
-        if (["test"].includes(this.type)) {
-            try {
-                create_icon_array(
-                    group_arrs_side.treat,  // treatment group.
-                    // cur2x2[0][0], cur2x2[0][1],  // control group.
-                    'dotdisplay-treat-side',
-                    ncol,
-                    ["steelblue", "lightgrey"],
-                    expansion);
+        // if (["test"].includes(this.type)) {
+        try {
+            create_icon_array(
+                group_arrs_side.treat,  // treatment group.
+                // cur2x2[0][0], cur2x2[0][1],  // control group.
+                'dotdisplay-treat-side',
+                ncol,
+                ["steelblue", "lightgrey"],
+                expansion);
 
-                create_icon_array(
-                    // [cur2x2[1][0], cur2x2[1][1]],  // treatment group.
-                    group_arrs_side.control,  // control group.
-                    'dotdisplay-control-side',
-                    ncol,
-                    ["steelblue", "lightgrey"],
-                    expansion);
+            create_icon_array(
+                // [cur2x2[1][0], cur2x2[1][1]],  // treatment group.
+                group_arrs_side.control,  // control group.
+                'dotdisplay-control-side',
+                ncol,
+                ["steelblue", "lightgrey"],
+                expansion);
 
-                $("#results-2-error ~ *").show();
-                $("#results-2-error").hide();
+            $("#results-2-error ~ *").show();
+            $("#results-2-error").hide();
 
-            } catch (error) {
-                console.warn(error);
-                $("#results-2-error ~ *").hide();
-                $("#results-2-error").show();
-            }
+        } catch (error) {
+            console.warn(error);
+            $("#results-2-error ~ *").hide();
+            $("#results-2-error").show();
         }
+        // }
 
 
         // Adding functionality: ~~~~~~~~~~~~~~~~~~
@@ -779,11 +788,16 @@ class Checklist {
         console.log("Side effects:");
         console.log(this.check_side);
 
+        // Transpose the risks for testing case:
+        if(["test"].includes(this.type)){
+            this.check_side.ntab.tab.tab2x2 = transpose(this.check_risk.ntab.tab.tab2x2);
+        }
+
         console.log("~~~~~~ Calculate the risks ~~~~");
         // TODO: Rather get from ptab/mtab -- this should be more flexible
         //  (e.g., if the risks in both groups were entered in percent).
         const eff_group_risks = this.check_risk.ntab.tab.margin2_mean();
-        const side_group_risks = this.check_side.ntab.tab.margin2_mean();
+        const side_group_risks =   this.check_side.ntab.tab.margin2_mean();  // Get the margins.
 
         console.log("Risks in each group:");
         console.log(eff_group_risks);
