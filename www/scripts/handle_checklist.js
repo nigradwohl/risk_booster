@@ -115,6 +115,7 @@ $(document).ready(function () {
         ]
     }
 
+    // Assign the words determined above to the ids and classes:
     $("#case-test").text(typeword);
     $(".cur-topic").text(typeword);
     $(".typeword").text(typeword);  // Set wordings
@@ -144,7 +145,7 @@ $(document).ready(function () {
     // Set initial values:
     if (text === "test") {
         // Set the margin sums:
-        cur_checklist.check_risk.ntab.msums1 = [1000, 1000];
+        cur_checklist.check_risk.ntab.N = 10000;  // Determine a random N.
     }
 
     console.log("CURRENT CHECKLIST");
@@ -1205,10 +1206,10 @@ const id_to_num_dict = {
     "p-side-control": "mtx0s",
     // ~~~ TESTS ~~~
     "prev": "mpx1",
-    "p-sens": "mt1x",
+    "p-sens": "mt11",
     // careful! Vaccinated are now column 2 (index 1)!
     // cases are second row (index 1)
-    "p-spec": "mt0x",  // cases among untreated (cases: 1, treatment: 0)
+    "p-spec": "mt00",  // cases among untreated (cases: 1, treatment: 0)
 }
 
 const eff_keys = ["N_tot",

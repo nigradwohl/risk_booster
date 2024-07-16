@@ -257,6 +257,7 @@ class RiskCollection {
         this.get_margintabs();  // Try to complete the margin tables.
         // this.print();
         this.get_tab_from_margins("ntab"); // Get elements from margin tables.
+        this.get_tab_from_margins("ptab");
         // TODO: make method to get anything from margins?
         // Here an issue occurs!
         // this.print();
@@ -339,9 +340,18 @@ class RiskCollection {
 
         // console.log(transpose(this.mtab2.tab));
 
-        const tab_from_margins = transpose(this.mtab2.tab.tab2x2
-            .map((x, ix) => x
-                .map(y => Math.round(y * curmsums[ix]))));
+        let tab_from_margins;
+        if (tabtype === "ntab") {
+            tab_from_margins = transpose(this.mtab2.tab.tab2x2
+                .map((x, ix) => x
+                    .map(y => Math.round(y * curmsums[ix]))));
+        } else {
+            // Do not round for ptab!
+            tab_from_margins = transpose(this.mtab2.tab.tab2x2
+                .map((x, ix) => x
+                    .map(y => y * curmsums[ix])));
+        }
+
 
         // console.log("Table from margins:");
         // console.log(JSON.stringify(tab_from_margins));
