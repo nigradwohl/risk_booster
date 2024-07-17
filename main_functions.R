@@ -2,6 +2,76 @@
 # MAIN FUNCTIONS
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Function to create token data: -----------------------
+get_token_data <- function(txt) {
+  
+  txt <- gsub('"', "\\\"", txt)  # escape quotes.
+  
+  # TODO: Improve handling of quotes!
+  
+  text_tokens = word_tokenizer(txt)  # Define the text as word and punctuation tokens.
+  # console.log(text_tokens);  # for testing.
+
+  # get paragraphs:
+  # print("PARAGRAPHS");
+  paragraph_array <- gregexpr("\\n\\n", txt, perl = TRUE)[[1]]
+  
+  # Initialize values:
+  tpos_end <- 0
+  sentence_id <- 0
+  cur_paragraph_id <- 0
+  
+  token_info <- c()
+  
+  for(token_i in text_tokens){
+    if(token_i %in% c("\\n\\*", ".", ":", ";", ",", "?", "!", "(", ")", "\"", "'", "/", "\\-", 
+                      "\\x{2018}", "\\x{2019}", "\\x{201c}", "\\x{201d}") |
+       grepl("\\++", token_i)){
+      
+      # Escape and add lookahead or behind.
+      if (token_i %in% c("(", ")")) {
+        token_pat <- gsub("([.?()/])", "\\\\\\1", token_i)
+      } else if (token_i %in% c("\"", "'", "\\x{2018}", "\\x{2019}", "\\x{201c}", "\\x{201d}")) {
+        token_pat = token_i  # no requirement to escape?
+      } else {
+        token_pat = paste0(gsub("([.?()/+\\-])", "\\\\\\1", token_i), "(?=\\s|\\n|$|\\.|,|-|[\"'\u2018\u2019\u201c\u201d])")
+      }
+      
+    } else {
+      token_pat <- paste0("(?<!\\w)", token_i, "(?!\\w)")
+    }
+    
+    cur_rex <- gregexpr(token_pat, txt, perl = TRUE)
+    
+    # Get position information (start, length):
+    pos_info <- rbind(cur_rex[[1]], attr(cur_rex[[1]], "match.length"))
+    pos_info <- cbind(pos_info[, pos_info[1,] > last_index])[,1]  # get rid of past entries.
+    
+    # Extract info:
+    tpos_start <- pos_info[1]
+    tpos_end <- sum(pos_info) - 1
+
+    # Assign sentence ID:
+    sentence_id <- sentence_id + token_i %in% c("?", ".", "!", ";")
+      # increment the id when a punctuation token is found
+    
+    # Assign paragraph ID:
+    if(all(paragraph_array != -1)){
+      if (pos_info[1] > paragraph_array[cur_paragraph_id + 1]) {
+        cur_paragraph_id <- cur_paragraph_id + 1
+      }  # increment the id when a punctuation token is found 
+    }
+
+
+    token_info <- rbind(token_info, c(token_i, tpos_start, tpos_end, 
+                                      sentence_id, cur_paragraph_id))
+    
+  }
+ 
+  return(data.frame(token_info))
+}
+  
+  
 
 # Function to extract regex matches and their positions from a text: -----------------
   get_regex_matches <- function(txt, regexp) {
