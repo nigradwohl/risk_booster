@@ -5,101 +5,18 @@ Eventual functionality:
 Judge an input text based on a fixed set of rules, e.g.:
     * if it reports effectivity it also must report harm
     * if it reports evidence it should report numbers (if available)
-    * if it reports numbers they need to have a reference (or be otherwise clearly defined)
+    * still open: if it reports numbers they need to have a reference (or be otherwise clearly defined)
 
  Therefore, it will be able to process texts, output adherence to the criteria, and highlight corresponding information in text.
 
 */
 
 /*
-Testcases:
-Testcase 1:
-Die Wahrscheinlichkeit für Regen ist 50% oder 60 Prozent? Jedenfalls irgendwas unter 100. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Die Wahrscheinlichkeit für Regen ist 50%  oder 60 Prozent? Jedenfalls irgendwas unter 100. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue.
-
-Testcase 2:
-Vergangene Woche hatten Biontech und Pfizer bekanntgegeben, dass ihr Impfstoff nach Zwischenergebnissen klinischer Studien einen mehr als 90-prozentigen Schutz vor Covid-19 bietet. Der US-Pharmakonzern Moderna hatte zuletzt für sein ähnliches Präparat eine Wirksamkeit von 94,5 Prozent errechnet.
-heute 5 94,5 Prozent
-100 Leute.
-1000 Leute.
-100 Leute
-
-Testcase 3:
-Der Impfstoff wird nach Angaben der beiden Unternehmen 2 mal im Abstand von 3 Wochen verabreicht. In der Altersgruppe der Über-65-Jährigen wurde 7 Tage nach der 2 Dosis eine Wirksamkeit von 94 Prozent ermittelt. Der Impfstoff sei von den Teilnehmern der weltweiten Studie gut vertragen worden, ernste Nebenwirkungen seien nicht beobachtet worden, berichteten die Unternehmen. Basis sind Angaben von mindestens 8000 zufällig ausgewählten Teilnehmern.
-
-Bei der immer noch in zahlreichen Ländern laufenden Studie erhält eine Hälfte der insgesamt 43.000 Teilnehmer den Impfstoff, die andere Hälfte fungiert als Kontrollgruppe und bekommt ein Placebo-Mittel.
-
-Bislang erkrankten den Angaben zufolge insgesamt 170 Teilnehmer an Covid-19. Davon entfielen nur 8 Fälle auf die tatsächlich geimpften Probanden, 162 Fälle wurden in der Placebo-Gruppe diagnostiziert. Daraus errechnet sich eine Wirksamkeit von rund 95 Prozent. Nach Angaben von Biontech und Pfizer gab es unter allen Covid-19-Erkrankungen 10 schwere Verläufe - 9 in der Kontroll- und einen in der Impfgruppe.
-
-Slight reformulation:
-Nur 8 Fälle ereigneten sich unter den tatsächlich geimpften Probanden, in der Kontrollgruppe wurden 162 Fälle diagnostiziert.
-
-Nur 8 Fälle ereigneten sich unter den tatsächlich geimpften Probanden, in der Kontrollgruppe waren es 162.
-
-Wer zum Selbstschutz eine Maske trägt, die dicht am Gesicht anliegt, der sei etwa 100-mal besser vor einer Infektion geschützt als ohne Maske.
-
-41 % der weltweiten Studienteilnehmer und 45 % der amerikanischen Studienteilnehmer sind im Alter von 56 bis 85 Jahren.
-
-Testcase 4:
-In der Studie traten insgesamt 10 schwere COVID-19-Verläufe auf. Davon wurden 9 in der Placebogruppe und einer in der BNT162b2-Gruppe beobachtet. Bislang konnte das Data Monitoring Committee keine schwerwiegenden Nebenwirkungen feststellen. Eine Untersuchung der entblindeten Daten zur Impfstoffreaktion in einer randomisierten Subgruppe der finalen Phase-2/3-Analyse mit mindestens 8.000 der über 18-jährigen Probanden zeigte, dass der Impfstoff gut verträglich ist. Die meisten Nebenwirkungen traten nur vorübergehend auf. Die einzigen schweren Nebenwirkungen (3. Grades), die in mehr als 2 % der Probanden nach der ersten oder zweiten Impfung auftraten, waren Erschöpfung mit 3,8 % sowie Kopfschmerzen mit 2,0 % nach der zweiten Dosis.
-
-Testcase percentages:
-BNT162b2 zeigt in der primären Endpunktanalyse 28 Tage nach der ersten Impfung eine 95%ige Wirksamkeit gegen COVID-19; insgesamt traten 170 bestätigte COVID-19-Fälle auf, mit 162 Fällen in der Placebogruppe und 8 Fällen in der Impfstoffgruppe
-
-41 % der weltweiten Studienteilnehmer und 45 % der amerikanischen Studienteilnehmer sind im Alter von 56 bis 85 Jahren.
-
-Der Impfstoff wurde in allen Teilnehmerpopulationen gut vertragen, insgesamt nahmen 43.000 Probanden an der Studie teil; es wurden keine schwerwiegenden Nebenwirkungen festgestellt; die einzigen Nebenwirkungen dritten Grades die häufiger als 2 % auftraten, waren Erschöpfung mit 3,8 % und Kopfschmerzen mit 2,0 %
-
-Test statements:
-- In der Kontrollgruppe erkranken 5 von 100, in der Behandlungsgruppe einer aus 100. --> gut
-- Das Risiko zu erkranken ist 30-mal so hoch. Das heißt es erkranken 30 von 10000 mit dem bösen Verhalten und nur einer von 10000 ohne.
-Das entspricht einem Risikoanstieg von 3000% --> Prozentzahl, vorsicht (mit 1. Satz okay-ish)
-- Das Risiko zu erkranken ist unter rauchern doppelt so hoch. --> Referenz fehlt
-
+Testcase:
  */
 
-/*
-Phraselist:
 
-* risk-
-    + verhindern + Erkrankung
-
- * relative_risk:
-    + [Ii]mpf + wirksam + Prozent
-    + Risiko + n-fach/n-mal so hoch
-
-*/
-
-/*
-Output terms:
-- bezugsgröße (worauf bezieht sich die Zahl?)
-
- */
-
-/*
-~~Feature ideas:~~
-
-Structual ideas:
-* make the token data an object with its own class, so that columns can be indexed accordingly.
-* make the text an object which has associated: tokens (maybe as object), an array of matches
-* color(?) code whether a display is good --> also differentiate between levels of "goodness"
-* For mobile: split into 3 blocks?
-* 1 block per topic (Prozentzahlen, relative Angaben etc.)
-
-Content ideas:
-* identify numbers and their units and types in token data? --> 95,4 [Prozent] is <perc>, 20 [Fälle] is <case>, etc.
-    + use a regex identifier {NUMBER}(?<unit>)
-    + use a unit dictionary to identify whether these are relevant units (can also be used to remove age etc.)
-    + possibly replace or complement with token-based detector?
-
-* identify other types of numbers (cases etc.)
-* identify number ranges
-* count occurrence of percentages: a large number (or density) may be hard to comprehend
-* Identify whether any risk is communicated and whether both effectivity and harm are addressed.
-* identify number references (e.g., adjacent nouns or verbs) --> may use a dictionary of nouns and verbs (or their regexes)!
-
-*/
-
-// Trigger the functionality:
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ START ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 $(document).ready(function () {
 
     // When the button is clicked, process and output the text:
@@ -111,8 +28,6 @@ $(document).ready(function () {
          * @type {string[]}
          */
         let units_exc = ["age", "currency", "time", "date", "year", "dur", "legal", "medical", "enum", "misc", "rank", "phone"];
-
-        const largenums = ["Millionen", "Milliarden"]
 
         /**
          * Object that is looped over to check for units.
@@ -345,13 +260,11 @@ $(document).ready(function () {
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // --------- TEXT INPUT AND PRE-PROCESSING --------
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-        // console.log("Check my text");
         const rawText = $("#text-query").val(); // Get raw input text:
 
+        // Insert text into mail feedback field:
         $("#mail-feedback").attr("href", 'mailto:risk.booster@gmail.com?subject=Fehlerhafter Text im ScienceXMedia Riskbooster&body=' +
             "Fehler im folgenden Text:<br><br>" + rawText.replaceAll("\n", "  "));
-
 
         // Pre-process input:
         console.log("Raw text:");
@@ -362,24 +275,16 @@ $(document).ready(function () {
             .replaceAll(/(?<![.?!;])\s*\u2022/gm, ". \u2022")
             .replaceAll(/\.\n\./gm, ".\n\n");  // Replace stray changes.
 
-
         console.log("Pre-processed text:");
         console.log(JSON.stringify(inputText));
 
         // Maybe replace missing punctuation here?
-
-        // console.log(sentence_tokenizer(inputText));
-
-        // console.log(word_tokenizer(inputText));
-        // console.log(sentence_tokenizer(inputText).map(word_tokenizer));
-
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // --------- ANALYSIS OF TOKENIZED DATA -----------
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         const token_dat = get_token_data(inputText);  // create tokenized data.
-
         // console.log("Initial token data:");
         // console.log(token_dat);
 
@@ -1669,6 +1574,7 @@ const month_names = ["Januar", "Februar", "März", "April", "Mai", "Juni",
 const pat_num = "(?:(?<![\\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,:][0-9]+)?))(?!\\\.[0-9A-Za-zÄÖÜäöüß]|[a-zA-Z0-9ÄÖÜäöüß])";
 const numwords = ["[Kk]einen?", "(?<![Kk])[Ee]ine?[rm]?(?![gnz])", "[Zz]wei(?!fe)", "[Dd]rei", "[Vv]ier", "[Ff]ünf", "[Ss]echs",
     "[Ss]ieben", "[Aa]cht(?!e)", "[Nn]eun(?!k)", "[Zz]ehn", "[Ee]lf", "[Zz]wölf"];
+const largenums = ["Millionen", "Milliarden"];
 
 const regex_num = new RegExp("(?<unknown>" + pat_num + "( Millionen| Milliarden)?)", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
 const regex_numwords = new RegExp("(?<unknown>(" + collapse_regex_or(numwords) + ") (Person(en)?|F[aä]lle?))", "dg");
@@ -2078,13 +1984,12 @@ class TokenData {
  */
 function get_token_data(text) {
 
-    text = text.replaceAll('"', "\"");
+    text = text.replaceAll('"', "\"");  // escape quotes.
 
     const text_tokens = word_tokenizer(text);  // Define the text as word and punctuation tokens.
     // console.log(text_tokens);  // for testing.
 
     let token_i;
-    let token_set = new Set();  // set of unique tokens.
     let tpos_start = [];  // starting position of token.
     let tpos_end = [];  // end position of token in basic text.
     let token_pat;
@@ -2942,8 +2847,9 @@ function word_tokenizer(txt) {
     txt = txt.replaceAll(RegExp("(?<=" + collapse_regex_or(abbrevs) + ")(\\.)", "gm"), "xABBREVx");
 
     // Split the text into its tokens:
+    // Ensure that punctuations becomes their own by adding a space before:
     const split = txt
-        .replace(/([.,;?!:)])(?=[\s"'\u2018\u2019\u201c\u201d?])/g, ' $1 ')  // Ensure that punctuations becomes their own by adding a space before.
+        .replace(/([.,;?!:)])(?=[\s"'\u2018\u2019\u201c\u201d?])/g, ' $1 ')
         .replace(/([.,;?!:])(?=$)/g, ' $1 ')
         .replace(/([)])/g, ' $1 ')  // space before any parenthesis.
         .replace(/([("'\u2018\u2019\u201c\u201d])/g, ' $1 ')  // space after opening parentheses or quote.
