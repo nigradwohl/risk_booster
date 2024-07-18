@@ -17,7 +17,7 @@ get_token_data <- function(txt) {
 
   # get paragraphs:
   # print("PARAGRAPHS");
-  paragraph_array <- gregexpr("\\n\\n", txt, perl = TRUE)[[1]]
+  paragraph_array <- c(gregexpr("\\n\\n", txt, perl = TRUE)[[1]], nchar(txt))
   
   # Initialize values:
   tpos_end <- 0
@@ -37,7 +37,7 @@ get_token_data <- function(txt) {
       # Escape and add lookahead or behind.
       if (token_i %in% c("(", ")")) {
         token_pat <- gsub("([.?()/])", "\\\\\\1", token_i)
-      } else if (token_i %in% c("\"", "'", ucode_quotes)) {
+      } else if (token_i %in% c("\"", "'") | grepl(collapse_regex_or(ucode_quotes), token_i)) {
         token_pat = token_i  # no requirement to escape?
       } else {
         token_pat = paste0(gsub("([.?()/+\\-])", "\\\\\\1", token_i), 
@@ -54,18 +54,16 @@ get_token_data <- function(txt) {
     pos_info <- rbind(cur_rex[[1]], attr(cur_rex[[1]], "match.length"))
     pos_info <- cbind(pos_info[, pos_info[1,] > tpos_end])[,1]  # get rid of past entries.
     
-    print(token_i)
-    print(tpos_end)
-    print(pos_info)
-    
-    substr(txt, 365, 366)
-    
-    # TODO: at "insgesamt" it goes wrong
-    
+    # cat(token_i, "\n")
+    # print(pos_info)
+    # 
+    # substr(txt, 365, 366)
     
     # Extract info:
     tpos_start <- pos_info[1]
     tpos_end <- sum(pos_info) - 1
+    
+    print(tpos_end)
 
     # Assign sentence ID:
     sentence_id <- sentence_id + token_i %in% c("?", ".", "!", ";")
