@@ -2,6 +2,9 @@
 # MAIN FUNCTIONS
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Unicode characters for quotes:
+ucode_quotes <- c("\\x{2018}", "\\x{2019}", "\\x{201c}", "\\x{201d}", "\\x{201e}")
+
 # Function to create token data: -----------------------
 get_token_data <- function(txt) {
   
@@ -24,17 +27,21 @@ get_token_data <- function(txt) {
   token_info <- c()
   
   for(token_i in text_tokens){
-    if(token_i %in% c("\\n\\*", ".", ":", ";", ",", "?", "!", "(", ")", "\"", "'", "/", "\\-", 
-                      "\\x{2018}", "\\x{2019}", "\\x{201c}", "\\x{201d}") |
-       grepl("\\++", token_i)){
+    # if(token_i %in% c("\\n\\*", ".", ":", ";", ",", "?", "!", "(", ")", "\"", "'", "/", "\\-", 
+    #                   ucode_quotes
+    #                   ) |
+    #    grepl("\\++", token_i)){
+    if(token_i %in% c("\\n\\*", ".", ":", ";", ",", "?", "!", "(", ")", "\"", "'", "/", "\\-") |
+         grepl(collapse_regex_or(c(ucode_quotes, "\\++")), token_i)){
       
       # Escape and add lookahead or behind.
       if (token_i %in% c("(", ")")) {
         token_pat <- gsub("([.?()/])", "\\\\\\1", token_i)
-      } else if (token_i %in% c("\"", "'", "\\x{2018}", "\\x{2019}", "\\x{201c}", "\\x{201d}")) {
+      } else if (token_i %in% c("\"", "'", ucode_quotes)) {
         token_pat = token_i  # no requirement to escape?
       } else {
-        token_pat = paste0(gsub("([.?()/+\\-])", "\\\\\\1", token_i), "(?=\\s|\\n|$|\\.|,|-|[\"'\u2018\u2019\u201c\u201d])")
+        token_pat = paste0(gsub("([.?()/+\\-])", "\\\\\\1", token_i), 
+                           "(?=\\s|\\n|$|\\.|,|-|[\"'", paste0(ucode_quotes, collapse = ""), "])")
       }
       
     } else {
@@ -45,7 +52,16 @@ get_token_data <- function(txt) {
     
     # Get position information (start, length):
     pos_info <- rbind(cur_rex[[1]], attr(cur_rex[[1]], "match.length"))
-    pos_info <- cbind(pos_info[, pos_info[1,] > last_index])[,1]  # get rid of past entries.
+    pos_info <- cbind(pos_info[, pos_info[1,] > tpos_end])[,1]  # get rid of past entries.
+    
+    print(token_i)
+    print(tpos_end)
+    print(pos_info)
+    
+    substr(txt, 365, 366)
+    
+    # TODO: at "insgesamt" it goes wrong
+    
     
     # Extract info:
     tpos_start <- pos_info[1]

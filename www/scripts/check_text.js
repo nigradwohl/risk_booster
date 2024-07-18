@@ -1288,11 +1288,11 @@ $(document).ready(function () {
                 mismatch_inf.reverse()
             }
 
-            arr_li.add('Achtung: Sie haben für den Nutzen ' +
+            arr_li.add('Achtung: Der Text verwendet für den Nutzen ' +
                 mismatch_inf[0][0] +
                 ' und für die Schadenwirkung ' +
                 mismatch_inf[1][0] +
-                ' verwendet. ' +
+                '. ' +
                 'Dieses "' +
                 '<div id="eff-mmf" class="tooltip">' +
                 '<span class="tooltiptext tooltip-overview">Verwendung relativer Maße ' +
@@ -1375,7 +1375,7 @@ $(document).ready(function () {
         // Update the text:
         $("#text-result").html('<h3>Ihr Text</h3>' +
             '<div class="fillout-info">' +
-            '<p class="instruction-par">Fahren Sie mit dem Mauszeiger über die hervorgehobenen Zahlen, um zu Erfahren, ' +
+            '<p class="instruction-par">Fahren Sie mit dem Mauszeiger über die hervorgehobenen Zahlen, um zu erfahren, ' +
             'welchem Format wir die Zahl zugeordnet haben.' +
             '<br>Klicken Sie auf die Zahl, um mehr zu erfahren.</p>' +
             '</div>' +

@@ -23,14 +23,14 @@ word_tokenizer <- function(txt) {
       txtsplt <- txt
       
       # Handle those followed by space or quotes:
-      txtsplt <- gsub("([.,;?!:])(?=[\\s\"'\\x{2018}\\x{2019}\\x{201c}\\x{201d}?])", 
+      txtsplt <- gsub(paste0("([.,;?!:])(?=[\\s\"'", paste0(ucode_quotes, collapse = ""), "])"), 
                       " \\1 ", txtsplt, perl = TRUE)
       # Also address those followed by  line end!
       txtsplt <- gsub("([.,;?!:])(?=$)", 
                       " \\1 ", txtsplt, perl = TRUE)
       txtsplt <- gsub("([)])", 
                       " \\1 ", txtsplt, perl = TRUE)  # space before any parenthesis.
-      txtsplt <- gsub("([(\"'\\x{2018}\\x{2019}\\x{201c}\\x{201d}])",  # space before quotes.
+      txtsplt <- gsub(paste0("([(\"'", paste0(ucode_quotes, collapse = ""), "])"),  # space before quotes.
                       " \\1 ", txtsplt, perl = TRUE)
       
       txtsplt <- strsplit(txtsplt, "[\\s\\x{2022}]", perl = TRUE)
