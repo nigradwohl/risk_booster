@@ -682,8 +682,6 @@ class Checklist {
 
         // Effectivity:
         try {
-
-
             // Create the icon arrays and assigne them:
             create_icon_array(
                 group_arrs_eff.treat,  // treatment group.
@@ -706,6 +704,21 @@ class Checklist {
 
         } catch (error) {
             console.warn(error);
+
+            console.log(this.check_risk);
+
+            // TODO: Show which info is missing!
+            // Candidates are:
+            // Sizes of the groups:
+
+            // Baseline risk/AR in at least one of the groups:
+            // Through risk in margins or cases plus number of individuals.
+            if(this.check_risk.mtab2.tab.tab2x2.flat().every(x => isNaN(x))){
+              console.warn("We could not determine the risk in either of the groups. " +
+                  "Providing a risk in one of the groups throguh a percentage or a number of cases in that group should help!");
+            }
+
+
             $("#results-1-error ~ *:not(textarea)").hide();
             $("#results-1-error").show();
 
@@ -736,6 +749,9 @@ class Checklist {
 
         } catch (error) {
             console.warn(error);
+
+            // TODO: Show which info is missing!
+
             $("#results-2-error ~ *").hide();
             $("#results-2-error").show();
         }
