@@ -53,6 +53,12 @@ Do we also have the group sizes?)
 ## Checklist
 
 * look for press releases (maybe articles) to check if "efficacy" or "effectiveness" are used in another context than infections (e.g., mortality, hospital admissions)
+  * https://www.thelancet.com/journals/lanres/article/PIIS2213-2600(23)00015-2/fulltext (effectiveness: hospitalization, mortality)
+  * https://www.gov.uk/government/news/vaccines-highly-effective-against-hospitalisation-from-delta-variant (effectiveness: hospitalization)
+  * https://www.helios-gesundheit.de/qualitaet/aktuelle-studien-zu-den-corona-impfungen/ (mortality)
+  * https://www.bmj.com/content/376/bmj-2021-069761 (hospital admissions) 
+* Note "In der medizinischen Statistik und Infektionsepidemiologie gehört die Ermittlung der Impfstoffwirksamkeit (IW),[1] auch Impfwirksamkeit,[2] Schutzwirkung,[3] (englisch vaccine efficacy) oder Impfeffekt[4] genannt," (Wikipedia)
+* Vaccine effectiveness is a measure of how well vaccination protects people against health outcomes such as infection, symptomatic illness, hospitalization, and death. (CDC)
 * Make clear which (relative) reduction is meant -- double check 
 * Speak of "reduction" for negative endpoints? 
 * translate diagnosis to "infection"
