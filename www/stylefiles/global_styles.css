@@ -42,6 +42,7 @@
     ---card-hover-bg: #e5e7e9;
     ---text-color-primary: #17171F;
     ---text-color-secondary: #333;
+    ---error-col: darkred;
 }
 
 /*Previous:*/
@@ -122,6 +123,15 @@ body {
 
 * {
     box-sizing: border-box;
+}
+
+/*Handling invalid inputs*/
+input:invalid {
+  border: var(---error-col) solid 3px;
+}
+
+input:focus:invalid {
+  box-shadow: none;
 }
 
 
@@ -325,7 +335,6 @@ blockquote cite:before {
 
 .number-input {
     flex: 30%;
-
 }
 
 

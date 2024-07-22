@@ -713,9 +713,9 @@ class Checklist {
 
             // Baseline risk/AR in at least one of the groups:
             // Through risk in margins or cases plus number of individuals.
-            if(this.check_risk.mtab2.tab.tab2x2.flat().every(x => isNaN(x))){
-              console.warn("We could not determine the risk in either of the groups. " +
-                  "Providing a risk in one of the groups throguh a percentage or a number of cases in that group should help!");
+            if (this.check_risk.mtab2.tab.tab2x2.flat().every(x => isNaN(x))) {
+                console.warn("We could not determine the risk in either of the groups. " +
+                    "Providing a risk in one of the groups throguh a percentage or a number of cases in that group should help!");
             }
 
 
@@ -817,7 +817,7 @@ class Checklist {
         const eff_group_risks = this.check_risk.ntab.tab.margin2_mean();
         let side_group_risks = this.check_side.ntab.tab.margin2_mean();  // Get the margins.
         // For testing case switch negatively tested to show actually healthy:
-        if(["test"].includes(this.type)){
+        if (["test"].includes(this.type)) {
             side_group_risks[0] = side_group_risks[0].reverse();
         }
 
@@ -932,13 +932,24 @@ class Checklist {
 
             // console.log("Is this a button with meaning? " + $(this).hasClass("input-btn"))
 
+            console.log("++++ Checking current input ++++");
+            console.log($("#" + cur_input)[0].validity.patternMismatch);
+
             // Is the input a button or a text-field?
             if ($(this).hasClass("input-btn")) {
                 console.log("Button with meaning!");
                 // console.log($(this).val());
                 curval = $(this).val();
             } else {
-                curval = $("#" + cur_input).val();  // current input value.
+                const cur_field = $("#" + cur_input);
+                if (!cur_field[0].validity.patternMismatch) {
+                    curval = cur_field.val();  // current input value.
+                } else {
+                    console.error("Input pattern does not match");
+                    this.is_error = true;
+                    return "err_pat";
+                }
+
             }
             console.log("Current value is: " + curval);
 
@@ -962,8 +973,12 @@ class Checklist {
                 // // Save value to table object:
                 // this.check_risk.update_by_arr(number_dict[cur_q_key], checked_val);
 
-                if (!/err_/.test(checked_val.toString())) {
+                // Check if an error occurred:
+                if (/err_/.test(checked_val.toString())) {
+                    this.is_error = true;
+                    return checked_val;
 
+                } else {
                     console.log(`Update objects ${cur_q_key}:`);
                     console.log(number_dict[cur_q_key]);
 
@@ -981,10 +996,6 @@ class Checklist {
                     if (side_keys.includes(cur_q_key)) {
                         this.check_side.update_by_arr(number_dict[cur_q_key], checked_val);
                     }
-
-                } else {
-                    this.is_error = true;
-                    return checked_val;
                 }
 
             }
@@ -1006,8 +1017,8 @@ class Checklist {
         const skipped_ids = this.q_order.filter((x, ix) => this.skipped_inputs.includes(ix));
         // console.log(skipped_ids);
 
-        // Loop over defined input fields:
-        for (const curid of this.q_order.slice(0, this.entry_ix)) {
+        // Loop over defined input fields (omit the first 2 uninformative questions):
+        for (const curid of this.q_order.slice(2, this.entry_ix)) {
 
             // Skip input fields that have been skipped previously!
             if (!skipped_ids.includes(curid)) {
@@ -1383,12 +1394,17 @@ function evaluate_entry(curval, cur_q_key) {
     // Replace comma with period:
     checked_val = checked_val.replace(/,/, ".");
 
+    console.log("++++ CHECKING INPUT ++++");
+
     // Test, if it is a number and convert if true:
     const is_num = !isNaN(parseFloat(checked_val));
     if (is_num) {
         // Note: Ignores additional text!
         checked_val = parseFloat(checked_val);
     }
+
+    console.log(is_num);
+    console.log(curval);
 
     if (int_keys.includes(cur_q_key)) {
         // Check integer entries:
@@ -1399,7 +1415,7 @@ function evaluate_entry(curval, cur_q_key) {
             // alert("KEINE GANZE ZAHL!");
             cur_error = "err_noint";
         }
-    } else if (float_keys.includes(cur_q_key)) {
+    } else if (float_keys.includes(cur_q_key) || perc_keys.includes(cur_q_key)) {
 
         // Check float entries:
         if (!is_num) {

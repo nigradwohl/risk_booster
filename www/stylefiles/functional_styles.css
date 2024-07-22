@@ -416,13 +416,13 @@ canvas {
 
 .error-prompt {
     position: absolute;
-    border: 1px solid darkred;
+    border: 1px solid var(---error-col);
     background-color: #f1f1f1;
     padding: 1em;
     margin: 1em;
 }
 
 .missing-input {
-    border: 2px solid darkred;
+    border: 2px solid var(---error-col);
 }
 
