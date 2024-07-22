@@ -435,17 +435,15 @@ class Checklist {
         // this.is_reload = false;
         this.missing_entries = [];
 
-
         // Check, if it is a relaod.
         // If so, fill the table with all entries until now:
         if (this.is_reload) {
             this.handle_reloads();
         }
 
-
-        const skip_misses = ev.currentTarget.id === "skip-missing" || (this.is_skip && !this.is_error) || this.entry_ix === 0;
+        this.skip_misses = ev.currentTarget.id === "skip-missing" || (this.is_skip && !this.is_error) || this.entry_ix === 0;
         // skip, if calling event is the "skip-misses" button or if the page is to be skipped.
-        console.log(`Current target ID is ${ev.currentTarget.id}; Skip misses ${skip_misses}; Incompatible: ${this.is_incompatible}; Invalid: ${this.is_invalid}`);
+        console.log(`Current target ID is ${ev.currentTarget.id}; Skip misses ${this.skip_misses}; Incompatible: ${this.is_incompatible}; Invalid: ${this.is_invalid}`);
 
         const curid = this.q_order[this.entry_ix];  // get id of current page.
 
@@ -478,7 +476,7 @@ class Checklist {
         } else {
             // For all subsequent pages:
             // 1. Get the inputs on current page: ~~~~~~~~~~~~~~~~~~~~~~~~
-            if (!skip_misses) {
+            if (!this.skip_misses) {
 
                 console.log("++++ Getting inputs and complete ++++");
 
@@ -527,7 +525,6 @@ class Checklist {
                 if (this.is_error) {
                     console.error(`An error (${inp_test}) occured when providing input!`);
                 }
-
 
             } else {
                 // If misses were skipped:
