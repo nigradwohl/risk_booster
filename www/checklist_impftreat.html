@@ -261,7 +261,7 @@
                             <p>
                                 <!--                                TODO: The pattern does not apply to relative risk (e.g., doppelt so viel, 10-fach etc.)-->
                                 <input class="checklist-input" id="rel-risk-reduction" type="text"
-                                       pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
+                                       pattern="([0-9]{0,2}(,[0-9]{1,2})?)|(100)"
                                        title="Zahlen zwischen 1 und 100 mit bis zu 2 Nachkommastellen">&nbsp;%
                                 <span class="tooltip delete-entry">
                                 <i class="fa fa-trash" aria-hidden="true" id="rel-risk-reduction-del"></i>
@@ -269,6 +269,7 @@
                                    Eintrag löschen
                                 </span>
                                 </span>
+                                <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Zahl ein.</span>
 
 
                                 <!--                                <button class="checklist-button continue-btn">Weiter</button>-->
@@ -298,8 +299,6 @@
                                 Wie viele Personen haben insgesamt an der Studie teilgenommen?
                             </p>
                             <input class="checklist-input" id="n-total" type="text">
-                            <br>
-                            <button class="checklist-button continue-btn">Weiter</button>
                         </div>
                     </div>
 
@@ -350,9 +349,7 @@
                             <input class="checklist-input" id="p-treat" type="text"
                                    pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
                                    title="Zahlen zwischen 1 und 100 mit bis zu 2 Nachkommastellen">&nbsp;%
-
-                            <!--                            <br>-->
-                            <!--                            <button class="checklist-button continue-btn">Weiter</button>-->
+                            <span class="alert-invalid"><br>!REPLACE WITH ICON! Bitte geben Sie eine gültige Prozentzahl ein.</span>
                         </div>
                     </div>
 

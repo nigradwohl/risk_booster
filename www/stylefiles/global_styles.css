@@ -127,12 +127,22 @@ body {
 
 /*Handling invalid inputs*/
 input:invalid {
-  border: var(---error-col) solid 3px;
+    border: var(---error-col) solid 3px;
 }
 
 input:focus:invalid {
-  box-shadow: none;
+    box-shadow: none;
 }
+
+.alert-invalid {
+    visibility: hidden;
+    color: var(---error-col);
+}
+
+input:invalid ~ .alert-invalid {
+    visibility: visible;
+}
+
 
 
 blockquote {
@@ -890,7 +900,6 @@ div.wiki-toc {
     /*    position: absolute;*/
     /*    background: #0077be;*/
     /*}*/
-
     #entry-list {
         margin: 0;
         width: 100%;

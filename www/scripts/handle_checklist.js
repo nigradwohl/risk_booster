@@ -404,6 +404,7 @@ class Checklist {
         this.is_skip = false;
         this.is_error = false;
         this.is_incompatible = false;
+        this.is_invalid = false;
         this.is_reload = false;
 
         this.skip_misses = false;
@@ -430,7 +431,7 @@ class Checklist {
     continue_page(ev) {
 
         // 0. Initialize variables: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        this.is_error = this.is_incompatible;
+        this.is_error = this.is_incompatible || this.is_invalid;
         // this.is_reload = false;
         this.missing_entries = [];
 
@@ -442,9 +443,9 @@ class Checklist {
         }
 
 
-        const skip_misses = ev.currentTarget.id === "skip-missing" || this.is_skip || this.entry_ix === 0;
+        const skip_misses = ev.currentTarget.id === "skip-missing" || (this.is_skip && !this.is_error) || this.entry_ix === 0;
         // skip, if calling event is the "skip-misses" button or if the page is to be skipped.
-        console.log(`Current target ID is ${ev.currentTarget.id}; Skip misses ${skip_misses}`);
+        console.log(`Current target ID is ${ev.currentTarget.id}; Skip misses ${skip_misses}; Incompatible: ${this.is_incompatible}; Invalid: ${this.is_invalid}`);
 
         const curid = this.q_order[this.entry_ix];  // get id of current page.
 
@@ -498,8 +499,7 @@ class Checklist {
                         this.check_side.try_completion(0);
                     }
 
-
-                    // Reset flag if no error is cought:
+                    // Reset flag if no error is caught:
                     this.is_incompatible = false;
                 } catch (e) {
                     console.error("Non-matching entries! " + e);
@@ -523,6 +523,7 @@ class Checklist {
                     this.is_incompatible = true;
                 }
 
+                // Check for errors:
                 if (this.is_error) {
                     console.error(`An error (${inp_test}) occured when providing input!`);
                 }
@@ -535,8 +536,10 @@ class Checklist {
 
             // TODO: Check for errors!
 
+            console.warn(`There is invalid input ${this.is_invalid}`);
+
             // 2. Handle missing entries:
-            if (this.missing_entries.length > 0 && !this.is_incompatible) {
+            if (this.missing_entries.length > 0 && !this.is_incompatible && !this.is_invalid) {
                 // alert("Sie haben nichts eingegeben! Absicht?");
                 // Show popup that can be skipped!
                 this.is_skip = true;
@@ -556,15 +559,7 @@ class Checklist {
                 // Final results page:
                 if (this.entry_ix === this.q_order.length - 1) {
 
-                    // if (this.is_reload) {
-                    //     console.log("Handle reload");
-                    //     this.handle_reloads();
-                    // } else {
-                    //     this.is_reload = true;
-                    // }
-
                     this.handle_final_page();  // handle the final page.
-
 
                     // Hide the continue button:
                     $(".continue-btn").hide();
@@ -924,6 +919,8 @@ class Checklist {
 
     get_current_input(curid, input_arr, id_to_num_dict) {
         // Loop over defined input fields:
+        this.is_invalid = false;  // flag that input is valid.
+
         for (const cur_input of input_arr) {
 
             const cur_q_key = id_to_num_dict[cur_input];  // get current input field, tied to table.
@@ -942,12 +939,15 @@ class Checklist {
                 curval = $(this).val();
             } else {
                 const cur_field = $("#" + cur_input);
-                if (!cur_field[0].validity.patternMismatch) {
-                    curval = cur_field.val();  // current input value.
-                } else {
+                if (cur_field[0].validity.patternMismatch) {
                     console.error("Input pattern does not match");
                     this.is_error = true;
+                    this.is_invalid = true;
                     return "err_pat";
+                } else {
+                    // If there is no error:
+                    curval = cur_field.val();  // current input value.
+                    // this.is_invalid = false;
                 }
 
             }
