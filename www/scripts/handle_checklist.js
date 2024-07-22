@@ -542,7 +542,7 @@ class Checklist {
             if (this.missing_entries.length > 0 && !this.is_incompatible && !this.is_invalid) {
                 // alert("Sie haben nichts eingegeben! Absicht?");
                 // Show popup that can be skipped!
-                this.is_skip = true;
+                // this.is_skip = true;
                 handle_missing_input(ev, this.missing_entries);
 
             }
@@ -567,6 +567,7 @@ class Checklist {
 
             } else if (this.is_error) {
                 console.error("An error occured!");
+                this.is_invalid = false;  // reset the invalidity flag.
             }
         }
 
