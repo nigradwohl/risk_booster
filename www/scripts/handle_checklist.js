@@ -466,6 +466,7 @@ class Checklist {
 
             // Removal of higlighting classes:
             $("#noentry-popup").hide();
+            $("#incompatible-popup").hide();
             $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
 
             // Show back button:
@@ -476,10 +477,7 @@ class Checklist {
         } else {
             // For all subsequent pages:
             // 1. Get the inputs on current page: ~~~~~~~~~~~~~~~~~~~~~~~~
-            if (!this.skip_misses) {
-
-                console.log("++++ Getting inputs and complete ++++");
-
+            if (curid !== "start") {
                 // Save the previous instances:
                 // const risk_prev = JSON.stringify(this.check_risk);
                 // const side_prev = JSON.stringify(this.check_side);
@@ -489,7 +487,7 @@ class Checklist {
                 // If it is not a round where inputs should be skipped:
                 const inp_test = this.get_current_input(curid, this.q_inputs[curid], id_to_num_dict);
                 // After trying to get the inputs, try completing the table:
-
+                console.log("++++ Getting inputs and complete ++++");
                 try {
                     this.check_risk.try_completion(0);
 
@@ -526,26 +524,22 @@ class Checklist {
                     console.error(`An error (${inp_test}) occured when providing input!`);
                 }
 
-            } else {
-                // If misses were skipped:
-                this.is_skip = false;
             }
 
             // TODO: Check for errors!
-
             console.warn(`There is invalid input ${this.is_invalid}`);
 
             // 2. Handle missing entries:
             if (this.missing_entries.length > 0 && !this.is_incompatible && !this.is_invalid) {
                 // alert("Sie haben nichts eingegeben! Absicht?");
                 // Show popup that can be skipped!
-                // this.is_skip = true;
+                this.is_skip = true;  // set skippable state.
                 handle_missing_input(ev, this.missing_entries);
 
             }
 
 
-            // Advance page:
+            // Advance page if no missing entries are detected (due to all provided or :
             if (!this.is_error && this.missing_entries.length === 0) {
 
                 // Pages before results:
@@ -562,9 +556,12 @@ class Checklist {
                     $(".continue-btn").hide();
                 }
 
+                this.is_skip = false;  // reset skippable state.
+                this.is_invalid = false;  // reset the invalidity flag.
+
             } else if (this.is_error) {
                 console.error("An error occured!");
-                this.is_invalid = false;  // reset the invalidity flag.
+
             }
         }
 
@@ -928,7 +925,7 @@ class Checklist {
             // console.log("Is this a button with meaning? " + $(this).hasClass("input-btn"))
 
             console.log("++++ Checking current input ++++");
-            console.log($("#" + cur_input)[0].validity.patternMismatch);
+            // console.log($("#" + cur_input)[0].validity.patternMismatch);
 
             // Is the input a button or a text-field?
             if ($(this).hasClass("input-btn")) {
@@ -955,11 +952,15 @@ class Checklist {
 
 
             // If not a missing value is skipped:
+
             // console.log(this.missing_entries.toString());  // check current set of missings.
             // Check the value; if appropriate, check the number format, transform and save to object.
             if ([undefined, "", " "].includes(curval)) {
-                this.missing_entries = this.missing_entries.concat(cur_input);
-                console.warn("Sie haben nichts eingegeben! Absicht?");
+                if (!this.is_skip) {
+                    this.missing_entries = this.missing_entries.concat(cur_input);
+                    console.warn("Sie haben nichts eingegeben! Absicht?");
+                    this.is_skip = true;
+                }
 
             } else {
                 // If the current value is defined and non-empty:
@@ -985,6 +986,7 @@ class Checklist {
                     if (eff_keys.includes(cur_q_key)) {
                         // Change effectivity as a function of prevention vs. achievement:
                         if (cur_q_key === "rrr" && this.outcome.direction === "achieve") {
+                            // TODO: Communicate the directional difference between RRR and relative risk.
                             console.log("Update relative value:");
                             checked_val = 2 - checked_val;
                         }
@@ -995,8 +997,8 @@ class Checklist {
                         this.check_side.update_by_arr(number_dict[cur_q_key], checked_val);
                     }
                 }
-
             }
+
         }
 
     }
