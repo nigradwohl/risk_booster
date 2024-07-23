@@ -850,7 +850,7 @@ class Checklist {
 
             // Note: If the risk is negative, it corresponds to an increase!
             // For an increase report the multiple!
-            const rrc = arc > 0 ? Math.abs(arc / group_risks[0][1]) : group_risks[1][1] / group_risks[0][1];
+            const rrc = arc >= 0 ? Math.abs(arc / group_risks[0][1]) : group_risks[1][1] / group_risks[0][1];
             // relative risk change.
             // How many times higher is the risk in the treatment group?
 
