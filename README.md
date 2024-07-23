@@ -24,7 +24,9 @@ Features are sorted by importance and are further split by features that should 
 
 ## General 
 
-* Handle treatment case  
+* Highlight current page in navbar (bold?)
+* Update introduction to 
+* Describe three elements and Wiki as aid and support in introductory text
 * Typos!
 
 ### Nice to have 
@@ -33,8 +35,8 @@ Features are sorted by importance and are further split by features that should 
 
 ## Text-checking tool 
 
-* Design durch Absetzungen; decrease size of input 
-
+* Scrollbar in Chrome
+* Make tooltip links clickable?
 * Increase the number of test-texts that are successfully handled
     + detect absolute risk reductions (e.g., smaller percentages, percentage points): distinguish from unidentified percentages (and mention if they are likely relative)
 * detect if numbers have a reference (e.g., is only the number of infections or percentages in groups reported? 
@@ -52,13 +54,17 @@ Do we also have the group sizes?)
 
 ## Checklist
 
+* Ask others: good idea to shorten the checker?
+* Add links to wiki and tooltips
+* Conclusion; where can I find additional information?
+
 * look for press releases (maybe articles) to check if "efficacy" or "effectiveness" are used in another context than infections (e.g., mortality, hospital admissions)
   * https://www.thelancet.com/journals/lanres/article/PIIS2213-2600(23)00015-2/fulltext (effectiveness: hospitalization, mortality)
   * https://www.gov.uk/government/news/vaccines-highly-effective-against-hospitalisation-from-delta-variant (effectiveness: hospitalization)
   * https://www.helios-gesundheit.de/qualitaet/aktuelle-studien-zu-den-corona-impfungen/ (mortality)
   * https://www.bmj.com/content/376/bmj-2021-069761 (hospital admissions) 
-* Note "In der medizinischen Statistik und Infektionsepidemiologie gehört die Ermittlung der Impfstoffwirksamkeit (IW),[1] auch Impfwirksamkeit,[2] Schutzwirkung,[3] (englisch vaccine efficacy) oder Impfeffekt[4] genannt," (Wikipedia)
-* Vaccine effectiveness is a measure of how well vaccination protects people against health outcomes such as infection, symptomatic illness, hospitalization, and death. (CDC)
+  * Note "In der medizinischen Statistik und Infektionsepidemiologie gehört die Ermittlung der Impfstoffwirksamkeit (IW),[1] auch Impfwirksamkeit,[2] Schutzwirkung,[3] (englisch vaccine efficacy) oder Impfeffekt[4] genannt," (Wikipedia)
+  * Vaccine effectiveness is a measure of how well vaccination protects people against health outcomes such as infection, symptomatic illness, hospitalization, and death. (CDC)
 * Make clear which (relative) reduction is meant -- double check 
 * Speak of "reduction" for negative endpoints? 
 * translate diagnosis to "infection"
@@ -67,7 +73,7 @@ Do we also have the group sizes?)
 * Recheck harding center
 * Treatment categories: Reduktion Symptome, Reduktion Krankheitstage, Reduktion der Symptome (z.B., Schmerzen), Symptomlinderung
 
-* fix issue with proportion treated (does not work reliably, espcially for side effects)
+* fix issue with proportion treated (does not work reliably, especially for side effects)
 * remove of fix "text bearbeiten"
 
 * look for articles and press releases to process (SciMedia center; JAMA network open!; BMJ, JAMA, Lancet, Annals of internal medicine, NEJM; Tim, get endpoints and superordinate terms; Cochrane?)

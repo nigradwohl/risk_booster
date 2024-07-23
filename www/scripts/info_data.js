@@ -683,14 +683,14 @@ const info_data = {
             "Wird häufig als <a href='#wiki-treat-control'>Kontrollgruppe</a> in medizinischen Studien verwendet, um den Wirkstoff eines Medikamentes über die von Patienten erwartete Wirkung hinaus zu untersuchen."],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": ["Kochsalzlösung", "Zuckerpillen"],  // array of list items with examples.
         "popup": [],
-        "maintext": "Placebos sind Scheinbehandlungen. Anstelle eines Medikaments wird ein Präparat ohne Wirkstoff " +
+        "maintext": "<p>Placebos sind Scheinbehandlungen. Anstelle eines Medikaments wird ein Präparat ohne Wirkstoff " +
             "verabreicht (z.B., Kochsalzlösung bei einer Impfung, Zuckertabletten ohne Wirkstoff anstelle von Medikamenten). " +
             "Zur Untersuchung der Wirksamkeit von Medikamenten ist dies wichtig, da so Erwartungseffekte ausgeschlossen " +
             "werden können. Erwartungseffekte treten auf, da alleine die Erwartung, dass mit der Einnahme eines Medikamentes " +
             "eine Besserung eintritt, dazu führen kann, dass eine Besserung wahrgenommen wird. Umgekehrt kann es auch " +
             "die Erwartung von Nebenwirkungen wahrscheinlicher machen, dass tatsächlich Nebenwirkungen wahrgenommen und " +
             "berichtet werden. Um Nutzen und Schaden des Wirkstoffes an sich festzustellen sollte daher ein Vergleich " +
-            "mit einem Placebo stattfinden."   // string of main text for wiki.
+            "mit einem Placebo stattfinden.</p>"   // string of main text for wiki.
     }
 
 }
