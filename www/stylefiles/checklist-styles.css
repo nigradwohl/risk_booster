@@ -106,14 +106,10 @@
 /*NOTE: May eventually need to be split again*/
 
 
-
-
-
-
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Styles for risk calculator ~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 .checklist-qtext {
-    color: #666;
+    color: var(---text-color-secondary);
     font-weight: bold;
     font-size: 1.1em;
 }
@@ -127,7 +123,7 @@
 .canvas-zoom {
     position: absolute;
     justify-content: center;
-    top: 5px;  /*slight space to top.*/
+    top: 5px; /*slight space to top.*/
     left: 33%;
     height: 90%;
     width: 90%;
@@ -203,7 +199,7 @@ canvas {
 .checklist-question {
     margin: 0 auto;
     /*flex: 100%;*/
-    /*background-color: var(---checklist-question-bg);*/
+    background-color: var(---checklist-question-bg);
     color: 2px var(---checklist-question-bg) solid;
     padding: 20px;
     border-radius: 5px;
@@ -251,7 +247,7 @@ canvas {
     font-size: 0.8em;
     position: relative;
     z-index: 9998;
-    -webkit-appearance: none;  /*to render properly*/
+    -webkit-appearance: none; /*to render properly*/
 }
 
 #edit-text-popup {
@@ -271,6 +267,25 @@ canvas {
     .checklist-question {
         width: 80%;
     }
+
+    .checklist-qtext {
+        font-size: 1em;
+    }
+
+    .question-content table {
+        font-size: 0.9em;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .checklist-content {
+        width: 90vw;
+        margin: 1em auto;
+    }
+
+    .checklist-question {
+        width: 90%;
+    }
 }
 
 .checklist-question.checklist-results {
@@ -279,8 +294,9 @@ canvas {
     padding: 1em;
 }
 
-.question-content td{
-    vertical-align: top;
+.question-content td {
+    /*vertical-align: top;*/
+    vertical-align: center;
 }
 
 

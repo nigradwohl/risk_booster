@@ -11,33 +11,27 @@
 /*        <div class="color-block" style="background-color: #78ad6c"></div>*/
 /*        <div class="color-block" style="background-color: #d31d19"></div>*/
 .current-theme {
-    ---body-background: #f1f1f1;
-    ---header-background: #f1f1f1;
-    ---header-line: #0077be;
-    ---textcol-header: white;
-    ---navbar-bg: #f1f1f1f;
-    ---navbar-text: #444;
-    ---navbar-hover-bg: #ddd;
-    ---navbar-hover-text: #f1f1f1f;
-    ---footer-bg: #ddd;
-    ---footer-text: #f1f1f1f;
-    ---footer-hover-text: lightgrey;
-    ---dropdown-content-bg: #f1f1f1;
-    ---dropdown-content-text: black;
-    ---dropdown-content-hover-text: #ddd;
-    ---column-bg-primary: #f1f1f1f;
-    ---column-bg-secondary: #f1f1f1f;
-    ---colum-bg-tertiary: #f1f1f1f;
-    ---checklist-question-bg: #f1f1f1;
-    ---checklist-shadow: #5e676c;
-    /*---button-primary: #004d9b;*/
-    /*---button-primary: #90AFC5;*/
-    /*---button-secondary: lightgrey;*/
-    ---wiki-bg: #f1f1f1f;
-    ---wiki-example-bg: lightgrey;
-    ---wiki-overview-bg: #90AFC5;
-    ---wiki-border: #444;
-    ---card-hover-bg: #e5e7e9;
+    /*---body-background: #f1f1f1;*/
+    /*---header-background: #f1f1f1;*/
+    /*---header-line: #0077be;*/
+    /*---textcol-header: white;*/
+    /*---navbar-bg: #f1f1f1f;*/
+    /*---navbar-text: #444;*/
+    /*---navbar-hover-bg: #ddd;*/
+    /*---navbar-hover-text: #f1f1f1f;*/
+    /*---dropdown-content-bg: #f1f1f1;*/
+    /*---dropdown-content-text: black;*/
+    /*---dropdown-content-hover-text: #ddd;*/
+    /*---column-bg-primary: #f1f1f1f;*/
+    /*---column-bg-secondary: #f1f1f1f;*/
+    /*---colum-bg-tertiary: #f1f1f1f;*/
+    /*---checklist-question-bg: #f1f1f1;*/
+    /*---checklist-shadow: #5e676c;*/
+    /*---wiki-bg: #f1f1f1f;*/
+    /*---wiki-example-bg: lightgrey;*/
+    /*---wiki-overview-bg: #90AFC5;*/
+    /*---wiki-border: #444;*/
+    /*---card-hover-bg: #e5e7e9;*/
     /*~~~~~~~~~~~~~~~~~ New theme* ~~~~~~~~~~~~~~~~~~~~~~~~~*/
     /*Backgrounds*/
     ---bg-general: #f1f1f1;
@@ -47,14 +41,22 @@
     ---bg-highlight-primary: #90AFC5;
     ---bg-highlight-secondary: #ddd;
     ---footer-hover-bg: #5e676c;
+    /*---column-bg-primary: #f1f1f1;*/
+    /*---column-bg-secondary: #f1f1f1;*/
+    ---card-hover-bg: #e5e7e9;
+    ---checklist-question-bg: #f7f7f7;
+    ---checklist-shadow: #5e676c;
     /*Text colors*/
     ---text-light: #f1f1f1;
     ---text-color-primary: #17171F;
-    ---text-color-secondary: #333;
+    ---text-color-secondary: #666; /* was: #333*/
     /*Other colors*/
     ---col-sepline: #0077be;
     ---error-col: darkred;
     ---col-border: #333; /*#444;*/
+    ---footer-bg: #ddd;
+    ---footer-text: #f1f1f1f;
+    ---footer-hover-text: lightgrey;
 }
 
 /*Previous:*/
@@ -162,7 +164,6 @@ input:invalid ~ .alert-invalid {
 
 /*Blockquotes*/
 blockquote {
-    /*font-size: 18px;*/
     font-size: 0.9em;
     font-style: italic;
     margin: 0.25em 0;
@@ -213,7 +214,7 @@ blockquote cite:before {
     display: flex;
     align-items: center;
     background: var(---bg-general);
-    color: var(---text-color-secondary);
+    color: var(---text-color-primary);
 
 }
 
@@ -244,7 +245,7 @@ blockquote cite:before {
     justify-content: space-around;
     align-items: center;
     flex-grow: 3;
-    font-size: 1.2em;
+    font-size: 1em;
     /*height: 100%;*/
 }
 
@@ -262,7 +263,7 @@ blockquote cite:before {
 }
 
 .nav-container > a {
-    color: var(---text-color-secondary);
+    color: var(---text-color-primary);
     text-decoration: none;
     width: 100%;
     /*display: flex;*/
@@ -285,7 +286,7 @@ blockquote cite:before {
 
 /* Style the navigation bar links */
 .navbar-foot a {
-    color: var(---text-color-secondary);
+    color: var(---text-color-primary);
     padding: 10px 20px;
     text-decoration: none;
     text-align: center;
@@ -338,14 +339,14 @@ blockquote cite:before {
 
 .full-column {
     flex: 100%;
-    background-color: var(---column-bg-primary);
+    background-color: var(---bg-general);
     padding: 20px;
 }
 
 /* Create two unequal columns that sits next to each other */
 /* Sidebar/left column */
 .input-col {
-    background-color: var(---column-bg-secondary);
+    background-color: var(---bg-general);
     padding: 5px 20px;
 }
 
@@ -378,7 +379,7 @@ blockquote cite:before {
 
 .wiki-overview {
     flex: 35%;
-    background-color: var(---wiki-overview-bg);
+    background-color: var(---bg-highlight-primary);
     border: 0.1em solid var(---col-border);
     border-radius: 5px;
 }
@@ -408,7 +409,6 @@ blockquote cite:before {
 }
 
 
-
 /*Styling input elements */
 .input-button {
     padding: 7px;
@@ -416,7 +416,7 @@ blockquote cite:before {
     font-size: 1em;
     text-align: center;
     background-color: var(---button-primary);
-    color: var(---text-color-secondary);
+    color: var(---text-color-primary);
     font-weight: 500;
     border: none;
     border-radius: 5px;
@@ -511,7 +511,7 @@ blockquote cite:before {
 
 /* CSS for paragraph */
 p {
-    color: var(---text-color-secondary);
+    color: var(---text-color-primary);
     font-size: 0.9em;
     line-height: 1.2;
     margin: 0 0 10px;
@@ -525,7 +525,7 @@ ul {
 /* CSS for h1 */
 h1 {
     color: var(---text-color-secondary);
-    font-size: 2em;
+    font-size: 1.8em;
     margin-bottom: 10px;
 }
 
@@ -541,6 +541,13 @@ h3 {
     color: #888;
     font-size: 1.2em;
     margin-bottom: 10px;
+}
+
+h4 {
+    /*color: #101010;*/
+    color: var(---text-color-primary);
+    font-size: 1em;
+    margin-bottom: 5px;
 }
 
 /*Color blocks for visualizing example palettes:*/
@@ -568,6 +575,96 @@ h3 {
     margin: 0.5em 0;
 }
 
+/* Tooltip container */
+.tooltip {
+    position: relative;
+    overflow: visible;
+    opacity: 1;
+    display: inline-block; /* vorher: inline */
+    border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+}
+
+.tooltip .tooltiptext.tooltip-checklist {
+    width: 15em;
+    text-align: left;
+    padding: 0.5em;
+}
+
+.tooltip .tooltiptext.tooltip-overview {
+    width: 15em;
+    text-align: left;
+    padding: 0.6em;
+    /*Option 1*/
+    /*background-color: #fff; */
+    /*color: black;*/
+    /*border: 1px solid #0077be;*/
+    /*Option 2*/
+    background-color: steelblue;
+    color: white;
+    border: 1px solid #0077be;
+    font-weight: normal;
+    opacity: 1;
+    border-radius: 2px;
+}
+
+.tooltip .tooltiptext.tooltip-overview > p {
+    color: white;
+}
+
+.tooltip .tooltiptext.tooltip-overview::after {
+    border-color: #0077be transparent transparent transparent;
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 8.5em; /* von 10em auf 8.5em */
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    padding: 5px 2px;
+    border-radius: 6px;
+
+    /* Position the tooltip text */
+    position: absolute;
+    z-index: 9997;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -70px;
+
+    /* Fade in tooltip */
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+/* Tooltip arrow */
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    overflow: visible;
+    border-color: #555 transparent transparent transparent;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+#tooltip-popup {
+    position: absolute;
+    display: none;
+}
+
+.tooltip-popup > ul {
+    padding-left: 1.8rem;
+}
+
 .error-prompt {
     z-index: 9998;
     display: none;
@@ -579,19 +676,18 @@ h3 {
 }
 
 .instruction-par {
-    color: #666;
-    font-size: 0.9em;
+    color: var(---text-color-secondary);
 }
 
 .note-par {
     /*font-size: 0.8em;*/
-    font-size: 0.9em;
+    /*font-size: 0.9em;*/
     margin-bottom: 5px;
     color: var(---text-color-secondary);
 }
 
 .fillout-info {
-    background-color: var(---column-bg-secondary);
+    background-color: var(---bg-general);
     border-radius: 5px;
     padding: 0.4em;
     margin-bottom: 0.5em;
@@ -649,7 +745,6 @@ h3 {
         float: none;
     }
 }
-
 
 
 @media screen and (max-width: 700px) {

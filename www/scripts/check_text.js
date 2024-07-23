@@ -624,7 +624,7 @@ $(document).ready(function () {
 
         // Default for linking risks:
         const curtop = "?page=" + (token_dat.topics.includes("impf") ? "impf" : "treat");
-        const risk_link = "<p>Untenstehend finden Sie Anmerkungen zu den Identifizierten Zahlen im Text.<br>" +
+        const risk_link = "<p class='note-par'>Untenstehend finden Sie Anmerkungen zu den Identifizierten Zahlen im Text.<br>" +
             "Verwenden Sie den <a target='_blank' href='checklist_impftreat.html" + curtop + "'>Risikorechner</a>, " +
             "um aus diesen Zahlen eine transparente Darstellung zu erstellen, wenn die Zahlen es erlauben.</p>";
 
@@ -1349,9 +1349,8 @@ $(document).ready(function () {
             }
 
             // Add the list entries:
-            notes_html += "<ul><li>Weitere Anmerkungen:</li><ul>" + str_li + "</ul>" +
-                "<li>" + risk_link + "</li>" +
-                "</ul>"
+            notes_html += "</ul><h4>Weitere Anmerkungen:</h4><ul>" + str_li + "</ul>" +
+                "<p>" + risk_link + "</p>"
 
         }
 
