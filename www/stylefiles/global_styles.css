@@ -1,15 +1,5 @@
 /* Definition of different themes */
 
-/*Charite*/
-/*        <div class="color-block" style="background-color: #004d9b"></div>*/
-/*        <div class="color-block" style="background-color: #0077be"></div>*/
-/*        <div class="color-block" style="background-color: #cbcfd2"></div>*/
-/*        <div class="color-block" style="background-color: #5e676c"></div>*/
-/*        <div class="color-block" style="background-color: #002451"></div>*/
-/*        <div class="color-block" style="background-color: #e5e7e9"></div>*/
-/*        <div class="color-block" style="background-color: #e95956"></div>*/
-/*        <div class="color-block" style="background-color: #78ad6c"></div>*/
-/*        <div class="color-block" style="background-color: #d31d19"></div>*/
 .current-theme {
     /*---body-background: #f1f1f1;*/
     /*---header-background: #f1f1f1;*/
@@ -58,6 +48,10 @@
     ---footer-text: #f1f1f1f;
     ---footer-hover-text: lightgrey;
 }
+
+
+/*Source for buttons:*/
+/*https://copy-paste-css.com/*/
 
 /*Previous:*/
 /*.current-theme {*/
@@ -129,7 +123,11 @@ html {
 }
 
 body {
-    font-family: Arial, sans-serif;
+    /*font-family: Arial, sans-serif;*/
+    /*font-family: Roboto, sans-serif;*/
+    /*font-family: Helvetica, sans-serif;*/
+    /*font-family: "Roboto Light", sans-serif;*/
+    font-family: "Open Sans", sans-serif;
     margin: 0 20px;
     padding: 0;
     background-color: var(---bg-general);
@@ -410,19 +408,56 @@ blockquote cite:before {
 
 
 /*Styling input elements */
-.input-button {
+.btn {
     padding: 7px;
     margin: 5px 0;
-    font-size: 1em;
     text-align: center;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    /*float: right;*/
+}
+
+.btn-large {
+    font-weight: 500;
+    font-size: 14px;
+}
+
+
+/*display: inline-block;*/
+/*outline: none;*/
+/*cursor: pointer;*/
+/*font-weight: 500;*/
+/*border: 1px solid transparent;*/
+/*border-radius: 2px;*/
+/*height: 36px;*/
+/*line-height: 34px;*/
+/*font-size: 14px;*/
+/*color: #ffffff;*/
+/*background-color: #007c89;*/
+/*transition: background-color 0.2s ease-in-out 0s, opacity 0.2s ease-in-out 0s;*/
+/*padding: 0 18px;*/
+/*:hover {*/
+/*    color: #ffffff;*/
+/*    background-color: #006570;*/
+/*}*/
+
+
+.btn-small {
+    font-weight: 500;
+    font-size: 0.9em;
+}
+
+.button-primary {
     background-color: var(---button-primary);
     color: var(---text-color-primary);
-    font-weight: 500;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    float: right;
 }
+
+.button-secondary {
+    background-color: var(---button-secondary);
+    color: var(---text-color-secondary);
+}
+
 
 #open-toc {
     display: none;
