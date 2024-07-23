@@ -35,7 +35,9 @@ Features are sorted by importance and are further split by features that should 
 
 ## Text-checking tool 
 
-* Scrollbar in Chrome
+* Sizes and shades of grey in overview output
+* check for fullstops and spaces
+* popup tooltips to top from beginning
 * Make tooltip links clickable?
 * Increase the number of test-texts that are successfully handled
     + detect absolute risk reductions (e.g., smaller percentages, percentage points): distinguish from unidentified percentages (and mention if they are likely relative)
