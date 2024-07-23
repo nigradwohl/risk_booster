@@ -139,13 +139,13 @@
 
 
 /*Text info*/
-.text-notes-list{
-    border: 1px solid var(---wiki-border);
-    border-radius: 3px;
-    background-color: var(---wiki-bg);
-    padding: 0.4em 0.7em;
-    margin: 0 0.4em 0.5em 0.4em;
-}
+/*.text-notes-list{*/
+/*    border: 1px solid var(---wiki-border);*/
+/*    border-radius: 3px;*/
+/*    background-color: var(---wiki-bg);*/
+/*    padding: 0.4em 0.7em;*/
+/*    margin: 0 0.4em 0.5em 0.4em;*/
+/*}*/
 
 .text-notes-list h4 {
     margin-bottom: 0.2em;
@@ -384,7 +384,8 @@ canvas {
     padding: 1em;
 }
 
-.question-content {
+.question-content td{
+    vertical-align: top;
 }
 
 
@@ -422,6 +423,16 @@ canvas {
     padding: 1em;
     margin: 1em;
 }
+
+.hidden-result {
+    display: none;
+}
+
+#text-endnote{
+    padding: 0.4em 0.7em;
+    margin: 0 0.4em 0.5em 0.4em;
+}
+
 
 .missing-input {
     border: 2px solid var(---error-col);

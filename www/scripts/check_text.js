@@ -624,8 +624,9 @@ $(document).ready(function () {
 
         // Default for linking risks:
         const curtop = "?page=" + (token_dat.topics.includes("impf") ? "impf" : "treat");
-        const risk_link = "<p>Verwenden Sie den <a target='_blank' href='checklist_impftreat.html" + curtop + "'>Risikorechner</a>, " +
-            "um eine transparente Darstellung zu erstellen, wenn die Zahlen es erlauben.</p>";
+        const risk_link = "<p>Untenstehend finden Sie Anmerkungen zu den Identifizierten Zahlen im Text.<br>" +
+            "Verwenden Sie den <a target='_blank' href='checklist_impftreat.html" + curtop + "'>Risikorechner</a>, " +
+            "um aus diesen Zahlen eine transparente Darstellung zu erstellen, wenn die Zahlen es erlauben.</p>";
 
         const info_tree = {
             // Levels:
@@ -1373,7 +1374,7 @@ $(document).ready(function () {
 
 
         // Update the text:
-        $("#text-result").html('<h3>Ihr Text</h3>' +
+        $("#text-result").html('<h3>Erklärungen zu den statistischen Zahlenangaben im Text</h3>' +
             '<div class="fillout-info">' +
             '<p class="instruction-par">Fahren Sie mit dem Mauszeiger über die hervorgehobenen Zahlen, um zu erfahren, ' +
             'welchem Format wir die Zahl zugeordnet haben.' +
@@ -1541,6 +1542,8 @@ $(document).ready(function () {
             // })
 
         })
+
+        $(".hidden-result").show();
 
     })
 

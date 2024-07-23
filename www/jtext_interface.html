@@ -42,34 +42,29 @@
         <textarea class="longtext" name="description" id="text-query"></textarea>
         <br>
         <button class="input-button" id="check-text">Prüfe meinen Text</button>
+        <div id="post-notes"></div>
     </div>
 
     <div class="output-col text-notes noprint">
         <div id="text-note-container">
             <p>
-                Geben Sie hier Ihren Text ein (das Tool kann aktuell nur deutsche Texte verarbeiten).
+                Geben Sie hier den zu prüfenden Text in deutscher Sprache ein.
                 Wenn Sie auf "Prüfe meinen Text" klicken, erhalten Sie einen Überblick, ob wichtige Kriterien
-                transparenter Berichterstattung als erfüllt klassifiziert werden können (s.
-                <a href="risk_wiki.html">Wiki</a>).
-                Werden Nutzen und Schaden berichtet? Und werden diese mit transparenten Zahlen belegt?
-                Und werden Zahlen für Untersuchungs- und Vergleichsgruppe berichtet?
+                transparenter Berichterstattung (Berichten von Nutzen und Schadenwirkung in Untersuchungs- und
+                Vergleichsgruppe,
+                sowie die Verwendung von transparenter Zahlen)
+                als erfüllt klassifiziert werden können (s. <a href="risk_wiki.html">Wiki</a>).
                 <br>
                 Entsprechenden Zahlen werden im Text unten hervorgehoben.
             </p>
             <p class="note-par">
-                Bitte beachten Sie: Das Tool nutzt nur den eingegebenen Text zur Beurteilung und macht keine Aussagen
-                über die Richtigkeit der Zahlen sonder nur über deren Transparenz.
-                <br>
-                Zudem wird es manche Zahlen nicht korrekt identifizieren
-                (insbesondere, wenn Texte, die keine Interventionen, wie Medikamente oder Impfungen, behandeln, eingegeben
-                werden).
-            </p>
-            <p class="note-par">Ihr Text und Ihre Anmerkungen werden lokal verarbeitet und nicht auf Servern
-                gespeichert.
+                Bitte beachten Sie: Es kann passieren, dass das Tool einige Zahlen nicht korrekt identifiziert &ndash;
+                insbesondere wenn die Zahlen nicht aus einer medizinischen randomisiert-kontrollierten Studie stammen.
+                Der Text und Ihre Anmerkungen werden lokal verarbeitet und nicht auf Servern gespeichert.
                 <!--                [Download-option des HTML anbieten (tabellarisch mit Tooltips als Anmerkungen am Rand?)-->
             </p>
         </div>
-        <div id="post-notes"></div>
+        <!--        <div id="post-notes"></div>-->
     </div>
 
 
@@ -78,7 +73,7 @@
 <div class="row current-theme">
 
     <!--    The resulting text with intext annotations:-->
-    <div class="output-col text-output noprint">
+    <div class="output-col text-output noprint hidden-result">
 
 
         <div id="text-result"></div>
@@ -98,6 +93,18 @@
 
         </div>
 
+    </div>
+
+    <div id="text-endnote" class="hidden-result">
+        <p>Sie haben den Text nun vollständig anhand der im Text verfügbaren Information geprüft.
+            Wenn Sie darüber hinaus weitere Informationen benötigen,
+            besuchen Sie unser <a target="_blank" href="risk_wiki.html">Wiki</a>,
+            verwenden sie den <a target="_blank" href="checklist_main.html">Risikorechner</a>,
+            um die Ihnen vorliegenden Zahlen transparent darzustellen
+            oder finden Sie hier
+            <a target="_blank" href="link_collection.html">weiterführende Links</a>
+            (z.B. zu Tools, zum Auffinden weiterer Studien, sowie zu weiteren Services und Erklärungen).
+        </p>
     </div>
 
 </div>

@@ -336,11 +336,16 @@ blockquote cite:before {
 }
 
 .output-col {
-    background-color: var(---colum-bg-tertiary) te;
-    padding: 5px 20px;
+    /*background-color: var(---colum-bg-tertiary) te;*/
+    /*padding: 5px 20px;*/
     /*margin: 1em;*/
     height: 100%;
     /*overflow: visible;*/
+    border: 1px solid var(---wiki-border);
+    border-radius: 3px;
+    background-color: var(---wiki-bg);
+    padding: 0.4em 0.7em;
+    margin: 0 0.4em 0.5em 0.4em;
 }
 
 .number-input {
@@ -422,6 +427,11 @@ blockquote cite:before {
     max-height: 50em;
     overflow-y: scroll;
     line-height: 1.6;
+    /*Border*/
+    border: 1px solid var(---wiki-border);
+    border-radius: 3px;
+    background-color: var(---wiki-bg);
+
 }
 
 .text-input > textarea {
@@ -635,7 +645,7 @@ h3 {
 .fillout-info {
     background-color: var(---column-bg-secondary);
     border-radius: 5px;
-    padding: 1em;
+    padding: 0.4em;
     margin-bottom: 0.5em;
 }
 
