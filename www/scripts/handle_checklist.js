@@ -821,7 +821,7 @@ class Checklist {
         // const curscale = 1000;  // fixed reference! Should eventually be so that the smallest number is detectable!
         // was: [100, 1000, 2000, 5000, 10000, 50000, 100000]
         const curscale = [100, 1000, 10000, 100000]
-            .filter((x) => group_risks_flat.every((r) => (r * x) >= 5))[0];
+            .filter((x) => group_risks_flat.every((r) => (r * x) >= 1))[0];
         // Get the first reference for which the product is greater 1!
         // Altering this threshold will lead to larger references (which may differentiate better!)
         console.log("Curscale is " + curscale);
