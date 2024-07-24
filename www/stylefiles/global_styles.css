@@ -354,8 +354,8 @@ blockquote cite:before {
     /*margin: 1em;*/
     height: 100%;
     /*overflow: visible;*/
-    border: 1px solid var(---col-border);
-    border-radius: 3px;
+    /*border: 1px solid var(---col-border);*/
+    /*border-radius: 3px;*/
     background-color: var(---bg-general);
     padding: 0.4em 0.7em;
     margin: 0 0.4em 0.5em 0.4em;

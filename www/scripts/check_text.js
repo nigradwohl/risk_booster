@@ -1373,13 +1373,15 @@ $(document).ready(function () {
 
 
         // Update the text:
-        $("#text-result").html('<h3>Erklärungen zu den statistischen Zahlenangaben im Text</h3>' +
+        $("#text-result").html('<h4>Erklärungen zu den statistischen Zahlenangaben im Text</h4>' +
             '<div class="fillout-info">' +
             '<p class="instruction-par">Fahren Sie mit dem Mauszeiger über die hervorgehobenen Zahlen, um zu erfahren, ' +
             'welchem Format wir die Zahl zugeordnet haben.' +
             '<br>Klicken Sie auf die Zahl, um mehr zu erfahren.</p>' +
             '</div>' +
-            procText);
+            '<div class="highlighted-text">' +
+            procText +
+            '</div>');
 
 
         // Alternative tooltip as popup:
