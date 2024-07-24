@@ -105,6 +105,8 @@ $(document).ready(function () {
         typeverb = "tatsächlich erkrankt";
         typeword = "Diagnostischer Test";
 
+        info_treat2 = "erkrankt";
+
         // Change the results display:
         $("#head1").text("Testgüte (Spezifität und Sensitivität)");
         $("#head2").text("Vorhersagegüte (NPV und PPV)");
@@ -112,6 +114,13 @@ $(document).ready(function () {
         $(".grid-subhead2").text("Unter den Erkrankten");
         $(".grid-subhead1#subhead1-r2").text("Unter den negativ getesteten");
         $(".grid-subhead2#subhead2-r2").text("Unter den positiv getesteten");
+
+        $("#intro-note").text("Typischerweise wird die Testgüte angegeben, während sich Individuuen dafür interessieren, " +
+            "was ein positiver (oder negativer Test aussagt).");
+        $("#report-what").text("Typischerweise wird die Testgüte angegeben, während sich Individuuen dafür interessieren, " +
+            "was ein positiver (oder negativer Test aussagt). " +
+            "Daher berichten Sie am besten direkt den positiven und negativen prädiktiven Wert (PPV und NPV). " +
+            "Diese setzt voraus, dass die Prävalenz der zu testenden Krankheit bekannt ist.");
         // TODO: Switch perspective?
         // $("#results-2").html("");  // Second results are not needed for tests.
 
@@ -119,7 +128,7 @@ $(document).ready(function () {
         outcome_list.eff = [
             {
                 "verb": new Verblist("bekommen ein positives Testergebnis", "werden", "positv getestet"),
-                "noun": "Positives Testergebnis", "direction": "achieve"
+                "noun": "Erkrankten", "direction": "achieve"
             }
         ]
 

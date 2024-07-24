@@ -134,6 +134,7 @@
                             <p class="checklist-qtext">
                                 <span class="cur-topic"></span>
                             </p>
+                            <p>[TODO!]</p>
                             <p>
                                 Prüfen Sie, ob die Ihnen vorliegenden Risikoinformationen eine transparente Darstellung
                                 erlauben.
@@ -141,12 +142,13 @@
                                 Verfügung haben.
                             </p>
 
+                            <p id="intro-note"></p>
+
                             <p>
                                 Wenn Ihnen Informationen fehlen, lassen Sie sie aus (Sie werden gefragt, ob Sie ein Feld
                                 absichtlich frei gelassen haben).
+                                [NOTE EVERYWHERE!]
                             </p>
-
-
                             <p>
                                 Mit den Pfeilen links und rechts können Sie navigieren.
                             </p>
@@ -282,10 +284,7 @@
 
                             <!--                            <p>Anmerkung: Wenn die Information fehlt, wird nachgefragt.</p>-->
                         </div>
-
-
                     </div>
-
 
                     <div class="checklist-question" id="n-total-q">
                         <div class="question-content">
@@ -338,7 +337,6 @@
                             <p>Bitte geben Sie die Anteile in Prozent (d.h., Zahlen zwischen 0 und 100) an.
                                 Kommazahlen mit bis zu zwei Nachkommastellen sind erlaubt.
                             </p>
-
                             <!--                            ACHTUNG: Plausible Ganzzahlen ggf. umformulieren!-->
                             <input class="checklist-input" id="p-treat" type="text"
                                    pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
@@ -352,7 +350,7 @@
                             <p class="checklist-qtext">
                                 Welcher Anteil der Personen ist <span class="typeverb"></span> (Prävalenz)?
                             </p>
-                            <p>Bitte geben Sie die Anteile in Prozent (d.h., Zahlen zwischen 0 und 100) an.
+                            <p>Bitte geben Sie den Anteil in Prozent (d.h., Zahlen zwischen 0 und 100) an.
                                 Kommazahlen mit bis zu zwei Nachkommastellen sind erlaubt.
                             </p>
 
@@ -449,7 +447,9 @@
                     <div class="checklist-question" id="p-sens-spec-q">
                         <div class="question-content">
                             <p class="checklist-qtext">
-                                Welche Testgütekriterien (Sensitivität und Spezifität) wurden berichtet?
+                                Welche Testgütekriterien
+                                (<a target="_blank" href="risk_wiki.html#wiki-sens-spec">Sensitivität und Spezifität</a>)
+                                wurden berichtet?
                             </p>
                             <p>Bitte geben Sie die Anteile in Prozent (d.h., Zahlen zwischen 0 und 100) an.
                                 Kommazahlen mit bis zu zwei Nachkommastellen sind erlaubt.
@@ -458,22 +458,26 @@
                                 <tr>
                                     <td>
                                         <label for="p-sens">
-                                            <span class="outcome-noun">Positive Tests</span> unter den <span
-                                                class="info-treat2">tatsächlich Erkrankt</span>en
-                                            (Sensitivität)
+                                            Anteil der Erkrankten, die vom Test korrekt als erkrankt
+                                            erkannt werden
+                                            (positive Testergebnisse unter den Erkrankten, Sensitivität)
                                         </label>
                                     </td>
                                     <td>
                                         <input class="checklist-input" id="p-sens" name="p-sens" type="text"
                                                pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
                                                title="Zahlen zwischen 1 und 100 mit bis zu 2 Nachkommastellen">&nbsp;%
-                                        <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Prozentzahl ein.</span>
+                                        <span class="alert-invalid"><br>
+                                            <i class="fa fa-exclamation-circle error"></i>
+                                            Bitte geben Sie eine gültige Prozentzahl zwischen 0 und 100 ein.
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td><label for="p-spec">
-                                        <span class="outcome-noun">Negative Tests</span> unter den tatsächlich Gesunden
-                                        (Spezifität)
+                                        Anteil der Gesunden, die vom Test korrekt als gesund
+                                            erkannt werden
+                                            (negative Testergebnisse unter den Gesunden, Spezifität)
                                     </label></td>
                                     <td>
                                         <input class="checklist-input" id="p-spec" name="p-spec"
@@ -602,7 +606,7 @@
 
                         <div id="results-info no-print">
                             <p>Hier sind die Ergebnisse der eingegebenen Zahlen:</p>
-                            <p>
+                            <p id="report-what">
                                 [ADD TOOLTIPS!]
                                 Am besten berichten Sie die
                                 <span id="abs-tt-res" class="tooltip">
@@ -612,7 +616,7 @@
                                     </span><a href="risk_wiki.html#wiki-abs">absolute Risikoveränderung</a>
                                 </span>,
                                 sowie die absoluten Risiken
-                                zu <a href="risk_wiki.html#wiki-effside">Nutzen und Schaden</a>
+                                zu <a target="_blank" href="risk_wiki.html#wiki-effside">Nutzen und Schaden</a>
                                 in
                                 [Behandlungs-] und
                                 [Kontrollgruppe].
@@ -625,7 +629,8 @@
                                     </span><a target="_blank"
                                               href="risk_wiki.html#wiki-rel">relative Risikoveränderung</a>
                                 </span>
-                                [ANGEBEN OB RELATIVE RISIKOREDUKTION ODER RELATIVES RISIKO!]
+                                angeben.
+<!--                                [ANGEBEN OB RELATIVE RISIKOREDUKTION ODER RELATIVES RISIKO!]-->
                             </p>
                         </div>
 
