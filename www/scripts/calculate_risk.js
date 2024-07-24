@@ -135,7 +135,7 @@ class RiskCollection {
 
     // Saving previous content:
     save_current_content() {
-        this.prev_content = JSON.stringify(this);
+        this.prev_content = JSON.stringify({"ntab": this.ntab, "ptab": this.ptab, "mtab1": this.mtab1, "mtab2": this.mtab2});
     }
 
     // Retrieving previous content:
