@@ -174,7 +174,7 @@
 
                         <div class="question-content">
                             <p class="checklist-qtext">
-                                Bitte wählen Sie die Endpunkte für Nutzen und Schaden aus.
+                                Bitte wählen Sie jewils einen Endpunkt für Nutzen und Schaden aus.
                                 Achten Sie dabei auf das
                                 <span id="framing-tt" class="tooltip">
                         <span class="tooltiptext tooltip-overview">
@@ -206,8 +206,6 @@
                                 </tr>
                             </table>
                         </div>
-
-
                     </div>
 
                     <div class="checklist-question" id="rel-risk-reduction-q">
@@ -216,6 +214,11 @@
 <!--                        gute Ergebnisse hervorbringt.-->
 
                         <div class="question-content">
+                            <p>
+                                ALTERNATIV:
+                                Bitte geben Sie die Risikoreduktion/den Anstieg im Nutzen(?)
+                                Interessierendes Ereignis (Tod, Symptomfreiheit, Symptomlinderung)
+                            </p>
                             <p class="checklist-qtext">Welche Wirksamkeit oder Effektivität
                                 der <span class="typeword"></span>
                                 wurde angegeben? (Englisch:
@@ -258,15 +261,13 @@
                                 <input class="checklist-input" id="rel-risk-reduction" type="text"
                                        pattern="([0-9]{0,2}(,[0-9]{1,2})?)|(100)"
                                        title="Zahlen zwischen 1 und 100 mit bis zu 2 Nachkommastellen">&nbsp;%
-                                <span class="tooltip delete-entry">
-                                <i class="fa fa-trash" aria-hidden="true" id="rel-risk-reduction-del"></i>
-                                <span class="tooltiptext tooltip-checklist">
-                                   Eintrag löschen
-                                </span>
-                                </span>
+<!--                                <span class="tooltip delete-entry">-->
+<!--                                <i class="fa fa-trash" aria-hidden="true" id="rel-risk-reduction-del"></i>-->
+<!--                                <span class="tooltiptext tooltip-checklist">-->
+<!--                                   Eintrag löschen-->
+<!--                                </span>-->
+<!--                                </span>-->
                                 <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Zahl ein.</span>
-
-
                                 <!--                                <button class="checklist-button continue-btn">Weiter</button>-->
                             </p>
 
@@ -678,9 +679,7 @@
                                 <span class="risk-info" id="risk-control-side"></span>
                             </p>
 
-
                             <!--                                Treatment group-->
-
                             <p class="grid-note2 content-end">
                                 <span class="risk-info" id="risk-treat-side"></span>
                             </p>
@@ -695,11 +694,15 @@
                                 <p id="abs-change-side"></p>
                                 <p id="rel-change-side"></p>
                             </div>
-
-
                         </div>
 
-                        <p class="no-print">Sie haben die eingegebene Zahleninformation nun auf ihre Transparenz hin
+                        <p class="no-print">
+                            Beachten Sie: Die Icon arrays sind auf ein Maximum von 1.000 Icons begrenzt, sodass
+                            die Zahlenangaben und Anzahl der Icons nicht unbedingt übereinstimmen.
+                        </p>
+
+                        <p class="no-print">
+                            Sie haben die eingegebene Zahleninformation nun auf ihre Transparenz hin
                             geprüft.
                             Wenn Sie darüber hinaus weitere Informationen benötigen,
                             besuchen Sie unser <a target="_blank" href="risk_wiki.html">Wiki</a>,
