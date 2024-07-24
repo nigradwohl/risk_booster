@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="stylefiles/global_styles.css">
+    <link rel="stylesheet" href="stylefiles/wiki-styles.css">
 
     <script src="jquery/jquery-3.7.1.min.js"></script>
 
@@ -21,22 +22,39 @@
 
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ MAIN CONTENT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 <!-- The flexible grid (content) -->
-<!--<div class="row current-theme">-->
-<!--    <div class="full-column">-->
-<!--        <h1>Wiki</h1>-->
-<!--        <p>-->
-<!--            &lt;!&ndash;            [Short introduction]&ndash;&gt;-->
-<!--            "Der Erfolg evidenzbasierter Praxis hängt von der klaren und effektiven Kommunikation statistischer-->
-<!--            Informationen ab (1). Ziel ist, dass die Informationen verstanden, Nutzen und Risiken von Interventionen-->
-<!--            korrekt eingeschätzt und letztlich informierte Entscheidungen ermöglicht werden. Für die Erstellung einer-->
-<!--            Information muss sowohl eine inhaltliche Auswahl der zu kommunizierenden Häufigkeiten stattfinden, als auch-->
-<!--            eine Überprüfung, ob Zahlen belastbar genug sind, dass sie kommuniziert werden können. Wurden Zahlen-->
-<!--            ausgewählt, ist es für das Gelingen der Kommunikation wichtig, die vorhandene Evidenz zu verschiedenen-->
-<!--            Darstellungen im Hinblick auf Wirksamkeit und auch auf mögliche adverse Effekte hin zu überprüfen." [ZITAT-->
-<!--            LEITLINIE]-->
-<!--        </p>-->
-<!--    </div>-->
-<!--</div>-->
+<!--        <div class="full-column wiki-intro">-->
+<!--            <h1>Wiki</h1>-->
+<!--            <p>-->
+<!--                &lt;!&ndash;            [Short introduction]&ndash;&gt;-->
+<!--                Gesundheitsinformation sollte so kommuniziert werden, dass die Individuen so transparent informiert-->
+<!--                werden,-->
+<!--                dass sie damit informiert Entscheidungen in Bezug auf ihre Gesundheit treffen können.-->
+<!--                Dazu ist es unerlässlich,-->
+<!--                Die <a target=\"blank\" href=\"https://www.leitlinie-gesundheitsinformation.de/\">Leitlinie-->
+<!--                evidenzbasierte-->
+<!--                Gesundheitsinformation</a> hält fest-->
+<!--            </p>-->
+<!--            <blockquote>-->
+<!--                Der Erfolg "evidenzbasierter Praxis hängt von der klaren und effektiven Kommunikation statistischer-->
+<!--                Informationen ab (1). Ziel ist, dass die Informationen verstanden, Nutzen und Risiken von Interventionen-->
+<!--                korrekt eingeschätzt und letztlich informierte Entscheidungen ermöglicht werden.-->
+<!--            </blockquote>-->
+<!--            &lt;!&ndash;            Für die Erstellung einer Information muss sowohl eine inhaltliche Auswahl der zu kommunizierenden Häufigkeiten stattfinden, als&ndash;&gt;-->
+<!--            &lt;!&ndash;                auch eine Überprüfung, ob Zahlen belastbar genug sind, dass sie kommuniziert werden können. Wurden Zahlen &ndash;&gt;-->
+<!--            &lt;!&ndash;                ausgewählt, ist es für das Gelingen der Kommunikation wichtig, die vorhandene Evidenz zu verschiedenen&ndash;&gt;-->
+<!--            &lt;!&ndash;                Darstellungen im Hinblick auf Wirksamkeit und auch auf mögliche adverse Effekte hin zu überprüfen.&ndash;&gt;-->
+<!--            <h4>Wichtige Aufgaben</h4>-->
+<!--            <ul>-->
+<!--                <li>Inhaltliche Auswahl der zu kommunizierenden statistischen Zahlen</li>-->
+<!--                <li>Überprüfung, ob Zahlen belastbar genug sind</li>-->
+<!--                <li>Darstellungen im Hinblick auf Wirksamkeit und mögliche adverse Effekte hin überprüfen</li>-->
+<!--            </ul>-->
+<!--            <p>-->
+<!--                Das vorliegende Tool und Wiki sollen Sie dabei unterstützen, die Krierien klarer und effektiver-->
+<!--                Kommunikation-->
+<!--                kennenzulernen und in der Praxis anzuwenden.-->
+<!--            </p>-->
+<!--        </div>-->
 
 <div class="row current-theme wiki-row">
     <!-- The sidebar -->
@@ -60,10 +78,6 @@
     </div>
 
     <div id="entry-list">
-
-        <div id="open-toc">
-            <i class="fa fa-bars" style="font-size:24px"></i>
-        </div>
 
         <div class="full-column wiki-intro">
             <h1>Wiki</h1>
@@ -98,6 +112,7 @@
                 kennenzulernen und in der Praxis anzuwenden.
             </p>
         </div>
+
         <div class="wiki-entry full-column" id="wiki-risk"><h2>Risiko</h2>
             <div class="wiki-overview">
                 <ul>
@@ -121,8 +136,8 @@
                 </ul>
             </div>
             <div class="wiki-text"><p>Risiko beschreibt wie wahrscheinlich es ist, dass ein bestimmtes Ereignis
-                eintritt. Risikoinformation kann mit Worten oder Zahlen kommuniziert werden. Die Leitlinein für
-                evidezbasierte Gesundheitskommunikation empfehlen Risiken nicht nur verbal anzugeben sondern immer auch
+                eintritt. Risikoinformation kann mit Worten oder Zahlen kommuniziert werden. Die Leitlinie für
+                evidezbasierte Gesundheitsinformation empfiehlt Risiken nicht nur verbal anzugeben sondern immer auch
                 zahlen zu berichten. Diese Zahlen können <a href="#wiki-abs">absolut</a> oder <a href="#wiki-rel">relativ
                     sein</a>, sprich, die Wahrscheinlichkeit für eine Population oder Gruppe angeben oder die
                 Wahrscheinlichkeiten für verschiedne Gruppen als Vielefache vergleichen.</p></div>
@@ -764,15 +779,14 @@
                     <li>Zuckerpillen</li>
                 </ul>
             </div>
-            <div class="wiki-text">Placebos sind Scheinbehandlungen. Anstelle eines Medikaments wird ein Präparat ohne
-                Wirkstoff verabreicht (z.B., Kochsalzlösung bei einer Impfung, Zuckertabletten ohne Wirkstoff anstelle
-                von Medikamenten). Zur Untersuchung der Wirksamkeit von Medikamenten ist dies wichtig, da so
+            <div class="wiki-text"><p>Placebos sind Scheinbehandlungen. Anstelle eines Medikaments wird ein Präparat
+                ohne Wirkstoff verabreicht (z.B., Kochsalzlösung bei einer Impfung, Zuckertabletten ohne Wirkstoff
+                anstelle von Medikamenten). Zur Untersuchung der Wirksamkeit von Medikamenten ist dies wichtig, da so
                 Erwartungseffekte ausgeschlossen werden können. Erwartungseffekte treten auf, da alleine die Erwartung,
                 dass mit der Einnahme eines Medikamentes eine Besserung eintritt, dazu führen kann, dass eine Besserung
                 wahrgenommen wird. Umgekehrt kann es auch die Erwartung von Nebenwirkungen wahrscheinlicher machen, dass
                 tatsächlich Nebenwirkungen wahrgenommen und berichtet werden. Um Nutzen und Schaden des Wirkstoffes an
-                sich festzustellen sollte daher ein Vergleich mit einem Placebo stattfinden.
-            </div>
+                sich festzustellen sollte daher ein Vergleich mit einem Placebo stattfinden.</p></div>
         </div>
         <div class="wiki-entry full-column" id="wiki-teval-comp"><h2>Untersuchungs- und Vergleichszeitpunkt</h2>
             <div class="wiki-overview">

@@ -169,7 +169,7 @@ const info_data = {
         "examples": ["100 Personen", "10.000 Studienteilnehmende", "3456 Todesfälle", "12 Geimpfte", "21 Äpfel"],  // array of list items with examples.
         "popup": ["<ul>" +
         "<li>Wenn es sich nicht um die Gesamtzahl in einer Gruppe handelt, achten Sie darauf diese Gesamtzahl immer anzugeben (z.B., Anzahl der Geimpften).</li>" +
-        "<li>Transparenter für die Kommunkation von Risiken sind <a href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> mit einer konstanten Referenz (z.B., 15 aus 1000).</li>" +
+        "<li>Transparenter für die Kommunkation von Risiken sind <a target='_blank' href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> mit einer konstanten Referenz (z.B., 15 aus 1000).</li>" +
         "</ul>"],
         "maintext": "<p>Im Kontext medizinischer Berichterstattung werden Häufigkeiten oft verwendet um die Anzahl von " +
             "Erkrankungs- oder Todesfällen oder die Anzahl von Personen mit Nebenwirkungen in einer Studie darzustellen.</p>" +
@@ -199,7 +199,7 @@ const info_data = {
             "Die Stichprobengröße sollten stets angegeben werden, da so Rückschlüsse auf die Verlässlichkeit der Ergebnisse gezogen werden können."],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": ["10.000 Studienteilnehmende", "1000 Probanden", "insgesamt 5000 Versuchsteilnehmer"],  // array of list items with examples.
         "popup": [
-            "<p>Hilfreiche Angabe. Die <a href='#wiki-sample'>Stichprobengröße</a> hilft, die Zuverlässigkeit der Daten zu beurteilen und kann als Bezugsgröße dienen.</p>"],
+            "<p>Hilfreiche Angabe. Die <a target='_blank' href='#wiki-sample'>Stichprobengröße</a> hilft, die Zuverlässigkeit der Daten zu beurteilen und kann als Bezugsgröße dienen.</p>"],
         "maintext": "<p></p>" +
             "<p>DDie Größe einer Stichprobe ist aber wird oft von den durch die verfügbaren Ressourcen geleitet begrenzt. " +
             "leine Stichproben liefern nicht zwingend falsche Ergebnisse, aber die Ergebnisse sind typischerweise weniger " +
@@ -224,7 +224,7 @@ const info_data = {
             "Geimpften nur 270 von 1000 erkranken.<br>" +
             "<a href=\"https://www.hardingcenter.de/de/impfungen/mrna-schutzimpfung-gegen-covid-19-fuer-erwachsene-unter-60-jahren\">https://www.hardingcenter.de/de/impfungen/mrna-schutzimpfung-gegen-covid-19-fuer-erwachsene-unter-60-jahren</a>"],
         "popup": [
-            "<p><a href=\"risk_wiki.html#wiki-nh\">Natürliche Häufigkeiten</a> sind sehr transparent, um Risiken auszudrücken. " +
+            "<p><a target='_blank' href=\"risk_wiki.html#wiki-nh\">Natürliche Häufigkeiten</a> sind sehr transparent, um Risiken auszudrücken. " +
             "Achten Sie aber darauf, dass die Referenz (d.h., 1 in 1000 oder 1 in 10000) jeweils für alle Risiken konstant ist.</p>"],
         "maintext": "<p>Natürliche Häufigkeiten sind eine transparente Art, um Risiken darzustellen, da sich " +
             "Individuen die zugrundeliegenden Gruppen gut vorstellen können. Während Lesende bei anderen Zahlenformaten " +
@@ -267,7 +267,7 @@ const info_data = {
             "<p><a target='_blank' href='risk_wiki.html#wiki-rel'><i class=\"fa fa-exclamation-triangle annote-text-icon\"></i>&nbsp;Relative Angaben</a> sind oft intransparent.</p>" +
             "<ul>" +
             // "<li>sie führen häufig zu einer <a href=\"risk_wiki.html#wiki-error-rel\">Überschätzung des Risikos</a></li>" +
-            "<li>Achten Sie darauf, dass die <a href='risk_wiki.html#wiki-baseprob'>Basiswahrscheinlichkeit (bzw. das Basisrisiko)</a> angegeben wurde, auf die sich die Veränderung bezieht.</li>" +
+            "<li>Achten Sie darauf, dass die <a target='_blank' href='risk_wiki.html#wiki-baseprob'>Basiswahrscheinlichkeit (bzw. das Basisrisiko)</a> angegeben wurde, auf die sich die Veränderung bezieht.</li>" +
             "</ul>"
         ],
         "maintext":
@@ -342,7 +342,7 @@ const info_data = {
             "<p><i class=\"fa fa-exclamation-triangle annote-text-icon\"></i>&nbsp;Relative Angaben sind oft intransparent.</p>" +
             "<ul>" +
             // "<li>sie führen häufig zu einer <a href=\"risk_wiki.html#wiki-error-rel\">Überschätzung des Risikos</a></li>" +
-            "<li>Achten Sie darauf, dass die <a href='risk_wiki.html#wiki-baseprob'>Basiswahrscheinlichkeit (bzw. das Basisrisiko)</a> angegeben wurde, auf die sich die Veränderung bezieht.</li>" +
+            "<li>Achten Sie darauf, dass die <a target='_blank' href='risk_wiki.html#wiki-baseprob'>Basiswahrscheinlichkeit (bzw. das Basisrisiko)</a> angegeben wurde, auf die sich die Veränderung bezieht.</li>" +
             "</ul>"
         ],
         "maintext":
@@ -392,7 +392,7 @@ const info_data = {
             "Intervall, in dem der wahre Wert in 95% aller Experimente liegen würde, wenn man dasselbe Experiment sehr oft wiederholt oder man sehr oft eine " +
             "Stichprobe aus der Selben Population zieht."],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": ["Die Schutzwirkung beträgt 97,4 % (95 % KI: 91,4 – 99,2)."],  // array of list items with examples.
-        "popup": ["<p><a href='wiki-confint'>Konfidenzintervalle</a> werden in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +
+        "popup": ["<p><a target='_blank' href='wiki-confint'>Konfidenzintervalle</a> werden in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +
         "<p>Typischerweise werden Konfidenzintervalle, die <emph>nicht</emph> null einschließen, was eine akzeptable Unischerheit ausdrückt.</p>"],
         "maintext": "<p>Konfidenzintervalle werden in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +
             "<p>Schließt das Konfidenzintervall eines Unterschiedes nicht den Wer null ein, wird die Unsicherheit, dass ein Effekt, " +
@@ -490,7 +490,7 @@ const info_data = {
             "Der p-Wert wird auch von Expert*innen häufig missverstanden und bringt daher vermutlich keinen Mehrwert für journalistische Artikel"
         ],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": [],  // array of list items with examples.
-        "popup": ["<p>Der <a href='wiki-pval'>p-Wert</a> wird in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +
+        "popup": ["<p>Der <a target='_blank' href='wiki-pval'>p-Wert</a> wird in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +
         "<p>Typischerweise wird ein p-Wert kleiner als 0.05 als \"statistisch signifikant\" bezeichtnet, was eine akzeptable Unischerheit ausdrückt.</p>" +
         "<p>Da der p-Wert auch von Expert*innen häufig missverstanden wird, sollte er in journalistische Publikationen eher nicht verwendet werden.</p>"],
         "maintext": "" +
@@ -576,10 +576,10 @@ const info_data = {
         "popup": ["Im Experiment weren durch zufällige Zuweisung auf eine Experimental- und eine Kontrollgruppe " +
             "systematische Unterschiede zwischen den Gruppen ausgeschlossen, " +
             "so dass (anders als bei der Beobachtung von Gruppen oder Zeitpunkten) " +
-            "<a href='#wiki-causal'>Kausalaussagen</a> möglich sind.",
+            "<a target='_blank' href='#wiki-causal'>Kausalaussagen</a> möglich sind.",
             "In der Medizin ist en typisches Experiment der \"Randomized Controlled Trial\" (RCT): " +
             "Personen werden zufällig einer Behandlung oder einer Vergleichsbehandlung " +
-            "(häufig mit einem <a href='#wiki-placebo'>Placebo</a>) zugewiesen"],
+            "(häufig mit einem <a target='_blank' href='#wiki-placebo'>Placebo</a>) zugewiesen"],
         "maintext":
             "<p>Im Allgemeinen besteht ein Experiment darin, das Versuchspersonen zufällig auf verschiedenen Behandlungen " +
             "verteilt werden. So werden systematische Unterschiede ausgeschlossen und Kausalaussagen ermöglicht. " +
@@ -643,7 +643,7 @@ const info_data = {
         "Der Vergleich von Untersuchungs- und Vergleichszeitpunkt erlaubt Aussagen über Veränderungen über die Zeit " +
         "(und deren Größe), also z.B., ob es Menschen besser oder schlechter geht (nur aufgrund der Zeit sind üblicherweise keine Aussagen über die Wirkmechanismen möglich)."],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": [],  // array of list items with examples.
-        "popup": ["Zeitpunkt zu dem eine Untersuchung stattfindet und der mit einem <a href=\"#wiki-tcomp\">Vergleichszeitpunkt</a> verglichen wird."],
+        "popup": ["Zeitpunkt zu dem eine Untersuchung stattfindet und der mit einem <a target='_blank' href=\"#wiki-tcomp\">Vergleichszeitpunkt</a> verglichen wird."],
         "maintext": "<p>Der Untersuchungszeitpunkt ist ähnlich zur Untersuchungsgruppe etwa in Medikamentenstudien, während der Vergleichszeitpunkt der Kontrollgruppe ähnlich ist. " +
             "Ein entscheidender Unterschied ist, dass Personen nicht zufällig auf Zeitpunkte zugewiesen werden können. " +
             "Daher können Zeitpunkte nicht für ein <a href='#wiki-expe'>Experiment</a> verwendet werden und Aussagen über <a href='#wiki-causal'>Ursache und Wirkung</a>" +
@@ -671,7 +671,7 @@ const info_data = {
             "Der Vergleich von Untersuchungs- und Vergleichszeitpunkt erlaubt Aussagen über Veränderungen über die Zeit (und deren Größe), " +
             "also z.B., ob es Menschen besser oder schlechter geht (nur aufgrund der Zeit sind üblicherweise keine Aussagen über die Wirkmechanismen möglich)."],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": [],  // array of list items with examples.
-        "popup": ["Zeitpunkt mit dem Daten zu einem <a href=\"#wiki-teval\">Untersuchungszeitpunkt</a> verglichen werden."],
+        "popup": ["Zeitpunkt mit dem Daten zu einem <a target='_blank' href=\"#wiki-teval\">Untersuchungszeitpunkt</a> verglichen werden."],
         "maintext": ""   // string of main text for wiki.
     },
     "placebo": {

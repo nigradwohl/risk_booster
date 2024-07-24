@@ -86,7 +86,7 @@ $(document).ready(function () {
                 collapse_regex_or(numwords) + "( (" + collapse_regex_or(largenums) + "))?" + " \\w*[Dd]os[ei])", "dg"),
             "degree": RegExp("(?<misc>(" + pat_num + " bis )?" + pat_num + "\\.?(.[gC](?= .)))", "dg"),
             // Enumeration:
-            "enum": /(?<enum>\(\d{1,2}\))/dg,
+            "enum": /(?<enum>[(\[]\d{1,2}[)\]])/dg,
             // "within_nums":
             //   RegExp("(?<misc>" +"\w*-?" + pat_num + ")", "dg")
             // Default number match:
@@ -235,8 +235,9 @@ $(document).ready(function () {
                 "medical": ["BMI"]
             },
             "rel": {
-                "abs": ["[Qq]uote", "Anteil", "mehr_als", "[%|Prozent]_[der|aller]"],  // quotas should always be absolute.
-                "rel": ["Wirksamkeit", "Impfschutz", "Schutzwirkung"]
+                "abs": ["[Qq]uote", "Anteil", "mehr_als"],  // quotas should always be absolute.
+                // MAYBE: "[%|Prozent]_[der|aller]"
+                "rel": ["Wirksamkeit", "Impfschutz", "Schutzwirkung", "verlagsamt"]
             },
             "reference": {
                 // TODO!
@@ -861,21 +862,21 @@ $(document).ready(function () {
         const feature_aliases = {
             "comp_time": {
                 "treat": "<span class=\"tooltiptext tooltip-overview\">Zeitpunkt, zu dem sich etwas verändert hat (z.B., Zunahme oder Abnhame von Erkrankungen)</span>" +
-                    "<a href='risk_wiki.html#wiki-teval'>Untersuchungszeitpunkt</a>",
+                    "<a target='_blank' href='risk_wiki.html#wiki-teval'>Untersuchungszeitpunkt</a>",
                 "contr": "<span class=\"tooltiptext tooltip-overview\">Zeitpunkt, mit dem der Untersuchungszeitpunkt verglichen wird.</span>" +
-                    "<a href='risk_wiki.html#wiki-tcontr'>Vergleichszeitpunkt</a>"
+                    "<a target='_blank' href='risk_wiki.html#wiki-tcontr'>Vergleichszeitpunkt</a>"
             },
             "comp_treat": {
                 "treat": "<span class=\"tooltiptext tooltip-overview\">Gruppe, die die Behandlung erhalten hat oder einem Risiko ausgesetzt war.</span>" +
-                    "<a href='risk_wiki.html#wiki-treat'>Behandlungsgruppe</a>",
+                    "<a target='_blank' href='risk_wiki.html#wiki-treat'>Behandlungsgruppe</a>",
                 "contr": "<span class=\"tooltiptext tooltip-overview\">Gruppe, die keine Behandlung erhalten hat oder einem Risiko nicht ausgesetzt war.</span>" +
-                    "<a href='risk_wiki.html#wiki-contr'>Vergleichsgruppe</a>"
+                    "<a target='_blank' href='risk_wiki.html#wiki-contr'>Vergleichsgruppe</a>"
             },
             "comp_default": {
                 "treat": "<span class=\"tooltiptext tooltip-overview\">Gruppe, in der sich etwas verändert hat (z.B., Zunahme oder Abnhame von Erkrankungen).</span>" +
-                    "<a href='risk_wiki.html#wiki-treat'>Untersuchungsgruppe</a>",
+                    "<a target='_blank' href='risk_wiki.html#wiki-treat'>Untersuchungsgruppe</a>",
                 "contr": "<span class=\"tooltiptext tooltip-overview\">Gruppe, mit der verglichen wird.</span>" +
-                    "<a href='risk_wiki.html#wiki-contr'>Vergleichsgruppe</a>"
+                    "<a target='_blank' href='risk_wiki.html#wiki-contr'>Vergleichsgruppe</a>"
             },
         };
 
@@ -896,15 +897,15 @@ $(document).ready(function () {
                 "<span class=\"tooltiptext tooltip-overview\">Wirksamkeit einer Behandlung oder Impfung" +
                 "(z.B., verhinderte Erkranungen, Genesung, Vermeidung von Todesfällen).<br>" +
                 "Sollte immer mit Zahlen belegt werden.</span>" +
-                "<a href='risk_wiki.html#wiki-effside'>Nutzen</a></div>",
+                "<a target='_blank' href='risk_wiki.html#wiki-effside'>Nutzen</a></div>",
             "side": "<div id=\"side-tt\" class=\"tooltip\">" +
                 "<span class=\"tooltiptext tooltip-overview\">Schaden (z.B., Nebenwirkungen) einer Behandlung oder Impfung.<br>" +
                 "Sollte immer mit Zahlen belegt werden.</span>" +
-                "<a href='risk_wiki.html#wiki-effside'>Schaden</a></div>",
+                "<a target='_blank' href='risk_wiki.html#wiki-effside'>Schaden</a></div>",
             // More general damage like an increase in risk over time or in specific groups:
             "damage": "<div id=\"eff-tt\" class=\"tooltip\">" +
                 "<span class=\"tooltiptext tooltip-overview\">Risiko einer negativen Auswirkung (z.B., Erkrankung)</span>" +
-                "<a href='risk_wiki.html#wiki-risk'>Gesundheitsrisiko</a></div>",
+                "<a target='_blank' href='risk_wiki.html#wiki-risk'>Gesundheitsrisiko</a></div>",
             "treat": "<div id=\"treat-tt\" class=\"tooltip\">" + curfeats["treat"] + "</div>",
             "contr": "<div id=\"contr-tt\" class=\"tooltip\">" +
                 curfeats["contr"] + "</div>"
@@ -1060,7 +1061,7 @@ $(document).ready(function () {
                 "<span id=\"causal-tt\" class=\"tooltip\">" +
                 "<span class=\"tooltiptext tooltip-overview\">Kausalaussagen beschreiben, ob ein Faktor ursächlich für ein Ergebnis ist " +
                 "(z.B., ein Medikament für die Genesung). Das ist nur zuverlässig in Experimenten mit randomisierter Zuteilung möglich.</span>" +
-                "<a href='risk_wiki.html#wiki-causal'>Kausalaussagen</a></span> " +
+                "<a target='_blank' href='risk_wiki.html#wiki-causal'>Kausalaussagen</a></span> " +
                 "möglich" +
                 "</p>";
 
@@ -1109,7 +1110,7 @@ $(document).ready(function () {
                 // "<span class=\"tooltiptext tooltip-overview\">Wirksamkeit einer Behandlung oder Impfung" +
                 // "(z.B., verhinderte Erkranungen, Genesung, Vermeidung von Todesfällen).<br>" +
                 // "Sollte immer mit Zahlen belegt werden.</span>" +
-                // "<a href='risk_wiki.html#wiki-effside'>Nutzen</a></div>"
+                // "<a target='_blank' href='risk_wiki.html#wiki-effside'>Nutzen</a></div>"
                 feature_str = feature_str + "<div id=\"" + key + "-tt\" class=\"tooltip\">" +
                     "<span class=\"tooltiptext tooltip-overview\" style='width: 100%'>" +
                     value.tool +
