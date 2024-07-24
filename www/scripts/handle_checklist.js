@@ -901,14 +901,60 @@ class Checklist {
 
         let cur_side_control = side_risks.risk_control_nh;
 
+        // Function to build sentences:
+        function build_riskinfo(group, aux, id, num, verb) {
+            return `in der ${group} ${aux} <span class="risk-info" id="${id}">${num} ${verb}</span>`
+        }
+
+        function risk_name_tt(type, incr, add_tt, rr) {
+            const abs = type === "abs";
+            const typelet = abs ? "r" : "s";  // letter for type.
+            const typeword = abs ? "Absolute" : "Relative";
+            let out = `${typeword}${incr ? (typelet + " Risiko") : " Risikoreduktion"}: `;
+            // Add a tooltip:
+            if (add_tt) {
+                let tt_text = "";
+                if(abs){
+                    tt_text = "Die Differenz der absoluten Risiken in den Gruppen";
+                } else if(rr) {
+                    // Relative risk:
+                    tt_text = "Ein Vielfaches wie viele Personen mehr oder weniger betroffen sind.";
+                } else {
+                    // Relative risk reduction:
+                    tt_text = "Der Anteil, der in der Behandlungsgruppe weniger betroffen ist.";
+                }
+
+                out = `<span class="tooltip">
+                        <span class="tooltiptext tooltip-overview">
+                        ${tt_text}
+                        </span><a target="_blank" href="risk_wiki.html#wiki-${type}">${out}</a></span>`
+            }
+            return out
+        }
+
         if (["test"].includes(this.type)) {
             cur_side_control = cur_side_control + " nicht";  // highlight the non-events!
         } else {
             // Add some information only in non-testing case:
-            $("#abs-change").html(`Absolute${eff_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe ${this.outcome.verb.aux} <span class="risk-info" id="arr">${eff_risks.arr_p} ${this.outcome.verb.main}</span>`);
-            $("#rel-change").html(`Relative${eff_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${eff_risks.rrr_p}</span>`);
-            $("#abs-change-side").html(`Absolute${side_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe ${this.outcome_side.verb.aux} <span class="risk-info" id="arr">${side_risks.arr_p}</span> ${this.outcome_side.verb.main}`);
-            $("#rel-change-side").html(`Relative${side_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${side_risks.rrr_p}</span>`);
+            $("#abs-change").html(//`Absolute${eff_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: ` +
+                risk_name_tt("abs", eff_risks.arc < 0, true, eff_risks.arc < 0) +
+                build_riskinfo("Behandlungsgruppe", this.outcome.verb.aux, "arr", eff_risks.arr_p, this.outcome.verb.main));
+            $("#rel-change").html(//`Relative${eff_risks.arc < 0 ? "s Risiko" : " Risikoreduktion"}: ` +
+                risk_name_tt("rel", eff_risks.arc < 0, true, eff_risks.arc < 0) +
+                build_riskinfo("Behandlungsgruppe", this.outcome.verb.aux, "rrr", eff_risks.rrr_p, this.outcome.verb.main));
+            // <span class="risk-info" id="rrr">${eff_risks.rrr_p}</span>`);
+
+            $("#abs-change-side").html(
+                risk_name_tt("abs", side_risks.arc < 0, true, side_risks.arc < 0) +
+                build_riskinfo("Behandlungsgruppe", this.outcome_side.verb.aux, "arr-side", side_risks.arr_p, this.outcome_side.verb.main)
+                // `Absolute${side_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe ${this.outcome_side.verb.aux} <span class="risk-info" id="arr">${side_risks.arr_p}</span> ${this.outcome_side.verb.main}`
+            );
+            $("#rel-change-side").html(
+                risk_name_tt("rel", side_risks.arc < 0, true, side_risks.arc < 0) +
+                build_riskinfo("Behandlungsgruppe", this.outcome_side.verb.aux, "rrr-side", side_risks.rrr_p, this.outcome_side.verb.main)
+                // `Relative${side_risks.arc < 0 ? "s Risiko" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${side_risks.rrr_p}</span>`
+            );
+            // TODO: Alternatively switch the reference and always report RRR? (could be done by making "Behandlungsgruppe" a variable).
         }
 
         // Also assign the side effect risks in the control group (or among the nagtively tested):
