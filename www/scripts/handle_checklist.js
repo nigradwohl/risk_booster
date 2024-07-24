@@ -749,6 +749,9 @@ class Checklist {
         }
         // }
 
+        // ALways show the headings:
+        $(".grid-head").show();
+
 
         // Adding functionality: ~~~~~~~~~~~~~~~~~~
         // Add button for saving the page:

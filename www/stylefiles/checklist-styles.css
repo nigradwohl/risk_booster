@@ -1,7 +1,8 @@
 .grid-container-check {
     display: grid;
     grid-template-columns: minmax(220px, 2.5fr) minmax(100px, 1.5fr) 20px minmax(100px, 1.5fr) minmax(220px, 2.5fr);
-    grid-template-rows: 1em 1.5em 60px auto 50px;
+    /*grid-template-rows: 1em 1.5em 60px auto 50px;*/
+    grid-template-rows: 1em 1.5em 60px auto 2em;
     grid-template-areas:
             "header header header header header"
             "subhead1 . . . subhead2"
@@ -255,8 +256,8 @@ canvas {
 
 .error-note {
     display: none;
+    grid-area: arr1 / arr1 / arr2 / arr2;
 }
-
 
 .checklist-question.checklist-results {
     width: 100%;
