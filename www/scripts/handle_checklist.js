@@ -1286,7 +1286,7 @@ const side_keys = ["N_tot",
     "msum0xs", "msum1xs",
     "rrrs",
     "p00s", "p01s", "p10s", "p11s",
-    "mpx0s", "mpx1s",
+    "mpx0s", "mpx1",
     "mtx0s", "mtx1s"
 ]
 
