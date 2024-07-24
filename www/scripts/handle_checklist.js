@@ -664,6 +664,8 @@ class Checklist {
             "control": [cur2x2_side[0][1], cur2x2_side[0][0]]
         }
 
+        console.log("Effectivity arrays");
+        console.log(group_arrs_eff);
 
         // ICON ARRAYS:
         let ncol = risk_info.N_scale === 1000 ? 25 : 10;  // determine number of columns.
@@ -877,7 +879,8 @@ class Checklist {
 
         // Rounding can eventually be improved!
 
-        const cur2x2_eff = eff_group_risks.map((x) => x.map((y) => Math.round(y * N_scale)));
+        const cur2x2_eff = eff_group_risks
+            .map((x) => x.map((y) => Math.round(y * N_scale) === 0 && y > 0 ? 1 : Math.round(y * N_scale)));
         console.log(cur2x2_eff);
 
         // Handle side effects:
@@ -904,9 +907,9 @@ class Checklist {
         // Also assign the side effect risks in the control group (or among the nagtively tested):
         $("#risk-control-side").html(this.outcome_side.verb.aux + "<br>" + cur_side_control + " " + this.outcome_side.verb.main);
 
-        const cur2x2_side = side_group_risks.map((x) => x.map((y) => Math.round(y * N_scale)));
+        const cur2x2_side = side_group_risks
+            .map((x) => x.map((y) => Math.round(y * N_scale) === 0 && y > 0 ? 1 : Math.round(y * N_scale)));
         console.log(cur2x2_side);
-
 
         // Return value of method:
         return {"cur2x2_eff": cur2x2_eff, "cur2x2_side": cur2x2_side, "N_scale": N_scale};
