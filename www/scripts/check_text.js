@@ -235,7 +235,7 @@ $(document).ready(function () {
                 "medical": ["BMI"]
             },
             "rel": {
-                "abs": ["[Qq]uote", "Anteil", "mehr_als"],  // quotas should always be absolute.
+                "abs": ["[Qq]uote", "Anteil", "mehr_als", "[%|Prozent]_[der|aller]"],  // quotas should always be absolute.
                 "rel": ["Wirksamkeit", "Impfschutz", "Schutzwirkung"]
             },
             "reference": {
@@ -2019,7 +2019,7 @@ function get_token_data(text) {
         token_i = text_tokens[i];
 
         // Regex for token to ensure exact matching:
-        // TODO: Translate unicode cahrs to array!
+        // TODO: Translate unicode chars to array!
         if (["\\n\\*", ".", ":", ";", ",", "?", "!", "[", "]", "(", ")", "\"", "'", "/", "\-", "\u2018", "\u2019", "\u201c", "\u201d"].includes(token_i) ||
             /\++/g.test(token_i)  // also test plus signs (and potentially other quantifiers)
         ) {
