@@ -2020,20 +2020,20 @@ function get_token_data(text) {
 
         // Regex for token to ensure exact matching:
         // TODO: Translate unicode cahrs to array!
-        if (["\\n\\*", ".", ":", ";", ",", "?", "!", "(", ")", "\"", "'", "/", "\-", "\u2018", "\u2019", "\u201c", "\u201d"].includes(token_i) ||
+        if (["\\n\\*", ".", ":", ";", ",", "?", "!", "[", "]", "(", ")", "\"", "'", "/", "\-", "\u2018", "\u2019", "\u201c", "\u201d"].includes(token_i) ||
             /\++/g.test(token_i)  // also test plus signs (and potentially other quantifiers)
         ) {
             // Punctuation follows somewhat different rules.
             // NOTE: Overlaps with other entities, likely because of the lack of spaces.
 
             // Escape and add lookahead or behind.
-            if (["(", ")"].includes(token_i)) {
-                token_pat = token_i.replace(/([.?()/])/dgm, "\\$1");
+            if (["(", ")", "[", "]"].includes(token_i)) {
+                token_pat = token_i.replace(/([.?()\[\]/])/dgm, "\\$1");
                 // was: token_pat = "(?<=\\s|\\n|^)" + token_i.replace(/([.?()/])/dgm, "\\$1");
             } else if (["\"", "'", "\u2018", "\u2019", "\u201c", "\u201d"].includes(token_i)) {
                 token_pat = token_i;  // no requirement to escape?
             } else {
-                token_pat = token_i.replace(/([.?()/+\-])/dgm, "\\$1") + "(?=\\s|\\n|$|\\.|,|-|[\"'\u2018\u2019\u201c\u201d])";
+                token_pat = token_i.replace(/([.?()\[\]/+\-])/dgm, "\\$1") + "(?=\\s|\\n|$|\\.|,|-|[\"'\u2018\u2019\u201c\u201d])";
             }
 
         } else {
@@ -2854,10 +2854,10 @@ function word_tokenizer(txt) {
     // Split the text into its tokens:
     // Ensure that punctuations becomes their own by adding a space before:
     const split = txt
-        .replace(/([.,;?!:)])(?=[\s"'\u2018\u2019\u201c\u201d?])/g, ' $1 ')
+        .replace(/([.,;?!:)\]])(?=[\s"'\u2018\u2019\u201c\u201d?])/g, ' $1 ')
         .replace(/([.,;?!:])(?=$)/g, ' $1 ')
-        .replace(/([)])/g, ' $1 ')  // space before any parenthesis.
-        .replace(/([("'\u2018\u2019\u201c\u201d])/g, ' $1 ')  // space after opening parentheses or quote.
+        .replace(/([)\]])/g, ' $1 ')  // space before any parenthesis.
+        .replace(/([\[("'\u2018\u2019\u201c\u201d])/g, ' $1 ')  // space after opening parentheses or quote.
         // .replace(/((?<=\s)[("'\u2018\u2019\u201c\u201d])/g, ' $1 ')  // space after opening parentheses or quote.
         // .replace(/(["'\u2018\u2019\u201c\u201d](?=\s))/g, ' $1')  // space before quotes.
         .split(/[\s\u2022]/g);  // split on spaces and bullets.
