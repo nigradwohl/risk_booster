@@ -693,6 +693,7 @@ class Checklist {
 
             $("#results-1-error ~ *:not(textarea)").show();
             $("#results-1-error").hide();
+            $("p.error-note").hide();
 
         } catch (error) {
             console.warn(error);
@@ -713,6 +714,7 @@ class Checklist {
 
             $("#results-1-error ~ *:not(textarea)").hide();
             $("#results-1-error").show();
+            $("p.error-note").show();
 
         }
 
@@ -738,6 +740,7 @@ class Checklist {
 
             $("#results-2-error ~ *").show();
             $("#results-2-error").hide();
+            $("p.error-note").hide();
 
         } catch (error) {
             console.warn(error);
@@ -746,6 +749,7 @@ class Checklist {
 
             $("#results-2-error ~ *").hide();
             $("#results-2-error").show();
+            $("p.error-note").show();
         }
         // }
 

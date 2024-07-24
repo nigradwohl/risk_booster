@@ -210,8 +210,8 @@
 
                     <div class="checklist-question" id="rel-risk-reduction-q">
 
-<!--                        EbM-Glossar: Wirksamkeit ("efficacy") beschreibt in der EbM, ob eine Maßnahme unter Idealbedingungen-->
-<!--                        gute Ergebnisse hervorbringt.-->
+                        <!--                        EbM-Glossar: Wirksamkeit ("efficacy") beschreibt in der EbM, ob eine Maßnahme unter Idealbedingungen-->
+                        <!--                        gute Ergebnisse hervorbringt.-->
 
                         <div class="question-content">
                             <p>
@@ -261,12 +261,12 @@
                                 <input class="checklist-input" id="rel-risk-reduction" type="text"
                                        pattern="([0-9]{0,2}(,[0-9]{1,2})?)|(100)"
                                        title="Zahlen zwischen 1 und 100 mit bis zu 2 Nachkommastellen">&nbsp;%
-<!--                                <span class="tooltip delete-entry">-->
-<!--                                <i class="fa fa-trash" aria-hidden="true" id="rel-risk-reduction-del"></i>-->
-<!--                                <span class="tooltiptext tooltip-checklist">-->
-<!--                                   Eintrag löschen-->
-<!--                                </span>-->
-<!--                                </span>-->
+                                <!--                                <span class="tooltip delete-entry">-->
+                                <!--                                <i class="fa fa-trash" aria-hidden="true" id="rel-risk-reduction-del"></i>-->
+                                <!--                                <span class="tooltiptext tooltip-checklist">-->
+                                <!--                                   Eintrag löschen-->
+                                <!--                                </span>-->
+                                <!--                                </span>-->
                                 <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Zahl ein.</span>
                                 <!--                                <button class="checklist-button continue-btn">Weiter</button>-->
                             </p>
@@ -608,9 +608,13 @@
                             <!--                            ERROR 1-->
                             <div class="grid-global-note error-note" id="results-1-error">
                                 <p>Leider konnten wir aus den angegebenen Zahlen keine transparente Risikoinformation
-                                    berechnen.</p>
-                                <p>Bitte prüfen Sie die Angaben. Möglicherweise erlauben diese keine Transparente
-                                    Risikodarstellung.</p>
+                                    zum Nutzen
+                                    [WOVON? Impfung, Behandlung etc.; Extra für Tests!]
+                                    erstellen.</p>
+                                <p>Bitte prüfen Sie die Ihnen vorliegenden Angaben.
+                                    Möglicherweise erlauben diese keine Transparente
+                                    Risikodarstellung.
+                                </p>
                             </div>
 
                             <!--                            CONTENT-->
@@ -657,6 +661,8 @@
                             <!--                            ERROR 2-->
                             <div class="grid-global-note error-note" id="results-2-error">
                                 <p>Leider konnten wir aus den angegebenen Zahlen keine transparente Risikoinformation
+                                    zur Schadenwirkung
+                                    [WOVON?]
                                     berechnen.</p>
                                 <p>Bitte prüfen Sie die Angaben. Möglicherweise erlauben diese keine Transparente
                                     Risikodarstellung.</p>
@@ -696,7 +702,15 @@
                             </div>
                         </div>
 
-                        <p class="no-print">
+                        <p class="no-print error-note">
+                            Wenn Sie weitere Studien heranziehen wollen, um die fehlende Information
+                            zu ergänzen, können Sie zum Beispiel
+                            <a href="https://scholar.google.com/">Google Scholar</a>
+                            <!--                                    Weitere Ressourcen?-->
+                            verwenden.
+                        </p>
+
+                        <p class="no-print note-par">
                             Beachten Sie: Die Icon arrays sind auf ein Maximum von 1.000 Icons begrenzt, sodass
                             die Zahlenangaben und Anzahl der Icons nicht unbedingt übereinstimmen.
                         </p>
