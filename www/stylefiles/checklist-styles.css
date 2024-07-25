@@ -302,6 +302,19 @@ canvas {
     width: 60%;
 }
 
+.arrow-btn {
+    font-size: 1.5em;
+}
+
+.arrow-btn.continue-btn {
+    /*color: var(---button-primary);*/
+}
+
+.nav-cell.active:hover {
+    background-color: var(---bg-highlight-secondary);
+    cursor: pointer;
+}
+
 .error-prompt {
     position: absolute;
     border: 1px solid var(---error-col);

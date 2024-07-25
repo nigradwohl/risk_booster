@@ -119,7 +119,6 @@ $(document).ready(function () {
         $(".grid-subhead2#subhead2-r2").text("Unter den positiv getesteten");
 
 
-
         $("#intro-note").text("Typischerweise wird die Testgüte angegeben, während sich Individuuen dafür interessieren, " +
             "was ein positiver (oder negativer Test aussagt).");
         $("#report-what").text("Typischerweise wird die Testgüte angegeben, während sich Individuuen dafür interessieren, " +
@@ -486,10 +485,6 @@ class Checklist {
             $("#incompatible-popup").hide();
             $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
 
-            // Show back button:
-            if (this.entry_ix > 0) {
-                $(".back-btn").css('display', 'inline-block');
-            }
 
         } else {
             // For all subsequent pages:
@@ -570,8 +565,11 @@ class Checklist {
                     this.handle_final_page();  // handle the final page.
 
                     // Hide the continue button:
-                    $(".continue-btn").hide();
+                    // $(".continue-btn").hide();
+                    $(".arrow-btn.continue-btn").css('display', 'none');
+                    $(".continue-btn").removeClass('active');
                 }
+
 
                 this.is_skip = false;  // reset skippable state.
                 this.is_invalid = false;  // reset the invalidity flag.
@@ -651,14 +649,16 @@ class Checklist {
         $("#incompatible-popup").hide();
         $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
 
-        // Show back button:
-        if (this.entry_ix > 0) {
-            $(".back-btn").css('display', 'inline-block');
-        }
-
         // console.log("Risk object after entries and calculation");
         // this.check_risk.print();
         // this.check_side.print();
+
+        // Show back button:
+        if (this.entry_ix > 0) {
+            // $(".back-btn").css('display', 'block');
+            $(".arrow-btn.back-btn").css('display', 'block');
+            $(".back-btn").addClass('active');
+        }
     }
 
     // Method to handle final page:
@@ -931,9 +931,9 @@ class Checklist {
             // Add a tooltip:
             if (add_tt) {
                 let tt_text = "";
-                if(abs){
+                if (abs) {
                     tt_text = "Die Differenz der absoluten Risiken in den Gruppen";
-                } else if(rr) {
+                } else if (rr) {
                     // Relative risk:
                     tt_text = "Ein Vielfaches wie viele Personen mehr oder weniger betroffen sind.";
                 } else {
@@ -1138,10 +1138,14 @@ class Checklist {
 
             $("#" + this.q_order[this.entry_ix] + "-q").css('display', 'flex');
             $("#" + calling_entry + "-q").hide();
-            $(".continue-btn").css('display', 'inline-block');
+            // $(".continue-btn").css('display', 'inline-block');
+            $(".arrow-btn.continue-btn").css('display', 'block');
+            $(".continue-btn").addClass('active');
 
             if (this.entry_ix === 0) {
-                $(".back-btn").hide();
+                // $(".back-btn").hide();
+                $(".arrow-btn.back-btn").css('display', 'none');
+                $(".back-btn").removeClass('active');
             }
 
             // Removal of highlighting classes:
