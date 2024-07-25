@@ -290,8 +290,8 @@ canvas {
     display: block;
 }
 
-.fa.back-btn {
-    display: none;
+.arrow-btn.back {
+    visibility: hidden;
 }
 
 #noentry-popup {
@@ -306,7 +306,7 @@ canvas {
     font-size: 1.5em;
 }
 
-.arrow-btn.continue-btn {
+.arrow-btn.continue {
     /*color: var(---button-primary);*/
 }
 
@@ -325,6 +325,11 @@ canvas {
 
 .missing-input {
     border: 2px solid var(---error-col);
+}
+
+.final-note {
+    background-color: var(---bg-highlight-secondary);
+    padding: 0.3em 0.4em;
 }
 
 /* Media queries*/

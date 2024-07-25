@@ -91,7 +91,7 @@
             <tr>
                 <td class="nav-cell back-btn no-print">
                     <div class="checklist-nav">
-                        <i class="fa fa-solid fa-chevron-up arrow-btn" style="rotate: -90deg"></i>
+                        <i class="fa fa-solid fa-chevron-up arrow-btn back" style="rotate: -90deg"></i>
                     </div>
                 </td>
                 <td class="content-cell">
@@ -615,33 +615,7 @@
                         </div>
 
                         <div id="results-info no-print">
-                            <p>Hier sind die Ergebnisse der eingegebenen Zahlen:</p>
-                            <p id="report-what">
-                                [ADD TOOLTIPS!]
-                                Am besten berichten Sie die
-                                <span id="abs-tt-res" class="tooltip">
-                                    <span class="tooltiptext tooltip-overview">
-                                        Die Differenz zwischen den Risiken in beiden Gruppen.
-                                        Diese ist der relativen Veränderung vorzuziehen.
-                                    </span><a href="risk_wiki.html#wiki-abs">absolute Risikoveränderung</a>
-                                </span>,
-                                sowie die absoluten Risiken
-                                zu <a target="_blank" href="risk_wiki.html#wiki-effside">Nutzen und Schaden</a>
-                                in
-                                [Behandlungs-] und
-                                [Kontrollgruppe].
-                                <br>
-                                Sie können zusätzlich die
-                                <span id="rel-tt-res" class="tooltip">
-                                    <span class="tooltiptext tooltip-overview">
-                                        [ANGEBEN OB RELATIVE RISIKOREDUKTION ODER RELATIVES RISIKO!]
-                                        Diese sollte nicht ohne die absoluten Risiken berichtet werden.
-                                    </span><a target="_blank"
-                                              href="risk_wiki.html#wiki-rel">relative Risikoveränderung</a>
-                                </span>
-                                angeben.
-                                <!--                                [ANGEBEN OB RELATIVE RISIKOREDUKTION ODER RELATIVES RISIKO!]-->
-                            </p>
+                            <h4>Ergebnis</h4>
                         </div>
 
                         <!--Container effectivitiy-->
@@ -649,9 +623,11 @@
 
                             <!--                            ERROR 1-->
                             <div class="grid-global-note error-note" id="results-1-error">
-                                <p>Leider konnten wir aus den angegebenen Zahlen keine transparente Risikoinformation
-                                    zum Nutzen
-                                    [WOVON? Impfung, Behandlung etc.; Extra für Tests!]
+                                <p>Leider konnten wir aus den angegebenen Zahlen keine
+                                    transparente Darstellung
+                                    <span id="which-trans-eff">
+                                        zum Nutzen
+                                    </span>
                                     erstellen.</p>
                                 <p>Bitte prüfen Sie die Ihnen vorliegenden Angaben.
                                     Möglicherweise erlauben diese keine Transparente
@@ -702,10 +678,12 @@
 
                             <!--                            ERROR 2-->
                             <div class="grid-global-note error-note" id="results-2-error">
-                                <p>Leider konnten wir aus den angegebenen Zahlen keine transparente Risikoinformation
-                                    zur Schadenwirkung
-                                    [WOVON?]
-                                    berechnen.</p>
+                                <p>Leider konnten wir aus den angegebenen Zahlen keine
+                                    transparente Darstellung
+                                    <span id="which-trans-side">
+                                        zur Schadenwirkung
+                                    </span>
+                                    erstellen.</p>
                                 <p>Bitte prüfen Sie die Angaben. Möglicherweise erlauben diese keine Transparente
                                     Risikodarstellung.</p>
                             </div>
@@ -750,25 +728,57 @@
                             die Zahlenangaben und Anzahl der Icons nicht unbedingt übereinstimmen.
                         </p>
 
-                        <p class="no-print">
-                            Sie haben die eingegebene Zahleninformation nun auf ihre Transparenz hin
-                            geprüft.
-                            Wenn Sie darüber hinaus weitere Informationen benötigen,
-                            besuchen Sie unser <a target="_blank" href="risk_wiki.html">Wiki</a>,
-                            verwenden sie den <a target="_blank" href="jtext_interface.html">Textchecker</a>,
-                            um einen Text auf seine transparente Darstellung zu prüfen
-                            oder finden Sie hier
-                            <a target="_blank" href="link_collection.html">weiterführende Links</a>
-                            (z.B. zu Tools, zum Auffinden weiterer Studien, sowie zu weiteren Services und Erklärungen).
-                        </p>
+                        <div class="final-note">
 
-                        <p class="no-print error-note">
-                            Wenn Sie weitere Studien heranziehen wollen, um die fehlende Information
-                            zu ergänzen, können Sie zum Beispiel
-                            <a href="https://scholar.google.com/">Google Scholar</a>
-                            <!--                                    Weitere Ressourcen?-->
-                            verwenden.
-                        </p>
+                            <p id="report-what no-print">
+                                <!--                                [ADD TOOLTIPS!]-->
+                                Um transparent zu berichten, verwenden Sie die
+                                <span id="abs-tt-res" class="tooltip">
+                                    <span class="tooltiptext tooltip-overview">
+                                        Absolute Risikoreduktion oder Risikoanstieg.
+                                        Die Differenz zwischen den Risiken in beiden Gruppen.
+                                        Diese ist der relativen Veränderung vorzuziehen.
+                                    </span><a href="risk_wiki.html#wiki-abs">absolute Risikoveränderung</a>
+                                </span>,
+                                sowie die absoluten Risiken
+                                zu <a target="_blank" href="risk_wiki.html#wiki-effside">Nutzen und Schaden</a>
+                                in
+                                Behandlungs- und Vergleichsgruppe.
+                                <br>
+                                Sie können zusätzlich die
+                                <span id="rel-tt-res" class="tooltip">
+                                    <span class="tooltiptext tooltip-overview">
+<!--                                        [ANGEBEN OB RELATIVE RISIKOREDUKTION ODER RELATIVES RISIKO!]-->
+                                        Relative Risikoreduktion oder relatives Risiko.
+                                        Diese sollten nicht ohne die absoluten Risiken berichtet werden.
+                                    </span><a target="_blank"
+                                              href="risk_wiki.html#wiki-rel">relative Risikoveränderung</a>
+                                </span>
+                                angeben.
+                                <!--                                [ANGEBEN OB RELATIVE RISIKOREDUKTION ODER RELATIVES RISIKO!]-->
+                            </p>
+
+                            <p class="no-print">
+                                Sie haben die eingegebene Zahleninformation nun auf ihre Transparenz hin
+                                geprüft.
+                                Wenn Sie darüber hinaus weitere Informationen benötigen,
+                                besuchen Sie unser <a target="_blank" href="risk_wiki.html">Wiki</a>,
+                                verwenden sie den <a target="_blank" href="jtext_interface.html">Textchecker</a>,
+                                um einen Text auf seine transparente Darstellung zu prüfen
+                                oder finden Sie hier
+                                <a target="_blank" href="link_collection.html">weiterführende Links</a>
+                                (z.B. zu Tools, zum Auffinden weiterer Studien, sowie zu weiteren Services und
+                                Erklärungen).
+                            </p>
+
+                            <p class="no-print error-note">
+                                Wenn Sie weitere Studien heranziehen wollen, um die fehlende Information
+                                zu ergänzen, können Sie zum Beispiel
+                                <a href="https://scholar.google.com/">Google Scholar</a>
+                                <!--                                    Weitere Ressourcen?-->
+                                verwenden.
+                            </p>
+                        </div>
 
                         <!--                        <br>-->
                         <!--                        [SPLIT THE ARRAY?]-->
@@ -776,7 +786,7 @@
                 </td>
                 <td class="nav-cell no-print continue-btn active">
                     <div class="checklist-nav">
-                        <i class="fa fa-solid fa-chevron-up arrow-btn" style="rotate: 90deg"></i>
+                        <i class="fa fa-solid fa-chevron-up arrow-btn continue" style="rotate: 90deg"></i>
                     </div>
                 </td>
             </tr>

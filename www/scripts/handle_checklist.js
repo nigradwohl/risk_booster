@@ -72,6 +72,10 @@ $(document).ready(function () {
             }
         ].concat(outcome_list.eff);
 
+        // Specific text snippets:
+        $("#which-trans-eff").text(" des Nutzens der Behandlung");
+        $("#which-trans-side").text(" der Schadenwirkung der Behandlung");
+
     } else if (text === "impf") {
         typeword = "Impfung";
         typeverb = "geimpft";
@@ -98,14 +102,20 @@ $(document).ready(function () {
                 "noun": "Positive Diagnosen", "direction": "prevent"
             }
         ].concat(outcome_list.eff);
+
+        // Specific text snippets:
+        $("#which-trans-eff").text(" des Nutzens der Impfung");
+        $("#which-trans-side").text(" der Schadenwirkung der Impfung");
+
     } else if (text === "test") {
         $(".intro-testscreen").show();
         $(".intro-impftreat").hide();
 
-        $("#prev-treat").html("ist tatsächlich erkrankt (\"Prävalenz\")");
+        // Specific text snippets:
+        $("#prev-treat").html("ist erkrankt (\"Prävalenz\")");
         $("#sens").html("Positive Tests unter den Erkrankten (Sensitivität)");
         $("#spec").html("Negative Tests unter den Gesunden (Spezifität)");
-        typeverb = "tatsächlich erkrankt";
+        typeverb = "erkrankt";
         typeword = "Diagnostischer Test";
 
         info_treat2 = "erkrankt";
@@ -118,13 +128,16 @@ $(document).ready(function () {
         $(".grid-subhead1#subhead1-r2").text("Unter den negativ getesteten");
         $(".grid-subhead2#subhead2-r2").text("Unter den positiv getesteten");
 
+        $("#which-trans-eff").text("transparente Darstellung der Testgüte");
+        $("#which-trans-side").text("transparente Darstellung der Vorhersagegenauigkeit");
 
-        $("#intro-note").text("Typischerweise wird die Testgüte angegeben, während sich Individuuen dafür interessieren, " +
+
+        $("#intro-note").text("Häufig wird nur die Testgüte angegeben, während sich Individuen dafür interessieren, " +
             "was ein positiver (oder negativer Test aussagt).");
-        $("#report-what").text("Typischerweise wird die Testgüte angegeben, während sich Individuuen dafür interessieren, " +
-            "was ein positiver (oder negativer Test aussagt). " +
-            "Daher berichten Sie am besten direkt den positiven und negativen prädiktiven Wert (PPV und NPV). " +
-            "Diese setzt voraus, dass die Prävalenz der zu testenden Krankheit bekannt ist.");
+        $("#report-what").text("Berichten Sie am besten direkt den positiven und negativen prädiktiven Wert (PPV und NPV). " +
+            "Häufig wird nur die Testgüte angegeben, während sich Individuen dafür interessieren, " +
+            "was ein positiver (oder negativer) Test aussagt. " +
+            "PPV und NPV setzen voraus, dass die Prävalenz der zu testenden Krankheit bekannt ist.");
         // TODO: Switch perspective?
         // $("#results-2").html("");  // Second results are not needed for tests.
 
@@ -138,8 +151,8 @@ $(document).ready(function () {
 
         outcome_list.side = [
             {
-                "verb": new Verblist("sind tatsächlich erkrankt", "sind", "erkrankt"),
-                "noun": "Tatsächlich erkrankt", "direction": "achieve"
+                "verb": new Verblist("sind erkrankt", "sind", "erkrankt"),
+                "noun": "erkrankt", "direction": "achieve"
             }
         ]
     }
@@ -566,7 +579,7 @@ class Checklist {
 
                     // Hide the continue button:
                     // $(".continue-btn").hide();
-                    $(".arrow-btn.continue-btn").css('display', 'none');
+                    $(".arrow-btn.continue").css('visibility', 'hidden');
                     $(".continue-btn").removeClass('active');
                 }
 
@@ -656,7 +669,7 @@ class Checklist {
         // Show back button:
         if (this.entry_ix > 0) {
             // $(".back-btn").css('display', 'block');
-            $(".arrow-btn.back-btn").css('display', 'block');
+            $(".arrow-btn.back").css('visibility', 'visible');
             $(".back-btn").addClass('active');
         }
     }
@@ -920,14 +933,14 @@ class Checklist {
 
         // Function to build sentences:
         function build_riskinfo(group, aux, id, num, verb) {
-            return `in der ${group} ${aux} <span class="risk-info" id="${id}">${num} ${verb}</span>`
+            return ` in der ${group} ${aux} <span class="risk-info" id="${id}">${num} ${verb}</span>`
         }
 
         function risk_name_tt(type, incr, add_tt, rr) {
             const abs = type === "abs";
             const typelet = abs ? "r" : "s";  // letter for type.
             const typeword = abs ? "Absolute" : "Relative";
-            let out = `${typeword}${incr ? (typelet + " Risiko") : " Risikoreduktion"}: `;
+            let out = `${typeword}${incr ? (typelet + " Risiko") + (abs ? "anstieg" : "") : " Risikoreduktion"}: `;
             // Add a tooltip:
             if (add_tt) {
                 let tt_text = "";
@@ -1139,12 +1152,12 @@ class Checklist {
             $("#" + this.q_order[this.entry_ix] + "-q").css('display', 'flex');
             $("#" + calling_entry + "-q").hide();
             // $(".continue-btn").css('display', 'inline-block');
-            $(".arrow-btn.continue-btn").css('display', 'block');
+            $(".arrow-btn.continue").css('visibility', 'visible');
             $(".continue-btn").addClass('active');
 
             if (this.entry_ix === 0) {
                 // $(".back-btn").hide();
-                $(".arrow-btn.back-btn").css('display', 'none');
+                $(".arrow-btn.back").css('visibility', 'hidden');
                 $(".back-btn").removeClass('active');
             }
 
