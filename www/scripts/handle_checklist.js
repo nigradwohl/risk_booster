@@ -31,20 +31,36 @@ $(document).ready(function () {
     }
 
     const outcome_list = {
-        "eff":
-            [{"verb": new Verblist("sterben", "sind", "verstorben"), "noun": "Todesfälle", "direction": "prevent"}],
+        "eff": [
+            {
+                "verb": new Verblist("sterben", "sind", "verstorben"),
+                "noun": "Todesfälle",
+                "select": "Reduktion Todesfälle",
+                "direction": "prevent"
+            },
+            {
+                "verb": new Verblist("???", "???", "???"),
+                "noun": "negative Ereignisse",
+                "select": "Reduktion negatives Ereignis",
+                "direction": "prevent"
+            }
+        ],
         "side": [
             // Exchange ERLEIDEN for BERICHTEN?
             {
-                "verb": new Verblist("erleiden Nebenwirkungen", "erleiden", "Nebenwirkungen"), "noun": "Nebenwirkungen",
+                "verb": new Verblist("erleiden Nebenwirkungen", "erleiden", "Nebenwirkungen"),
+                "noun": "Nebenwirkungen",
+                "select": "Nebenwirkungen",
                 "direction": "prevent"
             },
             {
                 "verb": new Verblist("erleiden leichte Nebenwirkungen", "erleiden", "leichte Nebenwirkungen"),
+                "select": "leichte Nebenwirkungen",
                 "noun": "leichte Nebenwirkungen"
             },
             {
                 "verb": new Verblist("erleiden schwere Nebenwirkungen", "erleiden", "schwere Nebenwirkungen"),
+                "select": "schwere Nebenwirkungen",
                 "noun": "schwere Nebenwirkungen"
             }
         ]
@@ -60,17 +76,39 @@ $(document).ready(function () {
         outcome_list.eff = [
             {
                 "verb": new Verblist("werden symptomfrei", "werden", "symptomfrei"),
-                "noun": "Symptomfreiheit", "direction": "achieve"
+                "noun": "Symptomreduktion",
+                "select": "Reduktion Symptome",
+                "direction": "achieve"
             },
             {
                 "verb": new Verblist("genesen", "genesen", ""),
-                "noun": "Genesungen", "direction": "achieve"
+                "noun": "Genesungen",
+                "select": "Genesung",
+                "direction": "achieve"
+            },
+            {
+                "verb": new Verblist("???", "???", "???"),
+                "noun": "Erkrankungsdauer",
+                "select": "Reduktion Erkrankungsdauer",
+                "direction": "achieve"
             },
             {
                 "verb": new Verblist("berichten Symptomlinderung", "berichten", "Symptomlinderung"),
-                "noun": "Symptomlinderung", "direction": "achieve"
+                "noun": "Symptomlinderung",
+                "select": "Symptomlinderung",
+                "direction": "achieve"
             }
         ].concat(outcome_list.eff);
+
+        // Add stuff to end:
+        outcome_list.eff = outcome_list.eff.concat(
+            {
+                "verb": new Verblist("???", "???", "???"),
+                "noun": "positive Ereignisse",
+                "select": "positive Ereignisse",
+                "direction": "achieve"
+            }
+        );
 
         // Specific text snippets:
         $("#which-trans-eff").text(" des Nutzens der Behandlung");
@@ -87,25 +125,37 @@ $(document).ready(function () {
         info_treat2 = "Geimpft";
         info_contr2 = "Ungeimpft";
 
+        // Add specific endpoints to outcome lists:
         outcome_list.eff = [
-            {"verb": new Verblist("erkranken", "erkranken", ""), "noun": "Erkrankungen"},
             {
-                "verb": new Verblist("ins Krankenhaus eingewiesen worden", "werden", "ins Krankenhaus eingewiesen"),
-                "noun": "Krankenhauseinweisungen", "direction": "prevent"
-            },
-            {
-                "verb": new Verblist("auf die Intensivstation eingewiesen worden", "werden", "auf die Intensivstation eingewiesen"),
-                "noun": "Krankenhauseinweisungen", "direction": "prevent"
+                "verb": new Verblist("erkranken", "erkranken", ""),
+                "noun": "Erkrankungen",
+                "select": "Reduktion Erkrankungen",
+                "direction": "prevent"
             },
             {
                 "verb": new Verblist("werden diagnostiziert", "werden", "diagnostiziert"),
-                "noun": "Positive Diagnosen", "direction": "prevent"
+                "noun": "Positive Diagnosen",
+                "select": "Reduktion Krankenhauseinweisungen",
+                "direction": "prevent"
             }
         ].concat(outcome_list.eff);
+
+        outcome_list.side = [
+            {
+                "verb": new Verblist("erleiden eine Impfreaktion", "erleiden", "Impfreaktion"),
+                "noun": "Impfreaktion",
+                "select": "Impfreaktion",
+                "direction": "prevent"
+            }
+        ].concat(outcome_list.side);
 
         // Specific text snippets:
         $("#which-trans-eff").text(" des Nutzens der Impfung");
         $("#which-trans-side").text(" der Schadenwirkung der Impfung");
+        $("#addnote-side").text("Impfreaktionen bezeichnen erwartbare Ereignisse einer Immunreaktion " +
+            "(z.B., Schmerzen an der Einstichstelle, Fieber) und sind für die Bewertung der Sicherheit nachrangig");
+        // TODO: Maybe also to results, if "Impfreaktion" is chosen?
 
     } else if (text === "test") {
         $(".intro-testscreen").show();
@@ -175,10 +225,10 @@ $(document).ready(function () {
 
     // Add outcome to selections:
     for (let i = 0; i < outcome_list.eff.length; i++) {
-        $("#out-eff").append(`<option value="${i}">${outcome_list.eff[i].noun}</option>`);
+        $("#out-eff").append(`<option value="${i}">${outcome_list.eff[i].select}</option>`);
     }
     for (let i = 0; i < outcome_list.side.length; i++) {
-        $("#out-side").append(`<option value="${i}">${outcome_list.side[i].noun}</option>`);
+        $("#out-side").append(`<option value="${i}">${outcome_list.side[i].select}</option>`);
     }
 
 
