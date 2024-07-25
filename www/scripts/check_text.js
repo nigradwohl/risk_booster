@@ -176,9 +176,11 @@ $(document).ready(function () {
                 // Types of subgroups:
                 "contr": ["(Kontroll|Placebo|Vergleichs)-?.*[Gg]ruppe",
                     "Prävention.*wenigsten.*befolgte",
-                    "kein.*Medika"],
+                    "kein.*Medika",
+                    "Scheinpräparat_(gespritzt|erhalten|bekommen)"],
                 "treat": ["[Gg]eimpfte?n?", "Impf-?.*[Gg]ruppe",
                     "(?<!Kontroll|Vergleichs|Placebo).*-?Gruppe",  // negative definition of treatment group.
+                    "(?<!keinen)_Impfstoff_(gespritzt|erhalten|bekommen)", // maybe handle word in between
                     "Behandlungsgruppe", "Behandelte",
                     "([Tt]eilnehmer|Probanden).*Impfung",
                     "erh(a|ie)lten.*(Präparat|Medikament)",
