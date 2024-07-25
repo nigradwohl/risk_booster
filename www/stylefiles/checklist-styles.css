@@ -327,6 +327,10 @@ canvas {
     border: 2px solid var(---error-col);
 }
 
+.show-impf{
+    display: none;
+}
+
 .final-note {
     background-color: var(---bg-highlight-secondary);
     padding: 0.3em 0.4em;

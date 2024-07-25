@@ -76,9 +76,9 @@ $(document).ready(function () {
         outcome_list.eff = [
             {
                 "verb": new Verblist("werden symptomfrei", "werden", "symptomfrei"),
-                "noun": "Symptomreduktion",
+                "noun": "Symptome",
                 "select": "Reduktion Symptome",
-                "direction": "achieve"
+                "direction": "prevent"
             },
             {
                 "verb": new Verblist("genesen", "genesen", ""),
@@ -90,7 +90,7 @@ $(document).ready(function () {
                 "verb": new Verblist("???", "???", "???"),
                 "noun": "Erkrankungsdauer",
                 "select": "Reduktion Erkrankungsdauer",
-                "direction": "achieve"
+                "direction": "prevent"
             },
             {
                 "verb": new Verblist("berichten Symptomlinderung", "berichten", "Symptomlinderung"),
@@ -117,9 +117,7 @@ $(document).ready(function () {
     } else if (text === "impf") {
         typeword = "Impfung";
         typeverb = "geimpft";
-        addinfo_rrr = "Manchmal wird diese Zahl auch als \"Impfschutz\" bezeichnet." +
-            "<br>" +
-            "Unter dem Begriff der Impfstoffwirksamkeit versteht man in der Regel,\n" +
+        addinfo_rrr = "Man versteht darunter in der Regel, " +
             "wie viele Prozent weniger in der Gruppe der Geimpften erkranken."
         info_treat = "wurden geimpft";
         info_treat2 = "Geimpft";
@@ -155,6 +153,7 @@ $(document).ready(function () {
         $("#which-trans-side").text(" der Schadenwirkung der Impfung");
         $("#addnote-side").text("Impfreaktionen bezeichnen erwartbare Ereignisse einer Immunreaktion " +
             "(z.B., Schmerzen an der Einstichstelle, Fieber) und sind für die Bewertung der Sicherheit nachrangig");
+        $(".show-impf").show();
         // TODO: Maybe also to results, if "Impfreaktion" is chosen?
 
     } else if (text === "test") {
@@ -221,6 +220,7 @@ $(document).ready(function () {
     $(".info-treat2").text(info_treat2);
     $(".info-control").text(info_contr);
     $(".info-control2").text(info_contr2);
+
 
 
     // Add outcome to selections:
@@ -504,6 +504,11 @@ class Checklist {
 
         $(".side-noun").text(this.outcome_side.noun);
         $(".side-verb").text(this.outcome_side.verb.base);
+
+        // Do benefits consist in a reduction or an increase?
+        const incr = this.outcome.direction === "achieve";
+        $(".incr-decr-noun").text((incr ? "den relative Anstieg" : "die relative Reduktion"));
+        $(".incr-decr-q").text((incr ? "Welcher relative Anstieg" : "Welche relative Reduktion") + " von " + this.outcome.noun);
     }
 
     // Method to advance page:
