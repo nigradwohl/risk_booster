@@ -99,6 +99,9 @@ $(document).ready(function () {
             }
         ].concat(outcome_list.eff);
     } else if (text === "test") {
+        $(".intro-testscreen").show();
+        $(".intro-impftreat").hide();
+
         $("#prev-treat").html("ist tatsächlich erkrankt (\"Prävalenz\")");
         $("#sens").html("Positive Tests unter den Erkrankten (Sensitivität)");
         $("#spec").html("Negative Tests unter den Gesunden (Spezifität)");
@@ -114,6 +117,8 @@ $(document).ready(function () {
         $(".grid-subhead2").text("Unter den Erkrankten");
         $(".grid-subhead1#subhead1-r2").text("Unter den negativ getesteten");
         $(".grid-subhead2#subhead2-r2").text("Unter den positiv getesteten");
+
+
 
         $("#intro-note").text("Typischerweise wird die Testgüte angegeben, während sich Individuuen dafür interessieren, " +
             "was ein positiver (oder negativer Test aussagt).");
@@ -139,6 +144,9 @@ $(document).ready(function () {
             }
         ]
     }
+
+    // Add examples:
+    $("#examples-eff").text(outcome_list.eff.map((x) => x.noun).join(", "));
 
     // Assign the words determined above to the ids and classes:
     $("#case-test").text(typeword);

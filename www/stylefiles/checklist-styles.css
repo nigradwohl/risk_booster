@@ -43,6 +43,10 @@
     color: var(---text-color-secondary);
 }
 
+.intro-testscreen {
+    display: none;
+}
+
 .grid-head {
     /*grid-row: 1;*/
     /*grid-column: 2 / 4;*/
