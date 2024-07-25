@@ -50,6 +50,8 @@ Do we also have the group sizes?)
 
 ### Nice to have
 
+* Remove/handle relative clauses 
+* handle "ein", "einen": only identify as numbers when keywords follow
 * handle other topics (especially feedback)
 * try again to catch unidentified numbers after current iterations 
 
