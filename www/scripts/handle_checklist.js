@@ -181,12 +181,12 @@ $(document).ready(function () {
         $("#which-trans-side").text("transparente Darstellung der Vorhersagegenauigkeit");
 
 
-        $("#intro-note").text("Häufig wird nur die Testgüte angegeben, während sich Individuen dafür interessieren, " +
-            "was ein positiver (oder negativer Test aussagt).");
-        $("#report-what").text("Berichten Sie am besten direkt den positiven und negativen prädiktiven Wert (PPV und NPV). " +
+        $("#intro-note").html("Häufig wird nur die Testgüte angegeben, während sich Individuen dafür interessieren, " +
+            "was ein positiver (oder negativer) Test aussagt (s. <a target='_blank' href='risk_wiki.html#wiki-cprob'>Wiki</a>).");
+        $("#report-what").html("Berichten Sie am besten direkt den positiven und negativen prädiktiven Wert (PPV und NPV). " +
             "Häufig wird nur die Testgüte angegeben, während sich Individuen dafür interessieren, " +
-            "was ein positiver (oder negativer) Test aussagt. " +
-            "PPV und NPV setzen voraus, dass die Prävalenz der zu testenden Krankheit bekannt ist.");
+            "was ein positiver (oder negativer) Test aussagt (s. <a target='_blank' href='risk_wiki.html#wiki-cprob'>Wiki</a>). " +
+            "PPV und NPV setzen allerdings voraus, dass die Prävalenz der zu testenden Krankheit bekannt ist.");
         // TODO: Switch perspective?
         // $("#results-2").html("");  // Second results are not needed for tests.
 
@@ -1376,8 +1376,8 @@ const q_order_test = [
     "start",
     // "n-treat-control",
     // "n-total",
-    "prev",  // prevalence.
     "p-sens-spec",  // sens & spec.
+    "prev",  // prevalence.
     "n-case",
     "results"
 ];

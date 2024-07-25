@@ -419,7 +419,7 @@ const info_data = {
             "angegeben werden, wenn eine Erkrankung tatsächlich vorliegt bzw. ein negatives Testergebnis, wenn " +
             "keine Erkrankung vorliegt (Sensitivität und Spezifität). Umgekehrt könne auch die bedingten Wahrscheinlichkeiten dafür angegeben werden, " +
             "dass bei einem positiven bzw. negativen Testergebnis tatsächleich eine Erkrankung bzw. keine Erkrankung vorliegt " +
-            "(positiver Vorhersagewert und negativer Vorhersagewert; s. <a href='#wiki-sens-spec'>Testgenauigkeit</a> unten). " +
+            "(positiver Vorhersagewert und negativer Vorhersagewert; s. <a href='#wiki-sens-spec'>Testgenauigkeit und Vorhersagegüte</a> unten). " +
             "Auch das Risiko innerhalb einer Gruppe " +
             "ist eine bedingte Wahrscheinlichkeit, da es die Wahrscheinlichkeit angibt beispielsweise zu erkranken " +
             "oder zu versterben, wenn eine bestimmte Gruppenzugehörigkeit vorliegt (z.B., <a href='#wiki-baseprob'>Basisrisiko</a> in der " +
@@ -427,19 +427,21 @@ const info_data = {
             "Ein weiteres Beispiel sind <a href='#wiki-pval'>p-Werte (s. unten)</a>, die angeben wie wahrrscheinlich es ist in einer " +
             "Stichprobe Daten zu beobachten, in denen sich Gruppen so stark oder stärker als in der Stichprobe unterscheiden, " +
             "wenn es in der Population eigentlich keinen Unterschied gibt.</p>" +
-            "<p>Wie insbesondere das Beispiel der TEstgenauigkeit illustriert, ist es wichtig dass bei bedingten Wahrscheinlichkeiten kar ist, " +
+            "<p>Wie insbesondere das Beispiel der Testgenauigkeit illustriert, ist es wichtig, dass bei bedingten Wahrscheinlichkeiten kar ist, " +
             "auf welche Gruppe oder welches Ereignis sich diese beziehen.</p>" +
             "" +
-            "<h4 id='wiki-sens-spec'>Beispiel: Testgenaugkeit</h4>" +
+            "<h4 id='wiki-sens-spec'>Beispiel: Testgenaugkeit und Vorhersagegüte</h4>" +
             "<p>Gerade bei medizinischen Tests gibt es einige wichtige bedingte Wahrscheinlichkeiten. " +
-            "Die Sensitivität gibt an, welcher Anteil der Erkrankten ein Test korrekt erkennt und ein positives Ergebnis " +
-            "ausgibt (typischerweise in <a href='#wiki-prozent'>Prozent</a>). Die Spezifität gibt an, wie viele Personen, " +
-            "die nicht erkrankt sind, ein korrektes, negatives Testergebnis erhalten. " +
+            "Die <emph>Testgenauigkeit</emph> wird üblicherweise als Sensitivität und Spezifität angegeben (typischerweise in <a href='#wiki-prozent'>Prozent</a>). " +
+            "Die Sensitivität gibt an, welchen Anteil der Erkrankten ein Test korrekt als erkrankt erkennt und ein positives Ergebnis " +
+            "ausgibt. Die Spezifität gibt an, wie viele Personen, " +
+            "die nicht erkrankt sind korrekt als nicht erkrankt erkannt werden und ein negatives Testergebnis erhalten. " +
             "Mit diesen Angaben werden Tests beschrieben, insbesondere da diese in der Regel an einer Gruppe von Erkranken und " +
             "nicht Erkrankten auf seine Güte geprüft werden.</p>" +
             "<p>Sensitivität und Spezifität sind aber häufig nicht die interessierenden Werte: " +
-            "Typischerweise interessieren sich die Getesteten dafür, wie wahrscheinlich sie erkrankt sind, wenn sie ein " +
-            "positives Testergebnis erhalten haben. Dies hängt zusätzlich zur Güte des Tests von der Prävalenz, also dem " +
+            "Typischerweise interessieren sich die Getesteten für die <emph>Vorhersagegüte</emph>, " +
+            "also wie wahrscheinlich sie tatsächlich erkrankt sind, wenn der Test sie als erkrankt erkennt (positives Testergebnis). " +
+            "Dies hängt zusätzlich zur Güte des Tests von der Prävalenz, also dem " +
             "Risiko der Erkrankung der Person ab. Das Risiko nach einem positiven Testergebnis tatsächlich erkrankt zu sein, wird " +
             "als positiver prädiktiver Wert (PPV) bezeichnet.</p>" +
             "<p>So der Test nicht perfekt ist, bleibt das Risiko insbesondere bei seltenen Erkrankungen auch nach dem Test möglicherweise relativ niedrig. " +
