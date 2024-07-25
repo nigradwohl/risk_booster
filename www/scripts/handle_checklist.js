@@ -998,7 +998,7 @@ class Checklist {
             // console.log("Is this a button with meaning? " + $(this).hasClass("input-btn"))
 
             console.log("++++ Checking current input ++++");
-            // console.log($("#" + cur_input)[0].validity.patternMismatch);
+            console.log($("#" + cur_input));
 
             // Is the input a button or a text-field?
             if ($(this).hasClass("input-btn")) {
