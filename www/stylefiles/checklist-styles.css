@@ -216,16 +216,6 @@ canvas {
     /*align-items: center;*/
 }
 
-.checklist-input {
-    border-radius: 5px;
-    line-height: 1.2em;
-    font-size: 1.2em;
-    padding: 5px;
-    margin-bottom: 0.3em;
-    max-width: 6em;
-    position: relative;
-}
-
 .checklist-button {
     margin: 0.2em;
     padding: 0.3em;
@@ -327,7 +317,7 @@ canvas {
     border: 2px solid var(---error-col);
 }
 
-.show-impf{
+.show-impf {
     display: none;
 }
 
@@ -336,8 +326,9 @@ canvas {
     padding: 0.7em 0.6em;
 }
 
-/* Media queries*/
 
+
+/* Media queries*/
 @media screen and (max-width: 700px) {
     .checklist-content {
         width: 80%;
