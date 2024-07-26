@@ -752,7 +752,7 @@ function transpose(matrix) {
 // Function to compare two values and take the one that is not missing (if any):
 function compare_vals(val1, val2, tol) {
     if (!isNaN(val1) && !isNaN(val2)) {
-        console.warn(`Comparing ${val1} and ${val2} (${Math.abs(val1 - val2)}) with tolerance ${tol}`);
+        // console.warn(`Comparing ${val1} and ${val2} (${Math.abs(val1 - val2)}) with tolerance ${tol}`);
         if (Math.abs(val1 - val2) > tol) {
             console.error("Provided values do not match. Please check!");
             // no_N = true;

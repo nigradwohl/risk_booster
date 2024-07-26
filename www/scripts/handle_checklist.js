@@ -222,7 +222,6 @@ $(document).ready(function () {
     $(".info-control2").text(info_contr2);
 
 
-
     // Add outcome to selections:
     for (let i = 0; i < outcome_list.eff.length; i++) {
         $("#out-eff").append(`<option value="${i}">${outcome_list.eff[i].select}</option>`);
@@ -236,12 +235,6 @@ $(document).ready(function () {
     const cur_order = text === "test" ? q_order_test : q_order;
     const cur_checklist = new Checklist(cur_order, outcome_list, text);  // create a new checklist instance.
     // const check_risk = new RiskCollection();
-
-    // Set initial values:
-    if (text === "test") {
-        // Set the margin sums:
-        cur_checklist.check_risk.ntab.N = 10000;  // Determine a random N.
-    }
 
     console.log("CURRENT CHECKLIST");
     console.log(cur_checklist);
@@ -479,6 +472,7 @@ class Checklist {
 
 
         this.entry_ix = 0;
+        this.firstnum_ix = type === "test" ? 1 : 2;  // index of first nueric input.
 
         this.is_skip = false;
         this.is_error = false;
@@ -568,6 +562,15 @@ class Checklist {
                 const inp_test = this.get_current_input(curid, this.q_inputs[curid], id_to_num_dict);
                 // After trying to get the inputs, try completing the table:
                 console.log("++++ Getting inputs and complete ++++");
+                console.log(this.type);
+
+                // Set assumed values (currently for test case only):
+                if (this.type === "test" && this.entry_ix === this.q_order.length - 2) {
+                    // Set the margin sums:
+                    console.warn("setting arbitrary sample size!");
+                    this.check_risk.ntab.N = 10000;  // Determine a random N.
+                }
+
                 try {
                     this.check_risk.try_completion(0);
 
@@ -1147,7 +1150,7 @@ class Checklist {
     handle_reloads() {
 
         // ~~~~~~~~~ Loop over all entries and complete (for reloads)! ~~~~~~~~~~~~~
-        console.log(`Is reload? ${this.is_reload}`);
+        console.log(`+++++++++++++ Is reload? ${this.is_reload} +++++++++++++`);
         this.is_reload = false;  // reset the flag!
         console.log("~~~~ Risk object before re-calculation ~~~");
         this.check_risk.print();
@@ -1156,10 +1159,11 @@ class Checklist {
         this.skipped_inputs = this.skipped_inputs.filter(x => x < this.entry_ix);  // remove future skips!
         // console.log(this.skipped_inputs);
         const skipped_ids = this.q_order.filter((x, ix) => this.skipped_inputs.includes(ix));
-        // console.log(skipped_ids);
+        console.log(skipped_ids);
 
         // Loop over defined input fields (omit the first 2 uninformative questions):
-        for (const curid of this.q_order.slice(2, this.entry_ix)) {
+        console.log(`Looping over ${this.q_order.slice(this.firstnum_ix, this.entry_ix)} (from: ${this.q_order}, Ix: ${this.entry_ix})`);
+        for (const curid of this.q_order.slice(this.firstnum_ix, this.entry_ix)) {
 
             // Skip input fields that have been skipped previously!
             if (!skipped_ids.includes(curid)) {
@@ -1378,7 +1382,7 @@ const q_order_test = [
     // "n-total",
     "p-sens-spec",  // sens & spec.
     "prev",  // prevalence.
-    "n-case",
+    // "n-case",
     "results"
 ];
 
