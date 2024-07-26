@@ -156,7 +156,10 @@ body {
 /*https://freebiesupply.com/blog/css-inputs/*/
 /* form starting stylings ------------------------------- */
 .input-group {
-    margin-top: 1.5em;
+    margin-top: 1.2em;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
 }
 .float-label-field {
     border: none;

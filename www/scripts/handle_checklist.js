@@ -1,7 +1,7 @@
 $(document).ready(function () {
 
     // Ensure that it is well formatted upon reloads:
-    $("input").each(function(){
+    $("input").each(function () {
         if ($(this).val()) {
             $(this).closest('.float-label-field').addClass('float');
         }
@@ -1256,15 +1256,17 @@ class Checklist {
  */
 function handle_missing_input(ev, missing_entries) {
 
-    const input_field = $("#" + missing_entries[0]);  // Get FIRST input field for reference (may be improved).
+    const input_field = $("#" + missing_entries[0]);  // Get FIRST missing input field for reference (may be improved).
 
     console.log(input_field.parent("td"));
     console.log(input_field.parents("table"));
 
     // Take the input field as reference if one element or if inside of table take the table, to ensure non-overlap:
-    const thispos = input_field.parent("td").length === 0 ? input_field.position() : input_field.parents("table").position();  // get position of current question.
+    // const thispos = input_field.parent("td").length === 0 ? input_field.position() : input_field.parents("table").position();  // get position of current question.
+    const thispos = input_field.position();  // get position of current question.
     console.log(input_field);
     console.log(thispos);
+    console.log("#" + input_field[0].id);
 
     console.log("MISSING ENTRIES ARE:");
     console.log(missing_entries);
@@ -1278,16 +1280,33 @@ function handle_missing_input(ev, missing_entries) {
     const popup_pad = cur_popup.innerHeight() - popup_height;
     const num_height = input_field.height();
 
+    // Add the popup:
+    cur_popup.detach().insertBefore("#" + input_field[0].id);
+    if (input_field.parent("fieldset").length > 0) {
+
+        // TODO: Eventuall insert before parent?
+        cur_popup
+            .css({
+                top: thispos.top - popup_height - popup_pad * 2,
+                // left: thispos.left,
+                width: "300px",
+                position: 'absolute'
+            })
+    } else {
+        cur_popup
+            .css({
+                top: thispos.top - popup_height - popup_pad * 2,
+                left: thispos.left,
+                width: "300px",
+                position: 'absolute'
+            })
+    }
+
     console.log(`Popup height (pad): ${popup_height} (${popup_pad}), Highlight height: ${num_height}, 
             Highlight pos (top, bottom) ${thispos.top}, ${thispos.left}`);
 
-    cur_popup
-        .css({
-            top: thispos.top - popup_height - popup_pad * 2,
-            left: thispos.left,
-            position: 'absolute'
-        })
-        .show();
+
+    cur_popup.show();
 
     // Prevent propagation:
     ev.stopPropagation();

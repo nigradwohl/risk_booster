@@ -97,6 +97,7 @@
     grid-area: midnote;
     justify-self: center;
     padding: 1em 0.2em;
+    line-height: 1.2em;
 }
 
 .content-start {
@@ -197,7 +198,7 @@ canvas {
 
 .checklist-results p {
     font-size: 0.8em;
-    line-height: 1;
+    line-height: 1.2;
 }
 
 .checklist-question {
