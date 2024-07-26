@@ -1276,28 +1276,36 @@ function handle_missing_input(ev, missing_entries) {
     // Change the popup text here:
     const cur_popup = $("#noentry-popup");
 
+    cur_popup
+        .css({
+            width: "300px"
+            // height: "100%"
+        })
+
     const popup_height = cur_popup.height();
     const popup_pad = cur_popup.innerHeight() - popup_height;
+
     const num_height = input_field.height();
 
     // Add the popup:
+        console.log(`Popup height (pad): ${popup_height} (${popup_pad}), Highlight height: ${num_height}, 
+            Highlight pos (top, bottom) ${thispos.top}, ${thispos.left}`);
+
     cur_popup.detach().insertBefore("#" + input_field[0].id);
     if (input_field.parent("fieldset").length > 0) {
 
-        // TODO: Eventuall insert before parent?
+        // TODO: Eventually insert before label?
         cur_popup
             .css({
-                top: thispos.top - popup_height - popup_pad * 2,
+                top: thispos.top + popup_height + popup_pad * 2,
                 // left: thispos.left,
-                width: "300px",
                 position: 'absolute'
             })
     } else {
         cur_popup
             .css({
-                top: thispos.top - popup_height - popup_pad * 2,
+                top: thispos.top - popup_height,
                 left: thispos.left,
-                width: "300px",
                 position: 'absolute'
             })
     }
