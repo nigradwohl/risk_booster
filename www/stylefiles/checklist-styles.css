@@ -1,6 +1,6 @@
 .grid-container-check {
     display: grid;
-    grid-template-columns: minmax(220px, 2.5fr) minmax(100px, 1.5fr) 40px minmax(100px, 1.5fr) minmax(220px, 2.5fr);
+    grid-template-columns: minmax(220px, 2.5fr) minmax(120px, 1.5fr) 40px minmax(120px, 1.5fr) minmax(220px, 2.5fr);
     /*grid-template-rows: 1em 1.5em 60px auto 50px;*/
     grid-template-rows: 1em 1.5em 60px auto 2em;
     grid-template-areas:

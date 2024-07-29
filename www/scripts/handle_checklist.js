@@ -94,10 +94,16 @@ $(document).ready(function () {
         // Ad treatment specific endpoints:
         outcome_list.eff = [
             {
-                "verb": new Verblist("werden symptomfrei", "werden", "symptomfrei"),
+                "verb": new Verblist("zeigen Symptome", "zeigen", "Symptome"),
                 "noun": "Symptome",
                 "select": "Reduktion Symptome",
                 "direction": "prevent"
+            },
+            {
+                "verb": new Verblist("werden symptomfrei", "werden", "symptomfrei"),
+                "noun": "Symptomfreiheit",
+                "select": "Symptomfreiheit",
+                "direction": "achieve"
             },
             {
                 "verb": new Verblist("genesen", "genesen", ""),
@@ -152,7 +158,7 @@ $(document).ready(function () {
             },
             {
                 "verb": new Verblist("werden diagnostiziert", "werden", "diagnostiziert"),
-                "noun": "Positive Diagnosen",
+                "noun": "Krankenhauseinweisungen",
                 "select": "Reduktion Krankenhauseinweisungen",
                 "direction": "prevent"
             }
@@ -160,7 +166,7 @@ $(document).ready(function () {
 
         outcome_list.side = [
             {
-                "verb": new Verblist("erleiden eine Impfreaktion", "erleiden", "Impfreaktion"),
+                "verb": new Verblist("erleiden eine Impfreaktion", "erleiden", "eine Impfreaktion"),
                 "noun": "Impfreaktionen",
                 "select": "Impfreaktion",
                 "direction": "prevent"
@@ -170,8 +176,9 @@ $(document).ready(function () {
         // Specific text snippets:
         $("#which-trans-eff").text(" des Nutzens der Impfung");
         $("#which-trans-side").text(" der Schadenwirkung der Impfung");
-        $("#addnote-side").text("Impfreaktionen bezeichnen erwartbare Ereignisse einer Immunreaktion " +
-            "(z.B., Schmerzen an der Einstichstelle, Fieber) und sind für die Bewertung der Sicherheit nachrangig");
+        $("#addnote-side").text("Bitte beachten Sie, falls Sie Impfreaktionen darstellen: " +
+            "Impfreaktionen bezeichnen erwartbare Ereignisse einer Immunreaktion " +
+            "(z.B., Schmerzen an der Einstichstelle, Fieber) und sind für die Bewertung der Sicherheit nachrangig.");
         $(".show-impf").show();
         // TODO: Maybe also to results, if "Impfreaktion" is chosen?
 
