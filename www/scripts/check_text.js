@@ -167,20 +167,22 @@ $(document).ready(function () {
          */
         const window_keys = {
             "grouptype": {
-                "total": ["insgesamt", "alle_", "Basis", "umfass(t|en)", "waren.*jeweils", "etwa.*[Tt]eiln[ae]hme"],
-                "sub": ["[Ii]n_", "[Uu]nter_", "[Dd]avon_",
+                "total": ["[Ii]nsgesamt", "alle_", "Basis", "umfass(t|en)", "waren.*jeweils", "etwa.*[Tt]eiln[ae]hme", ], // add case "insgesamt" with Insgesamt
+                "sub": ["[Ii]n_", "[Uu]nter_", "[Dd]avon_", 
                     "der.*[Tt]eilnehmer", "entfielen.*auf"]
                 // Note: Switch from \w* to .*, since \w does not capture % etc.
             },
             "treat_contr": {
                 // Types of subgroups:
-                "contr": ["(Kontroll|Placebo|Vergleichs)-?.*[Gg]ruppe",
+                "contr": [ "(Kontroll|Placebo|Vergleichs|Scheinpräparat)-?.*([Gg]ruppe|[Ee]mpfänger)", // add "Empfänger"
+                    "(?<!Impfstoff)-(Gruppe|Empfänger)", "(?<!Impfstoff)(gruppe|empfänger)", 
                     "Prävention.*wenigsten.*befolgte",
                     "kein.*Medika",
-                    "Scheinpräparat_(gespritzt|erhalten|bekommen)"],
-                "treat": ["[Gg]eimpfte?n?", "Impf-?.*[Gg]ruppe",
-                    "(?<!Kontroll|Vergleichs|Placebo).*-?Gruppe",  // negative definition of treatment group.
-                    "(?<!keinen)_Impfstoff_(gespritzt|erhalten|bekommen)", // maybe handle word in between
+                    "Scheinpräparat_(gespritzt|erhalten|bekommen)",], 
+                "treat": ["[Gg]eimpfte?n?", "Impf-?.*([Gg]ruppe|[Em]mpfänger)",
+                    // negative definition of treatment group.
+                    "(?<!Kontroll|Vergleichs|Placebo|Scheinpräparat)-(Gruppe|Empfänger)", // to cover case ...-... 
+                    "(?<!Kontroll|Vergleichs|Placebo|Scheinpräparat)(gruppe|empfänger)", // to cover case ...
                     "Behandlungsgruppe", "Behandelte",
                     "([Tt]eilnehmer|Probanden).*Impfung",
                     "erh(a|ie)lten.*(Präparat|Medikament)",
@@ -190,7 +192,7 @@ $(document).ready(function () {
                 "all": ["(aller|insgesamt).*[Tt]eilnehmer|Probanden",
                     "(Teilnehm|Proband).*rekrutiert",
                     "insgesamt.*(Fälle|Verläufe)", "(Fälle|Verläufe).*insgesamt",
-                    "beiden.*Gruppen", "sowohl.*[Gg]ruppe"]  // problematic!
+                    "beiden.*Gruppen", "sowohl.*[Gg]ruppe"] // problematic!
             },
             "effside": {
                 "eff": ["(?<![Nn]eben)[Ww]irk(?!lich)", "Impfschutz",
@@ -203,7 +205,7 @@ $(document).ready(function () {
                     // The following may only apply to vaccination? (But likely also to treatment!)
                     "schwer.*Verl[aä]uf",
                     "Verbesserung"],
-                "side": ["Nebenwirk", "Komplikation", "unerwünschte.*Effekt", "Herzmuskelentzündung", "Hirnblutung"],  // more keywords?
+                "side": ["Nebenwirk", "Komplikation", "unerwünschte.*Effekt", "Herzmuskelentzündung", "Hirnblutung", "Impfreaktion?en?"],  // more keywords? add "Impfreaktion"
                 "damage": ["(Inzidenz|[Ee]rkank|Todesfäll|Risiko).*(erhöht|vielfach)",
                     "(erhöht|vielfach).*(Inzidenz|[Ee]rkank|Todesfäll|Risiko)",
                     "Risiko.*Erkrank",
