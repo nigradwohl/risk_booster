@@ -258,7 +258,19 @@ $(document).ready(function () {
 
 
     // Preparations:
-    const cur_order = text === "test" ? q_order_test : q_order;
+    // Adjust question order:
+    let cur_order;
+    if(text === "test"){
+        cur_order = q_order_test
+    } else {
+        cur_order = q_order;
+        if(text === "treat"){
+            const ix_rrr = cur_order.indexOf("rel-risk-reduction");
+            const ix_pcase = cur_order.indexOf("p-case");
+            [cur_order[ix_rrr], cur_order[ix_pcase]] = [cur_order[ix_pcase], cur_order[ix_rrr]];
+        }
+    }
+
     const cur_checklist = new Checklist(cur_order, outcome_list, text);  // create a new checklist instance.
     // const check_risk = new RiskCollection();
 
@@ -594,7 +606,7 @@ class Checklist {
                 if (this.type === "test" && this.entry_ix === this.q_order.length - 2) {
                     // Set the margin sums:
                     console.warn("setting arbitrary sample size!");
-                    this.check_risk.ntab.N = 10000;  // Determine a random N.
+                    this.check_risk.ntab.N = 100000;  // Determine a random N.
                 }
 
                 try {
@@ -1415,7 +1427,8 @@ const q_order = [
     // "any-control",
     "n-treat-control",
     "n-total",
-    "p-treat", "p-case",
+    "p-treat",
+    "p-case",
     "n-case",
     // "or-case",
     // "side",
