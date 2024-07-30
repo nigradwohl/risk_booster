@@ -510,7 +510,7 @@ class Checklist {
 
 
         this.entry_ix = 0;
-        this.firstnum_ix = type === "test" ? 1 : 2;  // index of first nueric input.
+        this.firstnum_ix = type === "test" ? 1 : 2;  // index of first numeric input.
 
         this.is_skip = false;
         this.is_error = false;
@@ -942,9 +942,9 @@ class Checklist {
         const eff_group_risks = this.check_risk.ntab.tab.margin2_mean();
         let side_group_risks = this.check_side.ntab.tab.margin2_mean();  // Get the margins.
         // For testing case switch negatively tested to show actually healthy:
-        if (["test"].includes(this.type)) {
-            side_group_risks[0] = side_group_risks[0].reverse();
-        }
+        // if (["test"].includes(this.type)) {
+        //     side_group_risks[0] = side_group_risks[0].reverse();
+        // }
 
         console.log("Risks in each group:");
         console.log(eff_group_risks);
@@ -1059,7 +1059,7 @@ class Checklist {
         }
 
         if (["test"].includes(this.type)) {
-            cur_side_control = cur_side_control + " nicht";  // highlight the non-events!
+            // cur_side_control = cur_side_control + " nicht";  // highlight the non-events!
         } else {
             // Add some information only in non-testing case:
             $("#abs-change").html(//`Absolute${eff_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: ` +
