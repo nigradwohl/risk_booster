@@ -257,14 +257,14 @@
                                 (seltener auch von Krankenhauseinweisungen oder Todesfällen)
                                 häufig als
                                 Impfwirksamkeit, Impfschutz oder Schutzwirkung bezeichnet
-<!--                                <span class="highlight-num tooltip">-->
-<!--                                    Impfwirksamkeit, Impfschutz oder Schutzwirkung bezeichnet-->
-<!--                                    <span class="tooltiptext tooltip-checklist">-->
-<!--                                        <i class="fa fa-exclamation-triangle"></i>-->
-<!--                                        Ist typischerweise eine <a href="risk_wiki.html#wiki-rel">relative Risikoreduktion</a>-->
-<!--                                <span class="addinfo-rrr"></span>-->
-<!--                                </span>-->
-<!--                                </span>-->
+                                <!--                                <span class="highlight-num tooltip">-->
+                                <!--                                    Impfwirksamkeit, Impfschutz oder Schutzwirkung bezeichnet-->
+                                <!--                                    <span class="tooltiptext tooltip-checklist">-->
+                                <!--                                        <i class="fa fa-exclamation-triangle"></i>-->
+                                <!--                                        Ist typischerweise eine <a href="risk_wiki.html#wiki-rel">relative Risikoreduktion</a>-->
+                                <!--                                <span class="addinfo-rrr"></span>-->
+                                <!--                                </span>-->
+                                <!--                                </span>-->
                                 <span class="highlight-num tooltip">
                                     (Englisch: "efficacy"
                                     <span class="tooltiptext tooltip-checklist">
@@ -284,26 +284,37 @@
                             </p>
                             <p>
                                 Bitte geben Sie
-                                <span class="incr-decr-noun"></span>
-                                in Prozent (d.h., Zahlen zwischen 0 und 100) an. Wenn Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
+                                <span class="incr-decr-art"></span>
+                                in Prozent (d.h., Zahlen zwischen 0 und 100) an. Wenn Ihnen eine Angabe nicht vorliegt,
+                                lassen Sie das Feld frei.
                                 <!-- Kommazahlen mit bis zu zwei Nachkommastellen sind erlaubt. -->
                                 <!--                                [Sinnvoll?]-->
                             </p>
 
-                            <p>
-                                <!--                                TODO: The pattern does not apply to relative risk (e.g., doppelt so viel, 10-fach etc.)-->
-                                <input class="checklist-input" id="rel-risk-reduction" type="text"
-                                       pattern="([0-9]{0,2}(,[0-9]+)|(100)"
-                                       title="Zahl zwischen 1 und 100 mit Nachkommastellen">&nbsp;%
-                                <!--                                <span class="tooltip delete-entry">-->
-                                <!--                                <i class="fa fa-trash" aria-hidden="true" id="rel-risk-reduction-del"></i>-->
-                                <!--                                <span class="tooltiptext tooltip-checklist">-->
-                                <!--                                   Eintrag löschen-->
-                                <!--                                </span>-->
-                                <!--                                </span>-->
-                                <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Prozentzahl zwischen 1 und 100 ein.</span>
-                                <!--                                <button class="checklist-button continue-btn">Weiter</button>-->
-                            </p>
+                            <!--                            <p>-->
+                            <!--                                &lt;!&ndash;                                TODO: The pattern does not apply to relative risk (e.g., doppelt so viel, 10-fach etc.)&ndash;&gt;-->
+                            <!--                                <input class="checklist-input" id="rel-risk-reduction" type="text"-->
+                            <!--                                       pattern="([0-9]{0,2}(,[0-9]+)|(100)"-->
+                            <!--                                       title="Zahl zwischen 1 und 100 mit Nachkommastellen">&nbsp;%-->
+                            <!--                                &lt;!&ndash;                                <span class="tooltip delete-entry">&ndash;&gt;-->
+                            <!--                                &lt;!&ndash;                                <i class="fa fa-trash" aria-hidden="true" id="rel-risk-reduction-del"></i>&ndash;&gt;-->
+                            <!--                                &lt;!&ndash;                                <span class="tooltiptext tooltip-checklist">&ndash;&gt;-->
+                            <!--                                &lt;!&ndash;                                   Eintrag löschen&ndash;&gt;-->
+                            <!--                                &lt;!&ndash;                                </span>&ndash;&gt;-->
+                            <!--                                &lt;!&ndash;                                </span>&ndash;&gt;-->
+                            <!--                                <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Prozentzahl zwischen 1 und 100 ein.</span>-->
+                            <!--                                &lt;!&ndash;                                <button class="checklist-button continue-btn">Weiter</button>&ndash;&gt;-->
+                            <!--                            </p>-->
+
+                            <div class="input-group">
+                                <fieldset class="float-label-field">
+                                    <label for="n-impf"><span class="incr-decr-noun"></span></label>
+                                    <input class="checklist-input" id="rel-risk-reduction" type="text"
+                                           pattern="([0-9]{0,2}(,[0-9]+)|(100)"
+                                           title="Zahl zwischen 1 und 100 mit Nachkommastellen">&nbsp;%
+                                    <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Prozentzahl zwischen 1 und 100 ein.</span>
+                                </fieldset>
+                            </div>
 
 
                             <!--                            <p>-->
@@ -326,7 +337,8 @@
                                 Wie viele Personen haben insgesamt an der Studie oder Untersuchung teilgenommen?
                             </p>
                             <p>
-                                Bitte geben Sie die Gesamtzahl in der Untersuchung als ganze Zahl ein. Wenn Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
+                                Bitte geben Sie die Gesamtzahl an Personen in der Untersuchung als ganze Zahl ein. Wenn
+                                Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
                                 <!--                                [Sinnvoll?]-->
                             </p>
                             <input class="checklist-input" id="n-total"
@@ -353,7 +365,8 @@
                                 Wie viele waren in der <span class="info-control"></span>?
                             </p>
                             <p>
-                                Bitte geben Sie die Anzahl in den Gruppen als ganze Zahlen ein. Wenn Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
+                                Bitte geben Sie die Anzahl in den Gruppen als ganze Zahlen ein. Wenn Ihnen eine Angabe
+                                nicht vorliegt, lassen Sie das Feld frei.
                                 <!--                                [Sinnvoll?]-->
                             </p>
 
@@ -406,7 +419,8 @@
                             <p class="checklist-qtext">
                                 Welcher Anteil der Personen wurde <span class="typeverb"></span>?
                             </p>
-                            <p>Bitte geben Sie die Anteile in Prozent (d.h., Zahlen zwischen 0 und 100) an. Wenn Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
+                            <p>Bitte geben Sie die Anteile in Prozent (d.h., Zahlen zwischen 0 und 100) an. Wenn Ihnen
+                                eine Angabe nicht vorliegt, lassen Sie das Feld frei.
                                 <!-- Kommazahlen mit bis zu zwei Nachkommastellen sind erlaubt. -->
                             </p>
                             <!--                            ACHTUNG: Plausible Ganzzahlen ggf. umformulieren!-->
@@ -427,7 +441,8 @@
                             <p>Wenn Ihnen keine Prävalenz vorliegt, nehmen Sie einen Wert an und sehen Sie,
                                 wie sich das Ergebnis für verschiedene (kleine, mittlere, große) Werte verändert.</p>
                             <p>
-                                Bitte geben Sie den Anteil in Prozent (d.h., Zahlen zwischen 0 und 100) an. Wenn Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
+                                Bitte geben Sie den Anteil in Prozent (d.h., Zahlen zwischen 0 und 100) an. Wenn Ihnen
+                                eine Angabe nicht vorliegt, lassen Sie das Feld frei.
                                 <!-- Kommazahlen mit bis zu zwei Nachkommastellen sind erlaubt. -->
                             </p>
 
@@ -446,20 +461,20 @@
                             <p class="checklist-qtext">
                                 Wie viele Personen unter den
                                 <span class="info-treat2"></span>en
-                                und in der Vergleichsgruppe (Kontrollgruppe) <span class="outcome-verb">erkrankt</span>?
+                                und in der Vergleichsgruppe (Kontrollgruppe) <span class="outcome-part2">erkrankt</span>?
                                 <!--                                [Outcome for treatment case: mortality? symptoms? ask Helge]-->
                             </p>
                             <p>
                                 Bitte geben Sie als ganze Zahlen ein, wie viele Personen in den Gruppen jeweils <span
-                                    class="outcome-verb">erkrankt</span> sind.
-                                    Wenn Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
+                                    class="outcome-part2">erkrankt</span> sind.
+                                Wenn Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
                                 <!--                                [Sinnvoll?]-->
                             </p>
                             <table>
                                 <tr>
                                     <td>
                                         <label for="n-case-impf">
-                                            Anzahl <span class="outcome-noun">Erkrankungen</span> unter den <span
+                                            Anzahl <span class="outcome-pers">Erkrankungen</span> unter den <span
                                                 class="info-treat2"></span>en
                                         </label>
                                     </td>
@@ -472,7 +487,7 @@
                                 </tr>
                                 <tr>
                                     <td><label for="n-case-control">
-                                        Anzahl <span class="outcome-noun">Erkrankungen</span> in der Vergleichsgruppe
+                                        Anzahl <span class="outcome-pers">Erkrankungen</span> in der Vergleichsgruppe
                                         (Placebogruppe/<span class="info-control2"></span>)
                                     </label></td>
                                     <td>
@@ -495,14 +510,15 @@
                                     class="outcome-noun">Erkrankungen</span>
                                 berichtet?
                             </p>
-                            <p>Bitte geben Sie die Anteile in Prozent (d.h., Zahlen zwischen 0 und 100) an. Wenn Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
+                            <p>Bitte geben Sie die Anteile in Prozent (d.h., Zahlen zwischen 0 und 100) an. Wenn Ihnen
+                                eine Angabe nicht vorliegt, lassen Sie das Feld frei.
                                 <!-- Kommazahlen mit bis zu zwei Nachkommastellen sind erlaubt. -->
                             </p>
                             <table>
                                 <tr>
                                     <td>
                                         <label for="p-case-impf">
-                                            Anteil <span class="outcome-noun">Erkrankungen</span> unter den <span
+                                            Anteil <span class="outcome-pers">Erkrankungen</span> unter den <span
                                                 class="info-treat2"></span>en
                                             <span class="alert-invalid"><br><i
                                                     class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Prozentzahl zwischen 1 und 100 ein.</span>
@@ -517,7 +533,7 @@
                                 </tr>
                                 <tr>
                                     <td><label for="p-case-control">
-                                        Anteil <span class="outcome-noun">Erkrankungen</span> in der Vergleichsgruppe
+                                        Anteil <span class="outcome-pers">Erkrankungen</span> in der Vergleichsgruppe
                                         (Placebogruppe/<span class="info-control2"></span>)
                                     </label></td>
                                     <td>
@@ -540,7 +556,8 @@
                                 (<a target="_blank" href="risk_wiki.html#wiki-sens-spec">Sensitivität und Spezifität</a>)
                                 wurden berichtet?
                             </p>
-                            <p>Bitte geben Sie die Anteile in Prozent (d.h., Zahlen zwischen 0 und 100) an. Wenn Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
+                            <p>Bitte geben Sie die Anteile in Prozent (d.h., Zahlen zwischen 0 und 100) an. Wenn Ihnen
+                                eine Angabe nicht vorliegt, lassen Sie das Feld frei.
                                 <!-- Kommazahlen mit bis zu zwei Nachkommastellen sind erlaubt. -->
                             </p>
                             <table>
@@ -609,12 +626,13 @@
                         <div class="question-content">
                             <p class="checklist-qtext">
                                 Für wie viele Personen wurden unter den <span class="info-treat2"></span>en und in
-                                der <span class="info-control"></span> jeweils
+                                der <span class="info-control"></span> werden jeweils
                                 <span class="side-noun"></span>
                                 berichtet?
                             </p>
                             <p>
-                                Bitte geben Sie die Anzahl in den Gruppen als ganze Zahlen ein. Wenn Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
+                                Bitte geben Sie die Anzahl in den Gruppen als ganze Zahlen ein. Wenn Ihnen eine Angabe
+                                nicht vorliegt, lassen Sie das Feld frei.
                                 <!--                                [Sinnvoll?]-->
                             </p>
                             <!--                        TODO: Eventually translate to grid layout?-->
@@ -622,7 +640,7 @@
                                 <tr>
                                     <td>
                                         <label for="n-side-impf">
-                                            Anzahl <span class="side-noun"></span> unter den <span
+                                            Anzahl der Personen mit <span class="side-noun"></span> unter den <span
                                                 class="info-treat2"></span>en
                                         </label>
                                     </td>
@@ -635,7 +653,7 @@
                                 </tr>
                                 <tr>
                                     <td><label for="n-side-control">
-                                        Anzahl <span class="side-noun"></span> in der Vergleichsgruppe
+                                        Anzahl der Personen mit <span class="side-noun"></span> in der Vergleichsgruppe
                                         (Placebogruppe/<span
                                             class="info-control2"></span>)
                                     </label></td>
@@ -655,17 +673,19 @@
                         <div class="question-content">
                             <p class="checklist-qtext">
                                 Für welchen Anteil der Personen wurden unter den <span class="info-treat2"></span>en und
-                                der <span class="info-control2"></span> jeweils <span class="side-noun"></span>
+                                der <span class="info-control2"></span>en jeweils <span class="side-noun"></span>
                                 berichtet?
                             </p>
-                            <p>Bitte geben Sie die Anteile in Prozent (d.h., Zahlen zwischen 0 und 100) an. Wenn Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
+                            <p>Bitte geben Sie die Anteile in Prozent (d.h., Zahlen zwischen 0 und 100) an. Wenn Ihnen
+                                eine Angabe nicht vorliegt, lassen Sie das Feld frei.
                                 <!-- Kommazahlen mit bis zu zwei Nachkommastellen sind erlaubt. -->
                             </p>
                             <table>
                                 <tr>
                                     <td>
                                         <label for="p-side-impf">
-                                            <span class="side-noun"></span> unter den <span class="info-treat2"></span>en
+                                            Anteil der Personen mit <span class="side-noun"></span> unter den <span
+                                                class="info-treat2"></span>en
                                         </label>
                                     </td>
                                     <td>
@@ -677,7 +697,8 @@
                                 </tr>
                                 <tr>
                                     <td><label for="p-side-control">
-                                        <span class="side-noun"></span> in der Vergleichsgruppe (Placebogruppe/<span
+                                        Anteil der Personen mit <span class="side-noun"></span> in der Vergleichsgruppe
+                                        (Placebogruppe/<span
                                             class="info-control2"></span>)
                                     </label></td>
                                     <td>

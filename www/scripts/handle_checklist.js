@@ -54,12 +54,14 @@ $(document).ready(function () {
             {
                 "verb": new Verblist("sterben", "sind", "verstorben"),
                 "noun": "Todesfälle",
+                "pers": "verstorbene Personen",
                 "select": "Reduktion Todesfälle",
                 "direction": "prevent"
             },
             {
                 "verb": new Verblist("???", "???", "???"),
                 "noun": "negative Ereignisse",
+                "pers": "Personen mit negativem Ereignis",
                 "select": "Reduktion negatives Ereignis",
                 "direction": "prevent"
             }
@@ -96,30 +98,35 @@ $(document).ready(function () {
             {
                 "verb": new Verblist("zeigen Symptome", "zeigen", "Symptome"),
                 "noun": "Symptome",
-                "select": "Reduktion Symptome",
+                "pers": "Personen mit Symptomen",
+                "select": "Reduktion von Symptomen",
                 "direction": "prevent"
             },
             {
                 "verb": new Verblist("werden symptomfrei", "werden", "symptomfrei"),
                 "noun": "Symptomfreiheit",
+                "pers": "Personen ohne Symptome",
                 "select": "Symptomfreiheit",
                 "direction": "achieve"
             },
             {
                 "verb": new Verblist("genesen", "genesen", ""),
                 "noun": "Genesungen",
+                "pers": "Genesene Personen",
                 "select": "Genesung",
                 "direction": "achieve"
             },
             {
                 "verb": new Verblist("???", "???", "???"),
-                "noun": "Erkrankungsdauer",
+                "noun": "Reduktion der Erkrankungsdauer",
+                "pers": "Personen mit verringerter Erkrankungsdauer",
                 "select": "Reduktion Erkrankungsdauer",
-                "direction": "prevent"
+                "direction": "achieve"
             },
             {
                 "verb": new Verblist("berichten Symptomlinderung", "berichten", "Symptomlinderung"),
                 "noun": "Symptomlinderung",
+                "pers": "Personen mit gelinderten Symptomen",
                 "select": "Symptomlinderung",
                 "direction": "achieve"
             }
@@ -151,14 +158,16 @@ $(document).ready(function () {
         // Add specific endpoints to outcome lists:
         outcome_list.eff = [
             {
-                "verb": new Verblist("erkranken", "erkranken", ""),
+                "verb": new Verblist("erkranken", "sind", "erkrankt"),
                 "noun": "Erkrankungen",
+                "pers": "Personen mit Erkrankungen",
                 "select": "Reduktion Erkrankungen",
                 "direction": "prevent"
             },
             {
-                "verb": new Verblist("werden diagnostiziert", "werden", "diagnostiziert"),
+                "verb": new Verblist("müssen im Krankenhaus behandelt werden", "werden", "im Krankenhaus behandelt"),
                 "noun": "Krankenhauseinweisungen",
+                "pers": "Personen, die im Krankenhaus behandelt werden mussten",
                 "select": "Reduktion Krankenhauseinweisungen",
                 "direction": "prevent"
             }
@@ -533,13 +542,16 @@ class Checklist {
 
         $(".outcome-noun").text(this.outcome.noun);
         $(".outcome-verb").text(this.outcome.verb.base);
+        $(".outcome-part2").text(this.outcome.verb.aux + " " + this.outcome.verb.main);
+        $(".outcome-pers").text(this.outcome.pers);
 
         $(".side-noun").text(this.outcome_side.noun);
         $(".side-verb").text(this.outcome_side.verb.base);
 
         // Do benefits consist in a reduction or an increase?
         const incr = this.outcome.direction === "achieve";
-        $(".incr-decr-noun").text((incr ? "den relative Anstieg" : "die relative Reduktion"));
+        $(".incr-decr-art").text((incr ? "den relativen Anstieg" : "die relative Reduktion"));
+        $(".incr-decr-noun").text((incr ? "relativer Anstieg" : "relative Reduktion"));
         $(".incr-decr-q").text((incr ? "Welcher relative Anstieg" : "Welche relative Reduktion") + " von " + this.outcome.noun);
     }
 
