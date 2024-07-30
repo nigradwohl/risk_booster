@@ -285,16 +285,16 @@
                             <p>
                                 Bitte geben Sie
                                 <span class="incr-decr-noun"></span>
-                                in Prozent (d.h., Zahlen zwischen 0 und 100) an.
-                                Kommazahlen mit bis zu zwei Nachkommastellen sind erlaubt.
+                                in Prozent (d.h., Zahlen zwischen 0 und 100) an. Wenn Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
+                                <!-- Kommazahlen mit bis zu zwei Nachkommastellen sind erlaubt. -->
                                 <!--                                [Sinnvoll?]-->
                             </p>
 
                             <p>
                                 <!--                                TODO: The pattern does not apply to relative risk (e.g., doppelt so viel, 10-fach etc.)-->
                                 <input class="checklist-input" id="rel-risk-reduction" type="text"
-                                       pattern="([0-9]{0,2}(,[0-9]{1,2})?)|(100)"
-                                       title="Zahl zwischen 1 und 100 mit bis zu 2 Nachkommastellen">&nbsp;%
+                                       pattern="([0-9]{0,2}(,[0-9]+)|(100)"
+                                       title="Zahl zwischen 1 und 100 mit Nachkommastellen">&nbsp;%
                                 <!--                                <span class="tooltip delete-entry">-->
                                 <!--                                <i class="fa fa-trash" aria-hidden="true" id="rel-risk-reduction-del"></i>-->
                                 <!--                                <span class="tooltiptext tooltip-checklist">-->
@@ -326,7 +326,7 @@
                                 Wie viele Personen haben insgesamt an der Studie oder Untersuchung teilgenommen?
                             </p>
                             <p>
-                                Bitte geben Sie die Gesamtzahl in der Untersuchung als ganze Zahl ein.
+                                Bitte geben Sie die Gesamtzahl in der Untersuchung als ganze Zahl ein. Wenn Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
                                 <!--                                [Sinnvoll?]-->
                             </p>
                             <input class="checklist-input" id="n-total"
@@ -353,7 +353,7 @@
                                 Wie viele waren in der <span class="info-control"></span>?
                             </p>
                             <p>
-                                Bitte geben Sie die Anzahl in den Gruppen als ganze Zahlen ein.
+                                Bitte geben Sie die Anzahl in den Gruppen als ganze Zahlen ein. Wenn Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
                                 <!--                                [Sinnvoll?]-->
                             </p>
 
@@ -406,13 +406,13 @@
                             <p class="checklist-qtext">
                                 Welcher Anteil der Personen wurde <span class="typeverb"></span>?
                             </p>
-                            <p>Bitte geben Sie die Anteile in Prozent (d.h., Zahlen zwischen 0 und 100) an.
-                                Kommazahlen mit bis zu zwei Nachkommastellen sind erlaubt.
+                            <p>Bitte geben Sie die Anteile in Prozent (d.h., Zahlen zwischen 0 und 100) an. Wenn Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
+                                <!-- Kommazahlen mit bis zu zwei Nachkommastellen sind erlaubt. -->
                             </p>
                             <!--                            ACHTUNG: Plausible Ganzzahlen ggf. umformulieren!-->
                             <input class="checklist-input" id="p-treat" type="text"
                                    pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
-                                   title="Zahlen zwischen 1 und 100 mit bis zu 2 Nachkommastellen">&nbsp;%
+                                   title="Zahlen zwischen 1 und 100 mit Nachkommastellen">&nbsp;%
                             <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Prozentzahl zwischen 1 und 100 ein.</span>
                         </div>
                     </div>
@@ -427,13 +427,13 @@
                             <p>Wenn Ihnen keine Prävalenz vorliegt, nehmen Sie einen Wert an und sehen Sie,
                                 wie sich das Ergebnis für verschiedene (kleine, mittlere, große) Werte verändert.</p>
                             <p>
-                                Bitte geben Sie den Anteil in Prozent (d.h., Zahlen zwischen 0 und 100) an.
-                                Kommazahlen mit bis zu zwei Nachkommastellen sind erlaubt.
+                                Bitte geben Sie den Anteil in Prozent (d.h., Zahlen zwischen 0 und 100) an. Wenn Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
+                                <!-- Kommazahlen mit bis zu zwei Nachkommastellen sind erlaubt. -->
                             </p>
 
                             <!--                            ACHTUNG: Plausible Ganzzahlen ggf. umformulieren!-->
                             <input class="checklist-input" id="prev" type="text" pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
-                                   title="Zahlen zwischen 1 und 100 mit bis zu 2 Nachkommastellen">&nbsp;%
+                                   title="Zahlen zwischen 1 und 100 mit Nachkommastellen">&nbsp;%
                             <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Prozentzahl zwischen 1 und 100 ein.</span>
 
                             <!--                            <br>-->
@@ -452,6 +452,7 @@
                             <p>
                                 Bitte geben Sie als ganze Zahlen ein, wie viele Personen in den Gruppen jeweils <span
                                     class="outcome-verb">erkrankt</span> sind.
+                                    Wenn Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
                                 <!--                                [Sinnvoll?]-->
                             </p>
                             <table>
@@ -494,8 +495,8 @@
                                     class="outcome-noun">Erkrankungen</span>
                                 berichtet?
                             </p>
-                            <p>Bitte geben Sie die Anteile in Prozent (d.h., Zahlen zwischen 0 und 100) an.
-                                Kommazahlen mit bis zu zwei Nachkommastellen sind erlaubt.
+                            <p>Bitte geben Sie die Anteile in Prozent (d.h., Zahlen zwischen 0 und 100) an. Wenn Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
+                                <!-- Kommazahlen mit bis zu zwei Nachkommastellen sind erlaubt. -->
                             </p>
                             <table>
                                 <tr>
@@ -510,7 +511,7 @@
                                     <td>
                                         <input class="checklist-input" id="p-case-impf" name="p-case-impf" type="text"
                                                pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
-                                               title="Zahlen zwischen 1 und 100 mit bis zu 2 Nachkommastellen">&nbsp;%
+                                               title="Zahlen zwischen 1 und 100 mit Nachkommastellen">&nbsp;%
                                         <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Prozentzahl zwischen 1 und 100 ein.</span>
                                     </td>
                                 </tr>
@@ -522,7 +523,7 @@
                                     <td>
                                         <input class="checklist-input" id="p-case-control" name="p-case-control"
                                                type="text" pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
-                                               title="Zahlen zwischen 1 und 100 mit bis zu 2 Nachkommastellen">&nbsp;%
+                                               title="Zahlen zwischen 1 und 100 mit Nachkommastellen">&nbsp;%
                                         <span class="alert-invalid"><br>
                                             <i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Prozentzahl zwischen 0 und 100 ein.</span>
                                     </td>
@@ -539,8 +540,8 @@
                                 (<a target="_blank" href="risk_wiki.html#wiki-sens-spec">Sensitivität und Spezifität</a>)
                                 wurden berichtet?
                             </p>
-                            <p>Bitte geben Sie die Anteile in Prozent (d.h., Zahlen zwischen 0 und 100) an.
-                                Kommazahlen mit bis zu zwei Nachkommastellen sind erlaubt.
+                            <p>Bitte geben Sie die Anteile in Prozent (d.h., Zahlen zwischen 0 und 100) an. Wenn Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
+                                <!-- Kommazahlen mit bis zu zwei Nachkommastellen sind erlaubt. -->
                             </p>
                             <table>
                                 <tr>
@@ -554,10 +555,10 @@
                                     <td>
                                         <input class="checklist-input" id="p-sens" name="p-sens" type="text"
                                                pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
-                                               title="Zahlen zwischen 1 und 100 mit bis zu 2 Nachkommastellen">&nbsp;%
+                                               title="Zahlen zwischen 1 und 100 mit Nachkommastellen">&nbsp;%
                                         <span class="alert-invalid"><br>
                                             <i class="fa fa-exclamation-circle error"></i>
-                                            Bitte geben Sie eine gültige Prozentzahl zwischen 0 und 100 ein.
+                                            Bitte geben Sie eine gültige Prozentzahl zwischen 0 und 100 ein. Wenn Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
                                         </span>
                                     </td>
                                 </tr>
@@ -570,9 +571,9 @@
                                     <td>
                                         <input class="checklist-input" id="p-spec" name="p-spec"
                                                type="text" pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
-                                               title="Zahlen zwischen 1 und 100 mit bis zu 2 Nachkommastellen">&nbsp;%
+                                               title="Zahlen zwischen 1 und 100 mit Nachkommastellen">&nbsp;%
                                         <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i>
-                                            Bitte geben Sie eine gültige Prozentzahl zwischen 0 und 100 ein.
+                                            Bitte geben Sie eine gültige Prozentzahl zwischen 0 und 100 ein. Wenn Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
                                         </span>
                                     </td>
                                 </tr>
@@ -613,7 +614,7 @@
                                 berichtet?
                             </p>
                             <p>
-                                Bitte geben Sie die Anzahl in den Gruppen als ganze Zahlen ein.
+                                Bitte geben Sie die Anzahl in den Gruppen als ganze Zahlen ein. Wenn Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
                                 <!--                                [Sinnvoll?]-->
                             </p>
                             <!--                        TODO: Eventually translate to grid layout?-->
@@ -657,8 +658,8 @@
                                 der <span class="info-control2"></span> jeweils <span class="side-noun"></span>
                                 berichtet?
                             </p>
-                            <p>Bitte geben Sie die Anteile in Prozent (d.h., Zahlen zwischen 0 und 100) an.
-                                Kommazahlen mit bis zu zwei Nachkommastellen sind erlaubt.
+                            <p>Bitte geben Sie die Anteile in Prozent (d.h., Zahlen zwischen 0 und 100) an. Wenn Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
+                                <!-- Kommazahlen mit bis zu zwei Nachkommastellen sind erlaubt. -->
                             </p>
                             <table>
                                 <tr>
@@ -670,7 +671,7 @@
                                     <td>
                                         <input class="checklist-input" id="p-side-impf" name="p-side-impf" type="text"
                                                pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
-                                               title="Zahlen zwischen 1 und 100 mit bis zu 2 Nachkommastellen">&nbsp;%
+                                               title="Zahlen zwischen 1 und 100 mit Nachkommastellen">&nbsp;%
                                         <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Prozentzahl zwischen 1 und 100 ein.</span>
                                     </td>
                                 </tr>
@@ -682,7 +683,7 @@
                                     <td>
                                         <input class="checklist-input" id="p-side-control" name="p-side-control"
                                                type="text" pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
-                                               title="Zahlen zwischen 1 und 100 mit bis zu 2 Nachkommastellen">&nbsp;%
+                                               title="Zahlen zwischen 1 und 100 mit Nachkommastellen">&nbsp;%
                                         <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Prozentzahl zwischen 1 und 100 ein.</span>
                                     </td>
                                 </tr>
