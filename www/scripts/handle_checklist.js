@@ -1316,19 +1316,20 @@ function handle_missing_input(ev, missing_entries) {
     const popup_height = cur_popup.height();
     const popup_pad = cur_popup.innerHeight() - popup_height;
 
-    const num_height = input_field.height();
+    const input_height = input_field.height();
 
     // Add the popup:
-        console.log(`Popup height (pad): ${popup_height} (${popup_pad}), Highlight height: ${num_height}, 
+        console.log(`Popup height (pad): ${popup_height} (${popup_pad}), Highlight height: ${input_height}, 
             Highlight pos (top, bottom) ${thispos.top}, ${thispos.left}`);
 
     cur_popup.detach().insertBefore("#" + input_field[0].id);
     if (input_field.parent("fieldset").length > 0) {
 
+        console.warn("Popup for fieldset");
         // TODO: Eventually insert before label?
         cur_popup
             .css({
-                top: thispos.top + popup_height + popup_pad * 2,
+                top: - cur_popup.outerHeight() - input_height/2 - 5,
                 // left: thispos.left,
                 position: 'absolute'
             })
@@ -1341,7 +1342,7 @@ function handle_missing_input(ev, missing_entries) {
             })
     }
 
-    console.log(`Popup height (pad): ${popup_height} (${popup_pad}), Highlight height: ${num_height}, 
+    console.log(`Popup height (pad): ${popup_height} (${popup_pad}), Highlight height: ${input_height}, 
             Highlight pos (top, bottom) ${thispos.top}, ${thispos.left}`);
 
 
