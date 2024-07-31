@@ -77,6 +77,13 @@
 <!--</div>-->
 
 <div class="row current-theme">
+<!--    <span class="tooltip tooltip-q">-->
+<!--                                    <span class="tooltiptext tooltip-overview">Anzahl&nbsp;<span class="outcome-pers">Erkrankungen</span> in der-->
+<!--                                                                                Vergleichsgruppe-->
+<!--                                                                                (Placebogruppe/<span-->
+<!--                                                class="info-control2"></span>)<-->
+<!--                                    </span><i class="fa fa-info-circle"></i></span>-->
+
     <div class="checklist-content">
         <!--    Entry 1-->
         <div id="edit-text-popup" class="edit-prompt">
@@ -508,9 +515,9 @@
 
 
                             <div class="input-group">
-<!--                                PRELIMINARY BLUEPRINT!-->
+                                <!--                                PRELIMINARY BLUEPRINT!-->
                                 <div class="inner-input-group">
-                                    <div>
+                                    <div class="input-and-label">
                                         <fieldset class="float-label-field">
                                             <!--                                    <p>Anzahl&nbsp;<span class="outcome-pers">Erkrankungen</span> unter den <span-->
                                             <!--                                            class="info-treat2"></span>en</p>-->
@@ -523,27 +530,40 @@
                                             <span class="alert-invalid"><br><i
                                                     class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Häufigkeit ein.</span>
                                         </fieldset>
-
                                     </div>
                                     <div class="input-quantifier">
-                                        <div>Personen&nbsp;<span class="tooltip">
-                                    <span class="tooltiptext tooltip-overview"><p>Anzahl&nbsp;<span
+                                        <div>Personen&nbsp;<span class="tooltip tooltip-q">
+                                    <span class="tooltiptext tooltip-overview">Anzahl&nbsp;<span
                                             class="outcome-noun">Erkrankungen</span> unter den <span
-                                            class="info-treat2_g"></span>.</p>
+                                            class="info-treat2_g"></span>.
                                     </span><i class="fa fa-info-circle"></i></span></div>
                                     </div>
                                 </div>
-                                <fieldset class="float-label-field">
-                                    <!--                                    <p>Anzahl&nbsp;<span class="outcome-pers">Erkrankungen</span> in der-->
-                                    <!--                                        Vergleichsgruppe-->
-                                    <!--                                        (Placebogruppe/<span class="info-control2"></span>)</p>-->
-                                    <label for="n-case-control"><span class="outcome-noun">Erkrankungen</span> <span
-                                            class="info-control2"></span></label>
-                                    <input class="checklist-input" id="n-case-control" name="n-case-control"
-                                           type="text" pattern="[0-9]+"
-                                           title="Ganze Zahl größer gleich Null ohne Kommastellen">
-                                    <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Häufigkeit ein.</span>
-                                </fieldset>&nbsp;Personen
+                                <div class="inner-input-group">
+                                    <div class="input-and-label">
+                                        <fieldset class="float-label-field">
+                                            <!--                                                                            <p>Anzahl&nbsp;<span class="outcome-pers">Erkrankungen</span> in der-->
+                                            <!--                                                                                Vergleichsgruppe-->
+                                            <!--                                                                                (Placebogruppe/<span class="info-control2"></span>)</p>-->
+                                            <label for="n-case-control"><span class="outcome-noun">Erkrankungen</span>
+                                                <span
+                                                        class="info-control2"></span></label>
+                                            <input class="checklist-input" id="n-case-control" name="n-case-control"
+                                                   type="text" pattern="[0-9]+"
+                                                   title="Ganze Zahl größer gleich Null ohne Kommastellen">
+                                            <span class="alert-invalid"><br><i
+                                                    class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Häufigkeit ein.</span>
+                                        </fieldset>
+                                    </div>
+                                    <div class="input-quantifier">
+                                        <div>Personen&nbsp;<span class="tooltip">
+                                    <span class="tooltiptext tooltip-overview">Anzahl&nbsp;<span class="outcome-pers">Erkrankungen</span> in der
+                                                                                Vergleichsgruppe
+                                                                                (Placebogruppe/<span
+                                                class="info-control2"></span>)<
+                                    </span><i class="fa fa-info-circle"></i></span></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

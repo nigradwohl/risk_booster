@@ -89,6 +89,7 @@ Do we also have the group sizes?)
 
 * allow to show only 1 icon array
 * Make assumptions in case of missing information
+* add options for ppv and npv; proportion of positive tests; frequencies?
 
 ## Wiki
 

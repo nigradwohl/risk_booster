@@ -175,6 +175,10 @@ body {
     /*font-size: 0.8em;*/
 }
 
+.input-and-label{
+    width: 70%;
+}
+
 .float-label-field {
     border: none;
     outline: none;
@@ -204,6 +208,7 @@ body {
     transition: all 0.2s ease;
     /*font-size: 0.8em;*/
     cursor: text;
+    white-space: nowrap;
 }
 
 .float-label-field.focus label {
