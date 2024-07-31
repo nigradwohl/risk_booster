@@ -160,7 +160,21 @@ body {
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
+    font-size: 0.9em;
 }
+
+.inner-input-group {
+    display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  flex-direction: row;
+  align-items: baseline;
+}
+
+.input-quantifier > div{
+    /*font-size: 0.8em;*/
+}
+
 .float-label-field {
     border: none;
     outline: none;
@@ -174,21 +188,21 @@ body {
 .float-label-field input {
     border: none;
     outline: none;
-    padding: 5px 5px 12px 5px;
+    padding: 5px 5px 5px 5px;
     margin-bottom: 5px;
-    /*width: 100%;*/
-    max-width: 90%;
-    font-size: 1em;
+    width: 100%;
+    /*max-width: 90%;*/
+    /*font-size: 0.8em;*/
     border-bottom: solid 2px var(---col-sepline);
 }
 
 .float-label-field label {
     opacity: 0.5;
     position: absolute;
-    top: 15px;
+    top: 10px;
     left: 10px;
     transition: all 0.2s ease;
-    font-size: 1em;
+    /*font-size: 0.8em;*/
     cursor: text;
 }
 

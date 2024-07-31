@@ -200,7 +200,8 @@
                                 Nutzen kann sowohl durch die Reduktion von Fällen negativer Folgen
                                 (d.h. weniger Personen mit dem Ereignis bedeuten höheren Nutzen, z.B. Erkrankungen),
                                 als auch durch einen Anstieg der Fälle positiver Folgen
-                                (d.h. mehr Persone mit dem Ereignis bedeuten höheren Nutzen, z.B. Reduktion der Erkrankungsdauer)
+                                (d.h. mehr Persone mit dem Ereignis bedeuten höheren Nutzen, z.B. Reduktion der
+                                Erkrankungsdauer)
                                 abgebildet werden.
                                 Achten Sie dabei auf das
                                 <span id="framing-tt" class="tooltip">
@@ -504,60 +505,45 @@
                                 Wenn Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
                                 <!--                                [Sinnvoll?]-->
                             </p>
-                            <!--                            <table>-->
-                            <!--                                <tr>-->
-                            <!--                                    <td>-->
-                            <!--                                        <label for="n-case-impf">-->
-                            <!--                                            Anzahl <span class="outcome-pers">Erkrankungen</span> unter den <span-->
-                            <!--                                                class="info-treat2"></span>en-->
-                            <!--                                        </label>-->
-                            <!--                                    </td>-->
-                            <!--                                    <td>-->
-                            <!--                                        <input class="checklist-input" id="n-case-impf" name="n-case-impf"-->
-                            <!--                                               type="text" pattern="[0-9]+"-->
-                            <!--                                               title="Ganze Zahl größer gleich Null ohne Kommastellen">-->
-                            <!--                                        <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Häufigkeit ein.</span>-->
-                            <!--                                    </td>-->
-                            <!--                                </tr>-->
-                            <!--                                <tr>-->
-                            <!--                                    <td><label for="n-case-control">-->
-                            <!--                                        Anzahl <span class="outcome-pers">Erkrankungen</span> in der Vergleichsgruppe-->
-                            <!--                                        (Placebogruppe/<span class="info-control2"></span>)-->
-                            <!--                                    </label></td>-->
-                            <!--                                    <td>-->
-                            <!--                                        <input class="checklist-input" id="n-case-control" name="n-case-control"-->
-                            <!--                                               type="text" pattern="[0-9]+"-->
-                            <!--                                               title="Ganze Zahl größer gleich Null ohne Kommastellen">-->
-                            <!--                                        <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Häufigkeit ein.</span>-->
-                            <!--                                    </td>-->
-                            <!--                                </tr>-->
-                            <!--                            </table>-->
 
 
                             <div class="input-group">
+<!--                                PRELIMINARY BLUEPRINT!-->
+                                <div class="inner-input-group">
+                                    <div>
+                                        <fieldset class="float-label-field">
+                                            <!--                                    <p>Anzahl&nbsp;<span class="outcome-pers">Erkrankungen</span> unter den <span-->
+                                            <!--                                            class="info-treat2"></span>en</p>-->
+                                            <label for="n-case-impf"><span class="outcome-noun">Erkrankungen</span>
+                                                <span
+                                                        class="info-treat2"></span></label>
+                                            <input class="checklist-input" id="n-case-impf" name="n-case-impf"
+                                                   type="text" pattern="[0-9]+"
+                                                   title="Ganze Zahl größer gleich Null ohne Kommastellen">
+                                            <span class="alert-invalid"><br><i
+                                                    class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Häufigkeit ein.</span>
+                                        </fieldset>
 
-                                <fieldset class="float-label-field">
-                                    <!--                                    <p>Anzahl&nbsp;<span class="outcome-pers">Erkrankungen</span> unter den <span-->
-                                    <!--                                            class="info-treat2"></span>en</p>-->
-                                    <label for="n-case-impf"><span class="outcome-noun">Erkrankungen</span> <span class="info-treat2"></span></label>
-                                    <input class="checklist-input" id="n-case-impf" name="n-case-impf"
-                                           type="text" pattern="[0-9]+"
-                                           title="Ganze Zahl größer gleich Null ohne Kommastellen"
-                                    >&nbsp;Personen&nbsp;<span class="tooltip">
-                                    <span class="tooltiptext tooltip-overview"><p>Anzahl&nbsp;<span class="outcome-noun">Erkrankungen</span> unter den <span class="info-treat2_g"></span>.</p>
-                                    </span><i class="fa fa-info-circle"></i></span>
-                                    <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Häufigkeit ein.</span>
-                                </fieldset>
+                                    </div>
+                                    <div class="input-quantifier">
+                                        <div>Personen&nbsp;<span class="tooltip">
+                                    <span class="tooltiptext tooltip-overview"><p>Anzahl&nbsp;<span
+                                            class="outcome-noun">Erkrankungen</span> unter den <span
+                                            class="info-treat2_g"></span>.</p>
+                                    </span><i class="fa fa-info-circle"></i></span></div>
+                                    </div>
+                                </div>
                                 <fieldset class="float-label-field">
                                     <!--                                    <p>Anzahl&nbsp;<span class="outcome-pers">Erkrankungen</span> in der-->
                                     <!--                                        Vergleichsgruppe-->
                                     <!--                                        (Placebogruppe/<span class="info-control2"></span>)</p>-->
-                                    <label for="n-case-control"><span class="outcome-noun">Erkrankungen</span> <span class="info-control2"></span></label>
+                                    <label for="n-case-control"><span class="outcome-noun">Erkrankungen</span> <span
+                                            class="info-control2"></span></label>
                                     <input class="checklist-input" id="n-case-control" name="n-case-control"
                                            type="text" pattern="[0-9]+"
-                                           title="Ganze Zahl größer gleich Null ohne Kommastellen">&nbsp;Personen
+                                           title="Ganze Zahl größer gleich Null ohne Kommastellen">
                                     <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Häufigkeit ein.</span>
-                                </fieldset>
+                                </fieldset>&nbsp;Personen
                             </div>
                         </div>
                     </div>
@@ -577,8 +563,8 @@
                                 <tr>
                                     <td>
                                         <label for="p-case-impf">
-<!--                                            Anteil <span class="outcome-pers">Erkrankungen</span> unter den <span-->
-<!--                                                class="info-treat2"></span>-->
+                                            <!--                                            Anteil <span class="outcome-pers">Erkrankungen</span> unter den <span-->
+                                            <!--                                                class="info-treat2"></span>-->
                                             <span class="outcome-noun">Erkrankungen</span> <span
                                                 class="info-treat2"></span>
                                             <span class="alert-invalid"><br><i
@@ -595,7 +581,7 @@
                                 <tr>
                                     <td><label for="p-case-control">
                                         <span class="outcome-pers">Erkrankungen</span> Vergleichsgruppe [TOOLTIP!]
-<!--                                        (Placebogruppe/<span class="info-control2"></span>)-->
+                                        <!--                                        (Placebogruppe/<span class="info-control2"></span>)-->
                                     </label></td>
                                     <td>
                                         <input class="checklist-input" id="p-case-control" name="p-case-control"
