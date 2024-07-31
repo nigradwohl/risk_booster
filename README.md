@@ -60,7 +60,7 @@ Do we also have the group sizes?)
 
 * Ask others: good idea to shorten the checker?
 * Add links to wiki and tooltips
-* Conclusion; where can I find additional information?
+* Check whether we can skip more entries based on usin ptab and how we can determine this
 
 * look for press releases (maybe articles) to check if "efficacy" or "effectiveness" are used in another context than infections (e.g., mortality, hospital admissions)
   * https://www.thelancet.com/journals/lanres/article/PIIS2213-2600(23)00015-2/fulltext (effectiveness: hospitalization, mortality)
@@ -69,16 +69,14 @@ Do we also have the group sizes?)
   * https://www.bmj.com/content/376/bmj-2021-069761 (hospital admissions) 
   * Note "In der medizinischen Statistik und Infektionsepidemiologie gehört die Ermittlung der Impfstoffwirksamkeit (IW),[1] auch Impfwirksamkeit,[2] Schutzwirkung,[3] (englisch vaccine efficacy) oder Impfeffekt[4] genannt," (Wikipedia)
   * Vaccine effectiveness is a measure of how well vaccination protects people against health outcomes such as infection, symptomatic illness, hospitalization, and death. (CDC)
-* Make clear which (relative) reduction is meant -- double check 
-* Speak of "reduction" for negative endpoints? 
+* Make clear which (relative) reduction is meant -- double check
 * translate diagnosis to "infection"
-* Screening: avoid "positive test"; rather: correctly detected as ill/healthy (positive test, sens)
 * How do press-releases/articles talk about screenings?
 * Recheck harding center
 * Treatment categories: Reduktion Symptome, Reduktion Krankheitstage, Reduktion der Symptome (z.B., Schmerzen), Symptomlinderung
 
 * fix issue with proportion treated (does not work reliably, especially for side effects)
-* remove of fix "text bearbeiten"
+* remove or fix "text bearbeiten"
 
 * look for articles and press releases to process (SciMedia center; JAMA network open!; BMJ, JAMA, Lancet, Annals of internal medicine, NEJM; Tim, get endpoints and superordinate terms; Cochrane?)
 * Superordinate statement: "Das uns interessierende **Ereignis**"
