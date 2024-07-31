@@ -244,6 +244,7 @@ input:focus:invalid {
 
 .alert-invalid {
     visibility: hidden;
+    font-size: 0.9em;
     color: var(---error-col);
 }
 
