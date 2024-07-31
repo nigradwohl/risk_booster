@@ -1342,8 +1342,8 @@ function handle_missing_input(ev, missing_entries) {
             })
     }
 
-    console.log(`Popup height (pad): ${popup_height} (${popup_pad}), Highlight height: ${input_height}, 
-            Highlight pos (top, bottom) ${thispos.top}, ${thispos.left}`);
+    // console.log(`Popup height (pad): ${popup_height} (${popup_pad}), Highlight height: ${input_height},
+    //         Highlight pos (top, bottom) ${thispos.top}, ${thispos.left}`);
 
 
     cur_popup.show();
