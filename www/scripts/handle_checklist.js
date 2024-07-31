@@ -274,9 +274,13 @@ $(document).ready(function () {
     } else {
         cur_order = q_order;
         if(text === "treat"){
-            const ix_rrr = cur_order.indexOf("rel-risk-reduction");
-            const ix_pcase = cur_order.indexOf("p-case");
-            [cur_order[ix_rrr], cur_order[ix_pcase]] = [cur_order[ix_pcase], cur_order[ix_rrr]];
+            // Switching elements:
+            const ix_rrr = q_order.indexOf("rel-risk-reduction");
+            const ix_ncase = q_order.indexOf("n-case");  // after n-case.
+            // [cur_order[ix_rrr], cur_order[ix_pcase]] = [cur_order[ix_pcase], cur_order[ix_rrr]];
+
+            // Move relative reduction to final position:
+            cur_order = arraymove(q_order, ix_rrr, ix_ncase)
         }
     }
 
@@ -1464,6 +1468,20 @@ const q_order_test = [
     // "n-case",
     "results"
 ];
+
+/**
+ * Function to reorder arrays.
+ * @param arr
+ * @param fromIndex
+ * @param toIndex
+ */
+function arraymove(arr, fromIndex, toIndex) {
+    const arr_inp = [...arr];
+    const element = arr_inp[fromIndex];
+    arr_inp.splice(fromIndex, 1);
+    arr_inp.splice(toIndex, 0, element);
+    return arr_inp;
+}
 
 
 /**
