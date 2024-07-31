@@ -939,14 +939,15 @@ class Checklist {
 
         // Transpose the risks for testing case:
         if (["test"].includes(this.type)) {
-            this.check_side.ntab.tab.tab2x2 = transpose(this.check_risk.ntab.tab.tab2x2);
+            this.check_side.ptab.tab.tab2x2 = transpose(this.check_risk.ptab.tab.tab2x2);
         }
 
         console.log("~~~~~~ Calculate the risks ~~~~");
         // TODO: Rather get from ptab/mtab -- this should be more flexible
         //  (e.g., if the risks in both groups were entered in percent).
-        const eff_group_risks = this.check_risk.ntab.tab.margin2_mean();
-        let side_group_risks = this.check_side.ntab.tab.margin2_mean();  // Get the margins.
+        // May require converting to larger numbers? Ener factor in margin 2 mean function?
+        const eff_group_risks = this.check_risk.ptab.tab.margin2_mean();
+        let side_group_risks = this.check_side.ptab.tab.margin2_mean();  // Get the margins.
         // For testing case switch negatively tested to show actually healthy:
         // if (["test"].includes(this.type)) {
         //     side_group_risks[0] = side_group_risks[0].reverse();
@@ -965,6 +966,9 @@ class Checklist {
             .filter((x) => group_risks_flat.every((r) => (r * x) >= 1))[0];
         // Get the first reference for which the product is greater 1!
         // Altering this threshold will lead to larger references (which may differentiate better!)
+
+        // TODO: Use smallest scale close to data?
+
         console.log("Curscale is " + curscale);
         // Flexible scaling for large numbers:
         let N_scale = curscale;
