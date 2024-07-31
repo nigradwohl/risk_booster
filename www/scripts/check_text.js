@@ -142,7 +142,7 @@ $(document).ready(function () {
                     [RegExp("Todesfälle")],
                     [RegExp("(ver)?st[aeo]rben"), RegExp(collapse_regex_or(person_all))],
                     // Reporting certain effects in study:
-                    [RegExp("berichte(te)?n|entwickel|beobacht"), RegExp("Unwohlsein|Nebenwirkungen")],
+                    [RegExp("berichte(te)?n|entwickel|beobacht|meldet(e|en)"), RegExp("Unwohlsein|Nebenwirkungen")],
                     [RegExp("berichte(te)?n"), RegExp("wohl"), RegExp("fühlen")]
                 ]
             },
