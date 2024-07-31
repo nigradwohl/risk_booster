@@ -35,7 +35,7 @@ $(document).ready(function () {
          */
         const check_numbers_dict = {
             "perc": regex_perc,
-            "perc_word": RegExp("(?<perc>(" + collapse_regex_or(numwords) + ") ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.?!])" + ")", "dg"),
+            "perc_word": RegExp("(?<perc>(" + collapse_regex_or(numwords) + ") ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.,?!])" + ")", "dg"),
             "freq_word": regex_numwords,
             "nh": regex_nh,
             "nh2": regex_nh2,
@@ -93,7 +93,7 @@ $(document).ready(function () {
             "other_num": regex_num
         }
 
-        const person_all = ["Proband", "[Tt]eilnehme", "[Pp]erson", "Menschen", "Frauen", "Männer", "Kinder", "Erwachsene"]
+        const person_all = ["Proband", "[Tt]eilnehm", "[Pp]erson", "Mensch", "Frauen", "Männer", "Kind", "Erwachsen", "Mädchen", "Junge"]
 
         /**
          * Object that can be looped over to check numbers for number types taht are specific to their units in "number_unit".
@@ -137,7 +137,7 @@ $(document).ready(function () {
                 "number_unit": ["freq", "nh"],
                 "keyset": [
                     // TODO: Double check these!
-                    [RegExp("Fälle|Verläufe"), RegExp("insgesamt|nach|Studie")],
+                    [RegExp("Fälle|Verläufe"), RegExp("insgesamt|nach|Studie")], 
                     [RegExp("[Ee]rkrankt|[Bb]etroffen")],
                     [RegExp("Todesfälle")],
                     [RegExp("(ver)?st[aeo]rben"), RegExp(collapse_regex_or(person_all))],
@@ -175,21 +175,21 @@ $(document).ready(function () {
             "treat_contr": {
                 // Types of subgroups:
                 "contr": [ "(Kontroll|Placebo|Vergleichs|Scheinpräparat)-?.*([Gg]ruppe|[Ee]mpfänger)", // add "Empfänger"
-                    "(?<!Impfstoff)-(Gruppe|Empfänger)", "(?<!Impfstoff)(gruppe|empfänger)", 
+                    "(?<!Impfstoff|Impf)-(Gruppe|Empfänger)", "(?<!Impfstoff|Impf)(gruppe|empfänger)", 
                     "Prävention.*wenigsten.*befolgte",
                     "kein.*Medika",
                     "Scheinpräparat_(gespritzt|erhalten|bekommen)",], 
-                "treat": ["[Gg]eimpfte?n?", "Impf-?.*([Gg]ruppe|[Em]mpfänger)",
+                "treat": ["[Gg]eimpfte?n?", "Impf-?.*([Gg]ruppe|[Em]mpfänger)", 
                     // negative definition of treatment group.
                     "(?<!Kontroll|Vergleichs|Placebo|Scheinpräparat)-(Gruppe|Empfänger)", // to cover case ...-... 
                     "(?<!Kontroll|Vergleichs|Placebo|Scheinpräparat)(gruppe|empfänger)", // to cover case ...
-                    "Behandlungsgruppe", "Behandelte",
+                    "Behandlungsgruppe", "Behandelte", "Impfstoff_(gespritzt|erhalten|bekommen)",
                     "([Tt]eilnehmer|Probanden).*Impfung",
-                    "erh(a|ie)lten.*(Präparat|Medikament)",
-                    "(Präparat|Medikament|Antidepressiva).*erh(a|ie)lten",
+                    "erh(a|ie)lten.*(Präparat|Medikament)", 
+                    "(Präparat|Medikament|Antidepressiva).*erh(a|ie)lten", "Placebo_geschluckt",
                     "gesündesten.*Lebensstil"],
                 // "all": ["insgesamt.*([Tt]eilnehmer|Probanden)"],
-                "all": ["(aller|insgesamt).*[Tt]eilnehmer|Probanden",
+                "all": ["(aller|insgesamt).*[Tt]eilnehmer|Probanden", 
                     "(Teilnehm|Proband).*rekrutiert",
                     "insgesamt.*(Fälle|Verläufe)", "(Fälle|Verläufe).*insgesamt",
                     "beiden.*Gruppen", "sowohl.*[Gg]ruppe"] // problematic!
@@ -197,19 +197,20 @@ $(document).ready(function () {
             "effside": {
                 "eff": ["(?<![Nn]eben)[Ww]irk(?!lich)", "Impfschutz",
                     "Schutz", "geschützt",
-                    "(reduziert|verringert|minimiert).*(Risiko|[Gg]efahr|Wahrscheinlichkeit).*(Ansteckung|Infektion|[Ee]rkrank)",
-                    "((Risiko|[Gg]efahr|Wahrscheinlichkeit).*(Ansteckung|Infektion|[Ee]rkrank)).*(reduziert|verringert|minimiert)",
+                    "(reduziert|verringert|minimiert|gesunken).*(Risiko|[Gg]efahr|Wahrscheinlichkeit).*(Ansteckung|Infektion|[Ee]rkrank)",
+                    "((Risiko|[Gg]efahr|Wahrscheinlichkeit).*(Ansteckung|Infektion|[Ee]rkrank)).*(reduziert|verringert|minimiert|gesunken)",
+                    "(Risiko|[Gg]efahr|Wahrscheinlichkeit).*(reduziert|verringert|minimiert|gesunken)",
                     "(Ansteckungsgefahr|Infektionsrisiko).*(nur|verringert)",
                     "Reduzierung",
                     "(mindert|reduziert).*Symptome",
                     // The following may only apply to vaccination? (But likely also to treatment!)
                     "schwer.*Verl[aä]uf",
                     "Verbesserung"],
-                "side": ["Nebenwirk", "Komplikation", "unerwünschte.*Effekt", "Herzmuskelentzündung", "Hirnblutung", "Impfreaktion?en?"],  // more keywords? add "Impfreaktion"
+                "side": ["Nebenwirk", "Komplikation", "unerwünschte.*Effekt", "Herzmuskelentzündung", "Hirnblutung", "Impfreaktion?en?", "[Hh]erpes", "Fieber"],  // more keywords? add "Impfreaktion", "Herbes", "Fieber"
                 "damage": ["(Inzidenz|[Ee]rkank|Todesfäll|Risiko).*(erhöht|vielfach)",
                     "(erhöht|vielfach).*(Inzidenz|[Ee]rkank|Todesfäll|Risiko)",
                     "Risiko.*Erkrank",
-                    "Todesf[aä]ll|gestorben|Infektion",
+                    "Todesf[aä]ll|gestorben|tödlich|Infektion", // add tödlich
                     "Lebenserwartung.*sink|weniger", "st[aeo]rb.*früher",
                     "[Nn]ur.*Gesundheitszustand.*gut",  // absence of positive!
                     "([Gg]esundheit|[Ff]inanz|[Pp]sychisch).*Belastung"],
@@ -537,10 +538,11 @@ $(document).ready(function () {
                     const token = token_dat.token[ix];
                     console.log(`+++ Current token is ${token}`);
                     const num_ix = num_arr
-                        .filter((ixn) => RegExp(numwords[ixn], "dg").test(token))
+                         .filter((ixn) => RegExp(numwords[ixn], "dg").test(token))
                     // Excludes numbers that occur directly after the number word.
                     if (num_ix !== undefined && num_ix.length > 0) {
-                        token_dat.trnum[ix] = num_arr[num_ix].toString();
+                        token_dat.trnum[ix] = num_arr[num_ix[0]].toString(); // to cover multiple matches
+                        // token_dat.trnum[ix] = num_arr[num_ix].toString();
                     }
                 } else {
                     // Revoke status as number, if the next token after a potential number word is number itself.
@@ -1582,17 +1584,17 @@ const month_names = ["Januar", "Februar", "März", "April", "Mai", "Juni",
     "Dezember"];
 const pat_num = "(?:(?<![\\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,:][0-9]+)?))(?!\\\.[0-9A-Za-zÄÖÜäöüß]|[a-zA-Z0-9ÄÖÜäöüß])";
 const numwords = ["[Kk]einen?", "(?<![Kk])[Ee]ine?[rm]?(?![gnz])", "[Zz]wei(?!fe)", "[Dd]rei", "[Vv]ier", "[Ff]ünf", "[Ss]echs",
-    "[Ss]ieben", "[Aa]cht(?!e)", "[Nn]eun(?!k)", "[Zz]ehn", "[Ee]lf", "[Zz]wölf"];
+    "[Ss]ieben", "[Aa]cht(?!e)", "[Nn]eun(?!k)", "[Zz]ehn", "[Ee]lf", "[Zz]wölf", "[Zz]weieinhalb"];
 const largenums = ["Millionen", "Milliarden"];
 
 const regex_num = new RegExp("(?<unknown>" + pat_num + "( Millionen| Milliarden)?)", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
 const regex_numwords = new RegExp("(?<unknown>(" + collapse_regex_or(numwords) + ") (Person(en)?|F[aä]lle?))", "dg");
 const regex_perc = new RegExp("(?<perc>" +
-    // pat_num + " bzw\\. )?" +
-    pat_num + " ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.?!])" + ")", "dg");
+    // pat_num + " bzw\\. )?" + " ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.,?!])" + ")", "dg");
+    pat_num + " ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.,?!])" + ")", "dg");
 const regex_nh = new RegExp("(?<nh>" + pat_num + " (?!%|[Pp]rozent)(\\w+ )?(von|aus|in) (\\w+ )?" + pat_num + ")", "dg");  // TODO: Handle numberwords here.
 const regex_nh2 = new RegExp("(?<nh>(" + collapse_regex_or(numwords) + ") (?!%|[Pp]rozent)(\\w+ )?(von|aus|in) (\\w+ )?" + pat_num + ")", "dg");
-const regex_mult = new RegExp("(?<mult>" + pat_num + "[ \\-]?([Mm]al|[Ff]ach) (so )?( ?viele|gr[oö]ß(er)?|hoch|niedrig(er)?|besser|erhöht|höher)(?=[\\s.?!])" + ")", "dg");
+const regex_mult = new RegExp("(?<mult>" + pat_num + "[ \\-]?([Mm]al|[Ff]ach) (so )?( ?viele|gr[oö]ß(er)?|hoch|niedrig(er)?|besser|erhöht|höher)(?=[\\s.,?!])" + ")", "dg");
 const regex_dur2 = /(?<dur>\d+([,.]\d+)?-?\d*([,.]\d+)?(Minuten?| Stunden?| Tagen?| Wochen?))/dg;
 // Note: in regex_nh we may also try to get the denominator as a group or as its own entity.
 // nh must also be identified from tokens (e.g., In der Gruppe von 1000[case] Leuten sterben 4[num/case].
@@ -2221,7 +2223,7 @@ function detect_number_type(token_data, txt, numtype_dict) {
                     // console.log(value);
 
                     // Check for the number type to select whether the number type (cases, percentage...) applies:
-                    if (value.number_unit.includes(token_data.unit[curnum_id].toString())) {
+                    if (value.number_unit.includes(token_data.unit[curnum_id].toString())) { // [num_ix[0]]
                         // reversed relative to previous version, was: token_data.unit[curnum_id].includes(value.number_unit)
                         // Allows to associate numbertypes with different units!
 
@@ -2607,7 +2609,7 @@ function detect_unit(token_data) {
     // ALTERNATIVELY use dict etc.?
     const unit_lookup = [
         [/(%|[Pp]rozent\w*)/, "perc"],  // percentages.
-        [/Teilnehm|[Ff][aä]ll|Proband|Person|Mensch|Kind|Mädchen|Junge|Männer|Frauen|Verl[aä]uf|Erwachsen/, "freq"]  // frequencies.
+        [/Teilnehm|[Ff][aä]ll|Proband|Person|Mensch|Kind|Mädchen|Junge|Männer|Frauen|Verl[aä]uf|Erwachsen|Patient/, "freq"]  // frequencies.
         // natural/relative frequencies.
     ]
     // Note: Percentage signs may also be contained in the number token!
