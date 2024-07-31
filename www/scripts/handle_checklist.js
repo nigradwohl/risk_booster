@@ -37,9 +37,11 @@ $(document).ready(function () {
     let addinfo_rrr = "";
 
     let info_treat = "haben die Behandlung (z.B. das Medikament) erhalten";
-    let info_treat2 = "Behandelt";
+    let info_treat2 = "Behandelte";
+    let info_treat2_g = "Behandelten";  // Genitive
     let info_contr = "Vergleichsgruppe (z.B., Placebo)";
     let info_contr2 = "Vergleichsgruppe";
+    let info_contr2_g = "Personen in der Vergleichsgruppe";
 
     class Verblist {
         constructor(base, aux, main) {
@@ -54,14 +56,16 @@ $(document).ready(function () {
             {
                 "verb": new Verblist("sterben", "sind", "verstorben"),
                 "noun": "Todesfälle",
-                "pers": "verstorbene Personen",
+                "qpart": ["verstorben", "ist", "sind"],
+                "red_incr": "von Todesfällen",
                 "select": "Reduktion Todesfälle",
                 "direction": "prevent"
             },
             {
                 "verb": new Verblist("???", "???", "???"),
                 "noun": "negative Ereignisse",
-                "pers": "Personen mit negativem Ereignis",
+                "qpart": ["das negative Ereignis", "erlitt", "erlitten"],
+                "red_incr": "des negativen Ereignisses",
                 "select": "Reduktion negatives Ereignis",
                 "direction": "prevent"
             }
@@ -71,18 +75,26 @@ $(document).ready(function () {
             {
                 "verb": new Verblist("erleiden Nebenwirkungen", "erleiden", "Nebenwirkungen"),
                 "noun": "Nebenwirkungen",
+                "qpart": ["Nebenwirkungen", "erlitt", "erlitten"],
+                "red_incr": "der Nebenwirkungen",
                 "select": "Nebenwirkungen",
                 "direction": "prevent"
             },
             {
                 "verb": new Verblist("erleiden leichte Nebenwirkungen", "erleiden", "leichte Nebenwirkungen"),
                 "select": "leichte Nebenwirkungen",
-                "noun": "leichte Nebenwirkungen"
+                "qpart": ["leichte Nebenwirkungen", "erlitt", "erlitten"],
+                "red_incr": "der Nebenwirkungen",
+                "noun": "leichte Nebenwirkungen",
+                "direction": "prevent"
             },
             {
                 "verb": new Verblist("erleiden schwere Nebenwirkungen", "erleiden", "schwere Nebenwirkungen"),
+                "qpart": ["Nebenwirkungen", "erlitt", "erlitten"],
+                "red_incr": "der Nebenwirkungen",
                 "select": "schwere Nebenwirkungen",
-                "noun": "schwere Nebenwirkungen"
+                "noun": "schwere Nebenwirkungen",
+                "direction": "prevent"
             }
         ]
     };
@@ -97,36 +109,41 @@ $(document).ready(function () {
         outcome_list.eff = [
             {
                 "verb": new Verblist("zeigen Symptome", "zeigen", "Symptome"),
-                "noun": "Symptome",
-                "pers": "Personen mit Symptomen",
+                "noun": "symptomatische Fälle",
+                "qpart": ["Symptome", "zeigte", "zeigten"],
+                "red_incr": "symptomatischer Fälle",
                 "select": "Reduktion von Symptomen",
                 "direction": "prevent"
             },
             {
                 "verb": new Verblist("werden symptomfrei", "werden", "symptomfrei"),
                 "noun": "Symptomfreiheit",
-                "pers": "Personen ohne Symptome",
+                "qpart": ["symptomfrei", "wurde", "wurden"],
+                "red_incr": "symptomfreier Personen",
                 "select": "Symptomfreiheit",
                 "direction": "achieve"
             },
             {
                 "verb": new Verblist("genesen", "genesen", ""),
                 "noun": "Genesungen",
-                "pers": "Genesene Personen",
+                "qpart": ["genesen", "ist", "sind"],
+                "red_incr": "genesener Personen",
                 "select": "Genesung",
                 "direction": "achieve"
             },
             {
                 "verb": new Verblist("???", "???", "???"),
                 "noun": "Reduktion der Erkrankungsdauer",
-                "pers": "Personen mit verringerter Erkrankungsdauer",
+                "qpart": ["eine Reduktion der Erkrankungsdauer", "erreichte", "erreichten"],
+                "red_incr": "an Personen mit reduzierter Erkrankungsdauer",
                 "select": "Reduktion Erkrankungsdauer",
                 "direction": "achieve"
             },
             {
                 "verb": new Verblist("berichten Symptomlinderung", "berichten", "Symptomlinderung"),
                 "noun": "Symptomlinderung",
-                "pers": "Personen mit gelinderten Symptomen",
+                "qpart": ["eine Linderung der Symptome", "erreichte", "erreichten"],
+                "red_incr": "von Personen mit abgeschwächten Symptomen",
                 "select": "Symptomlinderung",
                 "direction": "achieve"
             }
@@ -137,6 +154,8 @@ $(document).ready(function () {
             {
                 "verb": new Verblist("???", "???", "???"),
                 "noun": "positive Ereignisse",
+                "qpart": ["das positive Ereignis", "zeigte", "zeigten"],
+                "red_incr": "positiven Ereignissen",
                 "select": "positive Ereignisse",
                 "direction": "achieve"
             }
@@ -152,22 +171,26 @@ $(document).ready(function () {
         addinfo_rrr = "Man versteht darunter in der Regel, " +
             "wie viele Prozent weniger in der Gruppe der Geimpften erkranken."
         info_treat = "wurden geimpft";
-        info_treat2 = "Geimpft";
-        info_contr2 = "Ungeimpft";
+        info_treat2 = "Geimpfte";
+        info_treat2_g = "Geimpften";
+        info_contr2 = "Ungeimpfte";
+        info_contr2_g = "Ungeimpften";
 
         // Add specific endpoints to outcome lists:
         outcome_list.eff = [
             {
                 "verb": new Verblist("erkranken", "sind", "erkrankt"),
                 "noun": "Erkrankungen",
-                "pers": "Personen mit Erkrankungen",
+                "qpart": ["erkrankt", "ist", "sind"],
+                "red_incr": "von Erkrankungen",
                 "select": "Reduktion Erkrankungen",
                 "direction": "prevent"
             },
             {
                 "verb": new Verblist("müssen im Krankenhaus behandelt werden", "werden", "im Krankenhaus behandelt"),
                 "noun": "Krankenhauseinweisungen",
-                "pers": "Personen, die im Krankenhaus behandelt werden mussten",
+                "qpart": ["ins Krankenhaus eingewiesen", "wurde", "wurden"],
+                "red_incr": "von Krankenhauseinweisungen",
                 "select": "Reduktion Krankenhauseinweisungen",
                 "direction": "prevent"
             }
@@ -175,8 +198,10 @@ $(document).ready(function () {
 
         outcome_list.side = [
             {
-                "verb": new Verblist("erleiden eine Impfreaktion", "erleiden", "eine Impfreaktion"),
+                "verb": new Verblist("zeigen eine Impfreaktion", "zeigen", "eine Impfreaktion"),
                 "noun": "Impfreaktionen",
+                "qpart": ["eine Impfreaktion", "zeigte", "zeigten"],
+                "red_incr": "von Impfreaktionen",
                 "select": "Impfreaktion",
                 "direction": "prevent"
             }
@@ -229,14 +254,18 @@ $(document).ready(function () {
         outcome_list.eff = [
             {
                 "verb": new Verblist("bekommen ein positives Testergebnis", "werden", "positv getestet"),
-                "noun": "Erkrankten", "direction": "achieve"
+                "noun": "Erkrankten",
+                "qpart": ["", "", ""],
+                "direction": "achieve"
             }
         ]
 
         outcome_list.side = [
             {
                 "verb": new Verblist("sind erkrankt", "sind", "erkrankt"),
-                "noun": "erkrankt", "direction": "achieve"
+                "noun": "erkrankt",
+                "qpart": ["", "", ""],
+                "direction": "achieve"
             }
         ]
     }
@@ -253,8 +282,10 @@ $(document).ready(function () {
 
     $(".info-treat").text(info_treat);
     $(".info-treat2").text(info_treat2);
+    $(".info-treat2_g").text(info_treat2_g);
     $(".info-control").text(info_contr);
     $(".info-control2").text(info_contr2);
+    $(".info-control2_g").text(info_contr2_g);
 
 
     // Add outcome to selections:
@@ -355,33 +386,6 @@ $(document).ready(function () {
     })
 
 
-    // console.log("~~~~~~~~~ Test icon array ~~~~~~~~~~~");
-    // let tst2x2 = [[9700, 9850], [300, 150]];
-    //
-    // // Rescale:
-    // tst2x2 = tst2x2.map((x) => x.map((y) => Math.round(y / 20)));
-    // console.log(tst2x2);
-    //
-    // create_icon_array(
-    //     tst2x2[0][1], tst2x2[1][0],
-    //     tst2x2[1][0], tst2x2[1][1],
-    //     'dotdisplay2');
-    // $("#dotdisplay2").show();
-    //
-    // console.log("~~~~~~~~~ eof. test icon array ~~~~~~~~~~~");
-
-    // Editing risk info elements:
-    let curtext;
-    // $(".editable").on("click", function () {
-    //
-    //     $("#edit-text-popup").show();
-    //
-    //     curtext = $(this);
-    //     console.log("curtext is:");
-    //     console.log(curtext);
-    //     $("#edit-newtext").val(curtext.text());
-    // })
-
     function end_editing() {
         const textfields = $(".edit-note");
         textfields.hide();
@@ -445,23 +449,6 @@ $(document).ready(function () {
 
     $("#stop-edit").on("click", end_editing)
 
-    // $("#edit-ok").on("click", function () {
-    //
-    //     console.log(curtext);
-    //     const text_element = $("#edit-newtext");
-    //     console.log(text_element.val());
-    //
-    //     curtext.text(text_element.val());
-    //
-    //     text_element.val("");
-    //     $("#edit-text-popup").hide();
-    // })
-
-
-    // $("#edit-cancel").on("click", function () {
-    //     $("#edit-newtext").val("");
-    //     $("#edit-text-popup").hide();
-    // })
 
 });
 
@@ -546,17 +533,20 @@ class Checklist {
 
         $(".outcome-noun").text(this.outcome.noun);
         $(".outcome-verb").text(this.outcome.verb.base);
-        $(".outcome-part2").text(this.outcome.verb.aux + " " + this.outcome.verb.main);
+        $(".outcome-part-p").text(this.outcome.qpart[1] + " jeweils " + this.outcome.qpart[0]);
+        $(".outcome-part-n").text(this.outcome.qpart[2] + " jeweils " + this.outcome.qpart[0]);
         $(".outcome-pers").text(this.outcome.pers);
 
         $(".side-noun").text(this.outcome_side.noun);
+        $(".side-part-p").text(this.outcome_side.qpart[1] + " jeweils " + this.outcome_side.qpart[0]);
+        $(".side-part-n").text(this.outcome_side.qpart[2] + " jeweils " + this.outcome_side.qpart[0]);
         $(".side-verb").text(this.outcome_side.verb.base);
 
         // Do benefits consist in a reduction or an increase?
         const incr = this.outcome.direction === "achieve";
         $(".incr-decr-art").text((incr ? "den relativen Anstieg" : "die relative Reduktion"));
         $(".incr-decr-noun").text((incr ? "relativer Anstieg" : "relative Reduktion"));
-        $(".incr-decr-q").text((incr ? "Welcher relative Anstieg" : "Welche relative Reduktion") + " von " + this.outcome.noun);
+        $(".incr-decr-q").text((incr ? "Welcher relative Anstieg" : "Welche relative Reduktion") + " " + this.outcome.red_incr);
     }
 
     // Method to advance page:

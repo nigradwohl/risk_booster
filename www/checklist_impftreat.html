@@ -251,7 +251,7 @@
                             <p class="checklist-qtext">
                                 <span class="incr-decr-q"></span>
                                 durch die <span class="typeword"></span>
-                                wurde angegeben?
+                                wurde berichtet?
                                 <!--                                Note: Link seems broken-->
                                 <!--                                <a href="https://www.who.int/news-room/feature-stories/detail/vaccine-efficacy-effectiveness-and-protection">-->
                             </p>
@@ -493,8 +493,9 @@
                         <div class="question-content">
                             <p class="checklist-qtext">
                                 Wie viele Personen unter den
-                                <span class="info-treat2"></span>en
-                                und in der Vergleichsgruppe (Kontrollgruppe) <span class="outcome-part2">erkrankt</span>?
+                                <span class="info-treat2_g"></span>
+                                und in der Vergleichsgruppe
+                                <span class="outcome-part-n">erkrankt</span>?
                                 <!--                                [Outcome for treatment case: mortality? symptoms? ask Helge]-->
                             </p>
                             <p>
@@ -538,12 +539,12 @@
                                 <fieldset class="float-label-field">
                                     <!--                                    <p>Anzahl&nbsp;<span class="outcome-pers">Erkrankungen</span> unter den <span-->
                                     <!--                                            class="info-treat2"></span>en</p>-->
-                                    <label for="n-case-impf">Anzahl unter den <span class="info-treat2"></span></label>
+                                    <label for="n-case-impf"><span class="outcome-noun">Erkrankungen</span> <span class="info-treat2"></span></label>
                                     <input class="checklist-input" id="n-case-impf" name="n-case-impf"
                                            type="text" pattern="[0-9]+"
                                            title="Ganze Zahl größer gleich Null ohne Kommastellen"
                                     >&nbsp;Personen&nbsp;<span class="tooltip">
-                                    <span class="tooltiptext tooltip-overview"><p>Anzahl&nbsp;<span class="outcome-pers">Erkrankungen</span> unter den <span class="info-treat2"></span>en.</p>
+                                    <span class="tooltiptext tooltip-overview"><p>Anzahl&nbsp;<span class="outcome-noun">Erkrankungen</span> unter den <span class="info-treat2_g"></span>.</p>
                                     </span><i class="fa fa-info-circle"></i></span>
                                     <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Häufigkeit ein.</span>
                                 </fieldset>
@@ -551,7 +552,7 @@
                                     <!--                                    <p>Anzahl&nbsp;<span class="outcome-pers">Erkrankungen</span> in der-->
                                     <!--                                        Vergleichsgruppe-->
                                     <!--                                        (Placebogruppe/<span class="info-control2"></span>)</p>-->
-                                    <label for="n-case-control">Anzahl in der Vergleichsgruppe</label>
+                                    <label for="n-case-control"><span class="outcome-noun">Erkrankungen</span> <span class="info-control2"></span></label>
                                     <input class="checklist-input" id="n-case-control" name="n-case-control"
                                            type="text" pattern="[0-9]+"
                                            title="Ganze Zahl größer gleich Null ohne Kommastellen">&nbsp;Personen
@@ -564,10 +565,9 @@
                     <div class="checklist-question" id="p-case-q">
                         <div class="question-content">
                             <p class="checklist-qtext">
-                                Für welchen Anteil der <span class="info-treat2"></span>en und
-                                der <span class="info-control2"></span>en jeweils <span
-                                    class="outcome-noun">Erkrankungen</span>
-                                berichtet?
+                                Welcher Anteil der <span class="info-treat2_g"></span> und
+                                der <span class="info-control2_g"></span> <span
+                                    class="outcome-part-p">erkrankt</span>?
                             </p>
                             <p>Bitte geben Sie die Anteile in Prozent (d.h., Zahlen zwischen 0 und 100) an. Wenn Ihnen
                                 eine Angabe nicht vorliegt, lassen Sie das Feld frei.
@@ -577,8 +577,10 @@
                                 <tr>
                                     <td>
                                         <label for="p-case-impf">
-                                            Anteil <span class="outcome-pers">Erkrankungen</span> unter den <span
-                                                class="info-treat2"></span>en
+<!--                                            Anteil <span class="outcome-pers">Erkrankungen</span> unter den <span-->
+<!--                                                class="info-treat2"></span>-->
+                                            <span class="outcome-noun">Erkrankungen</span> <span
+                                                class="info-treat2"></span>
                                             <span class="alert-invalid"><br><i
                                                     class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Prozentzahl zwischen 1 und 100 ein.</span>
                                         </label>
@@ -592,8 +594,8 @@
                                 </tr>
                                 <tr>
                                     <td><label for="p-case-control">
-                                        Anteil <span class="outcome-pers">Erkrankungen</span> in der Vergleichsgruppe
-                                        (Placebogruppe/<span class="info-control2"></span>)
+                                        <span class="outcome-pers">Erkrankungen</span> Vergleichsgruppe [TOOLTIP!]
+<!--                                        (Placebogruppe/<span class="info-control2"></span>)-->
                                     </label></td>
                                     <td>
                                         <input class="checklist-input" id="p-case-control" name="p-case-control"
@@ -684,23 +686,23 @@
                     <div class="checklist-question" id="n-side-q">
                         <div class="question-content">
                             <p class="checklist-qtext">
-                                Für wie viele Personen wurden unter den <span class="info-treat2"></span>en und in
-                                der <span class="info-control"></span> werden jeweils
-                                <span class="side-noun"></span>
-                                berichtet?
+                                Wie viele Personen unter den <span class="info-treat2_g"></span>
+                                und
+                                den
+                                <span class="info-control2_g"></span>
+                                <span class="side-part-n"></span>?
                             </p>
                             <p>
                                 Bitte geben Sie die Anzahl in den Gruppen als ganze Zahlen ein. Wenn Ihnen eine Angabe
                                 nicht vorliegt, lassen Sie das Feld frei.
-                                <!--                                [Sinnvoll?]-->
                             </p>
                             <!--                        TODO: Eventually translate to grid layout?-->
                             <table>
                                 <tr>
                                     <td>
                                         <label for="n-side-impf">
-                                            Anzahl der Personen mit <span class="side-noun"></span> unter den <span
-                                                class="info-treat2"></span>en
+                                            Anzahl der Personen mit <span class="side-noun"></span> <span
+                                                class="info-treat2_g"></span>
                                         </label>
                                     </td>
                                     <td>
@@ -731,27 +733,30 @@
                     <div class="checklist-question" id="p-side-q">
                         <div class="question-content">
                             <p class="checklist-qtext">
-                                Für welchen Anteil der Personen wurden unter den <span class="info-treat2"></span>en und
-                                der <span class="info-control2"></span>en jeweils <span class="side-noun"></span>
-                                berichtet?
+                                Welcher Anteil der
+                                <span class="info-treat2_g"></span>
+                                und
+                                der
+                                <span class="info-control2_g"></span>
+                                <span class="side-part-p"></span>?
                             </p>
                             <p>Bitte geben Sie die Anteile in Prozent (d.h., Zahlen zwischen 0 und 100) an. Wenn Ihnen
                                 eine Angabe nicht vorliegt, lassen Sie das Feld frei.
-                                <!-- Kommazahlen mit bis zu zwei Nachkommastellen sind erlaubt. -->
+                                <!-- Kommazahlen mit bis zu zwei Nachkommastellen sindside-part-p<em erlaubt. -->
                             </p>
                             <table>
                                 <tr>
                                     <td>
                                         <label for="p-side-impf">
-                                            Anteil der Personen mit <span class="side-noun"></span> unter den <span
-                                                class="info-treat2"></span>en
+                                            <span class="side-noun"></span> <span class="info-treat2"></span>
                                         </label>
                                     </td>
                                     <td>
                                         <input class="checklist-input" id="p-side-impf" name="p-side-impf" type="text"
                                                pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
                                                title="Zahlen zwischen 1 und 100 mit Nachkommastellen">&nbsp;%
-                                        <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Prozentzahl zwischen 1 und 100 ein.</span>
+                                        <span class="alert-invalid"><br>
+                                            <i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Prozentzahl zwischen 1 und 100 ein.</span>
                                     </td>
                                 </tr>
                                 <tr>
