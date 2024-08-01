@@ -963,7 +963,12 @@ class Checklist {
         // const curscale = 1000;  // fixed reference! Should eventually be so that the smallest number is detectable!
         // was: [100, 1000, 2000, 5000, 10000, 50000, 100000]
         const curscale = [100, 1000, 10000, 100000]
-            .filter((x) => group_risks_flat.every((r) => (r * x) >= 1))[0];
+            .filter((x) => group_risks_flat
+                .every((r) => (r * x) >= 1 && Math.round(r * 10000)/10000 === Math.round(r * x)/x)
+            )[0];
+        // The latter part ensures that (currently) up to 3 decimals are maintained, by comparing the rounded scaled result
+        // With the result for the (currently second to) maximum scale.
+        // e.g., Math.round(1.001 * 10000)/10000 === Math.round(1.001 * x)/100
         // Get the first reference for which the product is greater 1!
         // Altering this threshold will lead to larger references (which may differentiate better!)
 
