@@ -981,6 +981,21 @@ class Checklist {
             // Altering this threshold will lead to larger references (which may differentiate better!)
         }
 
+        // Warn if N is missing or small:
+        const n_warn_ele = $("#n-warn");
+        $("#warn-small-n").hide();
+        if(!N){
+            n_warn_ele.text("Sie haben keine Information zur Stichprobengröße angegeben. " +
+                "Die Zuverlässigkeit der Ergebnisse kann so schwer beurteilt werden. " +
+                "Die kleinstmögliche Anzahl wurde ausgewählt");
+            $("#warn-small-n").show();
+        } else if(N < 500){
+            const ix_warn = [30, 100, 500].findIndex((x) => x > N);
+             n_warn_ele.text(`Sie haben eine ${["sehr", "", "relativ"][ix_warn]} kleine Stichprobengröße von ${N} angegeben. ` +
+                "Die Zuverlässigkeit der Ergebnisse ist daher vermutlich begrenzt.");
+            $("#warn-small-n").show();
+        }
+
         console.log("Curscale is " + curscale);
         // Flexible scaling for large numbers:
         let N_scale = curscale;

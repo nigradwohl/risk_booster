@@ -265,6 +265,11 @@ canvas {
     padding: 1em;
 }
 
+#warn-small-n {
+    display: none;
+    padding: 0.4em;
+}
+
 .question-content td {
     /*vertical-align: top;*/
     vertical-align: center;
