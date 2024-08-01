@@ -241,7 +241,7 @@
                                 </tr>
                             </table>
                         </div>
-
+                        <!--Additional note about side effects-->
                         <p id="addnote-side"></p>
                     </div>
 
@@ -367,16 +367,35 @@
                             <!--                                   type="text" pattern="[0-9]+"-->
                             <!--                                   title="Ganze Zahl größer gleich Null ohne Kommastellen">-->
 
+                            <!--                            <div class="input-group">-->
+                            <!--                                <fieldset class="float-label-field">-->
+                            <!--                                    <label for="n-total">Stichprobengröße</label>-->
+                            <!--                                    <input class="checklist-input" id="n-total" type="text"-->
+                            <!--                                           pattern="[0-9]+"-->
+                            <!--                                           title="Zahl zwischen 1 und 100 mit Nachkommastellen">&nbsp;Personen-->
+                            <!--                                    <span class="alert-invalid"><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Häufigkeit ein.</span>-->
+                            <!--                                </fieldset>-->
+                            <!--                            </div>-->
 
                             <div class="input-group">
-                                <fieldset class="float-label-field">
-                                    <label for="n-total">Stichprobengröße</label>
-                                    <input class="checklist-input" id="n-total" type="text"
-                                           pattern="[0-9]+"
-                                           title="Zahl zwischen 1 und 100 mit Nachkommastellen">&nbsp;Personen
-                                    <span class="alert-invalid"><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Häufigkeit ein.</span>
-                                </fieldset>
+                                <div class="inner-input-group">
+                                    <div class="input-and-label">
+                                        <fieldset class="float-label-field">
+                                            <label for="n-total">Stichprobengröße</label>
+                                            <input class="checklist-input" id="n-total" type="text"
+                                                   pattern="[0-9]+"
+                                                   title="Zahl zwischen 1 und 100 mit Nachkommastellen">
+                                            <span class="alert-invalid"><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Häufigkeit ein.</span>
+                                        </fieldset>
+                                    </div>
+                                    <div class="input-quantifier">
+                                        <div>Personen&nbsp;<span class="tooltip tooltip-q">
+                                    <span class="tooltiptext tooltip-overview">Anzahl Personen in der Untersuchung
+                                    </span><i class="fa fa-info-circle"></i></span></div>
+                                    </div>
+                                </div>
                             </div>
+
                         </div>
                     </div>
 
@@ -444,9 +463,8 @@
                                     <div class="input-quantifier">
                                         <div>
                                             Personen&nbsp;<span class="tooltip tooltip-q">
-                                    <span class="tooltiptext tooltip-overview">Anzahl&nbsp;<span
-                                            class="outcome-noun">Erkrankungen</span> unter den <span
-                                            class="info-treat2_g"></span>.
+                                    <span class="tooltiptext tooltip-overview">Anzahl <span
+                                            class="info-treat2"></span>.
                                     </span><i class="fa fa-info-circle"></i></span>
                                         </div>
                                     </div>
@@ -463,18 +481,16 @@
                                         </fieldset>
                                     </div>
                                     <div class="input-quantifier">
-                                        <div>Personen&nbsp;<span class="tooltip">
-                                    <span class="tooltiptext tooltip-overview">Anzahl&nbsp;<span class="outcome-pers">Erkrankungen</span> in der
+                                        <div>Personen&nbsp;<span class="tooltip tooltip-q">
+                                    <span class="tooltiptext tooltip-overview">Anzahl in der
                                                                                 Vergleichsgruppe
                                                                                 (Placebogruppe/<span
-                                                class="info-control2"></span>)<
+                                                class="info-control2"></span>)
                                     </span><i class="fa fa-info-circle"></i></span></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-
                     </div>
 
 
@@ -491,14 +507,35 @@
                             <!--                            <input class="checklist-input" id="p-treat" type="text"-->
                             <!--                                   pattern="([0-9]{0,2}(,[0-9]+))|(100)"-->
                             <!--                                   title="Zahlen zwischen 1 und 100 mit Nachkommastellen">&nbsp;%-->
+                            <!--                            <div class="input-group">-->
+                            <!--                                <fieldset class="float-label-field">-->
+                            <!--                                    <label for="p-treat">Anteil <span class="typeverb"></span></label>-->
+                            <!--                                    <input class="checklist-input" id="p-treat" type="text"-->
+                            <!--                                           pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"-->
+                            <!--                                           title="Zahl zwischen 1 und 100 mit Nachkommastellen">&nbsp;%-->
+                            <!--                                    <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Prozentzahl zwischen 1 und 100 ein.</span>-->
+                            <!--                                </fieldset>-->
+                            <!--                            </div>-->
+
                             <div class="input-group">
-                                <fieldset class="float-label-field">
-                                    <label for="p-treat">Anteil <span class="typeverb"></span></label>
-                                    <input class="checklist-input" id="p-treat" type="text"
-                                           pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
-                                           title="Zahl zwischen 1 und 100 mit Nachkommastellen">&nbsp;%
-                                    <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Prozentzahl zwischen 1 und 100 ein.</span>
-                                </fieldset>
+                                <div class="inner-input-group">
+                                    <div class="input-and-label">
+                                        <fieldset class="float-label-field">
+                                            <label for="p-treat">Anteil <span class="typeverb"></span></label>
+                                            <input class="checklist-input" id="p-treat" type="text"
+                                                   pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
+                                                   title="Zahl zwischen 1 und 100 mit Nachkommastellen">&nbsp
+                                            <span class="alert-invalid"><br><i
+                                                    class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Prozentzahl zwischen 1 und 100 ein.</span>
+                                        </fieldset>
+                                    </div>
+                                    <div class="input-quantifier">
+                                        <div>%&nbsp;<span class="tooltip tooltip-q">
+                                    <span class="tooltiptext tooltip-overview">Anteil <span class="typeverb"></span>
+                                        Personen in der Untersuchung
+                                    </span><i class="fa fa-info-circle"></i></span></div>
+                                    </div>
+                                </div>
                             </div>
 
                         </div>
@@ -554,21 +591,18 @@
                                 <!--                                [Sinnvoll?]-->
                             </p>
 
-
                             <div class="input-group">
-                                <!--                                PRELIMINARY BLUEPRINT!-->
                                 <div class="inner-input-group">
                                     <div class="input-and-label">
                                         <fieldset class="float-label-field">
-                                            <!--                                    <p>Anzahl&nbsp;<span class="outcome-pers">Erkrankungen</span> unter den <span-->
+                                            <!--                                    <p>Anzahl&nbsp;<span class="outcome-noun">Erkrankungen</span> unter den <span-->
                                             <!--                                            class="info-treat2"></span>en</p>-->
                                             <label for="n-case-impf"><span class="outcome-noun">Erkrankungen</span>
-                                                <span
-                                                        class="info-treat2"></span></label>
+                                                <span class="info-treat2"></span></span></label>
                                             <input class="checklist-input" id="n-case-impf" name="n-case-impf"
                                                    type="text" pattern="[0-9]+"
                                                    title="Ganze Zahl größer gleich Null ohne Kommastellen">
-                                            <span class="alert-invalid"><br><i
+                                            <span class="alert-invalid"><i
                                                     class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Häufigkeit ein.</span>
                                         </fieldset>
                                     </div>
@@ -583,29 +617,31 @@
                                 <div class="inner-input-group">
                                     <div class="input-and-label">
                                         <fieldset class="float-label-field">
-                                            <!--                                                                            <p>Anzahl&nbsp;<span class="outcome-pers">Erkrankungen</span> in der-->
+                                            <!--                                                                            <p>Anzahl&nbsp;<span class="outcome-noun">Erkrankungen</span> in der-->
                                             <!--                                                                                Vergleichsgruppe-->
                                             <!--                                                                                (Placebogruppe/<span class="info-control2"></span>)</p>-->
-                                            <label for="n-case-control"><span class="outcome-noun">Erkrankungen</span>
-                                                <span
-                                                        class="info-control2"></span></label>
+                                            <label for="p-case-control"><span class="outcome-noun">Erkrankungen</span>
+                                                <span class="info-control2"></span></label>
                                             <input class="checklist-input" id="n-case-control" name="n-case-control"
                                                    type="text" pattern="[0-9]+"
                                                    title="Ganze Zahl größer gleich Null ohne Kommastellen">
-                                            <span class="alert-invalid"><br><i
+                                            <span class="alert-invalid"><i
                                                     class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Häufigkeit ein.</span>
                                         </fieldset>
                                     </div>
                                     <div class="input-quantifier">
-                                        <div>Personen&nbsp;<span class="tooltip">
-                                    <span class="tooltiptext tooltip-overview">Anzahl&nbsp;<span class="outcome-pers">Erkrankungen</span> in der
+                                        <div>
+                                            Personen&nbsp;<span class="tooltip tooltip-q">
+                                    <span class="tooltiptext tooltip-overview">Anzahl&nbsp;<span class="outcome-noun">Erkrankungen</span> in der
                                                                                 Vergleichsgruppe
                                                                                 (Placebogruppe/<span
-                                                class="info-control2"></span>)<
-                                    </span><i class="fa fa-info-circle"></i></span></div>
+                                                class="info-control2"></span>)
+                                    </span><i class="fa fa-info-circle"></i></span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
 
@@ -620,39 +656,60 @@
                                 eine Angabe nicht vorliegt, lassen Sie das Feld frei.
                                 <!-- Kommazahlen mit bis zu zwei Nachkommastellen sind erlaubt. -->
                             </p>
-                            <table>
-                                <tr>
-                                    <td>
-                                        <label for="p-case-impf">
-                                            <!--                                            Anteil <span class="outcome-pers">Erkrankungen</span> unter den <span-->
-                                            <!--                                                class="info-treat2"></span>-->
-                                            <span class="outcome-noun">Erkrankungen</span> <span
-                                                class="info-treat2"></span>
-                                            <span class="alert-invalid"><br><i
+
+                            <div class="input-group">
+                                <div class="inner-input-group">
+                                    <div class="input-and-label">
+                                        <fieldset class="float-label-field">
+                                            <!--                                    <p>Anzahl&nbsp;<span class="outcome-noun">Erkrankungen</span> unter den <span-->
+                                            <!--                                            class="info-treat2"></span>en</p>-->
+                                            <label for="p-case-impf"><span class="outcome-noun">Erkrankungen</span>
+                                                <span
+                                                        class="info-treat2"></span></span></label>
+                                            <input class="checklist-input" id="p-case-impf" name="p-case-impf"
+                                                   type="text"
+                                                   pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
+                                                   title="Zahlen zwischen 1 und 100 mit Nachkommastellen">
+                                            <span class="alert-invalid"><i
                                                     class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Prozentzahl zwischen 1 und 100 ein.</span>
-                                        </label>
-                                    </td>
-                                    <td>
-                                        <input class="checklist-input" id="p-case-impf" name="p-case-impf" type="text"
-                                               pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
-                                               title="Zahlen zwischen 1 und 100 mit Nachkommastellen">&nbsp;%
-                                        <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Prozentzahl zwischen 1 und 100 ein.</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><label for="p-case-control">
-                                        <span class="outcome-pers">Erkrankungen</span> Vergleichsgruppe [TOOLTIP!]
-                                        <!--                                        (Placebogruppe/<span class="info-control2"></span>)-->
-                                    </label></td>
-                                    <td>
-                                        <input class="checklist-input" id="p-case-control" name="p-case-control"
-                                               type="text" pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
-                                               title="Zahlen zwischen 1 und 100 mit Nachkommastellen">&nbsp;%
-                                        <span class="alert-invalid"><br>
+                                        </fieldset>
+                                    </div>
+                                    <div class="input-quantifier">
+                                        <div>%&nbsp;<span class="tooltip tooltip-q">
+                                    <span class="tooltiptext tooltip-overview">Anteil&nbsp;<span
+                                            class="outcome-noun">Erkrankungen</span> unter den <span
+                                            class="info-treat2_g"></span>.
+                                    </span><i class="fa fa-info-circle"></i></span></div>
+                                    </div>
+                                </div>
+                                <div class="inner-input-group">
+                                    <div class="input-and-label">
+                                        <fieldset class="float-label-field">
+                                            <!--                                                                            <p>Anzahl&nbsp;<span class="outcome-noun">Erkrankungen</span> in der-->
+                                            <!--                                                                                Vergleichsgruppe-->
+                                            <!--                                                                                (Placebogruppe/<span class="info-control2"></span>)</p>-->
+                                            <label for="p-case-control"><span class="outcome-noun">Erkrankungen</span>
+                                                <span
+                                                        class="info-control2"></span></label>
+                                            <input class="checklist-input" id="p-case-control" name="p-case-control"
+                                                   type="text" pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
+                                                   title="Zahlen zwischen 1 und 100 mit Nachkommastellen">
+                                            <span class="alert-invalid">
                                             <i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Prozentzahl zwischen 0 und 100 ein.</span>
-                                    </td>
-                                </tr>
-                            </table>
+                                        </fieldset>
+                                    </div>
+                                    <div class="input-quantifier">
+                                        <div>
+                                            %&nbsp;<span class="tooltip tooltip-q">
+                                    <span class="tooltiptext tooltip-overview">Anteil&nbsp;<span class="outcome-noun">Erkrankungen</span> in der
+                                                                                Vergleichsgruppe
+                                                                                (Placebogruppe/<span
+                                                class="info-control2"></span>)
+                                    </span><i class="fa fa-info-circle"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
                         </div>
                     </div>
@@ -681,7 +738,7 @@
                                         <input class="checklist-input" id="p-sens" name="p-sens" type="text"
                                                pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
                                                title="Zahlen zwischen 1 und 100 mit Nachkommastellen">&nbsp;%
-                                        <span class="alert-invalid"><br>
+                                        <span class="alert-invalid">
                                             <i class="fa fa-exclamation-circle error"></i>
                                             Bitte geben Sie eine gültige Prozentzahl zwischen 0 und 100 ein. Wenn Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
                                         </span>
@@ -697,7 +754,7 @@
                                         <input class="checklist-input" id="p-spec" name="p-spec"
                                                type="text" pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
                                                title="Zahlen zwischen 1 und 100 mit Nachkommastellen">&nbsp;%
-                                        <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i>
+                                        <span class="alert-invalid"><i class="fa fa-exclamation-circle error"></i>
                                             Bitte geben Sie eine gültige Prozentzahl zwischen 0 und 100 ein. Wenn Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
                                         </span>
                                     </td>
@@ -724,7 +781,7 @@
                             </p>
                             <input class="checklist-input" id="side" type="text" pattern="[0-9]+"
                                    title="Ganze Zahl größer gleich Null ohne Kommastellen">
-                            <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Häufigkeit ein.</span>
+                            <span class="alert-invalid"><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Häufigkeit ein.</span>
                             <!--                            <br>-->
                             <!--                            <button class="checklist-button continue-btn">Weiter</button>-->
                         </div>
@@ -744,35 +801,85 @@
                                 nicht vorliegt, lassen Sie das Feld frei.
                             </p>
                             <!--                        TODO: Eventually translate to grid layout?-->
-                            <table>
-                                <tr>
-                                    <td>
-                                        <label for="n-side-impf">
-                                            Anzahl der Personen mit <span class="side-noun"></span> <span
-                                                class="info-treat2_g"></span>
-                                        </label>
-                                    </td>
-                                    <td>
-                                        <input class="checklist-input" id="n-side-impf" name="n-side-impf" type="text"
-                                               pattern="[0-9]+"
-                                               title="Ganze Zahl größer gleich Null ohne Kommastellen">
-                                        <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Häufigkeit ein.</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><label for="n-side-control">
-                                        Anzahl der Personen mit <span class="side-noun"></span> in der Vergleichsgruppe
+                            <!--                            <table>-->
+                            <!--                                <tr>-->
+                            <!--                                    <td>-->
+                            <!--                                        <label for="n-side-impf">-->
+                            <!--                                            Anzahl der Personen mit <span class="side-noun"></span> <span-->
+                            <!--                                                class="info-treat2_g"></span>-->
+                            <!--                                        </label>-->
+                            <!--                                    </td>-->
+                            <!--                                    <td>-->
+                            <!--                                        <input class="checklist-input" id="n-side-impf" name="n-side-impf" type="text"-->
+                            <!--                                               pattern="[0-9]+"-->
+                            <!--                                               title="Ganze Zahl größer gleich Null ohne Kommastellen">-->
+                            <!--                                        <span class="alert-invalid"><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Häufigkeit ein.</span>-->
+                            <!--                                    </td>-->
+                            <!--                                </tr>-->
+                            <!--                                <tr>-->
+                            <!--                                    <td><label for="n-side-control">-->
+                            <!--                                        Anzahl der Personen mit <span class="side-noun"></span> in der Vergleichsgruppe-->
+                            <!--                                        (Placebogruppe/<span-->
+                            <!--                                            class="info-control2"></span>)-->
+                            <!--                                    </label></td>-->
+                            <!--                                    <td>-->
+                            <!--                                        <input class="checklist-input" id="n-side-control" name="n-side-control"-->
+                            <!--                                               type="text" pattern="[0-9]+"-->
+                            <!--                                               title="Ganze Zahl größer gleich Null ohne Kommastellen">-->
+                            <!--                                        <span class="alert-invalid"><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Häufigkeit ein.</span>-->
+                            <!--                                    </td>-->
+                            <!--                                </tr>-->
+                            <!--                            </table>-->
+
+                            <div class="input-group">
+                                <!--                                PRELIMINARY BLUEPRINT!-->
+                                <div class="inner-input-group">
+                                    <div class="input-and-label">
+                                        <fieldset class="float-label-field">
+                                            <!--                                    <p>Anzahl&nbsp;<span class="outcome-pers">Erkrankungen</span> unter den <span-->
+                                            <!--                                            class="info-treat2"></span>en</p>-->
+                                            <label for="n-side-impf">
+                                                <span class="side-noun"></span>
+                                                <span class="info-treat2"></span>
+                                            </label>
+                                            <input class="checklist-input" id="n-side-impf" name="n-side-impf"
+                                                   type="text"
+                                                   pattern="[0-9]+"
+                                                   title="Ganze Zahl größer gleich Null ohne Kommastellen">
+                                            <span class="alert-invalid"><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Häufigkeit ein.</span>
+                                        </fieldset>
+                                    </div>
+                                    <div class="input-quantifier">
+                                        <div>Personen&nbsp;<span class="tooltip tooltip-q">
+                                    <span class="tooltiptext tooltip-overview">Anzahl der Personen mit <span
+                                            class="side-noun"></span>
+                                        unter den <span class="info-treat2_g"></span>.
+                                    </span><i class="fa fa-info-circle"></i></span></div>
+                                    </div>
+                                </div>
+                                <div class="inner-input-group">
+                                    <div class="input-and-label">
+                                        <fieldset class="float-label-field">
+                                            <label for="n-side-control">
+                                                <span class="side-noun"></span>
+                                                <span class="info-control2"></span>
+                                            </label>
+                                            <input class="checklist-input" id="n-side-control" name="n-side-control"
+                                                   type="text" pattern="[0-9]+"
+                                                   title="Ganze Zahl größer gleich Null ohne Kommastellen">
+                                            <span class="alert-invalid"><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Häufigkeit ein.</span>
+                                        </fieldset>
+                                    </div>
+                                    <div class="input-quantifier">
+                                        <div>Personen&nbsp;<span class="tooltip tooltip-q">
+                                    <span class="tooltiptext tooltip-overview">Anzahl der Personen mit <span
+                                            class="side-noun"></span> in der Vergleichsgruppe
                                         (Placebogruppe/<span
-                                            class="info-control2"></span>)
-                                    </label></td>
-                                    <td>
-                                        <input class="checklist-input" id="n-side-control" name="n-side-control"
-                                               type="text" pattern="[0-9]+"
-                                               title="Ganze Zahl größer gleich Null ohne Kommastellen">
-                                        <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Häufigkeit ein.</span>
-                                    </td>
-                                </tr>
-                            </table>
+                                                class="info-control2"></span>)
+                                    </span><i class="fa fa-info-circle"></i></span></div>
+                                    </div>
+                                </div>
+                            </div>
 
                         </div>
                     </div>
@@ -791,35 +898,57 @@
                                 eine Angabe nicht vorliegt, lassen Sie das Feld frei.
                                 <!-- Kommazahlen mit bis zu zwei Nachkommastellen sindside-part-p<em erlaubt. -->
                             </p>
-                            <table>
-                                <tr>
-                                    <td>
-                                        <label for="p-side-impf">
-                                            <span class="side-noun"></span> <span class="info-treat2"></span>
-                                        </label>
-                                    </td>
-                                    <td>
-                                        <input class="checklist-input" id="p-side-impf" name="p-side-impf" type="text"
-                                               pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
-                                               title="Zahlen zwischen 1 und 100 mit Nachkommastellen">&nbsp;%
-                                        <span class="alert-invalid"><br>
+
+                            <div class="input-group">
+                                <!--                                PRELIMINARY BLUEPRINT!-->
+                                <div class="inner-input-group">
+                                    <div class="input-and-label">
+                                        <fieldset class="float-label-field">
+                                            <!--                                    <p>Anzahl&nbsp;<span class="outcome-pers">Erkrankungen</span> unter den <span-->
+                                            <!--                                            class="info-treat2"></span>en</p>-->
+                                            <label for="p-side-impf">
+                                                <span class="side-noun"></span>
+                                                <span class="info-treat2"></span>
+                                            </label>
+                                            <input class="checklist-input" id="p-side-impf" name="p-side-impf"
+                                                   type="text"
+                                                   pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
+                                                   title="Zahlen zwischen 1 und 100 mit Nachkommastellen">
+                                            <span class="alert-invalid">
                                             <i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Prozentzahl zwischen 1 und 100 ein.</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><label for="p-side-control">
-                                        Anteil der Personen mit <span class="side-noun"></span> in der Vergleichsgruppe
+                                        </fieldset>
+                                    </div>
+                                    <div class="input-quantifier">
+                                        <div>%&nbsp;<span class="tooltip tooltip-q">
+                                    <span class="tooltiptext tooltip-overview">Anteil der Personen mit <span
+                                            class="side-noun"></span>
+                                        unter den <span class="info-treat2_g"></span>.
+                                    </span><i class="fa fa-info-circle"></i></span></div>
+                                    </div>
+                                </div>
+                                <div class="inner-input-group">
+                                    <div class="input-and-label">
+                                        <fieldset class="float-label-field">
+                                            <label for="p-side-control">
+                                                <span class="side-noun"></span>
+                                                <span class="info-control2"></span>
+                                            </label>
+                                            <input class="checklist-input" id="p-side-control" name="p-side-control"
+                                                   type="text" pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
+                                                   title="Zahlen zwischen 1 und 100 mit Nachkommastellen">
+                                            <span class="alert-invalid"><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Prozentzahl zwischen 1 und 100 ein.</span>
+                                        </fieldset>
+                                    </div>
+                                    <div class="input-quantifier">
+                                        <div>%&nbsp;<span class="tooltip tooltip-q">
+                                    <span class="tooltiptext tooltip-overview">Anteil der Personen mit <span
+                                            class="side-noun"></span> in der Vergleichsgruppe
                                         (Placebogruppe/<span
-                                            class="info-control2"></span>)
-                                    </label></td>
-                                    <td>
-                                        <input class="checklist-input" id="p-side-control" name="p-side-control"
-                                               type="text" pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
-                                               title="Zahlen zwischen 1 und 100 mit Nachkommastellen">&nbsp;%
-                                        <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Prozentzahl zwischen 1 und 100 ein.</span>
-                                    </td>
-                                </tr>
-                            </table>
+                                                class="info-control2"></span>)
+                                    </span><i class="fa fa-info-circle"></i></span></div>
+                                    </div>
+                                </div>
+                            </div>
 
                         </div>
                     </div>
