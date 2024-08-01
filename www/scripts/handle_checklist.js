@@ -300,11 +300,11 @@ $(document).ready(function () {
     // Preparations:
     // Adjust question order:
     let cur_order;
-    if(text === "test"){
+    if (text === "test") {
         cur_order = q_order_test
     } else {
         cur_order = q_order;
-        if(text === "treat"){
+        if (text === "treat") {
             // Switching elements:
             const ix_rrr = q_order.indexOf("rel-risk-reduction");
             const ix_ncase = q_order.indexOf("n-case");  // after n-case.
@@ -960,19 +960,26 @@ class Checklist {
         const group_risks_flat = eff_group_risks.flat().concat(side_group_risks.flat()).filter(x => x && !isNaN(x));
 
         // Translate to natural frequencies:
-        // const curscale = 1000;  // fixed reference! Should eventually be so that the smallest number is detectable!
-        // was: [100, 1000, 2000, 5000, 10000, 50000, 100000]
-        const curscale = [100, 1000, 10000, 100000]
-            .filter((x) => group_risks_flat
-                .every((r) => (r * x) >= 1 && Math.round(r * 10000)/10000 === Math.round(r * x)/x)
-            )[0];
-        // The latter part ensures that (currently) up to 3 decimals are maintained, by comparing the rounded scaled result
-        // With the result for the (currently second to) maximum scale.
-        // e.g., Math.round(1.001 * 10000)/10000 === Math.round(1.001 * x)/100
-        // Get the first reference for which the product is greater 1!
-        // Altering this threshold will lead to larger references (which may differentiate better!)
-
-        // TODO: Use smallest scale close to data?
+        let curscale;
+        const N = this.check_risk.ntab.N;
+        const scaleset = [100, 1000, 10000, 100000];
+        if (N) {
+            // Use smallest scale close to data:
+            curscale = scaleset.filter((s) => Math.floor(s/(N/2))> 0)[0];
+            // Note: loses precisions for odd numbers like 3 in 141 (but this may be pseudo-precision anyways...)
+            curscale = !curscale ? scaleset[scaleset.length-1] : curscale;  // take the maximum in case no scale fits.
+        } else {
+            // was: [100, 1000, 2000, 5000, 10000, 50000, 100000]
+            curscale = scaleset
+                .filter((s) => group_risks_flat
+                    .every((r) => (r * s) >= 1 && Math.round(r * 10000) / 10000 === Math.round(r * s) / s)
+                )[0];
+            // The latter part ensures that (currently) up to 3 decimals are maintained, by comparing the rounded scaled result
+            // With the result for the (currently second to) maximum scale.
+            // e.g., Math.round(1.001 * 10000)/10000 === Math.round(1.001 * x)/100
+            // Get the first reference for which the product is greater 1!
+            // Altering this threshold will lead to larger references (which may differentiate better!)
+        }
 
         console.log("Curscale is " + curscale);
         // Flexible scaling for large numbers:
@@ -1322,7 +1329,7 @@ function handle_missing_input(ev, missing_entries) {
     const input_height = input_field.height();
 
     // Add the popup:
-        console.log(`Popup height (pad): ${popup_height} (${popup_pad}), Highlight height: ${input_height}, 
+    console.log(`Popup height (pad): ${popup_height} (${popup_pad}), Highlight height: ${input_height}, 
             Highlight pos (top, bottom) ${thispos.top}, ${thispos.left}`);
 
     cur_popup.detach().insertBefore("#" + input_field[0].id);
@@ -1332,7 +1339,7 @@ function handle_missing_input(ev, missing_entries) {
         // TODO: Eventually insert before label?
         cur_popup
             .css({
-                top: - cur_popup.outerHeight() - input_height/2 - 5,
+                top: -cur_popup.outerHeight() - input_height / 2 - 5,
                 // left: thispos.left,
                 position: 'absolute'
             })
