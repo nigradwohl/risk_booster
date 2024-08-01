@@ -560,15 +560,36 @@
                             <!--                            <input class="checklist-input" id="prev" type="text" pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"-->
                             <!--                                   title="Zahlen zwischen 1 und 100 mit Nachkommastellen">&nbsp;%-->
                             <!--                            <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Prozentzahl zwischen 1 und 100 ein.</span>-->
+                            <!--                            <div class="input-group">-->
+                            <!--                                <fieldset class="float-label-field">-->
+                            <!--                                    <label for="prev">Prävalenz</label>-->
+                            <!--                                    <input class="checklist-input" id="prev" type="text"-->
+                            <!--                                           pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"-->
+                            <!--                                           title="Zahl zwischen 1 und 100 mit Nachkommastellen">&nbsp;%-->
+                            <!--                                    <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Prozentzahl zwischen 1 und 100 ein.</span>-->
+                            <!--                                </fieldset>-->
+                            <!--                            </div>-->
 
                             <div class="input-group">
-                                <fieldset class="float-label-field">
-                                    <label for="prev">Prävalenz</label>
-                                    <input class="checklist-input" id="prev" type="text"
-                                           pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
-                                           title="Zahl zwischen 1 und 100 mit Nachkommastellen">&nbsp;%
-                                    <span class="alert-invalid"><br><i class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Prozentzahl zwischen 1 und 100 ein.</span>
-                                </fieldset>
+                                <div class="inner-input-group">
+                                    <div class="input-and-label">
+                                        <fieldset class="float-label-field">
+                                            <!--                                    <p>Anzahl&nbsp;<span class="outcome-noun">Erkrankungen</span> unter den <span-->
+                                            <!--                                            class="info-treat2"></span>en</p>-->
+                                            <label for="prev">Prävalenz</label>
+                                            <input class="checklist-input" id="prev" type="text"
+                                                   pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
+                                                   title="Zahl zwischen 1 und 100 mit Nachkommastellen">
+                                            <span class="alert-invalid"><br><i
+                                                    class="fa fa-exclamation-circle error"></i> Bitte geben Sie eine gültige Prozentzahl zwischen 1 und 100 ein.</span>
+                                        </fieldset>
+                                    </div>
+                                    <div class="input-quantifier">
+                                        <div>%&nbsp;<span class="tooltip tooltip-q">
+                                    <span class="tooltiptext tooltip-overview">Anteil der Erkrankten in der Population.
+                                    </span><i class="fa fa-info-circle"></i></span></div>
+                                    </div>
+                                </div>
                             </div>
                             <!--                            <br>-->
                             <!--                            <button class="checklist-button continue-btn">Weiter</button>-->
@@ -725,41 +746,57 @@
                                 eine Angabe nicht vorliegt, lassen Sie das Feld frei.
                                 <!-- Kommazahlen mit bis zu zwei Nachkommastellen sind erlaubt. -->
                             </p>
-                            <table>
-                                <tr>
-                                    <td>
-                                        <label for="p-sens">
-                                            Anteil der Erkrankten, die vom Test korrekt als erkrankt
-                                            erkannt werden
-                                            (positive Testergebnisse unter den Erkrankten, Sensitivität)
-                                        </label>
-                                    </td>
-                                    <td>
-                                        <input class="checklist-input" id="p-sens" name="p-sens" type="text"
-                                               pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
-                                               title="Zahlen zwischen 1 und 100 mit Nachkommastellen">&nbsp;%
-                                        <span class="alert-invalid">
+
+                            <div class="input-group">
+                                <div class="inner-input-group">
+                                    <div class="input-and-label">
+                                        <fieldset class="float-label-field">
+                                            <!--                                    <p>Anzahl&nbsp;<span class="outcome-noun">Erkrankungen</span> unter den <span-->
+                                            <!--                                            class="info-treat2"></span>en</p>-->
+                                            <label for="p-case-impf">Sensitivität</label>
+                                            <input class="checklist-input" id="p-sens" name="p-sens" type="text"
+                                                   pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
+                                                   title="Zahlen zwischen 1 und 100 mit Nachkommastellen">
+                                            <span class="alert-invalid">
                                             <i class="fa fa-exclamation-circle error"></i>
-                                            Bitte geben Sie eine gültige Prozentzahl zwischen 0 und 100 ein. Wenn Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
+                                            Bitte geben Sie eine gültige Prozentzahl zwischen 0 und 100 ein.
                                         </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><label for="p-spec">
-                                        Anteil der Gesunden, die vom Test korrekt als gesund
+                                        </fieldset>
+                                    </div>
+                                    <div class="input-quantifier">
+                                        <div>%&nbsp;<span class="tooltip tooltip-q">
+                                    <span class="tooltiptext tooltip-overview">Anteil der Erkrankten, die vom Test korrekt als erkrankt
+                                            erkannt werden
+                                            (positive Testergebnisse unter den Erkrankten, Sensitivität).
+                                    </span><i class="fa fa-info-circle"></i></span></div>
+                                    </div>
+                                </div>
+                                <div class="inner-input-group">
+                                    <div class="input-and-label">
+                                        <fieldset class="float-label-field">
+                                            <!--                                                                            <p>Anzahl&nbsp;<span class="outcome-noun">Erkrankungen</span> in der-->
+                                            <!--                                                                                Vergleichsgruppe-->
+                                            <!--                                                                                (Placebogruppe/<span class="info-control2"></span>)</p>-->
+                                            <label for="p-case-control">Spezifität</label>
+                                            <input class="checklist-input" id="p-spec" name="p-spec"
+                                                   type="text" pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
+                                                   title="Zahlen zwischen 1 und 100 mit Nachkommastellen">
+                                            <span class="alert-invalid"><i class="fa fa-exclamation-circle error"></i>
+                                            Bitte geben Sie eine gültige Prozentzahl zwischen 0 und 100 ein.
+                                        </span>
+                                        </fieldset>
+                                    </div>
+                                    <div class="input-quantifier">
+                                        <div>
+                                            %&nbsp;<span class="tooltip tooltip-q">
+                                    <span class="tooltiptext tooltip-overview">Anteil der Gesunden, die vom Test korrekt als gesund
                                         erkannt werden
                                         (negative Testergebnisse unter den Gesunden, Spezifität)
-                                    </label></td>
-                                    <td>
-                                        <input class="checklist-input" id="p-spec" name="p-spec"
-                                               type="text" pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
-                                               title="Zahlen zwischen 1 und 100 mit Nachkommastellen">&nbsp;%
-                                        <span class="alert-invalid"><i class="fa fa-exclamation-circle error"></i>
-                                            Bitte geben Sie eine gültige Prozentzahl zwischen 0 und 100 ein. Wenn Ihnen eine Angabe nicht vorliegt, lassen Sie das Feld frei.
-                                        </span>
-                                    </td>
-                                </tr>
-                            </table>
+                                    </span><i class="fa fa-info-circle"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
                         </div>
                     </div>
