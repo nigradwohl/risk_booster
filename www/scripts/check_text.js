@@ -5,101 +5,18 @@ Eventual functionality:
 Judge an input text based on a fixed set of rules, e.g.:
     * if it reports effectivity it also must report harm
     * if it reports evidence it should report numbers (if available)
-    * if it reports numbers they need to have a reference (or be otherwise clearly defined)
+    * still open: if it reports numbers they need to have a reference (or be otherwise clearly defined)
 
  Therefore, it will be able to process texts, output adherence to the criteria, and highlight corresponding information in text.
 
 */
 
 /*
-Testcases:
-Testcase 1:
-Die Wahrscheinlichkeit für Regen ist 50% oder 60 Prozent? Jedenfalls irgendwas unter 100. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Die Wahrscheinlichkeit für Regen ist 50%  oder 60 Prozent? Jedenfalls irgendwas unter 100. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porttitor elit neque, in condimentum ante pulvinar et. Donec et erat nulla. Vestibulum quis porta tellus. Curabitur non blandit metus. Vestibulum nec nisi quis urna tempor pharetra. Phasellus volutpat, arcu ac malesuada porttitor, erat diam facilisis ligula, eget aliquet nibh augue.
-
-Testcase 2:
-Vergangene Woche hatten Biontech und Pfizer bekanntgegeben, dass ihr Impfstoff nach Zwischenergebnissen klinischer Studien einen mehr als 90-prozentigen Schutz vor Covid-19 bietet. Der US-Pharmakonzern Moderna hatte zuletzt für sein ähnliches Präparat eine Wirksamkeit von 94,5 Prozent errechnet.
-heute 5 94,5 Prozent
-100 Leute.
-1000 Leute.
-100 Leute
-
-Testcase 3:
-Der Impfstoff wird nach Angaben der beiden Unternehmen 2 mal im Abstand von 3 Wochen verabreicht. In der Altersgruppe der Über-65-Jährigen wurde 7 Tage nach der 2 Dosis eine Wirksamkeit von 94 Prozent ermittelt. Der Impfstoff sei von den Teilnehmern der weltweiten Studie gut vertragen worden, ernste Nebenwirkungen seien nicht beobachtet worden, berichteten die Unternehmen. Basis sind Angaben von mindestens 8000 zufällig ausgewählten Teilnehmern.
-
-Bei der immer noch in zahlreichen Ländern laufenden Studie erhält eine Hälfte der insgesamt 43.000 Teilnehmer den Impfstoff, die andere Hälfte fungiert als Kontrollgruppe und bekommt ein Placebo-Mittel.
-
-Bislang erkrankten den Angaben zufolge insgesamt 170 Teilnehmer an Covid-19. Davon entfielen nur 8 Fälle auf die tatsächlich geimpften Probanden, 162 Fälle wurden in der Placebo-Gruppe diagnostiziert. Daraus errechnet sich eine Wirksamkeit von rund 95 Prozent. Nach Angaben von Biontech und Pfizer gab es unter allen Covid-19-Erkrankungen 10 schwere Verläufe - 9 in der Kontroll- und einen in der Impfgruppe.
-
-Slight reformulation:
-Nur 8 Fälle ereigneten sich unter den tatsächlich geimpften Probanden, in der Kontrollgruppe wurden 162 Fälle diagnostiziert.
-
-Nur 8 Fälle ereigneten sich unter den tatsächlich geimpften Probanden, in der Kontrollgruppe waren es 162.
-
-Wer zum Selbstschutz eine Maske trägt, die dicht am Gesicht anliegt, der sei etwa 100-mal besser vor einer Infektion geschützt als ohne Maske.
-
-41 % der weltweiten Studienteilnehmer und 45 % der amerikanischen Studienteilnehmer sind im Alter von 56 bis 85 Jahren.
-
-Testcase 4:
-In der Studie traten insgesamt 10 schwere COVID-19-Verläufe auf. Davon wurden 9 in der Placebogruppe und einer in der BNT162b2-Gruppe beobachtet. Bislang konnte das Data Monitoring Committee keine schwerwiegenden Nebenwirkungen feststellen. Eine Untersuchung der entblindeten Daten zur Impfstoffreaktion in einer randomisierten Subgruppe der finalen Phase-2/3-Analyse mit mindestens 8.000 der über 18-jährigen Probanden zeigte, dass der Impfstoff gut verträglich ist. Die meisten Nebenwirkungen traten nur vorübergehend auf. Die einzigen schweren Nebenwirkungen (3. Grades), die in mehr als 2 % der Probanden nach der ersten oder zweiten Impfung auftraten, waren Erschöpfung mit 3,8 % sowie Kopfschmerzen mit 2,0 % nach der zweiten Dosis.
-
-Testcase percentages:
-BNT162b2 zeigt in der primären Endpunktanalyse 28 Tage nach der ersten Impfung eine 95%ige Wirksamkeit gegen COVID-19; insgesamt traten 170 bestätigte COVID-19-Fälle auf, mit 162 Fällen in der Placebogruppe und 8 Fällen in der Impfstoffgruppe
-
-41 % der weltweiten Studienteilnehmer und 45 % der amerikanischen Studienteilnehmer sind im Alter von 56 bis 85 Jahren.
-
-Der Impfstoff wurde in allen Teilnehmerpopulationen gut vertragen, insgesamt nahmen 43.000 Probanden an der Studie teil; es wurden keine schwerwiegenden Nebenwirkungen festgestellt; die einzigen Nebenwirkungen dritten Grades die häufiger als 2 % auftraten, waren Erschöpfung mit 3,8 % und Kopfschmerzen mit 2,0 %
-
-Test statements:
-- In der Kontrollgruppe erkranken 5 von 100, in der Behandlungsgruppe einer aus 100. --> gut
-- Das Risiko zu erkranken ist 30-mal so hoch. Das heißt es erkranken 30 von 10000 mit dem bösen Verhalten und nur einer von 10000 ohne.
-Das entspricht einem Risikoanstieg von 3000% --> Prozentzahl, vorsicht (mit 1. Satz okay-ish)
-- Das Risiko zu erkranken ist unter rauchern doppelt so hoch. --> Referenz fehlt
-
+Testcase:
  */
 
-/*
-Phraselist:
 
-* risk-
-    + verhindern + Erkrankung
-
- * relative_risk:
-    + [Ii]mpf + wirksam + Prozent
-    + Risiko + n-fach/n-mal so hoch
-
-*/
-
-/*
-Output terms:
-- bezugsgröße (worauf bezieht sich die Zahl?)
-
- */
-
-/*
-~~Feature ideas:~~
-
-Structual ideas:
-* make the token data an object with its own class, so that columns can be indexed accordingly.
-* make the text an object which has associated: tokens (maybe as object), an array of matches
-* color(?) code whether a display is good --> also differentiate between levels of "goodness"
-* For mobile: split into 3 blocks?
-* 1 block per topic (Prozentzahlen, relative Angaben etc.)
-
-Content ideas:
-* identify numbers and their units and types in token data? --> 95,4 [Prozent] is <perc>, 20 [Fälle] is <case>, etc.
-    + use a regex identifier {NUMBER}(?<unit>)
-    + use a unit dictionary to identify whether these are relevant units (can also be used to remove age etc.)
-    + possibly replace or complement with token-based detector?
-
-* identify other types of numbers (cases etc.)
-* identify number ranges
-* count occurrence of percentages: a large number (or density) may be hard to comprehend
-* Identify whether any risk is communicated and whether both effectivity and harm are addressed.
-* identify number references (e.g., adjacent nouns or verbs) --> may use a dictionary of nouns and verbs (or their regexes)!
-
-*/
-
-// Trigger the functionality:
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ START ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 $(document).ready(function () {
 
     // When the button is clicked, process and output the text:
@@ -111,8 +28,6 @@ $(document).ready(function () {
          * @type {string[]}
          */
         let units_exc = ["age", "currency", "time", "date", "year", "dur", "legal", "medical", "enum", "misc", "rank", "phone"];
-
-        const largenums = ["Millionen", "Milliarden"]
 
         /**
          * Object that is looped over to check for units.
@@ -160,16 +75,18 @@ $(document).ready(function () {
             "carry_forward_pre": RegExp("(?<ucarryforward>((waren|sind) es|[Dd]avon[^.\\d ]*) (\\w+ ){0,2}" + pat_num + "(?=\\W))", "dg"),
             // (\w+ ){0,2} allows up to 2 more words; What happens after "Davon" may not be a fullstop or a number..
             "carry_forward_post": RegExp("(?<ucarryforward>" + pat_num + " (waren|sind) es)", "dg"),
+            "carry_back": RegExp("(?<ucarryback>" + pat_num + " (bzw\\.|und|bis))", "dg"),
+            // Units to exclude:
             "phone": /(?<phone>[+]?[0-9]* ?([(]?[0-9]{0,3}[)])?[-\s.]?[0-9]{3,4}[-\s.]?[0-9]{3,4}[-\s.]?[0-9]{1,6})/dg,
             // MIscellaneous numbers to be excluded!
             "misc": RegExp("(?<misc>(" + pat_num + " bis )?" + pat_num + "\\.? (Grad|Staat|Schritt|Kommentare|.[gC](?= .)))", "dg"),
             "vaccdose": RegExp("(?<misc>(" + pat_num + "( (" + collapse_regex_or(largenums) + "))? bis )?" +
-                 pat_num + "( (" + collapse_regex_or(largenums) + "))?" + "\\.? \\w*[Dd]os[ei])", "dg"),
+                pat_num + "( (" + collapse_regex_or(largenums) + "))?" + "\\.? \\w*[Dd]os[ei])", "dg"),
             "vaccdose_word": RegExp("(?<misc>(" + collapse_regex_or(numwords) + "( (" + collapse_regex_or(largenums) + "))? bis )?" +
                 collapse_regex_or(numwords) + "( (" + collapse_regex_or(largenums) + "))?" + " \\w*[Dd]os[ei])", "dg"),
             "degree": RegExp("(?<misc>(" + pat_num + " bis )?" + pat_num + "\\.?(.[gC](?= .)))", "dg"),
             // Enumeration:
-            "enum": /(?<enum>\(\d{1,2}\))/dg,
+            "enum": /(?<enum>[(\[]\d{1,2}[)\]])/dg,
             // "within_nums":
             //   RegExp("(?<misc>" +"\w*-?" + pat_num + ")", "dg")
             // Default number match:
@@ -259,9 +176,11 @@ $(document).ready(function () {
                 // Types of subgroups:
                 "contr": ["(Kontroll|Placebo|Vergleichs)-?.*[Gg]ruppe",
                     "Prävention.*wenigsten.*befolgte",
-                    "kein.*Medika"],
+                    "kein.*Medika",
+                    "Scheinpräparat_(gespritzt|erhalten|bekommen)"],
                 "treat": ["[Gg]eimpfte?n?", "Impf-?.*[Gg]ruppe",
                     "(?<!Kontroll|Vergleichs|Placebo).*-?Gruppe",  // negative definition of treatment group.
+                    "(?<!keinen)_Impfstoff_(gespritzt|erhalten|bekommen)", // maybe handle word in between
                     "Behandlungsgruppe", "Behandelte",
                     "([Tt]eilnehmer|Probanden).*Impfung",
                     "erh(a|ie)lten.*(Präparat|Medikament)",
@@ -319,7 +238,8 @@ $(document).ready(function () {
             },
             "rel": {
                 "abs": ["[Qq]uote", "Anteil", "mehr_als"],  // quotas should always be absolute.
-                "rel": ["Wirksamkeit", "Impfschutz", "Schutzwirkung"]
+                // MAYBE: "[%|Prozent]_[der|aller]"
+                "rel": ["Wirksamkeit", "Impfschutz", "Schutzwirkung", "verlagsamt"]
             },
             "reference": {
                 // TODO!
@@ -343,13 +263,11 @@ $(document).ready(function () {
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // --------- TEXT INPUT AND PRE-PROCESSING --------
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-        // console.log("Check my text");
         const rawText = $("#text-query").val(); // Get raw input text:
 
+        // Insert text into mail feedback field:
         $("#mail-feedback").attr("href", 'mailto:risk.booster@gmail.com?subject=Fehlerhafter Text im ScienceXMedia Riskbooster&body=' +
             "Fehler im folgenden Text:<br><br>" + rawText.replaceAll("\n", "  "));
-
 
         // Pre-process input:
         console.log("Raw text:");
@@ -360,24 +278,16 @@ $(document).ready(function () {
             .replaceAll(/(?<![.?!;])\s*\u2022/gm, ". \u2022")
             .replaceAll(/\.\n\./gm, ".\n\n");  // Replace stray changes.
 
-
         console.log("Pre-processed text:");
         console.log(JSON.stringify(inputText));
 
         // Maybe replace missing punctuation here?
-
-        // console.log(sentence_tokenizer(inputText));
-
-        // console.log(word_tokenizer(inputText));
-        // console.log(sentence_tokenizer(inputText).map(word_tokenizer));
-
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // --------- ANALYSIS OF TOKENIZED DATA -----------
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         const token_dat = get_token_data(inputText);  // create tokenized data.
-
         // console.log("Initial token data:");
         // console.log(token_dat);
 
@@ -489,6 +399,7 @@ $(document).ready(function () {
         // console.log(token_dat.is_num);
 
         // Detect missing units:
+        // TODO: Move up?
         console.log(" +++ detecting missing units +++");
         const no_unit_ix = token_dat.id.filter((d, ix) => token_dat.is_num[ix] && token_dat.unit[ix] === "unknown");
         // console.log(no_unit_ix);
@@ -640,9 +551,11 @@ $(document).ready(function () {
 
         }
 
+        // Update information on small percentages:
         token_dat.add_column(token_dat.unit.map((x, ix) => x === "perc" && token_dat.is_num[ix] ?
             token_dat.trnum[ix].match(regex_num)[0].replace(",", ".") < 1 : -1), "smperc");
 
+        // Investigate change for relative or absolute:
         for (const ix of n_change_ix) {
 
             let out = "unclear";
@@ -672,13 +585,35 @@ $(document).ready(function () {
 
         // eof. detecting relative vs. absolute.
 
-        // Fix some issues:
+        // Fix some issues with numtype:
         token_dat.numtype = token_dat.numtype
             .map((x, ix) => token_dat.unit[ix] === "freq" && [-1, "other"].includes(x) && token_dat.gtype[ix] === "sub" ? "ncase" : x);
 
-        // Reference information for absolute percentages and subgroups:
+        // Reference information for absolute percentages and subgroups (WORK IN PROGRESS):
         // +++ HERE +++
         token_dat.add_column(investigate_context(token_dat, n_subgroup_ix, window_keys.reference, false), "reference");
+
+
+        // Carry backward number information:
+        // Get carryback (from 1 or 2 places before):
+        console.log("CARRYBACKWARD!");
+        for (const ix of allnum_ix) {
+            if (token_dat.unit[ix] === "ucarryback") {
+                // Check the next 2 tokens if they are numbers and return the first match (if any):
+                const ix_nxt = token_dat.id.slice(ix + 1, ix + 3).filter(ixx => token_dat.is_num[ixx]);
+                console.log(ix_nxt);
+                if (ix_nxt.length > 0) {
+                    token_dat.unit[ix] = token_dat.unit[ix_nxt[0]];
+                    token_dat.numtype[ix] = token_dat.numtype[ix_nxt[0]];
+                    token_dat.gtype[ix] = token_dat.gtype[ix_nxt[0]];
+                    token_dat.group[ix] = token_dat.group[ix_nxt[0]];
+                    token_dat.effside[ix] = token_dat.effside[ix_nxt[0]];
+                    token_dat.ftype[ix] = token_dat.ftype[ix_nxt[0]];
+                    token_dat.relabs[ix] = token_dat.relabs[ix_nxt[0]];
+                }
+            }
+        }
+
 
         // Display for testing: ~~~~~~~~~~~~~~~~~~
         console.log("~~~~~ Updated token data: ~~~~~~");
@@ -692,8 +627,9 @@ $(document).ready(function () {
 
         // Default for linking risks:
         const curtop = "?page=" + (token_dat.topics.includes("impf") ? "impf" : "treat");
-        const risk_link = "<p>Verwenden Sie den <a target='_blank' href='checklist_impftreat.html" + curtop + "'>Risikorechner</a>, " +
-            "um eine transparente Darstellung zu erstellen, wenn die Zahlen es erlauben.</p>";
+        const risk_link = "<p class='note-par'>Untenstehend finden Sie Anmerkungen zu den Identifizierten Zahlen im Text.<br>" +
+            "Verwenden Sie den <a target='_blank' href='checklist_impftreat.html" + curtop + "'>Risikorechner</a>, " +
+            "um aus diesen Zahlen eine transparente Darstellung zu erstellen, wenn die Zahlen es erlauben.</p>";
 
         const info_tree = {
             // Levels:
@@ -777,8 +713,11 @@ $(document).ready(function () {
         let cur_ix = 0;  // current index in original text.
         let procText = "";
 
-        // Get rid of unidentified carryforward units:
-        token_dat.unit = token_dat.unit.map((x) => x === "ucarryforward" ? -1 : x);
+
+        // Carry back anything that has not been identified so far:
+
+        // Get rid of unidentified carryforward and backward units:
+        token_dat.unit = token_dat.unit.map((x) => ["ucarryforward", "ucarryback"].includes(x) ? -1 : x);
 
         // Loop over all tokens:
         // TODO: Turn into a function eventually?
@@ -925,21 +864,21 @@ $(document).ready(function () {
         const feature_aliases = {
             "comp_time": {
                 "treat": "<span class=\"tooltiptext tooltip-overview\">Zeitpunkt, zu dem sich etwas verändert hat (z.B., Zunahme oder Abnhame von Erkrankungen)</span>" +
-                    "<a href='risk_wiki.html#wiki-teval'>Untersuchungszeitpunkt</a>",
+                    "<a target='_blank' href='risk_wiki.html#wiki-teval'>Untersuchungszeitpunkt</a>",
                 "contr": "<span class=\"tooltiptext tooltip-overview\">Zeitpunkt, mit dem der Untersuchungszeitpunkt verglichen wird.</span>" +
-                    "<a href='risk_wiki.html#wiki-tcontr'>Vergleichszeitpunkt</a>"
+                    "<a target='_blank' href='risk_wiki.html#wiki-tcontr'>Vergleichszeitpunkt</a>"
             },
             "comp_treat": {
                 "treat": "<span class=\"tooltiptext tooltip-overview\">Gruppe, die die Behandlung erhalten hat oder einem Risiko ausgesetzt war.</span>" +
-                    "<a href='risk_wiki.html#wiki-treat'>Behandlungsgruppe</a>",
+                    "<a target='_blank' href='risk_wiki.html#wiki-treat'>Behandlungsgruppe</a>",
                 "contr": "<span class=\"tooltiptext tooltip-overview\">Gruppe, die keine Behandlung erhalten hat oder einem Risiko nicht ausgesetzt war.</span>" +
-                    "<a href='risk_wiki.html#wiki-contr'>Vergleichsgruppe</a>"
+                    "<a target='_blank' href='risk_wiki.html#wiki-contr'>Vergleichsgruppe</a>"
             },
             "comp_default": {
                 "treat": "<span class=\"tooltiptext tooltip-overview\">Gruppe, in der sich etwas verändert hat (z.B., Zunahme oder Abnhame von Erkrankungen).</span>" +
-                    "<a href='risk_wiki.html#wiki-treat'>Untersuchungsgruppe</a>",
+                    "<a target='_blank' href='risk_wiki.html#wiki-treat'>Untersuchungsgruppe</a>",
                 "contr": "<span class=\"tooltiptext tooltip-overview\">Gruppe, mit der verglichen wird.</span>" +
-                    "<a href='risk_wiki.html#wiki-contr'>Vergleichsgruppe</a>"
+                    "<a target='_blank' href='risk_wiki.html#wiki-contr'>Vergleichsgruppe</a>"
             },
         };
 
@@ -960,15 +899,15 @@ $(document).ready(function () {
                 "<span class=\"tooltiptext tooltip-overview\">Wirksamkeit einer Behandlung oder Impfung" +
                 "(z.B., verhinderte Erkranungen, Genesung, Vermeidung von Todesfällen).<br>" +
                 "Sollte immer mit Zahlen belegt werden.</span>" +
-                "<a href='risk_wiki.html#wiki-effside'>Nutzen</a></div>",
+                "<a target='_blank' href='risk_wiki.html#wiki-effside'>Nutzen</a></div>",
             "side": "<div id=\"side-tt\" class=\"tooltip\">" +
                 "<span class=\"tooltiptext tooltip-overview\">Schaden (z.B., Nebenwirkungen) einer Behandlung oder Impfung.<br>" +
                 "Sollte immer mit Zahlen belegt werden.</span>" +
-                "<a href='risk_wiki.html#wiki-effside'>Schaden</a></div>",
+                "<a target='_blank' href='risk_wiki.html#wiki-effside'>Schaden</a></div>",
             // More general damage like an increase in risk over time or in specific groups:
             "damage": "<div id=\"eff-tt\" class=\"tooltip\">" +
                 "<span class=\"tooltiptext tooltip-overview\">Risiko einer negativen Auswirkung (z.B., Erkrankung)</span>" +
-                "<a href='risk_wiki.html#wiki-risk'>Gesundheitsrisiko</a></div>",
+                "<a target='_blank' href='risk_wiki.html#wiki-risk'>Gesundheitsrisiko</a></div>",
             "treat": "<div id=\"treat-tt\" class=\"tooltip\">" + curfeats["treat"] + "</div>",
             "contr": "<div id=\"contr-tt\" class=\"tooltip\">" +
                 curfeats["contr"] + "</div>"
@@ -1124,7 +1063,7 @@ $(document).ready(function () {
                 "<span id=\"causal-tt\" class=\"tooltip\">" +
                 "<span class=\"tooltiptext tooltip-overview\">Kausalaussagen beschreiben, ob ein Faktor ursächlich für ein Ergebnis ist " +
                 "(z.B., ein Medikament für die Genesung). Das ist nur zuverlässig in Experimenten mit randomisierter Zuteilung möglich.</span>" +
-                "<a href='risk_wiki.html#wiki-causal'>Kausalaussagen</a></span> " +
+                "<a target='_blank' href='risk_wiki.html#wiki-causal'>Kausalaussagen</a></span> " +
                 "möglich" +
                 "</p>";
 
@@ -1173,7 +1112,7 @@ $(document).ready(function () {
                 // "<span class=\"tooltiptext tooltip-overview\">Wirksamkeit einer Behandlung oder Impfung" +
                 // "(z.B., verhinderte Erkranungen, Genesung, Vermeidung von Todesfällen).<br>" +
                 // "Sollte immer mit Zahlen belegt werden.</span>" +
-                // "<a href='risk_wiki.html#wiki-effside'>Nutzen</a></div>"
+                // "<a target='_blank' href='risk_wiki.html#wiki-effside'>Nutzen</a></div>"
                 feature_str = feature_str + "<div id=\"" + key + "-tt\" class=\"tooltip\">" +
                     "<span class=\"tooltiptext tooltip-overview\" style='width: 100%'>" +
                     value.tool +
@@ -1203,7 +1142,7 @@ $(document).ready(function () {
             // +++ HERE!
             // TODO: Remove/adjust Nutzen/Schaden terminology for other kinds of topics (e.g., comparison of risks).
 
-                        // Differentiate numbers for control and treat group:
+            // Differentiate numbers for control and treat group:
             // Do numbers apply to treat and contr group
             // (or: affected and general population for other risks)
 
@@ -1353,11 +1292,11 @@ $(document).ready(function () {
                 mismatch_inf.reverse()
             }
 
-            arr_li.add('Achtung: Sie haben für den Nutzen ' +
+            arr_li.add('Achtung: Der Text verwendet für den Nutzen ' +
                 mismatch_inf[0][0] +
                 ' und für die Schadenwirkung ' +
                 mismatch_inf[1][0] +
-                ' verwendet. ' +
+                '. ' +
                 'Dieses "' +
                 '<div id="eff-mmf" class="tooltip">' +
                 '<span class="tooltiptext tooltip-overview">Verwendung relativer Maße ' +
@@ -1413,9 +1352,8 @@ $(document).ready(function () {
             }
 
             // Add the list entries:
-            notes_html += "<ul><li>Weitere Anmerkungen:</li><ul>" + str_li + "</ul>" +
-                "<li>" + risk_link + "</li>" +
-                "</ul>"
+            notes_html += "</ul><h4>Weitere Anmerkungen:</h4><ul>" + str_li + "</ul>" +
+                "<p>" + risk_link + "</p>"
 
         }
 
@@ -1438,13 +1376,15 @@ $(document).ready(function () {
 
 
         // Update the text:
-        $("#text-result").html('<h3>Ihr Text</h3>' +
+        $("#text-result").html('<h4>Erklärungen zu den statistischen Zahlenangaben im Text</h4>' +
             '<div class="fillout-info">' +
-            '<p class="instruction-par">Fahren Sie mit dem Mauszeiger über die hervorgehobenen Zahlen, um zu Erfahren, ' +
+            '<p class="instruction-par">Fahren Sie mit dem Mauszeiger über die hervorgehobenen Zahlen, um zu erfahren, ' +
             'welchem Format wir die Zahl zugeordnet haben.' +
             '<br>Klicken Sie auf die Zahl, um mehr zu erfahren.</p>' +
             '</div>' +
-            procText);
+            '<div class="highlighted-text">' +
+            procText +
+            '</div>');
 
 
         // Alternative tooltip as popup:
@@ -1607,6 +1547,8 @@ $(document).ready(function () {
 
         })
 
+        $(".hidden-result").show();
+
     })
 
 })
@@ -1639,10 +1581,13 @@ const month_names = ["Januar", "Februar", "März", "April", "Mai", "Juni",
 const pat_num = "(?:(?<![\\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,:][0-9]+)?))(?!\\\.[0-9A-Za-zÄÖÜäöüß]|[a-zA-Z0-9ÄÖÜäöüß])";
 const numwords = ["[Kk]einen?", "(?<![Kk])[Ee]ine?[rm]?(?![gnz])", "[Zz]wei(?!fe)", "[Dd]rei", "[Vv]ier", "[Ff]ünf", "[Ss]echs",
     "[Ss]ieben", "[Aa]cht(?!e)", "[Nn]eun(?!k)", "[Zz]ehn", "[Ee]lf", "[Zz]wölf"];
+const largenums = ["Millionen", "Milliarden"];
 
 const regex_num = new RegExp("(?<unknown>" + pat_num + "( Millionen| Milliarden)?)", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
 const regex_numwords = new RegExp("(?<unknown>(" + collapse_regex_or(numwords) + ") (Person(en)?|F[aä]lle?))", "dg");
-const regex_perc = new RegExp("(?<perc>(" + pat_num + " bzw\\. )?" + pat_num + " ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.?!])" + ")", "dg");
+const regex_perc = new RegExp("(?<perc>" +
+    // pat_num + " bzw\\. )?" +
+    pat_num + " ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.?!])" + ")", "dg");
 const regex_nh = new RegExp("(?<nh>" + pat_num + " (?!%|[Pp]rozent)(\\w+ )?(von|aus|in) (\\w+ )?" + pat_num + ")", "dg");  // TODO: Handle numberwords here.
 const regex_nh2 = new RegExp("(?<nh>(" + collapse_regex_or(numwords) + ") (?!%|[Pp]rozent)(\\w+ )?(von|aus|in) (\\w+ )?" + pat_num + ")", "dg");
 const regex_mult = new RegExp("(?<mult>" + pat_num + "[ \\-]?([Mm]al|[Ff]ach) (so )?( ?viele|gr[oö]ß(er)?|hoch|niedrig(er)?|besser|erhöht|höher)(?=[\\s.?!])" + ")", "dg");
@@ -2046,13 +1991,12 @@ class TokenData {
  */
 function get_token_data(text) {
 
-    text = text.replaceAll('"', "\"");
+    text = text.replaceAll('"', "\"");  // escape quotes.
 
     const text_tokens = word_tokenizer(text);  // Define the text as word and punctuation tokens.
     // console.log(text_tokens);  // for testing.
 
     let token_i;
-    let token_set = new Set();  // set of unique tokens.
     let tpos_start = [];  // starting position of token.
     let tpos_end = [];  // end position of token in basic text.
     let token_pat;
@@ -2078,20 +2022,21 @@ function get_token_data(text) {
         token_i = text_tokens[i];
 
         // Regex for token to ensure exact matching:
-        if (["\\n\\*", ".", ":", ";", ",", "?", "!", "(", ")", "\"", "'", "/", "\-", "\u2018", "\u2019", "\u201c", "\u201d"].includes(token_i) ||
+        // TODO: Translate unicode chars to array!
+        if (["\\n\\*", ".", ":", ";", ",", "?", "!", "[", "]", "(", ")", "\"", "'", "/", "\-", "\u2018", "\u2019", "\u201c", "\u201d"].includes(token_i) ||
             /\++/g.test(token_i)  // also test plus signs (and potentially other quantifiers)
         ) {
             // Punctuation follows somewhat different rules.
             // NOTE: Overlaps with other entities, likely because of the lack of spaces.
 
             // Escape and add lookahead or behind.
-            if (["(", ")"].includes(token_i)) {
-                token_pat = token_i.replace(/([.?()/])/dgm, "\\$1");
+            if (["(", ")", "[", "]"].includes(token_i)) {
+                token_pat = token_i.replace(/([.?()\[\]/])/dgm, "\\$1");
                 // was: token_pat = "(?<=\\s|\\n|^)" + token_i.replace(/([.?()/])/dgm, "\\$1");
             } else if (["\"", "'", "\u2018", "\u2019", "\u201c", "\u201d"].includes(token_i)) {
                 token_pat = token_i;  // no requirement to escape?
             } else {
-                token_pat = token_i.replace(/([.?()/+\-])/dgm, "\\$1") + "(?=\\s|\\n|$|\\.|,|-|[\"'\u2018\u2019\u201c\u201d])";
+                token_pat = token_i.replace(/([.?()\[\]/+\-])/dgm, "\\$1") + "(?=\\s|\\n|$|\\.|,|-|[\"'\u2018\u2019\u201c\u201d])";
             }
 
         } else {
@@ -2652,8 +2597,8 @@ function detect_unit(token_data) {
         unit_info = token_data.unit;
     }
 
-                console.log("INITIAL UNITS:");
-        console.log(JSON.stringify(token_data.unit));
+    console.log("INITIAL UNITS:");
+    console.log(JSON.stringify(token_data.unit));
 
     // Migrate later! Maybe to JSON
     // Lookup table:
@@ -2832,7 +2777,7 @@ function detect_regex_match(txt, token_dat, check_dict) {
                 cur_type = match.type;
 
                 // } else if (match.type[0] !== "unknown") {
-            } else if (!["unknown", "ucarryforward"].includes(match.type[0])) {  // now exclude both.
+            } else if (!["unknown", "ucarryforward", "ucarryback"].includes(match.type[0])) {  // now exclude both.
 
                 // console.log("Match type");
                 // console.log(match.type);
@@ -2910,11 +2855,12 @@ function word_tokenizer(txt) {
     txt = txt.replaceAll(RegExp("(?<=" + collapse_regex_or(abbrevs) + ")(\\.)", "gm"), "xABBREVx");
 
     // Split the text into its tokens:
+    // Ensure that punctuations becomes their own by adding a space before:
     const split = txt
-        .replace(/([.,;?!:)])(?=[\s"'\u2018\u2019\u201c\u201d?])/g, ' $1 ')  // Ensure that punctuations becomes their own by adding a space before.
+        .replace(/([.,;?!:)\]])(?=[\s"'\u2018\u2019\u201c\u201d?])/g, ' $1 ')
         .replace(/([.,;?!:])(?=$)/g, ' $1 ')
-        .replace(/([)])/g, ' $1 ')  // space before any parenthesis.
-        .replace(/([("'\u2018\u2019\u201c\u201d])/g, ' $1 ')  // space after opening parentheses or quote.
+        .replace(/([)\]])/g, ' $1 ')  // space before any parenthesis.
+        .replace(/([\[("'\u2018\u2019\u201c\u201d])/g, ' $1 ')  // space after opening parentheses or quote.
         // .replace(/((?<=\s)[("'\u2018\u2019\u201c\u201d])/g, ' $1 ')  // space after opening parentheses or quote.
         // .replace(/(["'\u2018\u2019\u201c\u201d](?=\s))/g, ' $1')  // space before quotes.
         .split(/[\s\u2022]/g);  // split on spaces and bullets.

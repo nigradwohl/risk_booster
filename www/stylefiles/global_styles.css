@@ -1,48 +1,57 @@
 /* Definition of different themes */
 
-/*Charite*/
-/*        <div class="color-block" style="background-color: #004d9b"></div>*/
-/*        <div class="color-block" style="background-color: #0077be"></div>*/
-/*        <div class="color-block" style="background-color: #cbcfd2"></div>*/
-/*        <div class="color-block" style="background-color: #5e676c"></div>*/
-/*        <div class="color-block" style="background-color: #002451"></div>*/
-/*        <div class="color-block" style="background-color: #e5e7e9"></div>*/
-/*        <div class="color-block" style="background-color: #e95956"></div>*/
-/*        <div class="color-block" style="background-color: #78ad6c"></div>*/
-/*        <div class="color-block" style="background-color: #d31d19"></div>*/
 .current-theme {
-    ---body-background: #f1f1f1f;
-    ---header-background: #f1f1f1f;
-    ---header-line: #0077be;
-    ---textcol-header: white;
-    ---navbar-bg: #f1f1f1f;
-    ---navbar-text: #444;
-    ---navbar-hover-bg: #ddd;
-    ---navbar-hover-text: #f1f1f1f;
-    ---footer-bg: #ddd;
-    ---footer-text: #f1f1f1f;
-    ---footer-hover-bg: #5e676c;
-    ---footer-hover-text: lightgrey;
-    ---dropdown-content-bg: #f1f1f1;
-    ---dropdown-content-text: black;
-    ---dropdown-content-hover-text: #ddd;
-    ---column-bg-primary: #f1f1f1f;
-    ---column-bg-secondary: #f1f1f1f;
-    ---colum-bg-tertiary: #f1f1f1f;
-    ---checklist-question-bg: #f1f1f1f;
-    ---checklist-shadow: #5e676c;
-    /*---button-primary: #004d9b;*/
+    /*---body-background: #f1f1f1;*/
+    /*---header-background: #f1f1f1;*/
+    /*---header-line: #0077be;*/
+    /*---textcol-header: white;*/
+    /*---navbar-bg: #f1f1f1f;*/
+    /*---navbar-text: #444;*/
+    /*---navbar-hover-bg: #ddd;*/
+    /*---navbar-hover-text: #f1f1f1f;*/
+    /*---dropdown-content-bg: #f1f1f1;*/
+    /*---dropdown-content-text: black;*/
+    /*---dropdown-content-hover-text: #ddd;*/
+    /*---column-bg-primary: #f1f1f1f;*/
+    /*---column-bg-secondary: #f1f1f1f;*/
+    /*---colum-bg-tertiary: #f1f1f1f;*/
+    /*---checklist-question-bg: #f1f1f1;*/
+    /*---checklist-shadow: #5e676c;*/
+    /*---wiki-bg: #f1f1f1f;*/
+    /*---wiki-example-bg: lightgrey;*/
+    /*---wiki-overview-bg: #90AFC5;*/
+    /*---wiki-border: #444;*/
+    /*---card-hover-bg: #e5e7e9;*/
+    /*~~~~~~~~~~~~~~~~~ New theme* ~~~~~~~~~~~~~~~~~~~~~~~~~*/
+    /*Backgrounds*/
+    ---bg-general: #f1f1f1;
     ---button-primary: #90AFC5;
     ---button-secondary: lightgrey;
-    ---wiki-bg: #f1f1f1f;
-    ---wiki-example-bg: lightgrey;
-    ---wiki-overview-bg: #90AFC5;
-    ---wiki-border: #444;
     ---card-bg: #cbcfd2;
+    ---bg-highlight-primary: #90AFC5;
+    ---bg-highlight-secondary: #ddd;
+    ---footer-hover-bg: #5e676c;
+    /*---column-bg-primary: #f1f1f1;*/
+    /*---column-bg-secondary: #f1f1f1;*/
     ---card-hover-bg: #e5e7e9;
+    ---checklist-question-bg: #f7f7f7;
+    ---checklist-shadow: #5e676c;
+    /*Text colors*/
+    ---text-light: #f1f1f1;
     ---text-color-primary: #17171F;
-    ---text-color-secondary: #333;
+    ---text-color-secondary: #666; /* was: #333*/
+    /*Other colors*/
+    ---col-sepline: #0077be;
+    ---error-col: darkred;
+    ---col-border: #333; /*#444;*/
+    ---footer-bg: #ddd;
+    ---footer-text: #f1f1f1f;
+    ---footer-hover-text: lightgrey;
 }
+
+
+/*Source for buttons:*/
+/*https://copy-paste-css.com/*/
 
 /*Previous:*/
 /*.current-theme {*/
@@ -109,11 +118,19 @@
 /*}*/
 
 /* CSS for body */
+html {
+    background-color: #f1f1f1;
+}
+
 body {
-    font-family: Arial, sans-serif;
+    /*font-family: Arial, sans-serif;*/
+    /*font-family: Roboto, sans-serif;*/
+    /*font-family: Helvetica, sans-serif;*/
+    /*font-family: "Roboto Light", sans-serif;*/
+    font-family: "Open Sans", sans-serif;
     margin: 0 20px;
     padding: 0;
-    background-color: var(---body-background);
+    background-color: var(---bg-general);
 }
 
 .footer {
@@ -124,9 +141,121 @@ body {
     box-sizing: border-box;
 }
 
+/* ~~~~~~~~~~ Input field styling ~~~~~~~~~~~~~~~~~~~~~~*/
+/*.checklist-input {*/
+/*    border-radius: 5px;*/
+/*    line-height: 1.2em;*/
+/*    font-size: 1.2em;*/
+/*    padding: 5px;*/
+/*    margin-bottom: 0.3em;*/
+/*    max-width: 6em;*/
+/*    position: relative;*/
+/*}*/
 
+
+/*https://freebiesupply.com/blog/css-inputs/*/
+/* form starting stylings ------------------------------- */
+.input-group {
+    margin-top: 1.2em;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    font-size: 0.9em;
+}
+
+.inner-input-group {
+    display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  flex-direction: row;
+  align-items: baseline;
+}
+
+.input-quantifier > div{
+    /*font-size: 0.8em;*/
+}
+
+.input-and-label{
+    width: 70%;
+}
+
+.float-label-field {
+    border: none;
+    outline: none;
+    position: relative;
+    margin: 1em 5px 10px 0;
+    padding: 0.4em;
+    box-sizing: border-box;
+    cursor: text;
+}
+
+.float-label-field input {
+    border: none;
+    outline: none;
+    padding: 5px 5px 5px 5px;
+    margin-bottom: 5px;
+    width: 100%;
+    /*max-width: 90%;*/
+    /*font-size: 0.8em;*/
+    border-bottom: solid 2px var(---col-sepline);
+}
+
+.float-label-field label {
+    opacity: 0.5;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    transition: all 0.2s ease;
+    /*font-size: 0.8em;*/
+    cursor: text;
+    white-space: nowrap;
+}
+
+.float-label-field.focus label {
+    color: orange;
+}
+
+.float-label-field.focus input {
+    border-bottom: solid 2px orange;
+}
+
+.float-label-field.float label {
+    opacity: 1;
+    top: -6px;
+    font-size: 60%;
+    transition: all 0.2s ease;
+    font-weight: bold;
+}
+
+
+/*Handling invalid inputs*/
+input:invalid {
+    /*border: var(---error-col) solid 3px;*/
+    border-bottom: var(---error-col) solid 3px;
+}
+
+.float-label-field.focus input:invalid {
+    border-bottom: var(---error-col) solid 3px;
+}
+
+input:focus:invalid {
+    box-shadow: none;
+}
+
+.alert-invalid {
+    visibility: hidden;
+    font-size: 0.9em;
+    display: block;
+    color: var(---error-col);
+}
+
+input:invalid ~ .alert-invalid {
+    visibility: visible;
+}
+
+
+/*Blockquotes*/
 blockquote {
-    /*font-size: 18px;*/
     font-size: 0.9em;
     font-style: italic;
     margin: 0.25em 0;
@@ -159,13 +288,14 @@ blockquote cite:before {
 }
 
 
+/*HEADER*/
 .header-container {
     display: flex;
     flex-wrap: wrap;
     align-items: stretch;
     align-content: stretch;
     width: 100%;
-    border-bottom: 2px solid var(---header-line);
+    border-bottom: 2px solid var(---col-sepline);
 }
 
 /* Header/logo Title */
@@ -175,13 +305,14 @@ blockquote cite:before {
     flex-grow: 2;
     display: flex;
     align-items: center;
-    background: var(---header-background);
-    color: var(---textcol-header);
+    background: var(---bg-general);
+    color: var(---text-color-primary);
 
 }
 
-.header > h2 {
+.header h2 {
     display: inline-block;
+    text-decoration: none;
 }
 
 .subhead {
@@ -202,11 +333,11 @@ blockquote cite:before {
 /* Style the top navigation bar */
 .navbar {
     display: flex;
-    background-color: var(---navbar-bg);
+    background-color: var(---bg-general);
     justify-content: space-around;
     align-items: center;
     flex-grow: 3;
-    font-size: 1.2em;
+    font-size: 1em;
     /*height: 100%;*/
 }
 
@@ -224,7 +355,7 @@ blockquote cite:before {
 }
 
 .nav-container > a {
-    color: var(---navbar-text);
+    color: var(---text-color-primary);
     text-decoration: none;
     width: 100%;
     /*display: flex;*/
@@ -234,8 +365,8 @@ blockquote cite:before {
 
 /* Change color on hover */
 .navbar .nav-container:hover {
-    background-color: var(---navbar-hover-bg);
-    color: var(---navbar-hover-text);
+    background-color: var(---bg-highlight-secondary);
+    color: var(---bg-highlight-secondary);
 }
 
 /* Footer */
@@ -247,7 +378,7 @@ blockquote cite:before {
 
 /* Style the navigation bar links */
 .navbar-foot a {
-    color: var(---footer-text);
+    color: var(---text-color-primary);
     padding: 10px 20px;
     text-decoration: none;
     text-align: center;
@@ -266,7 +397,7 @@ blockquote cite:before {
 .dropdown-content {
     display: none;
     position: absolute;
-    background-color: var(---dropdown-content-bg);
+    background-color: var(---bg-general);
     min-width: 160px;
     left: 30%;
     top: 80%;
@@ -275,22 +406,18 @@ blockquote cite:before {
 }
 
 .dropdown-content a {
-    color: var(---dropdown-content-text);
+    color: var(---text-color-primary);
     padding: 12px 16px;
     text-decoration: none;
     display: block;
 }
 
 .dropdown-content a:hover {
-    background-color: var(---dropdown-content-hover-text);
+    background-color: var(---bg-highlight-secondary);
 }
 
 .dropdown:hover .dropdown-content {
     display: block;
-}
-
-.dropdown:hover .dropbtn {
-    background-color: #3e8e41;
 }
 
 
@@ -304,28 +431,32 @@ blockquote cite:before {
 
 .full-column {
     flex: 100%;
-    background-color: var(---column-bg-primary);
+    background-color: var(---bg-general);
     padding: 20px;
 }
 
 /* Create two unequal columns that sits next to each other */
 /* Sidebar/left column */
 .input-col {
-    background-color: var(---column-bg-secondary);
+    background-color: var(---bg-general);
     padding: 5px 20px;
 }
 
 .output-col {
-    background-color: var(---colum-bg-tertiary) te;
-    padding: 5px 20px;
+    /*background-color: var(---colum-bg-tertiary) te;*/
+    /*padding: 5px 20px;*/
     /*margin: 1em;*/
     height: 100%;
     /*overflow: visible;*/
+    /*border: 1px solid var(---col-border);*/
+    /*border-radius: 3px;*/
+    background-color: var(---bg-general);
+    padding: 0.4em 0.7em;
+    margin: 0 0.4em 0.5em 0.4em;
 }
 
 .number-input {
     flex: 30%;
-
 }
 
 
@@ -340,8 +471,8 @@ blockquote cite:before {
 
 .wiki-overview {
     flex: 35%;
-    background-color: var(---wiki-overview-bg);
-    border: 0.1em solid var(---wiki-border);
+    background-color: var(---bg-highlight-primary);
+    border: 0.1em solid var(---col-border);
     border-radius: 5px;
 }
 
@@ -354,8 +485,8 @@ blockquote cite:before {
     margin: 1em 0;
     width: 80%;
     border-radius: 5px;
-    border: 1px solid var(---wiki-border);
-    background-color: var(---wiki-bg);
+    border: 1px solid var(---col-border);
+    background-color: var(---bg-general);
 }
 
 .wiki-intro {
@@ -363,81 +494,120 @@ blockquote cite:before {
 }
 
 .wiki-examples {
-    /*border: 1px solid var(---wiki-border);*/
+    /*border: 1px solid var(---col-border);*/
     margin: 1em 0;
     padding: 1em;
-    background-color: var(---wiki-example-bg);
-}
-
-.text-input {
-    display: flex;
-    flex-direction: column;
-    flex: 35%;
-    /*height: 20em;*/
-}
-
-.text-notes {
-    flex: 45%;
-    /*height: 20em;*/
-    /*overflow-y: scroll;*/
-}
-
-.text-notes ul {
-    padding-left: 1.2em;
-    list-style-type: none;
-}
-
-.text-notes ul li {
-    padding-top: 0.5em;
-}
-
-.text-notes ul ul {
-    padding-left: 1.5em;
-    list-style-type: circle;
-}
-
-.text-output {
-    /*flex: 55%;*/
-    padding: 0.5em 2em;
-    min-height: 20em;
-    max-height: 50em;
-    overflow-y: scroll;
-    line-height: 1.6;
-}
-
-.text-input > textarea {
-    /*flex: 1;*/
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 0.8em;
-    min-height: 15em;
-    /*Removed due to display issues*/
+    background-color: var(---bg-highlight-secondary);
 }
 
 
 /*Styling input elements */
-.input-button {
+.btn {
     padding: 7px;
     margin: 5px 0;
-    font-size: 1em;
     text-align: center;
-    background-color: var(---button-primary);
-    color: #f1f1f1f;
-    font-weight: 500;
     border: none;
-    border-radius: 5px;
+    border-radius: 2px;
     cursor: pointer;
-    float: right;
+    /*float: right;*/
 }
 
-.longtext {
-    border-radius: 10px;
-    padding: 0.5em;
+.btn-large {
+    font-weight: 500;
+    font-size: 14px;
 }
+
+
+/*display: inline-block;*/
+/*outline: none;*/
+/*cursor: pointer;*/
+/*font-weight: 500;*/
+/*border: 1px solid transparent;*/
+/*border-radius: 2px;*/
+/*height: 36px;*/
+/*line-height: 34px;*/
+/*font-size: 14px;*/
+/*color: #ffffff;*/
+/*background-color: #007c89;*/
+/*transition: background-color 0.2s ease-in-out 0s, opacity 0.2s ease-in-out 0s;*/
+/*padding: 0 18px;*/
+/*:hover {*/
+/*    color: #ffffff;*/
+/*    background-color: #006570;*/
+/*}*/
+
+select {
+
+  /* styling */
+  background-color: white;
+  border: thin solid var(---col-sepline);
+  border-radius: 4px;
+  display: inline-block;
+  font: inherit;
+  line-height: 1.2em;
+  padding: 0.5em 1.5em 0.5em 1em;
+  /* reset */
+  margin: 0 0.5em;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+    width: 350px;
+/*Minimal style*/
+  background-image:
+    linear-gradient(45deg, transparent 50%, gray 50%),
+    linear-gradient(135deg, gray 50%, transparent 50%),
+    linear-gradient(to right, #ccc, #ccc);
+  background-position:
+    calc(100% - 20px) calc(1em + 2px),
+    calc(100% - 15px) calc(1em + 2px),
+    calc(100% - 2.5em) 0.5em;
+  background-size:
+    5px 5px,
+    5px 5px,
+    1px 1.5em;
+  background-repeat: no-repeat;
+}
+
+select:focus {
+  background-image:
+    linear-gradient(45deg, green 50%, transparent 50%),
+    linear-gradient(135deg, transparent 50%, green 50%),
+    linear-gradient(to right, #ccc, #ccc);
+  background-position:
+    calc(100% - 15px) 1em,
+    calc(100% - 20px) 1em,
+    calc(100% - 2.5em) 0.5em;
+  background-size:
+    5px 5px,
+    5px 5px,
+    1px 1.5em;
+  background-repeat: no-repeat;
+  border-color: green;
+  outline: 0;
+}
+
+.btn-small {
+    font-weight: 500;
+    font-size: 0.9em;
+}
+
+
+.button-primary {
+    background-color: var(---button-primary);
+    color: var(---text-color-primary);
+}
+
+.button-secondary {
+    background-color: var(---button-secondary);
+    color: var(---text-color-secondary);
+}
+
 
 #open-toc {
     display: none;
 }
-
 
 .container {
     display: flex;
@@ -479,20 +649,11 @@ blockquote cite:before {
 }
 
 
-/*.content > * {*/
-/*    background: silver;*/
-/*    color: black;*/
-/*}*/
-
 .card:hover {
     background-color: var(---card-hover-bg);
     color: black;
 }
 
-.media {
-    background: black;
-    min-height: 120px;
-}
 
 /* Display logic:*/
 .content-inner {
@@ -531,7 +692,7 @@ blockquote cite:before {
 
 /* CSS for paragraph */
 p {
-    color: var(---text-color-secondary);
+    color: var(---text-color-primary);
     font-size: 0.9em;
     line-height: 1.2;
     margin: 0 0 10px;
@@ -544,8 +705,8 @@ ul {
 
 /* CSS for h1 */
 h1 {
-    color: #444;
-    font-size: 2em;
+    color: var(---text-color-secondary);
+    font-size: 1.8em;
     margin-bottom: 10px;
 }
 
@@ -563,14 +724,21 @@ h3 {
     margin-bottom: 10px;
 }
 
+h4 {
+    /*color: #101010;*/
+    color: var(---text-color-primary);
+    font-size: 1em;
+    margin-bottom: 5px;
+}
+
 /*Color blocks for visualizing example palettes:*/
 .color-block {
     height: 3em;
     width: 3em;
-
     margin: 0 0.5em;
 }
 
+/*Tooltips and error prompts*/
 #tooltip-popup {
     background-color: white;
     border: 2px solid steelblue;
@@ -588,6 +756,96 @@ h3 {
     margin: 0.5em 0;
 }
 
+/* Tooltip container */
+.tooltip {
+    position: relative;
+    overflow: visible;
+    opacity: 1;
+    display: inline-block; /* vorher: inline */
+    border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+}
+
+.tooltip .tooltiptext.tooltip-checklist {
+    width: 15em;
+    text-align: left;
+    padding: 0.5em;
+}
+
+.tooltip .tooltiptext.tooltip-overview {
+    width: 15em;
+    text-align: left;
+    padding: 0.6em;
+    /*Option 1*/
+    /*background-color: #fff; */
+    /*color: black;*/
+    /*border: 1px solid #0077be;*/
+    /*Option 2*/
+    background-color: steelblue;
+    color: white;
+    border: 1px solid #0077be;
+    font-weight: normal;
+    opacity: 1;
+    border-radius: 2px;
+}
+
+.tooltip .tooltiptext.tooltip-overview > p {
+    color: white;
+}
+
+.tooltip .tooltiptext.tooltip-overview::after {
+    border-color: #0077be transparent transparent transparent;
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 8.5em; /* von 10em auf 8.5em */
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    padding: 5px 2px;
+    border-radius: 6px;
+
+    /* Position the tooltip text */
+    position: absolute;
+    z-index: 9997;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -70px;
+
+    /* Fade in tooltip */
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+/* Tooltip arrow */
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    overflow: visible;
+    border-color: #555 transparent transparent transparent;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+#tooltip-popup {
+    position: absolute;
+    display: none;
+}
+
+.tooltip-popup > ul {
+    padding-left: 1.8rem;
+}
+
 .error-prompt {
     z-index: 9998;
     display: none;
@@ -598,207 +856,46 @@ h3 {
     z-index: 9997;
 }
 
-#notes-dummy td {
-    padding: 0.5em;
-    border: 1px solid black;
-}
-
 .instruction-par {
-    color: #666;
-    font-size: 0.8em;
+    color: var(---text-color-secondary);
 }
 
 .note-par {
-    font-size: 0.8em;
+    /*font-size: 0.8em;*/
+    /*font-size: 0.9em;*/
     margin-bottom: 5px;
+    color: var(---text-color-secondary);
 }
 
 .fillout-info {
-    background-color: var(---column-bg-secondary);
+    background-color: var(---bg-general);
     border-radius: 5px;
-    padding: 1em;
+    padding: 0.4em;
     margin-bottom: 0.5em;
 }
 
-.grid-container-check {
-    display: grid;
-    grid-template-columns: minmax(220px, 2.5fr) minmax(100px, 1.5fr) 20px minmax(100px, 1.5fr) minmax(220px, 2.5fr);
-    grid-template-rows: 1em 1.5em 60px auto 50px;
-    grid-template-areas:
-            "header header header header header"
-            "subhead1 . . . subhead2"
-            "arr1 arrnote1 . arrnote2 arr2"
-            "arr1 midnote midnote midnote arr2";
-    margin-top: 0.8em;
-    /*justify-items: center;*/
+.in-text-icon {
+    font-size: 1.5em;
 }
 
-#results-q {
-    padding-top: 0;
+.in-text-icon.warning {
+    color: goldenrod;
+    /*color: #8CA000;*/
+    /*rotate: -90deg;*/
 }
 
-.check-results-navrow {
-    font-size: 0.7em;
-    display: flex;
-    align-items: end;
-    width: 100%;
-    /*background-color: lightsteelblue;*/
-    border-bottom: 1px solid darkgrey;
-    z-index: 9998;
-    margin-bottom: 1em;
+.in-text-icon.error {
+    color: #B85042;
 }
 
-.check-results-navrow div {
-    cursor: pointer;
-    padding: 0.8em 0.9em 0.5em;
-    justify-self: end;
-    z-index: 9998;
+.in-text-icon.good {
+    color: #1abc9c;
 }
 
-#stop-edit {
-    display: none;
+.annote-text-icon {
+    font-size: 0.2em;
 }
 
-.check-results-navrow div:hover {
-    background-color: var(---navbar-hover-bg);
-    color: var(---navbar-hover-text);
-}
-
-.grid-head {
-    /*grid-row: 1;*/
-    /*grid-column: 2 / 4;*/
-    grid-area: header;
-    justify-self: center;
-}
-
-.grid-subhead1 {
-    /*grid-row: 2;*/
-    grid-area: subhead1;
-    justify-self: center;
-}
-
-.grid-subhead2 {
-    /*grid-row: 2;*/
-    grid-area: subhead2;
-    justify-self: center;
-}
-
-.grid-arr1 {
-    grid-area: arr1;
-    /*grid-row: 3 / 4;*/
-}
-
-.grid-arr2 {
-    grid-area: arr2;
-    /*grid-row: 3 / 4;*/
-}
-
-.grid-note1 {
-    grid-area: arrnote1;
-    justify-self: start;
-    text-align: left;
-    align-self: center;
-    padding: 0 0.2em;
-}
-
-.grid-note2 {
-    grid-area: arrnote2;
-    justify-self: end;
-    text-align: right;
-    align-self: center;
-    padding: 0 0.2em;
-}
-
-.grid-global-note {
-    /*grid-row: 4;*/
-    grid-area: midnote;
-    justify-self: center;
-    padding: 1em 0.2em;
-}
-
-.content-start {
-    justify-self: start;
-}
-
-.content-end {
-    justify-self: end;
-}
-
-/* WIKI STYLES */
-/* The side navigation menu */
-.sidebar {
-    margin: 0;
-    padding: 0;
-    width: 200px;
-    background-color: #f1f1f1;
-    /*position: fixed;*/
-    height: 100%;
-    overflow: auto;
-}
-
-/* Sidebar links */
-.sidebar a {
-    display: block;
-    color: black;
-    padding: 16px;
-    text-decoration: none;
-}
-
-/* Active/current link */
-.sidebar a.active {
-    background-color: #04AA6D;
-    color: white;
-}
-
-/* Links on mouse-over */
-.sidebar a:hover:not(.active) {
-    background-color: #555;
-    color: white;
-}
-
-.wiki-row {
-    max-height: 800px;
-    min-height: 500px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
-
-#entry-list {
-    /*margin-left: 25%;*/
-    width: 75%;
-    /*overflow: hidden;*/
-    overflow: hidden;
-    overflow-y: scroll;
-    flex-grow: 4;
-}
-
-/* Page content. The value of the margin-left property should match the value of the sidebar's width property */
-div.wiki-toc {
-    margin: 1em;
-    height: 480px;
-    flex-basis: 20%;
-    /*width: 20%;*/
-    padding: 10px 16px;
-    /*position: fixed;*/
-    z-index: 0;
-    /*position: relative;*/
-    /*top: 0;*/
-    /*left: 0;*/
-    border-radius: 5px;
-    border: 1px solid var(---wiki-border);
-    /*background-color: var(---wiki-bg);*/
-    /*height: 1000px;*/
-    overflow-y: scroll;
-    /*top: 0;*/
-    /*bottom: 0;*/
-}
-
-.wiki-toc a {
-    padding: 5px 3px;
-    display: block;
-    overflow: hidden;
-}
 
 /* On screens that are less than 700px wide, make the sidebar into a topbar */
 @media screen and (max-width: 700px) {
@@ -830,12 +927,6 @@ div.wiki-toc {
     }
 }
 
-/* Responsive layout - when the screen is less than 700px wide, make the two columns stack on top of each other instead of next to each other */
-@media screen and (max-width: 1025px) {
-    .wiki-entry {
-        width: 90%;
-    }
-}
 
 @media screen and (max-width: 700px) {
     .row, .navbar {
@@ -861,7 +952,7 @@ div.wiki-toc {
     }
 
     #tooltip-popup {
-        max-width: 90%;
+        max-width: 70%;
     }
 
     .wiki-entry {
@@ -875,56 +966,7 @@ div.wiki-toc {
 /*}*/
 
 /*320px to 480px mobile devices*/
-@media screen and (max-width: 480px) {
-    /*.wiki-toc {*/
-    /*    display: none;*/
-    /*    position: absolute;*/
-    /*    background: #0077be;*/
-    /*}*/
 
-    #entry-list {
-        margin: 0;
-        width: 100%;
-    }
-
-    body {
-        margin: 0;
-    }
-
-    #open-toc {
-        display: block;
-        position: absolute;
-        margin: 20px 5px;
-        padding: 5px;
-        right: 10%;
-        /*top: 5%;*/
-        z-index: 2;
-        background-color: lightgrey;
-        cursor: pointer;
-    }
-
-    div.wiki-toc {
-        position: absolute;
-        opacity: 1;
-        /*background-color: var(---wiki-bg);*/
-        /*background-color: #f1f1f1;*/
-        background: #f1f1f1;
-        z-index: 1;
-        width: 90%;
-    }
-
-    /*#open-toc:hover + .wiki-toc {*/
-    /*    display: block;*/
-    /*}*/
-}
-
-@media screen and (max-width: 700px) {
-
-    #tooltip-popup {
-        max-width: 70%;
-    }
-
-}
 
 @media screen and (max-width: 350px) {
 

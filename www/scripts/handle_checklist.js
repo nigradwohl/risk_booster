@@ -1,5 +1,24 @@
 $(document).ready(function () {
 
+    // Ensure that it is well formatted upon reloads:
+    $("input").each(function () {
+        if ($(this).val()) {
+            $(this).closest('.float-label-field').addClass('float');
+        }
+    })
+
+    // Handle input fields:
+    $('input').focus(function (event) {
+        $(this).closest('.float-label-field').addClass('float').addClass('focus');
+    })
+
+    $('input').blur(function () {
+        $(this).closest('.float-label-field').removeClass('focus');
+        if (!$(this).val()) {
+            $(this).closest('.float-label-field').removeClass('float');
+        }
+    })
+
     // let entry_ix = 0;  // index for the current entry.
     // let is_skip = false;
     // let out_arr = [0, false];
@@ -18,9 +37,11 @@ $(document).ready(function () {
     let addinfo_rrr = "";
 
     let info_treat = "haben die Behandlung (z.B. das Medikament) erhalten";
-    let info_treat2 = "Behandelt";
+    let info_treat2 = "Behandelte";
+    let info_treat2_g = "Behandelten";  // Genitive
     let info_contr = "Vergleichsgruppe (z.B., Placebo)";
     let info_contr2 = "Vergleichsgruppe";
+    let info_contr2_g = "Personen in der Vergleichsgruppe";
 
     class Verblist {
         constructor(base, aux, main) {
@@ -31,21 +52,49 @@ $(document).ready(function () {
     }
 
     const outcome_list = {
-        "eff":
-            [{"verb": new Verblist("sterben", "sind", "verstorben"), "noun": "Todesfälle", "direction": "prevent"}],
+        "eff": [
+            {
+                "verb": new Verblist("sterben", "sind", "verstorben"),
+                "noun": "Todesfälle",
+                "qpart": ["verstorben", "ist", "sind"],
+                "red_incr": "von Todesfällen",
+                "select": "Reduktion Todesfälle",
+                "direction": "prevent"
+            },
+            {
+                "verb": new Verblist("???", "???", "???"),
+                "noun": "negative Ereignisse",
+                "qpart": ["das negative Ereignis", "erlitt", "erlitten"],
+                "red_incr": "des negativen Ereignisses",
+                "select": "Reduktion negatives Ereignis",
+                "direction": "prevent"
+            }
+        ],
         "side": [
             // Exchange ERLEIDEN for BERICHTEN?
             {
-                "verb": new Verblist("erleiden Nebenwirkungen", "erleiden", "Nebenwirkungen"), "noun": "Nebenwirkungen",
+                "verb": new Verblist("erleiden Nebenwirkungen", "erleiden", "Nebenwirkungen"),
+                "noun": "Nebenwirkungen",
+                "qpart": ["Nebenwirkungen", "erlitt", "erlitten"],
+                "red_incr": "der Nebenwirkungen",
+                "select": "Nebenwirkungen",
                 "direction": "prevent"
             },
             {
                 "verb": new Verblist("erleiden leichte Nebenwirkungen", "erleiden", "leichte Nebenwirkungen"),
-                "noun": "leichte Nebenwirkungen"
+                "select": "leichte Nebenwirkungen",
+                "qpart": ["leichte Nebenwirkungen", "erlitt", "erlitten"],
+                "red_incr": "der Nebenwirkungen",
+                "noun": "leichte Nebenwirkungen",
+                "direction": "prevent"
             },
             {
                 "verb": new Verblist("erleiden schwere Nebenwirkungen", "erleiden", "schwere Nebenwirkungen"),
-                "noun": "schwere Nebenwirkungen"
+                "qpart": ["Nebenwirkungen", "erlitt", "erlitten"],
+                "red_incr": "der Nebenwirkungen",
+                "select": "schwere Nebenwirkungen",
+                "noun": "schwere Nebenwirkungen",
+                "direction": "prevent"
             }
         ]
     };
@@ -59,47 +108,172 @@ $(document).ready(function () {
         // Ad treatment specific endpoints:
         outcome_list.eff = [
             {
+                "verb": new Verblist("zeigen Symptome", "zeigen", "Symptome"),
+                "noun": "symptomatische Fälle",
+                "qpart": ["Symptome", "zeigte", "zeigten"],
+                "red_incr": "symptomatischer Fälle",
+                "select": "Reduktion von Symptomen",
+                "direction": "prevent"
+            },
+            {
                 "verb": new Verblist("werden symptomfrei", "werden", "symptomfrei"),
-                "noun": "Symptomfreiheit", "direction": "achieve"
+                "noun": "Symptomfreiheit",
+                "qpart": ["symptomfrei", "wurde", "wurden"],
+                "red_incr": "symptomfreier Personen",
+                "select": "Symptomfreiheit",
+                "direction": "achieve"
             },
             {
                 "verb": new Verblist("genesen", "genesen", ""),
-                "noun": "Genesungen", "direction": "achieve"
+                "noun": "Genesungen",
+                "qpart": ["genesen", "ist", "sind"],
+                "red_incr": "genesener Personen",
+                "select": "Genesung",
+                "direction": "achieve"
+            },
+            {
+                "verb": new Verblist("???", "???", "???"),
+                "noun": "Reduktion der Erkrankungsdauer",
+                "qpart": ["eine Reduktion der Erkrankungsdauer", "erreichte", "erreichten"],
+                "red_incr": "an Personen mit reduzierter Erkrankungsdauer",
+                "select": "Reduktion Erkrankungsdauer",
+                "direction": "achieve"
             },
             {
                 "verb": new Verblist("berichten Symptomlinderung", "berichten", "Symptomlinderung"),
-                "noun": "Symptomlinderung", "direction": "achieve"
+                "noun": "Symptomlinderung",
+                "qpart": ["eine Linderung der Symptome", "erreichte", "erreichten"],
+                "red_incr": "von Personen mit abgeschwächten Symptomen",
+                "select": "Symptomlinderung",
+                "direction": "achieve"
             }
         ].concat(outcome_list.eff);
+
+        // Add stuff to end:
+        outcome_list.eff = outcome_list.eff.concat(
+            {
+                "verb": new Verblist("???", "???", "???"),
+                "noun": "positive Ereignisse",
+                "qpart": ["das positive Ereignis", "zeigte", "zeigten"],
+                "red_incr": "positiven Ereignissen",
+                "select": "positive Ereignisse",
+                "direction": "achieve"
+            }
+        );
+
+        // Specific text snippets:
+        $("#which-trans-eff").text(" des Nutzens der Behandlung");
+        $("#which-trans-side").text(" der Schadenwirkung der Behandlung");
 
     } else if (text === "impf") {
         typeword = "Impfung";
         typeverb = "geimpft";
-        addinfo_rrr = "Manchmal wird diese Zahl auch als \"Impfschutz\" bezeichnet." +
-            "<br>" +
-            "Unter dem Begriff der Impfstoffwirksamkeit versteht man in der Regel,\n" +
+        addinfo_rrr = "Man versteht darunter in der Regel, " +
             "wie viele Prozent weniger in der Gruppe der Geimpften erkranken."
         info_treat = "wurden geimpft";
-        info_treat2 = "Geimpft";
-        info_contr2 = "Ungeimpft";
+        info_treat2 = "Geimpfte";
+        info_treat2_g = "Geimpften";
+        info_contr2 = "Ungeimpfte";
+        info_contr2_g = "Ungeimpften";
 
+        // Add specific endpoints to outcome lists:
         outcome_list.eff = [
-            {"verb": new Verblist("erkranken", "erkranken", ""), "noun": "Erkrankungen"},
             {
-                "verb": new Verblist("ins Krankenhaus eingewiesen worden", "werden", "ins Krankenhaus eingewiesen"),
-                "noun": "Krankenhauseinweisungen", "direction": "prevent"
+                "verb": new Verblist("erkranken", "sind", "erkrankt"),
+                "noun": "Erkrankungen",
+                "qpart": ["erkrankt", "ist", "sind"],
+                "red_incr": "von Erkrankungen",
+                "select": "Reduktion Erkrankungen",
+                "direction": "prevent"
             },
             {
-                "verb": new Verblist("auf die Intensivstation eingewiesen worden", "werden", "auf die Intensivstation eingewiesen"),
-                "noun": "Krankenhauseinweisungen", "direction": "prevent"
-            },
-            {
-                "verb": new Verblist("werden diagnostiziert", "werden", "diagnostiziert"),
-                "noun": "Positive Diagnosen", "direction": "prevent"
+                "verb": new Verblist("müssen im Krankenhaus behandelt werden", "werden", "im Krankenhaus behandelt"),
+                "noun": "Krankenhauseinweisungen",
+                "qpart": ["ins Krankenhaus eingewiesen", "wurde", "wurden"],
+                "red_incr": "von Krankenhauseinweisungen",
+                "select": "Reduktion Krankenhauseinweisungen",
+                "direction": "prevent"
             }
         ].concat(outcome_list.eff);
+
+        outcome_list.side = [
+            {
+                "verb": new Verblist("zeigen eine Impfreaktion", "zeigen", "eine Impfreaktion"),
+                "noun": "Impfreaktionen",
+                "qpart": ["eine Impfreaktion", "zeigte", "zeigten"],
+                "red_incr": "von Impfreaktionen",
+                "select": "Impfreaktion",
+                "direction": "prevent"
+            }
+        ].concat(outcome_list.side);
+
+        // Specific text snippets:
+        $("#which-trans-eff").text(" des Nutzens der Impfung");
+        $("#which-trans-side").text(" der Schadenwirkung der Impfung");
+        $("#addnote-side").text("Bitte beachten Sie, falls Sie Impfreaktionen darstellen: " +
+            "Impfreaktionen bezeichnen erwartbare Ereignisse einer Immunreaktion " +
+            "(z.B., Schmerzen an der Einstichstelle, Fieber) und sind für die Bewertung der Sicherheit nachrangig.");
+        $(".show-impf").show();
+        // TODO: Maybe also to results, if "Impfreaktion" is chosen?
+
+    } else if (text === "test") {
+        $(".intro-testscreen").show();
+        $(".intro-impftreat").hide();
+
+        // Specific text snippets:
+        $("#prev-treat").html("ist erkrankt (\"Prävalenz\")");
+        $("#sens").html("Positive Tests unter den Erkrankten (Sensitivität)");
+        $("#spec").html("Negative Tests unter den Gesunden (Spezifität)");
+        typeverb = "erkrankt";
+        typeword = "Diagnostischer Test";
+
+        info_treat2 = "erkrankt";
+
+        // Change the results display:
+        $("#head1").text("Testgüte (Spezifität und Sensitivität)");
+        $("#head2").text("Vorhersagegüte (NPV und PPV)");
+        $(".grid-subhead1").text("Unter den Gesunden");
+        $(".grid-subhead2").text("Unter den Erkrankten");
+        $(".grid-subhead1#subhead1-r2").text("Unter den negativ getesteten");
+        $(".grid-subhead2#subhead2-r2").text("Unter den positiv getesteten");
+
+        $("#which-trans-eff").text("transparente Darstellung der Testgüte");
+        $("#which-trans-side").text("transparente Darstellung der Vorhersagegenauigkeit");
+
+
+        $("#intro-note").html("Häufig wird nur die Testgüte angegeben, während sich Individuen dafür interessieren, " +
+            "was ein positiver (oder negativer) Test aussagt (s. <a target='_blank' href='risk_wiki.html#wiki-cprob'>Wiki</a>).");
+        $("#report-what").html("Berichten Sie am besten direkt den positiven und negativen prädiktiven Wert (PPV und NPV). " +
+            "Häufig wird nur die Testgüte angegeben, während sich Individuen dafür interessieren, " +
+            "was ein positiver (oder negativer) Test aussagt (s. <a target='_blank' href='risk_wiki.html#wiki-cprob'>Wiki</a>). " +
+            "PPV und NPV setzen allerdings voraus, dass die Prävalenz der zu testenden Krankheit bekannt ist.");
+        // TODO: Switch perspective?
+        // $("#results-2").html("");  // Second results are not needed for tests.
+
+        // Define outcome information:
+        outcome_list.eff = [
+            {
+                "verb": new Verblist("bekommen ein positives Testergebnis", "werden", "positv getestet"),
+                "noun": "Erkrankten",
+                "qpart": ["", "", ""],
+                "direction": "achieve"
+            }
+        ]
+
+        outcome_list.side = [
+            {
+                "verb": new Verblist("sind erkrankt", "sind", "erkrankt"),
+                "noun": "erkrankt",
+                "qpart": ["", "", ""],
+                "direction": "achieve"
+            }
+        ]
     }
 
+    // Add examples:
+    $("#examples-eff").text(outcome_list.eff.map((x) => x.noun).join(", "));
+
+    // Assign the words determined above to the ids and classes:
     $("#case-test").text(typeword);
     $(".cur-topic").text(typeword);
     $(".typeword").text(typeword);  // Set wordings
@@ -108,23 +282,45 @@ $(document).ready(function () {
 
     $(".info-treat").text(info_treat);
     $(".info-treat2").text(info_treat2);
+    $(".info-treat2_g").text(info_treat2_g);
     $(".info-control").text(info_contr);
     $(".info-control2").text(info_contr2);
+    $(".info-control2_g").text(info_contr2_g);
 
 
     // Add outcome to selections:
     for (let i = 0; i < outcome_list.eff.length; i++) {
-        $("#out-eff").append(`<option value="${i}">${outcome_list.eff[i].noun}</option>`);
+        $("#out-eff").append(`<option value="${i}">${outcome_list.eff[i].select}</option>`);
     }
     for (let i = 0; i < outcome_list.side.length; i++) {
-        $("#out-side").append(`<option value="${i}">${outcome_list.side[i].noun}</option>`);
+        $("#out-side").append(`<option value="${i}">${outcome_list.side[i].select}</option>`);
     }
 
 
     // Preparations:
-    const cur_checklist = new Checklist(q_order, outcome_list);  // create a new checklist instance.
+    // Adjust question order:
+    let cur_order;
+    if(text === "test"){
+        cur_order = q_order_test
+    } else {
+        cur_order = q_order;
+        if(text === "treat"){
+            // Switching elements:
+            const ix_rrr = q_order.indexOf("rel-risk-reduction");
+            const ix_ncase = q_order.indexOf("n-case");  // after n-case.
+            // [cur_order[ix_rrr], cur_order[ix_pcase]] = [cur_order[ix_pcase], cur_order[ix_rrr]];
+
+            // Move relative reduction to final position:
+            cur_order = arraymove(q_order, ix_rrr, ix_ncase)
+        }
+    }
+
+    const cur_checklist = new Checklist(cur_order, outcome_list, text);  // create a new checklist instance.
     // const check_risk = new RiskCollection();
-    // console.log(check_risk);
+
+    console.log("CURRENT CHECKLIST");
+    console.log(cur_checklist);
+
 
     console.log("+++ Handle questions +++");
 
@@ -190,33 +386,6 @@ $(document).ready(function () {
     })
 
 
-    // console.log("~~~~~~~~~ Test icon array ~~~~~~~~~~~");
-    // let tst2x2 = [[9700, 9850], [300, 150]];
-    //
-    // // Rescale:
-    // tst2x2 = tst2x2.map((x) => x.map((y) => Math.round(y / 20)));
-    // console.log(tst2x2);
-    //
-    // create_icon_array(
-    //     tst2x2[0][1], tst2x2[1][0],
-    //     tst2x2[1][0], tst2x2[1][1],
-    //     'dotdisplay2');
-    // $("#dotdisplay2").show();
-    //
-    // console.log("~~~~~~~~~ eof. test icon array ~~~~~~~~~~~");
-
-    // Editing risk info elements:
-    let curtext;
-    // $(".editable").on("click", function () {
-    //
-    //     $("#edit-text-popup").show();
-    //
-    //     curtext = $(this);
-    //     console.log("curtext is:");
-    //     console.log(curtext);
-    //     $("#edit-newtext").val(curtext.text());
-    // })
-
     function end_editing() {
         const textfields = $(".edit-note");
         textfields.hide();
@@ -280,23 +449,6 @@ $(document).ready(function () {
 
     $("#stop-edit").on("click", end_editing)
 
-    // $("#edit-ok").on("click", function () {
-    //
-    //     console.log(curtext);
-    //     const text_element = $("#edit-newtext");
-    //     console.log(text_element.val());
-    //
-    //     curtext.text(text_element.val());
-    //
-    //     text_element.val("");
-    //     $("#edit-text-popup").hide();
-    // })
-
-
-    // $("#edit-cancel").on("click", function () {
-    //     $("#edit-newtext").val("");
-    //     $("#edit-text-popup").hide();
-    // })
 
 });
 
@@ -320,17 +472,50 @@ $(document).ready(function () {
  */
 
 class Checklist {
-    constructor(q_order, outcome_list) {
+    constructor(q_order, outcome_list, type) {
+        this.type = type;
         this.q_order = q_order;
+
+        // Input map:
+        this.q_inputs = Object.fromEntries(q_order.map((x) => [x, [x]]));
+        if (q_order.includes("n-case")) {
+            this.q_inputs["n-case"] = ["n-case-impf", "n-case-control"]
+        }
+        if (q_order.includes("p-case")) {
+            this.q_inputs["p-case"] = ["p-case-impf", "p-case-control"]
+        }
+        if (q_order.includes("n-treat-control")) {
+            this.q_inputs["n-treat-control"] = ["n-impf", "n-control"]
+        }
+        if (q_order.includes("n-side")) {
+            this.q_inputs["n-side"] = ["n-side-impf", "n-side-control"]
+        }
+        if (q_order.includes("p-side")) {
+            this.q_inputs["p-side"] = ["p-side-impf", "p-side-control"]
+        }
+        if (q_order.includes("p-sens-spec")) {
+            this.q_inputs["p-sens-spec"] = ["p-sens", "p-spec"]
+        }
+
         this.outcome_list = outcome_list;
-        this.outcome = "";
-        this.outcome_side = "";
+        if (type === "test") {
+
+            this.assign_words(0, 0)
+
+        } else {
+
+            this.outcome = "";
+            this.outcome_side = "";
+        }
+
 
         this.entry_ix = 0;
+        this.firstnum_ix = type === "test" ? 1 : 2;  // index of first numeric input.
 
         this.is_skip = false;
         this.is_error = false;
         this.is_incompatible = false;
+        this.is_invalid = false;
         this.is_reload = false;
 
         this.skip_misses = false;
@@ -342,14 +527,35 @@ class Checklist {
         this.check_side = new RiskCollection();
     }
 
+    assign_words(out_eff, out_side) {
+        this.outcome = this.outcome_list.eff[out_eff];  // assign the selected outcome.
+        this.outcome_side = this.outcome_list.side[out_side]
+
+        $(".outcome-noun").text(this.outcome.noun);
+        $(".outcome-verb").text(this.outcome.verb.base);
+        $(".outcome-part-p").text(this.outcome.qpart[1] + " jeweils " + this.outcome.qpart[0]);
+        $(".outcome-part-n").text(this.outcome.qpart[2] + " jeweils " + this.outcome.qpart[0]);
+        $(".outcome-pers").text(this.outcome.pers);
+
+        $(".side-noun").text(this.outcome_side.noun);
+        $(".side-part-p").text(this.outcome_side.qpart[1] + " jeweils " + this.outcome_side.qpart[0]);
+        $(".side-part-n").text(this.outcome_side.qpart[2] + " jeweils " + this.outcome_side.qpart[0]);
+        $(".side-verb").text(this.outcome_side.verb.base);
+
+        // Do benefits consist in a reduction or an increase?
+        const incr = this.outcome.direction === "achieve";
+        $(".incr-decr-art").text((incr ? "den relativen Anstieg" : "die relative Reduktion"));
+        $(".incr-decr-noun").text((incr ? "relativer Anstieg" : "relative Reduktion"));
+        $(".incr-decr-q").text((incr ? "Welcher relative Anstieg" : "Welche relative Reduktion") + " " + this.outcome.red_incr);
+    }
+
     // Method to advance page:
     continue_page(ev) {
 
         // 0. Initialize variables: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        this.is_error = this.is_incompatible;
+        this.is_error = this.is_incompatible || this.is_invalid;
         // this.is_reload = false;
         this.missing_entries = [];
-
 
         // Check, if it is a relaod.
         // If so, fill the table with all entries until now:
@@ -357,10 +563,9 @@ class Checklist {
             this.handle_reloads();
         }
 
-
-        const skip_misses = ev.currentTarget.id === "skip-missing" || this.is_skip || this.entry_ix === 0;
+        this.skip_misses = ev.currentTarget.id === "skip-missing" || (this.is_skip && !this.is_error) || this.entry_ix === 0;
         // skip, if calling event is the "skip-misses" button or if the page is to be skipped.
-        console.log(`Current target ID is ${ev.currentTarget.id}; Skip misses ${skip_misses}`);
+        console.log(`Current target ID is ${ev.currentTarget.id}; Skip misses ${this.skip_misses}; Incompatible: ${this.is_incompatible}; Invalid: ${this.is_invalid}`);
 
         const curid = this.q_order[this.entry_ix];  // get id of current page.
 
@@ -374,36 +579,23 @@ class Checklist {
 
             console.log(`Eff: ${out_eff}, Side: ${out_side}`);
 
-            this.outcome = this.outcome_list.eff[out_eff];  // assign the selected outcome.
-            this.outcome_side = this.outcome_list.side[out_side]
-
-            $(".outcome-noun").text(this.outcome.noun);
-            $(".outcome-verb").text(this.outcome.verb.base);
-
-            $(".side-noun").text(this.outcome_side.noun);
-            $(".side-verb").text(this.outcome_side.verb.base);
+            this.assign_words(out_eff, out_side);  // assign the corresponding words.
 
             // Show the new question and hide the previous one:
             this.entry_ix++;
-            $("#" + q_order[this.entry_ix] + "-q").css('display', 'flex');
+            $("#" + this.q_order[this.entry_ix] + "-q").css('display', 'flex');
             $("#select-outcome-q").hide();
 
             // Removal of higlighting classes:
             $("#noentry-popup").hide();
+            $("#incompatible-popup").hide();
             $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
 
-            // Show back button:
-            if (this.entry_ix > 0) {
-                $(".back-btn").css('display', 'inline-block');
-            }
 
         } else {
             // For all subsequent pages:
             // 1. Get the inputs on current page: ~~~~~~~~~~~~~~~~~~~~~~~~
-            if (!skip_misses) {
-
-                console.log("++++ Getting inputs and complete ++++");
-
+            if (curid !== "start") {
                 // Save the previous instances:
                 // const risk_prev = JSON.stringify(this.check_risk);
                 // const side_prev = JSON.stringify(this.check_side);
@@ -411,26 +603,42 @@ class Checklist {
                 this.check_side.save_current_content();
 
                 // If it is not a round where inputs should be skipped:
-                const inp_test = this.get_current_input(curid, q_inputs[curid], id_to_num_dict);
+                const inp_test = this.get_current_input(curid, this.q_inputs[curid], id_to_num_dict);
                 // After trying to get the inputs, try completing the table:
+                console.log("++++ Getting inputs and complete ++++");
+                console.log(this.type);
+
+                // Set assumed values (currently for test case only):
+                if (this.type === "test" && this.entry_ix === this.q_order.length - 2) {
+                    // Set the margin sums:
+                    console.warn("setting arbitrary sample size!");
+                    this.check_risk.ntab.N = 100000;  // Determine a random N.
+                }
 
                 try {
                     this.check_risk.try_completion(0);
-                    this.check_side.try_completion(0);
 
-                    // Reset flag if no error is cought:
+                    if (!["test"].includes(this.type)) {
+                        this.check_side.try_completion(0);
+                    }
+
+                    // Reset flag if no error is caught:
                     this.is_incompatible = false;
                 } catch (e) {
                     console.error("Non-matching entries! " + e);
 
                     // Reset the values to before getting entries and trying to complete:
                     this.check_risk.retrieve_previous_content();
-                    this.check_side.retrieve_previous_content();
+                    if (!["test"].includes(this.type)) {
+                        this.check_side.retrieve_previous_content();
+                    }
 
                     // After reset:
                     console.log("AFTER RESET");
                     console.log(this.check_risk);
-                    console.log(this.check_side);
+                    if (!["test"].includes(this.type)) {
+                        console.log(this.check_side);
+                    }
 
                     // Show that inputs were incompatible:
                     $("#incompatible-popup").show().addClass("selected-blur");
@@ -438,55 +646,52 @@ class Checklist {
                     this.is_incompatible = true;
                 }
 
+                // Check for errors:
                 if (this.is_error) {
                     console.error(`An error (${inp_test}) occured when providing input!`);
                 }
 
-
-            } else {
-                // If misses were skipped:
-                this.is_skip = false;
             }
 
             // TODO: Check for errors!
+            console.warn(`There is invalid input ${this.is_invalid}`);
 
             // 2. Handle missing entries:
-            if (this.missing_entries.length > 0 && !this.is_incompatible) {
+            if (this.missing_entries.length > 0 && !this.is_incompatible && !this.is_invalid) {
                 // alert("Sie haben nichts eingegeben! Absicht?");
                 // Show popup that can be skipped!
-                this.is_skip = true;
+                this.is_skip = true;  // set skippable state.
                 handle_missing_input(ev, this.missing_entries);
 
             }
 
 
-            // Advance page:
+            // Advance page if no missing entries are detected (due to all provided or :
             if (!this.is_error && this.missing_entries.length === 0) {
 
                 // Pages before results:
-                if (this.entry_ix < q_order.length) {
+                if (this.entry_ix < this.q_order.length) {
                     this.increment_or_skip();
                 }
 
                 // Final results page:
                 if (this.entry_ix === this.q_order.length - 1) {
 
-                    // if (this.is_reload) {
-                    //     console.log("Handle reload");
-                    //     this.handle_reloads();
-                    // } else {
-                    //     this.is_reload = true;
-                    // }
-
                     this.handle_final_page();  // handle the final page.
 
-
                     // Hide the continue button:
-                    $(".continue-btn").hide();
+                    // $(".continue-btn").hide();
+                    $(".arrow-btn.continue").css('visibility', 'hidden');
+                    $(".continue-btn").removeClass('active');
                 }
+
+
+                this.is_skip = false;  // reset skippable state.
+                this.is_invalid = false;  // reset the invalidity flag.
 
             } else if (this.is_error) {
                 console.error("An error occured!");
+
             }
         }
 
@@ -498,7 +703,7 @@ class Checklist {
         // Check whether input can be skipped: ~~~~~~~~~~~~
         console.log("+++ CHECK IF SKIPPABLE +++");
         const skiplist = ["n-total", "p-treat", "n-case", "p-case", "n-side", "p-side"];  // Make p-side or n-side skippable, if both were provided!
-        const cur_entry = q_order[this.entry_ix];
+        const cur_entry = this.q_order[this.entry_ix];
         let next_entry;
 
         let skip = true;
@@ -508,7 +713,7 @@ class Checklist {
          */
         do {
             this.entry_ix++;  // Increment entry index.
-            next_entry = q_order[this.entry_ix];  // get the next entry.
+            next_entry = this.q_order[this.entry_ix];  // get the next entry.
             skip = false;  // set to false.
 
             console.log(`Next entry is ${next_entry}`);
@@ -518,7 +723,7 @@ class Checklist {
                 // Get the previous value for the field(s):
                 let prevvals = [];
 
-                for (const inp of q_inputs[next_entry]) {
+                for (const inp of this.q_inputs[next_entry]) {
 
                     console.log("Index array");
                     const ref_ix = id_to_num_dict[inp];
@@ -551,7 +756,7 @@ class Checklist {
 
 
         // Show the new question and hide the previous one:
-        $("#" + q_order[this.entry_ix] + "-q").css('display', 'flex');
+        $("#" + this.q_order[this.entry_ix] + "-q").css('display', 'flex');
         $("#" + cur_entry + "-q").hide();
 
         // Removal of popups and highlighting classes:
@@ -559,14 +764,16 @@ class Checklist {
         $("#incompatible-popup").hide();
         $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
 
-        // Show back button:
-        if (this.entry_ix > 0) {
-            $(".back-btn").css('display', 'inline-block');
-        }
-
         // console.log("Risk object after entries and calculation");
         // this.check_risk.print();
         // this.check_side.print();
+
+        // Show back button:
+        if (this.entry_ix > 0) {
+            // $(".back-btn").css('display', 'block');
+            $(".arrow-btn.back").css('visibility', 'visible');
+            $(".back-btn").addClass('active');
+        }
     }
 
     // Method to handle final page:
@@ -580,17 +787,17 @@ class Checklist {
         console.log(risk_info);
         const cur2x2_eff = risk_info.cur2x2_eff;
         const cur2x2_side = risk_info.cur2x2_side;
-
-        // Get array information for each group:
         const group_arrs_eff = {
             "treat": [cur2x2_eff[1][1], cur2x2_eff[1][0]],
             "control": [cur2x2_eff[0][1], cur2x2_eff[0][0]]
         }
-
         const group_arrs_side = {
             "treat": [cur2x2_side[1][1], cur2x2_side[1][0]],
             "control": [cur2x2_side[0][1], cur2x2_side[0][0]]
         }
+
+        console.log("Effectivity arrays");
+        console.log(group_arrs_eff);
 
         // ICON ARRAYS:
         let ncol = risk_info.N_scale === 1000 ? 25 : 10;  // determine number of columns.
@@ -599,8 +806,6 @@ class Checklist {
 
         // Effectivity:
         try {
-
-
             // Create the icon arrays and assigne them:
             create_icon_array(
                 group_arrs_eff.treat,  // treatment group.
@@ -620,16 +825,34 @@ class Checklist {
 
             $("#results-1-error ~ *:not(textarea)").show();
             $("#results-1-error").hide();
+            $("p.error-note").hide();
 
         } catch (error) {
             console.warn(error);
+
+            console.log(this.check_risk);
+
+            // TODO: Show which info is missing!
+            // Candidates are:
+            // Sizes of the groups:
+
+            // Baseline risk/AR in at least one of the groups:
+            // Through risk in margins or cases plus number of individuals.
+            if (this.check_risk.mtab2.tab.tab2x2.flat().every(x => isNaN(x))) {
+                console.warn("We could not determine the risk in either of the groups. " +
+                    "Providing a risk in one of the groups throguh a percentage or a number of cases in that group should help!");
+            }
+
+
             $("#results-1-error ~ *:not(textarea)").hide();
             $("#results-1-error").show();
+            $("p.error-note").show();
 
         }
 
 
         // Side effects:
+        // if (["test"].includes(this.type)) {
         try {
             create_icon_array(
                 group_arrs_side.treat,  // treatment group.
@@ -649,12 +872,22 @@ class Checklist {
 
             $("#results-2-error ~ *").show();
             $("#results-2-error").hide();
+            $("p.error-note").hide();
 
         } catch (error) {
             console.warn(error);
+
+            // TODO: Show which info is missing!
+
             $("#results-2-error ~ *").hide();
             $("#results-2-error").show();
+            $("p.error-note").show();
         }
+        // }
+
+        // ALways show the headings:
+        $(".grid-head").show();
+
 
         // Adding functionality: ~~~~~~~~~~~~~~~~~~
         // Add button for saving the page:
@@ -704,11 +937,21 @@ class Checklist {
         console.log("Side effects:");
         console.log(this.check_side);
 
+        // Transpose the risks for testing case:
+        if (["test"].includes(this.type)) {
+            this.check_side.ptab.tab.tab2x2 = transpose(this.check_risk.ptab.tab.tab2x2);
+        }
+
         console.log("~~~~~~ Calculate the risks ~~~~");
         // TODO: Rather get from ptab/mtab -- this should be more flexible
         //  (e.g., if the risks in both groups were entered in percent).
-        const eff_group_risks = this.check_risk.ntab.tab.margin2_mean();
-        const side_group_risks = this.check_side.ntab.tab.margin2_mean();
+        // May require converting to larger numbers? Ener factor in margin 2 mean function?
+        const eff_group_risks = this.check_risk.ptab.tab.margin2_mean();
+        let side_group_risks = this.check_side.ptab.tab.margin2_mean();  // Get the margins.
+        // For testing case switch negatively tested to show actually healthy:
+        // if (["test"].includes(this.type)) {
+        //     side_group_risks[0] = side_group_risks[0].reverse();
+        // }
 
         console.log("Risks in each group:");
         console.log(eff_group_risks);
@@ -720,9 +963,12 @@ class Checklist {
         // const curscale = 1000;  // fixed reference! Should eventually be so that the smallest number is detectable!
         // was: [100, 1000, 2000, 5000, 10000, 50000, 100000]
         const curscale = [100, 1000, 10000, 100000]
-            .filter((x) => group_risks_flat.every((r) => (r * x) >= 5))[0];
+            .filter((x) => group_risks_flat.every((r) => (r * x) >= 1))[0];
         // Get the first reference for which the product is greater 1!
         // Altering this threshold will lead to larger references (which may differentiate better!)
+
+        // TODO: Use smallest scale close to data?
+
         console.log("Curscale is " + curscale);
         // Flexible scaling for large numbers:
         let N_scale = curscale;
@@ -749,7 +995,7 @@ class Checklist {
 
             // Note: If the risk is negative, it corresponds to an increase!
             // For an increase report the multiple!
-            const rrc = arc > 0 ? Math.abs(arc / group_risks[0][1]) : group_risks[1][1] / group_risks[0][1];
+            const rrc = arc >= 0 ? Math.abs(arc / group_risks[0][1]) : group_risks[1][1] / group_risks[0][1];
             // relative risk change.
             // How many times higher is the risk in the treatment group?
 
@@ -773,27 +1019,86 @@ class Checklist {
         // Assign the information to the objects in results page:
         $("#risk-treat").html(this.outcome.verb.aux + "<br>" + eff_risks.risk_treat_nh + " " + this.outcome.verb.main);
         $("#risk-control").html(this.outcome.verb.aux + "<br>" + eff_risks.risk_control_nh + " " + this.outcome.verb.main);
-        $("#abs-change").html(`Absolute${eff_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe ${this.outcome.verb.aux} <span class="risk-info" id="arr">${eff_risks.arr_p} ${this.outcome.verb.main}</span>`);
-        $("#rel-change").html(`Relative${eff_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${eff_risks.rrr_p}</span>`);
+
         // Rounding can eventually be improved!
 
-        const cur2x2_eff = eff_group_risks.map((x) => x.map((y) => Math.round(y * N_scale)));
+        const cur2x2_eff = eff_group_risks
+            .map((x) => x.map((y) => Math.round(y * N_scale) === 0 && y > 0 ? 1 : Math.round(y * N_scale)));
         console.log(cur2x2_eff);
 
         // Handle side effects:
         // Handle side effects:
         const side_risks = get_risk_set(side_group_risks);
         console.log("Side risks");
+        console.log(side_risks);
         console.log(side_group_risks);
         // Assign the information to the objects in results page:
         $("#risk-treat-side").html(this.outcome_side.verb.aux + "<br>" + side_risks.risk_treat_nh + " " + this.outcome_side.verb.main);
-        $("#risk-control-side").html(this.outcome_side.verb.aux + "<br>" + side_risks.risk_control_nh + " " + this.outcome_side.verb.main);
-        $("#abs-change-side").html(`Absolute${side_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe ${this.outcome_side.verb.aux} <span class="risk-info" id="arr">${side_risks.arr_p}</span> ${this.outcome_side.verb.main}`);
-        $("#rel-change-side").html(`Relative${side_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${side_risks.rrr_p}</span>`);
 
-        const cur2x2_side = side_group_risks.map((x) => x.map((y) => Math.round(y * N_scale)));
+        let cur_side_control = side_risks.risk_control_nh;
+
+        // Function to build sentences:
+        function build_riskinfo(group, aux, id, num, verb) {
+            return ` in der ${group} ${aux} <span class="risk-info" id="${id}">${num} ${verb}</span>`
+        }
+
+        function risk_name_tt(type, incr, add_tt, rr) {
+            const abs = type === "abs";
+            const typelet = abs ? "r" : "s";  // letter for type.
+            const typeword = abs ? "Absolute" : "Relative";
+            let out = `${typeword}${incr ? (typelet + " Risiko") + (abs ? "anstieg" : "") : " Risikoreduktion"}: `;
+            // Add a tooltip:
+            if (add_tt) {
+                let tt_text = "";
+                if (abs) {
+                    tt_text = "Die Differenz der absoluten Risiken in den Gruppen";
+                } else if (rr) {
+                    // Relative risk:
+                    tt_text = "Ein Vielfaches wie viele Personen mehr oder weniger betroffen sind.";
+                } else {
+                    // Relative risk reduction:
+                    tt_text = "Der Anteil, der in der Behandlungsgruppe weniger betroffen ist.";
+                }
+
+                out = `<span class="tooltip">
+                        <span class="tooltiptext tooltip-overview">
+                        ${tt_text}
+                        </span><a target="_blank" href="risk_wiki.html#wiki-${type}">${out}</a></span>`
+            }
+            return out
+        }
+
+        if (["test"].includes(this.type)) {
+            // cur_side_control = cur_side_control + " nicht";  // highlight the non-events!
+        } else {
+            // Add some information only in non-testing case:
+            $("#abs-change").html(//`Absolute${eff_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: ` +
+                risk_name_tt("abs", eff_risks.arc < 0, true, eff_risks.arc < 0) +
+                build_riskinfo("Behandlungsgruppe", this.outcome.verb.aux, "arr", eff_risks.arr_p, this.outcome.verb.main));
+            $("#rel-change").html(//`Relative${eff_risks.arc < 0 ? "s Risiko" : " Risikoreduktion"}: ` +
+                risk_name_tt("rel", eff_risks.arc < 0, true, eff_risks.arc < 0) +
+                build_riskinfo("Behandlungsgruppe", this.outcome.verb.aux, "rrr", eff_risks.rrr_p, this.outcome.verb.main));
+            // <span class="risk-info" id="rrr">${eff_risks.rrr_p}</span>`);
+
+            $("#abs-change-side").html(
+                risk_name_tt("abs", side_risks.arc < 0, true, side_risks.arc < 0) +
+                build_riskinfo("Behandlungsgruppe", this.outcome_side.verb.aux, "arr-side", side_risks.arr_p, this.outcome_side.verb.main)
+                // `Absolute${side_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe ${this.outcome_side.verb.aux} <span class="risk-info" id="arr">${side_risks.arr_p}</span> ${this.outcome_side.verb.main}`
+            );
+            $("#rel-change-side").html(
+                risk_name_tt("rel", side_risks.arc < 0, true, side_risks.arc < 0) +
+                build_riskinfo("Behandlungsgruppe", this.outcome_side.verb.aux, "rrr-side", side_risks.rrr_p, this.outcome_side.verb.main)
+                // `Relative${side_risks.arc < 0 ? "s Risiko" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${side_risks.rrr_p}</span>`
+            );
+            // TODO: Alternatively switch the reference and always report RRR? (could be done by making "Behandlungsgruppe" a variable).
+        }
+
+        // Also assign the side effect risks in the control group (or among the nagtively tested):
+        $("#risk-control-side").html(this.outcome_side.verb.aux + "<br>" + cur_side_control + " " + this.outcome_side.verb.main);
+
+        const cur2x2_side = side_group_risks
+            .map((x) => x.map((y) => Math.round(y * N_scale) === 0 && y > 0 ? 1 : Math.round(y * N_scale)));
         console.log(cur2x2_side);
-
 
         // Return value of method:
         return {"cur2x2_eff": cur2x2_eff, "cur2x2_side": cur2x2_side, "N_scale": N_scale};
@@ -801,6 +1106,8 @@ class Checklist {
 
     get_current_input(curid, input_arr, id_to_num_dict) {
         // Loop over defined input fields:
+        this.is_invalid = false;  // flag that input is valid.
+
         for (const cur_input of input_arr) {
 
             const cur_q_key = id_to_num_dict[cur_input];  // get current input field, tied to table.
@@ -809,13 +1116,27 @@ class Checklist {
 
             // console.log("Is this a button with meaning? " + $(this).hasClass("input-btn"))
 
+            console.log("++++ Checking current input ++++");
+            console.log($("#" + cur_input));
+
             // Is the input a button or a text-field?
             if ($(this).hasClass("input-btn")) {
                 console.log("Button with meaning!");
                 // console.log($(this).val());
                 curval = $(this).val();
             } else {
-                curval = $("#" + cur_input).val();  // current input value.
+                const cur_field = $("#" + cur_input);
+                if (cur_field[0].validity.patternMismatch) {
+                    console.error("Input pattern does not match");
+                    this.is_error = true;
+                    this.is_invalid = true;
+                    return "err_pat";
+                } else {
+                    // If there is no error:
+                    curval = cur_field.val();  // current input value.
+                    // this.is_invalid = false;
+                }
+
             }
             console.log("Current value is: " + curval);
 
@@ -823,11 +1144,15 @@ class Checklist {
 
 
             // If not a missing value is skipped:
+
             // console.log(this.missing_entries.toString());  // check current set of missings.
             // Check the value; if appropriate, check the number format, transform and save to object.
             if ([undefined, "", " "].includes(curval)) {
-                this.missing_entries = this.missing_entries.concat(cur_input);
-                console.warn("Sie haben nichts eingegeben! Absicht?");
+                if (!this.is_skip) {
+                    this.missing_entries = this.missing_entries.concat(cur_input);
+                    console.warn("Sie haben nichts eingegeben! Absicht?");
+                    this.is_skip = true;
+                }
 
             } else {
                 // If the current value is defined and non-empty:
@@ -839,8 +1164,12 @@ class Checklist {
                 // // Save value to table object:
                 // this.check_risk.update_by_arr(number_dict[cur_q_key], checked_val);
 
-                if (!/err_/.test(checked_val.toString())) {
+                // Check if an error occurred:
+                if (/err_/.test(checked_val.toString())) {
+                    this.is_error = true;
+                    return checked_val;
 
+                } else {
                     console.log(`Update objects ${cur_q_key}:`);
                     console.log(number_dict[cur_q_key]);
 
@@ -849,6 +1178,7 @@ class Checklist {
                     if (eff_keys.includes(cur_q_key)) {
                         // Change effectivity as a function of prevention vs. achievement:
                         if (cur_q_key === "rrr" && this.outcome.direction === "achieve") {
+                            // TODO: Communicate the directional difference between RRR and relative risk.
                             console.log("Update relative value:");
                             checked_val = 2 - checked_val;
                         }
@@ -858,13 +1188,9 @@ class Checklist {
                     if (side_keys.includes(cur_q_key)) {
                         this.check_side.update_by_arr(number_dict[cur_q_key], checked_val);
                     }
-
-                } else {
-                    this.is_error = true;
-                    return checked_val;
                 }
-
             }
+
         }
 
     }
@@ -872,7 +1198,7 @@ class Checklist {
     handle_reloads() {
 
         // ~~~~~~~~~ Loop over all entries and complete (for reloads)! ~~~~~~~~~~~~~
-        console.log(`Is reload? ${this.is_reload}`);
+        console.log(`+++++++++++++ Is reload? ${this.is_reload} +++++++++++++`);
         this.is_reload = false;  // reset the flag!
         console.log("~~~~ Risk object before re-calculation ~~~");
         this.check_risk.print();
@@ -880,18 +1206,19 @@ class Checklist {
         // console.log("Skipped inputs were:");
         this.skipped_inputs = this.skipped_inputs.filter(x => x < this.entry_ix);  // remove future skips!
         // console.log(this.skipped_inputs);
-        const skipped_ids = q_order.filter((x, ix) => this.skipped_inputs.includes(ix));
-        // console.log(skipped_ids);
+        const skipped_ids = this.q_order.filter((x, ix) => this.skipped_inputs.includes(ix));
+        console.log(skipped_ids);
 
-        // Loop over defined input fields:
-        for (const curid of q_order.slice(0, this.entry_ix)) {
+        // Loop over defined input fields (omit the first 2 uninformative questions):
+        console.log(`Looping over ${this.q_order.slice(this.firstnum_ix, this.entry_ix)} (from: ${this.q_order}, Ix: ${this.entry_ix})`);
+        for (const curid of this.q_order.slice(this.firstnum_ix, this.entry_ix)) {
 
             // Skip input fields that have been skipped previously!
             if (!skipped_ids.includes(curid)) {
                 console.log(`Current inputs for ID ${curid}:`);
-                console.log(q_inputs[curid]);
+                console.log(this.q_inputs[curid]);
 
-                this.get_current_input(curid, q_inputs[curid], id_to_num_dict);
+                this.get_current_input(curid, this.q_inputs[curid], id_to_num_dict);
 
                 console.log("Risk object after re-evaluating inputs until then");
                 this.check_risk.print();
@@ -920,21 +1247,25 @@ class Checklist {
 
             // Decrementing the page:
             // TODO: Skip inputs that were previously skipped
-            // Get previously seen input (or skip, if q_order[this.entry_ix] in skiplist?)
+            // Get previously seen input (or skip, if this.q_order[this.entry_ix] in skiplist?)
             // Note: Also must ensure that elements from the skiplist are removed when they are passed upon a back-button click!
-            const calling_entry = q_order[this.entry_ix];
+            const calling_entry = this.q_order[this.entry_ix];
 
             // Decrement, while previous input has been skipped:
             do {
                 this.entry_ix--;
             } while (this.skipped_inputs.includes(this.entry_ix))
 
-            $("#" + q_order[this.entry_ix] + "-q").css('display', 'flex');
+            $("#" + this.q_order[this.entry_ix] + "-q").css('display', 'flex');
             $("#" + calling_entry + "-q").hide();
-            $(".continue-btn").css('display', 'inline-block');
+            // $(".continue-btn").css('display', 'inline-block');
+            $(".arrow-btn.continue").css('visibility', 'visible');
+            $(".continue-btn").addClass('active');
 
             if (this.entry_ix === 0) {
-                $(".back-btn").hide();
+                // $(".back-btn").hide();
+                $(".arrow-btn.back").css('visibility', 'hidden');
+                $(".back-btn").removeClass('active');
             }
 
             // Removal of highlighting classes:
@@ -954,15 +1285,17 @@ class Checklist {
  */
 function handle_missing_input(ev, missing_entries) {
 
-    const input_field = $("#" + missing_entries[0]);  // Get FIRST input field for reference (may be improved).
+    const input_field = $("#" + missing_entries[0]);  // Get FIRST missing input field for reference (may be improved).
 
     console.log(input_field.parent("td"));
     console.log(input_field.parents("table"));
 
     // Take the input field as reference if one element or if inside of table take the table, to ensure non-overlap:
-    const thispos = input_field.parent("td").length === 0 ? input_field.position() : input_field.parents("table").position();  // get position of current question.
+    // const thispos = input_field.parent("td").length === 0 ? input_field.position() : input_field.parents("table").position();  // get position of current question.
+    const thispos = input_field.position();  // get position of current question.
     console.log(input_field);
     console.log(thispos);
+    console.log("#" + input_field[0].id);
 
     console.log("MISSING ENTRIES ARE:");
     console.log(missing_entries);
@@ -972,20 +1305,46 @@ function handle_missing_input(ev, missing_entries) {
     // Change the popup text here:
     const cur_popup = $("#noentry-popup");
 
-    const popup_height = cur_popup.height();
-    const popup_pad = cur_popup.innerHeight() - popup_height;
-    const num_height = input_field.height();
-
-    console.log(`Popup height (pad): ${popup_height} (${popup_pad}), Highlight height: ${num_height}, 
-            Highlight pos (top, bottom) ${thispos.top}, ${thispos.left}`);
-
     cur_popup
         .css({
-            top: thispos.top - popup_height - popup_pad * 2,
-            left: thispos.left,
-            position: 'absolute'
+            width: "300px"
+            // height: "100%"
         })
-        .show();
+
+    const popup_height = cur_popup.height();
+    const popup_pad = cur_popup.innerHeight() - popup_height;
+
+    const input_height = input_field.height();
+
+    // Add the popup:
+        console.log(`Popup height (pad): ${popup_height} (${popup_pad}), Highlight height: ${input_height}, 
+            Highlight pos (top, bottom) ${thispos.top}, ${thispos.left}`);
+
+    cur_popup.detach().insertBefore("#" + input_field[0].id);
+    if (input_field.parent("fieldset").length > 0) {
+
+        console.warn("Popup for fieldset");
+        // TODO: Eventually insert before label?
+        cur_popup
+            .css({
+                top: - cur_popup.outerHeight() - input_height/2 - 5,
+                // left: thispos.left,
+                position: 'absolute'
+            })
+    } else {
+        cur_popup
+            .css({
+                top: thispos.top - popup_height,
+                left: thispos.left,
+                position: 'absolute'
+            })
+    }
+
+    // console.log(`Popup height (pad): ${popup_height} (${popup_pad}), Highlight height: ${input_height},
+    //         Highlight pos (top, bottom) ${thispos.top}, ${thispos.left}`);
+
+
+    cur_popup.show();
 
     // Prevent propagation:
     ev.stopPropagation();
@@ -1079,7 +1438,8 @@ const q_order = [
     // "any-control",
     "n-treat-control",
     "n-total",
-    "p-treat", "p-case",
+    "p-treat",
+    "p-case",
     "n-case",
     // "or-case",
     // "side",
@@ -1090,16 +1450,33 @@ const q_order = [
 // ORDER WILL BE FLEXIBLE!
 
 /**
- * Inputs on each subpage to be looped over.
- * @type {{[p: string]: [string]}}
+ * Ordered array of question (subpage) IDs which can be reordered fo reach type.
+ * @type {string[]}
  */
-const q_inputs = Object.fromEntries(q_order.map((x) => [x, [x]]));
-q_inputs["n-case"] = ["n-case-impf", "n-case-control"];
-q_inputs["p-case"] = ["p-case-impf", "p-case-control"];
-q_inputs["n-treat-control"] = ["n-impf", "n-control"];
-q_inputs["n-side"] = ["n-side-impf", "n-side-control"];
-q_inputs["p-side"] = ["p-side-impf", "p-side-control"];
-console.log(q_inputs);
+const q_order_test = [
+    "start",
+    // "n-treat-control",
+    // "n-total",
+    "p-sens-spec",  // sens & spec.
+    "prev",  // prevalence.
+    // "n-case",
+    "results"
+];
+
+/**
+ * Function to reorder arrays.
+ * @param arr
+ * @param fromIndex
+ * @param toIndex
+ */
+function arraymove(arr, fromIndex, toIndex) {
+    const arr_inp = [...arr];
+    const element = arr_inp[fromIndex];
+    arr_inp.splice(fromIndex, 1);
+    arr_inp.splice(toIndex, 0, element);
+    return arr_inp;
+}
+
 
 /**
  * Dictionary to convert inputs to the numbers in the object. First index is condition, second index is treatment.
@@ -1122,7 +1499,13 @@ const id_to_num_dict = {
     "n-side-impf": "n11s",
     "n-side-control": "n10s",
     "p-side-impf": "mtx1s",
-    "p-side-control": "mtx0s"
+    "p-side-control": "mtx0s",
+    // ~~~ TESTS ~~~
+    "prev": "mpx1",
+    "p-sens": "mt11",
+    // careful! Vaccinated are now column 2 (index 1)!
+    // cases are second row (index 1)
+    "p-spec": "mt00",  // cases among untreated (cases: 1, treatment: 0)
 }
 
 const eff_keys = ["N_tot",
@@ -1132,7 +1515,9 @@ const eff_keys = ["N_tot",
     "rrr",
     "p00", "p01", "p10", "p11",
     "mpx0", "mpx1",
-    "mtx0", "mtx1"
+    "mtx0", "mtx1",
+    // Tests and screening:
+    "mt00", "mt11"
 ]
 
 const side_keys = ["N_tot",
@@ -1141,7 +1526,7 @@ const side_keys = ["N_tot",
     "msum0xs", "msum1xs",
     "rrrs",
     "p00s", "p01s", "p10s", "p11s",
-    "mpx0s", "mpx1s",
+    "mpx0s", "mpx1",
     "mtx0s", "mtx1s"
 ]
 
@@ -1188,6 +1573,9 @@ const number_dict = {
     "n11s": ["ntab", "tab", "tab2x2", 1, 1],
     "mtx0s": ["mtab2", "tab", "tab2x2", 0, 1],
     "mtx1s": ["mtab2", "tab", "tab2x2", 1, 1],
+    // Screening:
+    "mt00": ["mtab2", "tab", "tab2x2", 0, 0],
+    "mt11": ["mtab2", "tab", "tab2x2", 1, 1],
     // Non-numeric info:
     "any_control": []
 }
@@ -1227,7 +1615,9 @@ const float_keys = ["rrr",
 const perc_keys = ["rrr", "mpx1",
     "mtx0", "mtx1",
     "mtx0s", "mtx1s",
-    "p00", "p01", "p10", "p11"]
+    "p00", "p01", "p10", "p11",
+    "mt00", "mt11"
+]
 
 
 // FUNCTIONS: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1244,12 +1634,17 @@ function evaluate_entry(curval, cur_q_key) {
     // Replace comma with period:
     checked_val = checked_val.replace(/,/, ".");
 
+    console.log("++++ CHECKING INPUT ++++");
+
     // Test, if it is a number and convert if true:
     const is_num = !isNaN(parseFloat(checked_val));
     if (is_num) {
         // Note: Ignores additional text!
         checked_val = parseFloat(checked_val);
     }
+
+    console.log(is_num);
+    console.log(curval);
 
     if (int_keys.includes(cur_q_key)) {
         // Check integer entries:
@@ -1260,7 +1655,7 @@ function evaluate_entry(curval, cur_q_key) {
             // alert("KEINE GANZE ZAHL!");
             cur_error = "err_noint";
         }
-    } else if (float_keys.includes(cur_q_key)) {
+    } else if (float_keys.includes(cur_q_key) || perc_keys.includes(cur_q_key)) {
 
         // Check float entries:
         if (!is_num) {

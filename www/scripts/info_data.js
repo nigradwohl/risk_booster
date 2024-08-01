@@ -169,7 +169,7 @@ const info_data = {
         "examples": ["100 Personen", "10.000 Studienteilnehmende", "3456 Todesfälle", "12 Geimpfte", "21 Äpfel"],  // array of list items with examples.
         "popup": ["<ul>" +
         "<li>Wenn es sich nicht um die Gesamtzahl in einer Gruppe handelt, achten Sie darauf diese Gesamtzahl immer anzugeben (z.B., Anzahl der Geimpften).</li>" +
-        "<li>Transparenter für die Kommunkation von Risiken sind <a href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> mit einer konstanten Referenz (z.B., 15 aus 1000).</li>" +
+        "<li>Transparenter für die Kommunkation von Risiken sind <a target='_blank' href=\"risk_wiki.html#wiki-nh\">natürliche Häufigkeiten</a> mit einer konstanten Referenz (z.B., 15 aus 1000).</li>" +
         "</ul>"],
         "maintext": "<p>Im Kontext medizinischer Berichterstattung werden Häufigkeiten oft verwendet um die Anzahl von " +
             "Erkrankungs- oder Todesfällen oder die Anzahl von Personen mit Nebenwirkungen in einer Studie darzustellen.</p>" +
@@ -199,7 +199,7 @@ const info_data = {
             "Die Stichprobengröße sollten stets angegeben werden, da so Rückschlüsse auf die Verlässlichkeit der Ergebnisse gezogen werden können."],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": ["10.000 Studienteilnehmende", "1000 Probanden", "insgesamt 5000 Versuchsteilnehmer"],  // array of list items with examples.
         "popup": [
-            "<p>Hilfreiche Angabe. Die <a href='#wiki-sample'>Stichprobengröße</a> hilft, die Zuverlässigkeit der Daten zu beurteilen und kann als Bezugsgröße dienen.</p>"],
+            "<p>Hilfreiche Angabe. Die <a target='_blank' href='#wiki-sample'>Stichprobengröße</a> hilft, die Zuverlässigkeit der Daten zu beurteilen und kann als Bezugsgröße dienen.</p>"],
         "maintext": "<p></p>" +
             "<p>DDie Größe einer Stichprobe ist aber wird oft von den durch die verfügbaren Ressourcen geleitet begrenzt. " +
             "leine Stichproben liefern nicht zwingend falsche Ergebnisse, aber die Ergebnisse sind typischerweise weniger " +
@@ -224,7 +224,7 @@ const info_data = {
             "Geimpften nur 270 von 1000 erkranken.<br>" +
             "<a href=\"https://www.hardingcenter.de/de/impfungen/mrna-schutzimpfung-gegen-covid-19-fuer-erwachsene-unter-60-jahren\">https://www.hardingcenter.de/de/impfungen/mrna-schutzimpfung-gegen-covid-19-fuer-erwachsene-unter-60-jahren</a>"],
         "popup": [
-            "<p><a href=\"risk_wiki.html#wiki-nh\">Natürliche Häufigkeiten</a> sind sehr transparent, um Risiken auszudrücken. " +
+            "<p><a target='_blank' href=\"risk_wiki.html#wiki-nh\">Natürliche Häufigkeiten</a> sind sehr transparent, um Risiken auszudrücken. " +
             "Achten Sie aber darauf, dass die Referenz (d.h., 1 in 1000 oder 1 in 10000) jeweils für alle Risiken konstant ist.</p>"],
         "maintext": "<p>Natürliche Häufigkeiten sind eine transparente Art, um Risiken darzustellen, da sich " +
             "Individuen die zugrundeliegenden Gruppen gut vorstellen können. Während Lesende bei anderen Zahlenformaten " +
@@ -267,7 +267,7 @@ const info_data = {
             "<p><a target='_blank' href='risk_wiki.html#wiki-rel'><i class=\"fa fa-exclamation-triangle annote-text-icon\"></i>&nbsp;Relative Angaben</a> sind oft intransparent.</p>" +
             "<ul>" +
             // "<li>sie führen häufig zu einer <a href=\"risk_wiki.html#wiki-error-rel\">Überschätzung des Risikos</a></li>" +
-            "<li>Achten Sie darauf, dass die <a href='risk_wiki.html#wiki-baseprob'>Basiswahrscheinlichkeit (bzw. das Basisrisiko)</a> angegeben wurde, auf die sich die Veränderung bezieht.</li>" +
+            "<li>Achten Sie darauf, dass die <a target='_blank' href='risk_wiki.html#wiki-baseprob'>Basiswahrscheinlichkeit (bzw. das Basisrisiko)</a> angegeben wurde, auf die sich die Veränderung bezieht.</li>" +
             "</ul>"
         ],
         "maintext":
@@ -342,7 +342,7 @@ const info_data = {
             "<p><i class=\"fa fa-exclamation-triangle annote-text-icon\"></i>&nbsp;Relative Angaben sind oft intransparent.</p>" +
             "<ul>" +
             // "<li>sie führen häufig zu einer <a href=\"risk_wiki.html#wiki-error-rel\">Überschätzung des Risikos</a></li>" +
-            "<li>Achten Sie darauf, dass die <a href='risk_wiki.html#wiki-baseprob'>Basiswahrscheinlichkeit (bzw. das Basisrisiko)</a> angegeben wurde, auf die sich die Veränderung bezieht.</li>" +
+            "<li>Achten Sie darauf, dass die <a target='_blank' href='risk_wiki.html#wiki-baseprob'>Basiswahrscheinlichkeit (bzw. das Basisrisiko)</a> angegeben wurde, auf die sich die Veränderung bezieht.</li>" +
             "</ul>"
         ],
         "maintext":
@@ -392,7 +392,7 @@ const info_data = {
             "Intervall, in dem der wahre Wert in 95% aller Experimente liegen würde, wenn man dasselbe Experiment sehr oft wiederholt oder man sehr oft eine " +
             "Stichprobe aus der Selben Population zieht."],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": ["Die Schutzwirkung beträgt 97,4 % (95 % KI: 91,4 – 99,2)."],  // array of list items with examples.
-        "popup": ["<p><a href='wiki-confint'>Konfidenzintervalle</a> werden in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +
+        "popup": ["<p><a target='_blank' href='wiki-confint'>Konfidenzintervalle</a> werden in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +
         "<p>Typischerweise werden Konfidenzintervalle, die <emph>nicht</emph> null einschließen, was eine akzeptable Unischerheit ausdrückt.</p>"],
         "maintext": "<p>Konfidenzintervalle werden in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +
             "<p>Schließt das Konfidenzintervall eines Unterschiedes nicht den Wer null ein, wird die Unsicherheit, dass ein Effekt, " +
@@ -419,7 +419,7 @@ const info_data = {
             "angegeben werden, wenn eine Erkrankung tatsächlich vorliegt bzw. ein negatives Testergebnis, wenn " +
             "keine Erkrankung vorliegt (Sensitivität und Spezifität). Umgekehrt könne auch die bedingten Wahrscheinlichkeiten dafür angegeben werden, " +
             "dass bei einem positiven bzw. negativen Testergebnis tatsächleich eine Erkrankung bzw. keine Erkrankung vorliegt " +
-            "(positiver Vorhersagewert und negativer Vorhersagewert; s. <a href='#wiki-sens-spec'>Testgenauigkeit</a> unten). " +
+            "(positiver Vorhersagewert und negativer Vorhersagewert; s. <a href='#wiki-sens-spec'>Testgenauigkeit und Vorhersagegüte</a> unten). " +
             "Auch das Risiko innerhalb einer Gruppe " +
             "ist eine bedingte Wahrscheinlichkeit, da es die Wahrscheinlichkeit angibt beispielsweise zu erkranken " +
             "oder zu versterben, wenn eine bestimmte Gruppenzugehörigkeit vorliegt (z.B., <a href='#wiki-baseprob'>Basisrisiko</a> in der " +
@@ -427,19 +427,21 @@ const info_data = {
             "Ein weiteres Beispiel sind <a href='#wiki-pval'>p-Werte (s. unten)</a>, die angeben wie wahrrscheinlich es ist in einer " +
             "Stichprobe Daten zu beobachten, in denen sich Gruppen so stark oder stärker als in der Stichprobe unterscheiden, " +
             "wenn es in der Population eigentlich keinen Unterschied gibt.</p>" +
-            "<p>Wie insbesondere das Beispiel der TEstgenauigkeit illustriert, ist es wichtig dass bei bedingten Wahrscheinlichkeiten kar ist, " +
+            "<p>Wie insbesondere das Beispiel der Testgenauigkeit illustriert, ist es wichtig, dass bei bedingten Wahrscheinlichkeiten kar ist, " +
             "auf welche Gruppe oder welches Ereignis sich diese beziehen.</p>" +
             "" +
-            "<h4 id='wiki-sens-spec'>Beispiel: Testgenaugkeit</h4>" +
+            "<h4 id='wiki-sens-spec'>Beispiel: Testgenaugkeit und Vorhersagegüte</h4>" +
             "<p>Gerade bei medizinischen Tests gibt es einige wichtige bedingte Wahrscheinlichkeiten. " +
-            "Die Sensitivität gibt an, welcher Anteil der Erkrankten ein Test korrekt erkennt und ein positives Ergebnis " +
-            "ausgibt (typischerweise in <a href='#wiki-prozent'>Prozent</a>). Die Spezifität gibt an, wie viele Personen, " +
-            "die nicht erkrankt sind, ein korrektes, negatives Testergebnis erhalten. " +
+            "Die <emph>Testgenauigkeit</emph> wird üblicherweise als Sensitivität und Spezifität angegeben (typischerweise in <a href='#wiki-prozent'>Prozent</a>). " +
+            "Die Sensitivität gibt an, welchen Anteil der Erkrankten ein Test korrekt als erkrankt erkennt und ein positives Ergebnis " +
+            "ausgibt. Die Spezifität gibt an, wie viele Personen, " +
+            "die nicht erkrankt sind korrekt als nicht erkrankt erkannt werden und ein negatives Testergebnis erhalten. " +
             "Mit diesen Angaben werden Tests beschrieben, insbesondere da diese in der Regel an einer Gruppe von Erkranken und " +
             "nicht Erkrankten auf seine Güte geprüft werden.</p>" +
             "<p>Sensitivität und Spezifität sind aber häufig nicht die interessierenden Werte: " +
-            "Typischerweise interessieren sich die Getesteten dafür, wie wahrscheinlich sie erkrankt sind, wenn sie ein " +
-            "positives Testergebnis erhalten haben. Dies hängt zusätzlich zur Güte des Tests von der Prävalenz, also dem " +
+            "Typischerweise interessieren sich die Getesteten für die <emph>Vorhersagegüte</emph>, " +
+            "also wie wahrscheinlich sie tatsächlich erkrankt sind, wenn der Test sie als erkrankt erkennt (positives Testergebnis). " +
+            "Dies hängt zusätzlich zur Güte des Tests von der Prävalenz, also dem " +
             "Risiko der Erkrankung der Person ab. Das Risiko nach einem positiven Testergebnis tatsächlich erkrankt zu sein, wird " +
             "als positiver prädiktiver Wert (PPV) bezeichnet.</p>" +
             "<p>So der Test nicht perfekt ist, bleibt das Risiko insbesondere bei seltenen Erkrankungen auch nach dem Test möglicherweise relativ niedrig. " +
@@ -490,7 +492,7 @@ const info_data = {
             "Der p-Wert wird auch von Expert*innen häufig missverstanden und bringt daher vermutlich keinen Mehrwert für journalistische Artikel"
         ],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": [],  // array of list items with examples.
-        "popup": ["<p>Der <a href='wiki-pval'>p-Wert</a> wird in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +
+        "popup": ["<p>Der <a target='_blank' href='wiki-pval'>p-Wert</a> wird in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern.</p>" +
         "<p>Typischerweise wird ein p-Wert kleiner als 0.05 als \"statistisch signifikant\" bezeichtnet, was eine akzeptable Unischerheit ausdrückt.</p>" +
         "<p>Da der p-Wert auch von Expert*innen häufig missverstanden wird, sollte er in journalistische Publikationen eher nicht verwendet werden.</p>"],
         "maintext": "" +
@@ -576,10 +578,10 @@ const info_data = {
         "popup": ["Im Experiment weren durch zufällige Zuweisung auf eine Experimental- und eine Kontrollgruppe " +
             "systematische Unterschiede zwischen den Gruppen ausgeschlossen, " +
             "so dass (anders als bei der Beobachtung von Gruppen oder Zeitpunkten) " +
-            "<a href='#wiki-causal'>Kausalaussagen</a> möglich sind.",
+            "<a target='_blank' href='#wiki-causal'>Kausalaussagen</a> möglich sind.",
             "In der Medizin ist en typisches Experiment der \"Randomized Controlled Trial\" (RCT): " +
             "Personen werden zufällig einer Behandlung oder einer Vergleichsbehandlung " +
-            "(häufig mit einem <a href='#wiki-placebo'>Placebo</a>) zugewiesen"],
+            "(häufig mit einem <a target='_blank' href='#wiki-placebo'>Placebo</a>) zugewiesen"],
         "maintext":
             "<p>Im Allgemeinen besteht ein Experiment darin, das Versuchspersonen zufällig auf verschiedenen Behandlungen " +
             "verteilt werden. So werden systematische Unterschiede ausgeschlossen und Kausalaussagen ermöglicht. " +
@@ -643,7 +645,7 @@ const info_data = {
         "Der Vergleich von Untersuchungs- und Vergleichszeitpunkt erlaubt Aussagen über Veränderungen über die Zeit " +
         "(und deren Größe), also z.B., ob es Menschen besser oder schlechter geht (nur aufgrund der Zeit sind üblicherweise keine Aussagen über die Wirkmechanismen möglich)."],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": [],  // array of list items with examples.
-        "popup": ["Zeitpunkt zu dem eine Untersuchung stattfindet und der mit einem <a href=\"#wiki-tcomp\">Vergleichszeitpunkt</a> verglichen wird."],
+        "popup": ["Zeitpunkt zu dem eine Untersuchung stattfindet und der mit einem <a target='_blank' href=\"#wiki-tcomp\">Vergleichszeitpunkt</a> verglichen wird."],
         "maintext": "<p>Der Untersuchungszeitpunkt ist ähnlich zur Untersuchungsgruppe etwa in Medikamentenstudien, während der Vergleichszeitpunkt der Kontrollgruppe ähnlich ist. " +
             "Ein entscheidender Unterschied ist, dass Personen nicht zufällig auf Zeitpunkte zugewiesen werden können. " +
             "Daher können Zeitpunkte nicht für ein <a href='#wiki-expe'>Experiment</a> verwendet werden und Aussagen über <a href='#wiki-causal'>Ursache und Wirkung</a>" +
@@ -671,7 +673,7 @@ const info_data = {
             "Der Vergleich von Untersuchungs- und Vergleichszeitpunkt erlaubt Aussagen über Veränderungen über die Zeit (und deren Größe), " +
             "also z.B., ob es Menschen besser oder schlechter geht (nur aufgrund der Zeit sind üblicherweise keine Aussagen über die Wirkmechanismen möglich)."],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": [],  // array of list items with examples.
-        "popup": ["Zeitpunkt mit dem Daten zu einem <a href=\"#wiki-teval\">Untersuchungszeitpunkt</a> verglichen werden."],
+        "popup": ["Zeitpunkt mit dem Daten zu einem <a target='_blank' href=\"#wiki-teval\">Untersuchungszeitpunkt</a> verglichen werden."],
         "maintext": ""   // string of main text for wiki.
     },
     "placebo": {
@@ -683,14 +685,14 @@ const info_data = {
             "Wird häufig als <a href='#wiki-treat-control'>Kontrollgruppe</a> in medizinischen Studien verwendet, um den Wirkstoff eines Medikamentes über die von Patienten erwartete Wirkung hinaus zu untersuchen."],  // array of list items overview of most important points, displayed in wiki and text checker.
         "examples": ["Kochsalzlösung", "Zuckerpillen"],  // array of list items with examples.
         "popup": [],
-        "maintext": "Placebos sind Scheinbehandlungen. Anstelle eines Medikaments wird ein Präparat ohne Wirkstoff " +
+        "maintext": "<p>Placebos sind Scheinbehandlungen. Anstelle eines Medikaments wird ein Präparat ohne Wirkstoff " +
             "verabreicht (z.B., Kochsalzlösung bei einer Impfung, Zuckertabletten ohne Wirkstoff anstelle von Medikamenten). " +
             "Zur Untersuchung der Wirksamkeit von Medikamenten ist dies wichtig, da so Erwartungseffekte ausgeschlossen " +
             "werden können. Erwartungseffekte treten auf, da alleine die Erwartung, dass mit der Einnahme eines Medikamentes " +
             "eine Besserung eintritt, dazu führen kann, dass eine Besserung wahrgenommen wird. Umgekehrt kann es auch " +
             "die Erwartung von Nebenwirkungen wahrscheinlicher machen, dass tatsächlich Nebenwirkungen wahrgenommen und " +
             "berichtet werden. Um Nutzen und Schaden des Wirkstoffes an sich festzustellen sollte daher ein Vergleich " +
-            "mit einem Placebo stattfinden."   // string of main text for wiki.
+            "mit einem Placebo stattfinden.</p>"   // string of main text for wiki.
     }
 
 }

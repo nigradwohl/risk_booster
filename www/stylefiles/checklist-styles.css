@@ -1,0 +1,387 @@
+.grid-container-check {
+    display: grid;
+    grid-template-columns: minmax(220px, 2.5fr) minmax(120px, 1.5fr) 40px minmax(120px, 1.5fr) minmax(220px, 2.5fr);
+    /*grid-template-rows: 1em 1.5em 60px auto 50px;*/
+    grid-template-rows: 1em 1.5em 60px auto 2em;
+    grid-template-areas:
+            "header header header header header"
+            "subhead1 . . . subhead2"
+            "arr1 arrnote1 . arrnote2 arr2"
+            "arr1 midnote midnote midnote arr2";
+    margin-top: 0.8em;
+    /*justify-items: center;*/
+}
+
+#results-q {
+    padding-top: 0;
+}
+
+.check-results-navrow {
+    font-size: 0.7em;
+    display: flex;
+    align-items: end;
+    width: 100%;
+    /*background-color: lightsteelblue;*/
+    border-bottom: 1px solid var(---text-color-secondary);
+    z-index: 9998;
+    margin-bottom: 1em;
+}
+
+.check-results-navrow div {
+    cursor: pointer;
+    padding: 0.8em 0.9em 0.5em;
+    justify-self: end;
+    z-index: 9998;
+}
+
+#stop-edit {
+    display: none;
+}
+
+.check-results-navrow div:hover {
+    background-color: var(---bg-highlight-secondary);
+    color: var(---text-color-secondary);
+}
+
+.intro-testscreen {
+    display: none;
+}
+
+.grid-head {
+    /*grid-row: 1;*/
+    /*grid-column: 2 / 4;*/
+    grid-area: header;
+    justify-self: center;
+}
+
+.grid-subhead1 {
+    /*grid-row: 2;*/
+    grid-area: subhead1;
+    justify-self: center;
+}
+
+.grid-subhead2 {
+    /*grid-row: 2;*/
+    grid-area: subhead2;
+    justify-self: center;
+}
+
+.grid-arr1 {
+    grid-area: arr1;
+    /*grid-row: 3 / 4;*/
+}
+
+.grid-arr2 {
+    grid-area: arr2;
+    /*grid-row: 3 / 4;*/
+}
+
+.grid-note1 {
+    grid-area: arrnote1;
+    justify-self: start;
+    text-align: left;
+    align-self: center;
+    padding: 0 0.2em;
+}
+
+.grid-note2 {
+    grid-area: arrnote2;
+    justify-self: end;
+    text-align: right;
+    align-self: center;
+    padding: 0 0.2em;
+}
+
+.grid-global-note {
+    /*grid-row: 4;*/
+    grid-area: midnote;
+    justify-self: center;
+    padding: 1em 0.2em;
+    line-height: 1.2em;
+}
+
+.grid-global-note > p {
+    margin-left: 20px;
+}
+
+.content-start {
+    justify-self: start;
+}
+
+.content-end {
+    justify-self: end;
+}
+
+/*Stylefile with functional styles for the specific tasks*/
+/*NOTE: May eventually need to be split again*/
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Styles for risk calculator ~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+.checklist-qtext {
+    color: var(---text-color-secondary);
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+#dotdisplay-zoom {
+    margin: auto;
+    height: 90%;
+    width: 90%;
+}
+
+.canvas-zoom {
+    position: absolute;
+    justify-content: center;
+    top: 5px; /*slight space to top.*/
+    left: 33%;
+    height: 90%;
+    width: 90%;
+    display: none;
+    background-color: whitesmoke;
+    border: 1px darkgrey solid;
+    z-index: 9998;
+}
+
+
+.canvas-container {
+    /*width: 300px;*/
+    /*height: 300px;*/
+    background-color: var(---checklist-question-bg);
+    cursor: pointer;
+    margin: 0 auto;
+}
+
+canvas {
+    /*display: none;*/
+    /*background: white;*/
+    /*background-color: var(---bg-general);*/
+    /*width: 250px;*/
+    /*height: 250px;*/
+    /*border-radius: 50%;*/
+    margin: 0 auto;
+    /*border: 1px solid black;*/
+}
+
+.canvas-base {
+    width: 250px;
+    height: 125px;
+    /*display: none;*/
+}
+
+.zoomed-canvas {
+    width: 95%;
+    height: 95%;
+    z-index: 9998;
+}
+
+.split-content {
+    display: flex;
+    flex-direction: row;
+    /*width: clamp(100%, 800px, 100%);*/
+    /*320px (can be 0 to X ) is the min-width you agree width, 600px the max-width you allow and 100% the limit not to pass.*/
+}
+
+.checklist-nav {
+    font-size: 1.5em;
+    color: darkgrey;
+    text-align: center;
+    height: 100%;
+    /*display: flex;*/
+    align-content: center;
+}
+
+
+.checklist-nav:hover {
+    font-weight: bold;
+    cursor: pointer;
+    text-shadow: 2px 2px 5px var(---checklist-shadow);
+    /*background-color: #444444;*/
+}
+
+
+.checklist-results p {
+    font-size: 0.8em;
+    line-height: 1.2;
+}
+
+.checklist-question {
+    margin: 0 auto;
+    /*flex: 100%;*/
+    background-color: var(---checklist-question-bg);
+    color: 2px var(---checklist-question-bg) solid;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px var(---checklist-shadow);
+    flex-direction: column;
+    width: 800px;
+    display: none;
+    height: 400px;
+    justify-content: center;
+    /*align-items: center;*/
+}
+
+.checklist-button {
+    margin: 0.2em;
+    padding: 0.3em;
+    font-size: 1em;
+    text-align: center;
+    min-width: 5em;
+    flex: 20%;
+    background-color: var(---button-secondary);
+    border-radius: 5px;
+}
+
+.checklist-content {
+    margin: 1em auto;
+    width: 800px;
+}
+
+.edit-note {
+    display: none;
+    resize: none;
+    width: 102%;
+    overflow: hidden;
+    /*height: 100%;*/
+    font-size: 0.8em;
+    position: relative;
+    z-index: 9998;
+    -webkit-appearance: none; /*to render properly*/
+}
+
+#edit-text-popup {
+    display: none;
+}
+
+.error-note {
+    display: none;
+    grid-area: arr1 / arr1 / arr2 / arr2;
+}
+
+.checklist-question.checklist-results {
+    width: 100%;
+    height: 100%;
+    padding: 1em;
+}
+
+.question-content td {
+    /*vertical-align: top;*/
+    vertical-align: center;
+}
+
+
+.nav-cell {
+    width: 10%;
+}
+
+.content-cell {
+    width: 80%;
+    position: relative;
+}
+
+.risk-info {
+    font-weight: bold;
+    color: #666;
+    display: block;
+}
+
+.arrow-btn.back {
+    visibility: hidden;
+}
+
+#noentry-popup {
+    width: 50%;
+}
+
+#incompatible-popup {
+    width: 60%;
+}
+
+.arrow-btn {
+    font-size: 1.5em;
+}
+
+.arrow-btn.continue {
+    /*color: var(---button-primary);*/
+}
+
+.nav-cell.active:hover {
+    background-color: var(---bg-highlight-secondary);
+    cursor: pointer;
+}
+
+.error-prompt {
+    position: absolute;
+    border: 1px solid var(---error-col);
+    background-color: var(---bg-general);
+    padding: 1em;
+    margin: 1em;
+}
+
+.missing-input {
+    border: 2px solid var(---error-col);
+}
+
+.show-impf {
+    display: none;
+}
+
+.final-note {
+    background-color: var(---bg-highlight-secondary);
+    padding: 0.7em 0.6em;
+}
+
+/*TOOLTIPS*/
+
+.tooltip.tooltip-q .tooltiptext {
+    width: 180px;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -90px; /* Use half of the width (120/2 = 60), to center the tooltip */
+    background-color: var(---bg-highlight-secondary);
+    border: none;
+    color: var(---text-color-primary);
+}
+
+.tooltip.tooltip-q .tooltiptext.tooltip-overview::after {
+    border-color: var(---bg-highlight-secondary) transparent transparent transparent;
+}
+
+/* Media queries*/
+@media screen and (max-width: 700px) {
+    .checklist-content {
+        width: 80%;
+        margin: 1em auto;
+    }
+
+    .checklist-question {
+        width: 80%;
+    }
+
+    .checklist-qtext {
+        font-size: 1em;
+    }
+
+    .question-content table {
+        font-size: 0.9em;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .checklist-content {
+        width: 95vw;
+        margin: 1em auto;
+    }
+
+    .checklist-question {
+        width: 90%;
+    }
+
+    #noentry-popup {
+        width: 90%;
+    }
+
+    #incompatible-popup {
+        width: 90%;
+    }
+}

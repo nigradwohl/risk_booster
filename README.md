@@ -24,7 +24,9 @@ Features are sorted by importance and are further split by features that should 
 
 ## General 
 
-* Handle treatment case  
+* Highlight current page in navbar (bold?)
+* Update introduction to 
+* Describe three elements and Wiki as aid and support in introductory text
 * Typos!
 
 ### Nice to have 
@@ -33,9 +35,10 @@ Features are sorted by importance and are further split by features that should 
 
 ## Text-checking tool 
 
-* Design durch Absetzungen; decrease size of input 
-* Risikorechner verlinken!
-
+* Sizes and shades of grey in overview output
+* check for fullstops and spaces
+* popup tooltips to top from beginning
+* Make tooltip links clickable?
 * Increase the number of test-texts that are successfully handled
     + detect absolute risk reductions (e.g., smaller percentages, percentage points): distinguish from unidentified percentages (and mention if they are likely relative)
 * detect if numbers have a reference (e.g., is only the number of infections or percentages in groups reported? 
@@ -47,13 +50,34 @@ Do we also have the group sizes?)
 
 ### Nice to have
 
+* Remove/handle relative clauses 
+* handle "ein", "einen": only identify as numbers when keywords follow
 * handle other topics (especially feedback)
 * try again to catch unidentified numbers after current iterations 
 
 
 ## Checklist
 
-* Screenings as case (sensitivity/specificity) 
+* Ask others: good idea to shorten the checker?
+* Add links to wiki and tooltips
+* Check whether we can skip more entries based on usin ptab and how we can determine this
+
+* look for press releases (maybe articles) to check if "efficacy" or "effectiveness" are used in another context than infections (e.g., mortality, hospital admissions)
+  * https://www.thelancet.com/journals/lanres/article/PIIS2213-2600(23)00015-2/fulltext (effectiveness: hospitalization, mortality)
+  * https://www.gov.uk/government/news/vaccines-highly-effective-against-hospitalisation-from-delta-variant (effectiveness: hospitalization)
+  * https://www.helios-gesundheit.de/qualitaet/aktuelle-studien-zu-den-corona-impfungen/ (mortality)
+  * https://www.bmj.com/content/376/bmj-2021-069761 (hospital admissions) 
+  * Note "In der medizinischen Statistik und Infektionsepidemiologie gehört die Ermittlung der Impfstoffwirksamkeit (IW),[1] auch Impfwirksamkeit,[2] Schutzwirkung,[3] (englisch vaccine efficacy) oder Impfeffekt[4] genannt," (Wikipedia)
+  * Vaccine effectiveness is a measure of how well vaccination protects people against health outcomes such as infection, symptomatic illness, hospitalization, and death. (CDC)
+* Make clear which (relative) reduction is meant -- double check
+* translate diagnosis to "infection"
+* How do press-releases/articles talk about screenings?
+* Recheck harding center
+* Treatment categories: Reduktion Symptome, Reduktion Krankheitstage, Reduktion der Symptome (z.B., Schmerzen), Symptomlinderung
+
+* fix issue with proportion treated (does not work reliably, especially for side effects)
+* remove or fix "text bearbeiten"
+
 * look for articles and press releases to process (SciMedia center; JAMA network open!; BMJ, JAMA, Lancet, Annals of internal medicine, NEJM; Tim, get endpoints and superordinate terms; Cochrane?)
 * Superordinate statement: "Das uns interessierende **Ereignis**"
 * Implement additional questions as needed (e.g., OR, AR or ARR for side effects)
@@ -65,6 +89,7 @@ Do we also have the group sizes?)
 
 * allow to show only 1 icon array
 * Make assumptions in case of missing information
+* add options for ppv and npv; proportion of positive tests; frequencies?
 
 ## Wiki
 

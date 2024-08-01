@@ -25,6 +25,8 @@ regex_mult = paste0("(?<mult>", pat_num, "[ \\-]?([Mm]al|[Ff]ach) (so )?( ?viele
 regex_dur2 = "(?<dur>\\d+([,.]\\d+)?-?\\d*([,.]\\d+)?(Minuten?| Stunden?| Tagen?| Wochen?))"
 
 
+# Person words:
+person_all <- c("Proband", "[Tt]eilnehme", "[Pp]erson", "Menschen", "Frauen", "Männer", "Kinder", "Erwachsene")
 
 
 
