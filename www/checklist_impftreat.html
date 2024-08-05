@@ -1010,6 +1010,13 @@
                             <h4>Ergebnis</h4>
                         </div>
 
+                        <div id="warn-small-n">
+                            <p>
+                                <i class="fa fa-exclamation-triangle highlight-warning"></i>
+                                <span id="n-warn"></span>
+                            </p>
+                        </div>
+
                         <!--Container effectivitiy-->
                         <div class="grid-container-check" id="results-1">
 
@@ -1021,6 +1028,7 @@
                                         zum Nutzen
                                     </span>
                                     erstellen.</p>
+                                <p class="missing-info-par" id="reason-eff"></p>
                                 <p>Bitte prüfen Sie die Ihnen vorliegenden Angaben.
                                     Möglicherweise erlauben diese keine Transparente
                                     Risikodarstellung.
@@ -1076,6 +1084,7 @@
                                         zur Schadenwirkung
                                     </span>
                                     erstellen.</p>
+                                <p class="missing-info-par" id="reason-side"></p>
                                 <p>Bitte prüfen Sie die Angaben. Möglicherweise erlauben diese keine Transparente
                                     Risikodarstellung.</p>
                             </div>
@@ -1191,16 +1200,17 @@
         <!--        <canvas id="dotdisplay-control-zoom" class="zoomed-canvas"></canvas>-->
     </div>
 
-    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ EOF MAIN CONTENT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+</div>
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ EOF MAIN CONTENT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 
-    <!-- Footer -->
-    <div class="footer no-print"></div>
+<!-- Footer -->
+<div class="footer no-print"></div>
 
 
-    <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-    <!--Space for scripts-->
-    <script src="scripts/calculate_risk.js"></script>
-    <script src="scripts/handle_checklist.js"></script>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--Space for scripts-->
+<script src="scripts/calculate_risk.js"></script>
+<script src="scripts/handle_checklist.js"></script>
 
 
 </body>
