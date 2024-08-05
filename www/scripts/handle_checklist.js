@@ -965,9 +965,9 @@ class Checklist {
         const scaleset = [100, 1000, 10000, 100000];
         if (N) {
             // Use smallest scale close to data:
-            curscale = scaleset.filter((s) => Math.floor(s/(N/2))> 0)[0];
+            curscale = scaleset.filter((s) => Math.floor(s / (N / 2)) > 0)[0];
             // Note: loses precisions for odd numbers like 3 in 141 (but this may be pseudo-precision anyways...)
-            curscale = !curscale ? scaleset[scaleset.length-1] : curscale;  // take the maximum in case no scale fits.
+            curscale = !curscale ? scaleset[scaleset.length - 1] : curscale;  // take the maximum in case no scale fits.
         } else {
             // was: [100, 1000, 2000, 5000, 10000, 50000, 100000]
             curscale = scaleset
@@ -984,14 +984,15 @@ class Checklist {
         // Warn if N is missing or small:
         const n_warn_ele = $("#n-warn");
         $("#warn-small-n").hide();
-        if(!N){
+        if (!N) {
             n_warn_ele.text("Sie haben keine Information zur Stichprobengröße angegeben. " +
                 "Die Zuverlässigkeit der Ergebnisse kann so schwer beurteilt werden. " +
-                "Die kleinstmögliche Anzahl wurde ausgewählt");
+                "Die kleinstmögliche Anzahl wurde ausgewählt.");
             $("#warn-small-n").show();
-        } else if(N < 500){
+        } else if (N < 500) {
             const ix_warn = [30, 100, 500].findIndex((x) => x > N);
-             n_warn_ele.text(`Sie haben eine ${["sehr", "", "relativ"][ix_warn]} kleine Stichprobengröße von ${N} angegeben. ` +
+            n_warn_ele.text(`Sie haben eine ${["sehr", "", "relativ"][ix_warn]} kleine Stichprobengröße von ${N} angegeben. ` +
+                "Prüfen Sie die Ergebnisse unbedingt auf ihre <a href='risk_wiki.html#p-val'>statistische Signifikanz</a>. " +
                 "Die Zuverlässigkeit der Ergebnisse ist daher vermutlich begrenzt.");
             $("#warn-small-n").show();
         }
@@ -1118,6 +1119,21 @@ class Checklist {
                 // `Relative${side_risks.arc < 0 ? "s Risiko" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${side_risks.rrr_p}</span>`
             );
             // TODO: Alternatively switch the reference and always report RRR? (could be done by making "Behandlungsgruppe" a variable).
+
+        }
+
+        // Warinings about missing information:
+        // - missing group sizes/proportions
+        // - missing proportion of endpoint (AR)
+        // Warn, if something is missing:
+        if (eff_group_risks.flat().includes(NaN)) {
+
+            const miss_text = "Es konnte kein absolutes Risiko für die " + " ermittelt werden. " +
+                ""
+
+            $("#reason-eff")
+                .text("Something is missing...")
+                .show();
         }
 
         // Also assign the side effect risks in the control group (or among the nagtively tested):

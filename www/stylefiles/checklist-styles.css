@@ -238,6 +238,10 @@ canvas {
     /*width: 800px;*/
 }
 
+.missing-info-par{
+    display: none;
+}
+
 .edit-note {
     display: none;
     resize: none;
