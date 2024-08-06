@@ -93,8 +93,8 @@ $(document).ready(function () {
             "other_num": regex_num
         }
 
-        const person_all = ["Proband", "[Tt]eilnehm", "[Pp]erson", "Mensch", "Frauen", "Männer", "Kind", "Erwachsen", "Mädchen", "Junge"]
-
+        const person_all = ["Proband", "[Tt]eilnehm", "[Pp]erson", "Mensch", "Frauen", "Männer", "Kind", "Erwachsen", "Mädchen","Junge"]        
+        
         /**
          * Object that can be looped over to check numbers for number types taht are specific to their units in "number_unit".
          * @type {{ncase: {number_unit: string[], keyset: RegExp[][]}, incr: {number_unit: string[], keyset: RegExp[][]}, ntot: {number_unit: string[], keyset: RegExp[][]}, decr: {number_unit: string[], keyset: RegExp[][]}}}
@@ -1584,7 +1584,9 @@ const month_names = ["Januar", "Februar", "März", "April", "Mai", "Juni",
     "Dezember"];
 const pat_num = "(?:(?<![\\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,:][0-9]+)?))(?!\\\.[0-9A-Za-zÄÖÜäöüß]|[a-zA-Z0-9ÄÖÜäöüß])";
 const numwords = ["[Kk]einen?", "(?<![Kk])[Ee]ine?[rm]?(?![gnz])", "[Zz]wei(?!fe)", "[Dd]rei", "[Vv]ier", "[Ff]ünf", "[Ss]echs",
-    "[Ss]ieben", "[Aa]cht(?!e)", "[Nn]eun(?!k)", "[Zz]ehn", "[Ee]lf", "[Zz]wölf", "[Zz]weieinhalb"];
+    "[Ss]ieben", "[Aa]cht(?!e)", "[Nn]eun(?!k)", "[Zz]ehn", "[Ee]lf", "[Zz]wölf", 
+    // Other kinds of number words 
+    "[Zz]weieinhalb"];
 const largenums = ["Millionen", "Milliarden"];
 
 const regex_num = new RegExp("(?<unknown>" + pat_num + "( Millionen| Milliarden)?)", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
@@ -2381,6 +2383,9 @@ function investigate_context(token_data, index_arr, keyset, only_pars) {
     // }
     const par_minmax = token_data.par_minmax;
 
+    // Initialize specific end tokens to handle window_size (one direction!)
+    const sentence_end_tokens = ["\\n", ".", "?", "!", ":"];
+    
     // For each number query:
     for (const token_ix of index_arr) {
 
@@ -2424,22 +2429,35 @@ function investigate_context(token_data, index_arr, keyset, only_pars) {
         // OPEN THE WINDOW: ~~~~~~~~~~~~~~~~
         while (!description_complete && (lock_start > min_start || lock_end < max_end)) {
 
-            // console.log(`Token ${token_ix}, window start: ${window_start}, lock start: ${lock_start}, window end: ${window_end}, lock end: ${lock_end}; range before: ${token_ix - lock_start}, range after: ${lock_end - token_ix}, current stop tokens: ${stop_tokens.join(" ")}`);
+            // Check if either stop token is a sentence end token
+            const is_sentence_end_start = sentence_end_tokens.includes(token_data.token[window_start]);
+            const is_sentence_end_end = sentence_end_tokens.includes(token_data.token[window_end]);
 
-            while (window_start > lock_start) {
-                window_start--;
-                // Log if a stop token was encountered:
-                if (stop_tokens.includes(token_data.token[window_start])) {
-                    stop_token_start = true;
-                    break;
+            if (is_sentence_end_start || is_sentence_end_end) {
+                // If sentence end token is found, restrict window expansion to left direction only
+                while (window_start > lock_start) {
+                    window_start--;
+                    if (stop_tokens.includes(token_data.token[window_start])) {
+                        stop_token_start = true;
+                        break;
+                    }
+                }
+            } else {
+                // Normal window expansion in both directions
+                while (window_start > lock_start) {
+                    window_start--;
+                    if (stop_tokens.includes(token_data.token[window_start])) {
+                        stop_token_start = true;
+                        break;
+                    }
                 }
 
-            }
-            while (window_end < lock_end) {
-                window_end++;
-                if (stop_tokens.includes(token_data.token[window_end])) {
-                    stop_token_end = true;
-                    break;
+                while (window_end < lock_end) {
+                    window_end++;
+                    if (stop_tokens.includes(token_data.token[window_end])) {
+                        stop_token_end = true;
+                        break;
+                    }
                 }
             }
 
