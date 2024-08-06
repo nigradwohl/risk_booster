@@ -21,8 +21,8 @@ In der Studie traten insgesamt 10 schwere COVID-19-Verläufe auf. Davon wurden 9
 
 
 # Get other scripts: -----------------------------
-source("modifyable_defintions.R")
 source("util_funs.R")
+source("modifyable_defintions.R")
 source("main_functions.R")
 
 
@@ -38,8 +38,52 @@ test_text <- function(txt){
   
   input_txt <- txt
   
+  token_data <- get_token_data(input_txt)
+  
+  # TODO: How to save the modifyiable defintions?
+  modifyiable_defs <- list(
+    units_exc = units_exc,
+    check_numbers_dict = check_numbers_dict  
+  )
+  
+  
+  
+  # Text-level: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # Detect topics: ------------
+  topic_list <- list(
+    impf = c("(?<!gl|sch)[Ii]mpf"),
+    mask = c("Maske|FFP"),
+    protect = c("Schutzwirkung", "Ansteckungsgefahr", "nur", "besser", "geschützt"),
+    lower_risk = c("mindern", "Risiko", "schützen|Schutz", "Infekt|Ansteck"),
+    cancer_risk = c("[Rr]isiko", "Krebs"),
+    med_risk = c("[Mm]edikament", "Krebs", "[Mm]edikament", "wirk")
+  )
+
+  # Assign to main object attribute:
+  attr(token_data, "topics") <- names(topic_list)[sapply(topic_list, 
+                                                  FUN = function(top){detect_topic(token_data$token, top)})]
+  
+  if (!"lifex" %in% attr(token_data, "topics")) {
+    modifyiable_defs$check_numbers_dict <- with(modifyiable_defs,
+         check_numbers_dict[names(check_numbers_dict) != "yearnum"]
+         )
+    # modifyiable_defs$check_numbers_dict <- modifyiable_defs$check_numbers_dict[names(modifyiable_defs$check_numbers_dict) != "yearnum"]
+    # If no life-expectancy is discussed, remove numbers of years.
+  } else {
+
+    modifyiable_defs$units_exc <- with(modifyiable_defs,
+         units_exc <- units_exc[units_exc != "age"]
+         # show age, when it comes to life expectancy.
+    )
+  }
+  
+  
+  # Get regex-based matches:
+  
+  
 }
 
+test_text(tsttxt)
 
 
 

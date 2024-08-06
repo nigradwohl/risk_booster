@@ -13,7 +13,7 @@ get_token_data <- function(txt) {
   # TODO: Improve handling of quotes!
   
   text_tokens = word_tokenizer(txt)  # Define the text as word and punctuation tokens.
-  # console.log(text_tokens);  # for testing.
+  # print(text_tokens);  # for testing.
 
   # get paragraphs:
   # print("PARAGRAPHS");
@@ -63,7 +63,7 @@ get_token_data <- function(txt) {
     tpos_start <- pos_info[1]
     tpos_end <- sum(pos_info) - 1
     
-    print(tpos_end)
+    # print(tpos_end)  # final positions. 
 
     # Assign sentence ID:
     sentence_id <- sentence_id + token_i %in% c("?", ".", "!", ";")
@@ -77,11 +77,14 @@ get_token_data <- function(txt) {
     }
 
 
-    token_info <- rbind(token_info, c(token_i, tpos_start, tpos_end, 
-                                      sentence_id, cur_paragraph_id))
+    token_info <- rbind(token_info, c(token = token_i, 
+                                      start = tpos_start, end = tpos_end, 
+                                      sent = sentence_id, par = cur_paragraph_id))
     
   }
- 
+  
+  token_info <- cbind(id = 1:nrow(token_info), token_info)
+  
   return(data.frame(token_info))
 }
   
@@ -116,5 +119,25 @@ get_token_data <- function(txt) {
     return(arr_out)
   }
 
-  get_regex_matches(tsttxt, regex_perc)
+  # get_regex_matches(tsttxt, regex_perc)
+  
+  
+# Funciton to detect topic in text: -------------------------------------------
+  detect_topic <- function(tokens, key_list){
+    
+    token_str <- paste0(tokens, collapse = "_")  # collapse all tokens.
+    
+    # One subarray of key_list must be met:
+    # e.g., ["Schutzwirkung"], ["Ansteckungsgefahr", "nur"], ["besser", "geschützt"]
+    # key_list <- list(c("Schutzwirkung"), c("Ansteckungsgefahr", "nur"), c("besser", "geschützt"))
+    
+    
+    topic_present <- any(sapply(key_list, FUN = function(sublist) {
+      all(sapply(sublist, FUN = grepl, token_str, perl = TRUE))
+      }))
+
+    return(topic_present)
+    
+    
+  }
   
