@@ -24,7 +24,7 @@ get_token_data <- function(txt) {
   sentence_id <- 0
   cur_paragraph_id <- 0
   
-  token_info <- c()
+  token_info <- data.frame()
   
   for(token_i in text_tokens){
     # if(token_i %in% c("\\n\\*", ".", ":", ";", ",", "?", "!", "(", ")", "\"", "'", "/", "\\-", 
@@ -77,7 +77,7 @@ get_token_data <- function(txt) {
     }
 
 
-    token_info <- rbind(token_info, c(token = token_i, 
+    token_info <- rbind(token_info, data.frame(token = token_i, 
                                       start = tpos_start, end = tpos_end, 
                                       sent = sentence_id, par = cur_paragraph_id))
     
@@ -91,7 +91,7 @@ get_token_data <- function(txt) {
   
 
 # Function to extract regex matches and their positions from a text: -----------------
-  get_regex_matches <- function(txt, regexp) {
+  get_regex_matches <- function(regexp, txt) {
     # Initialize an empty list to store matches
     arr_out <- list()
     
@@ -99,27 +99,124 @@ get_token_data <- function(txt) {
     matches <- gregexec(regexp, txt, perl = TRUE)
     dimlist <- unlist(dimnames(matches[[1]]))
     type <- dimlist[dimlist > 0]
-    match_pos <- matches[[1]][type,]  # TODO: Does this always work?
-    match_lens <- attr(matches[[1]], "match.length")[type,]
-    matchlist <- regmatches(txt, matches)[[1]][type,]
     
-    for (i in seq_along(matchlist)) {
-      match <- matchlist[i]
-      if (nchar(match) > 0) {
-        # Extract the matched text
-        curmatch <- list(
-          type = type,
-          match = match,
-          start_end = c(match_pos[i], match_pos[i] + match_lens[i])
-        )
-        arr_out[[i]] <- curmatch
+    if(!is.null(type)){
+      match_pos <- matches[[1]][type,]  # TODO: Does this always work?
+      match_lens <- attr(matches[[1]], "match.length")[type,]
+      matchlist <- regmatches(txt, matches)[[1]][type,]
+      
+      for (i in seq_along(matchlist)) {
+        match <- matchlist[i]
+        if (nchar(match) > 0) {
+          # Extract the matched text
+          curmatch <- list(
+            type = type,
+            match = match,
+            start_end = c(match_pos[i], match_pos[i] + match_lens[i])
+          )
+          arr_out[[i]] <- curmatch
+        }
       }
     }
+    
     
     return(arr_out)
   }
 
   # get_regex_matches(tsttxt, regex_perc)
+  
+# Detect matches defined in an object in a regular expression. ----------------
+# TODO
+  # For testing:
+  # check_dict <- check_numbers_dict
+  # token_dat <- token_data
+  detect_regex_match <- function(txt, token_dat, check_dict){
+    
+
+    # get all matches:
+    arr_match <- unlist(sapply(check_dict, get_regex_matches, txt = txt), recursive = FALSE)
+    
+    
+    # Connect matches to token data:
+    token_match <- NA
+    match_type <- NA
+    
+    dropvec <- c()
+    
+    # curmatch <- arr_match[[2]]  # for testing.
+    
+    # TODO: Loop?
+    for(i in 1:length(arr_match)){
+      
+      curmatch <- arr_match[[i]]
+      
+      match_start <- token_dat$start >= curmatch$start_end[1] & token_dat$start < curmatch$start_end[2]
+      match_end <- token_dat$end <= (curmatch$start_end[2] - 1) & token_dat$end > curmatch$start_end[1]
+      
+      match_pos <- match_start | match_end
+    
+      
+      # If one of the indices can be found:
+      if(any(match_start) | any(match_end)){
+        
+        if(!any(match_end)){match_end <- match_start}
+        if(!any(match_start)){match_start <- match_end}
+        
+        # n_ele  # NEEDED?
+        
+        cur_type <- curmatch$type  # define current type.
+        
+        # Check if the match has been defined already:
+        if(all(is.na(match_type[range(which(match_pos))]))){
+          
+          # Establish new match:
+          token_match[match_pos] <- i  # match_id.
+          match_type[match_pos] <- cur_type  # cur_type.
+          
+        } else if(!curmatch$type %in% c("unknown", "ucarryforward", "ucarryback")){
+          
+          dropvec <- c(dropvec, i)  # flag for dropping.
+          prev_ix <- token_match[which(match_pos)[1]]
+          prev_type <- arr_match[prev_ix[1]]$type
+          
+          
+          precedence_list <- c("nyear", "age")  # define precedence.
+          
+          # Add the match:
+          if(!is.na(prev_ix)){
+            # prev_ix = Array.isArray(prev_ix) ? prev_ix : [prev_ix];
+            
+            token_match <- list(c(token_match, i))
+            
+            # Handle precedence:
+            if(which(precedence_list == cur_type) < which(precedence_list == prev_type)){
+              token_match[prev_ix[1]]$type <- cur_type
+            } else {
+              cur_type <- prev_type
+            }  # eof. precedence.
+            
+          }
+          
+        } else {
+          dropvec <- c(dropvec, i)  # flag for dropping.
+        }
+        
+      }
+      
+    }
+    
+    # Remove the indices that have to be dropped:
+    arr_match <- arr_match[-dropvec]
+    
+    # Sort the array by the starting position of each match:
+    arr_match <- arr_match[order(sapply(arr_match, `[[`, "start_end")[1,])]
+    
+
+    return(list(arr_match = arr_match, match_id = token_match, match_type = match_type))
+    
+    
+    
+  }
   
   
 # Funciton to detect topic in text: -------------------------------------------

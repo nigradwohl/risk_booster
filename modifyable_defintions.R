@@ -44,7 +44,7 @@ check_numbers_dict <- list(
   "mult" = regex_mult,
   "mult2" = "(?<mult>([Hh]alb|[Dd]oppelt|[Dd]reifach|[Dd]reimal) (so )?(viele|gr[oö]ß|hoch|niedrig|besser|erhöht|höher))",
   "pval" = paste0("(?<pval>p ?[\\<\\=] ?", pat_num, ")"),
-  "confint" = paste0("(?<confint>", pat_num, " ?% ?[CK]I:? \\[?", pat_num, " ?[-\\u2013;,] ?", pat_num, "\\]?)"),
+  "confint" = paste0("(?<confint>", pat_num, " ?% ?[CK]I:? \\[?", pat_num, " ?[-\\x{2013};,] ?", pat_num, "\\]?)"),
   "yearnum" = "(?<nyear>\\d+([.|,]\\d+)( Jahr[a-z]*))",  # require comma or point separator!
     "yearnum2" = "(?<nyear>\\d+( Jahr[a-z]*) ([A-Za-z]+ )?(?=länger|steiger|reduzier))",  # require comma or point separator!
     # "lifeexpectancy" =
@@ -64,7 +64,7 @@ check_numbers_dict <- list(
   datemon = "(?<date>\\d{1,2}\\.\\d{1,2}\\.(18|19|20)\\d{2}(?![|.\\w]))",
   year = "(?<year>(Jahr|Anfang|Ende|Mitte|Nach) \\d{4})",
   year2 = "(?<year>(18|19|20)?\\d{2}er)",
-  year3 = "(?<year>(?<!(,|\\.|Jahr |Anfang |Ende |Mitte |Nach ))(19|20)\\d{2}(?![|.\\w]))",  # 20th and 21st century.
+  year3 = "(?<year>(?<!,|\\.|Jahr |Anfang |Ende |Mitte |Nach )(19|20)\\d{2}(?![|.\\w]))",  # 20th and 21st century.
   monyear = paste0("(?<year>", collapse_regex_or(month_names), " \\d{4})"),
   yearrange = "(?<year>(zwischen|von) (18|19|20)\\d{2}(?![|.\\w]) (und|bis) (18|19|20)?\\d{2}(?![|.\\w]))",
   dur = "(?<dur>[0-9]+(-stündig|-tägig|-monatig| Minuten?| Stunden?| Tagen?| Wochen?| Monate?))",

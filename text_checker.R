@@ -38,7 +38,7 @@ test_text <- function(txt){
   
   input_txt <- txt
   
-  token_data <- get_token_data(input_txt)
+  token_dat <- get_token_data(input_txt)
   
   # TODO: How to save the modifyiable defintions?
   modifyiable_defs <- list(
@@ -60,7 +60,7 @@ test_text <- function(txt){
   )
 
   # Assign to main object attribute:
-  attr(token_data, "topics") <- names(topic_list)[sapply(topic_list, 
+  attr(token_dat, "topics") <- names(topic_list)[sapply(topic_list, 
                                                   FUN = function(top){detect_topic(token_data$token, top)})]
   
   if (!"lifex" %in% attr(token_data, "topics")) {
@@ -79,6 +79,12 @@ test_text <- function(txt){
   
   
   # Get regex-based matches:
+  # TODO
+  # uses: check_dict <- modifyiable_defs$check_numbers_dict
+  regex_matches <- detect_regex_match(input_txt, token_dat, modifyiable_defs$check_numbers_dict)
+  
+  token_dat$match <- regex_matches$match_id
+  token_dat$unit <- regex_matches$match_type
   
   
 }
