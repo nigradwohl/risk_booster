@@ -975,3 +975,8 @@ h4 {
     }
 
 }
+
+#version-num{
+    font-size: 0.6em;
+    font-family: "Lucida Sans Typewriter", sans-serif;
+}
