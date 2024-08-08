@@ -100,7 +100,7 @@
     line-height: 1.2em;
 }
 
-.grid-global-note > p {
+.grid-global-note p {
     margin-left: 20px;
 }
 
@@ -205,6 +205,15 @@ canvas {
     line-height: 1.2;
 }
 
+.checklist-results ul {
+    font-size: 0.8em;
+    line-height: 1.2;
+}
+
+.checklist-results ul ul {
+    font-size: 1em;
+}
+
 .checklist-question {
     margin: 0 auto;
     /*flex: 100%;*/
@@ -238,7 +247,7 @@ canvas {
     /*width: 800px;*/
 }
 
-.missing-info-par{
+.missing-info{
     display: none;
 }
 

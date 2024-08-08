@@ -215,9 +215,12 @@ class RiskCollection {
         // console.log(JSON.stringify(this.ptab));
 
         // Complete the inner p-table:
+        // From sample size:
         this.ptab.tab.tab2x2 = this.ptab.tab.tab2x2
             .map((vx, ix) => vx
                 .map((vy, iy) => compare_vals(vy, cur_ntab.tab.tab2x2[ix][iy] / cur_ntab.N, 0.005)));
+
+
     }
 
     // Method to get the margin from p-table margins:
