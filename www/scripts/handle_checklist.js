@@ -318,6 +318,8 @@ $(document).ready(function () {
     const cur_checklist = new Checklist(cur_order, outcome_list, text);  // create a new checklist instance.
     // const check_risk = new RiskCollection();
 
+    cur_checklist.show_progress();  // display the progress bar.
+
     console.log("CURRENT CHECKLIST");
     console.log(cur_checklist);
 
@@ -355,7 +357,19 @@ $(document).ready(function () {
     $(".back-btn").on("click", function () {
         cur_checklist.handle_back();
 
-    })
+    });
+
+    // Using navigation:
+    // TODO: Only do for active ones!
+    $(".prog-item active").on("click", function () {
+        const node_id = $(this).attr("id");
+        const node_ix = node_id.replace("prog-", "");
+        console.warn(node_id.replace("prog-", ""));
+        cur_checklist.entry_ix = cur_checklist.q_order.indexOf(node_ix);
+        $(".checklist-question").hide();  // hide all questions.
+        cur_checklist.handle_back();
+
+    });
 
     // ~~~ HANDLING OTHER ~~~
 
@@ -527,6 +541,18 @@ class Checklist {
         this.check_side = new RiskCollection();
     }
 
+    // Method to show progress:
+    show_progress() {
+        for (const q of this.q_order) {
+
+            const tooltip = `<span class="tooltiptext">${q}</span>`;
+            const prog_node = `<div class="prog-item tooltip tooltip-prog" id="prog-${q}">${tooltip}</div>`;
+
+            $("#checklist-progress")
+                .append(prog_node);
+        }
+    }
+
     assign_words(out_eff, out_side) {
         this.outcome = this.outcome_list.eff[out_eff];  // assign the selected outcome.
         this.outcome_side = this.outcome_list.side[out_side]
@@ -668,6 +694,9 @@ class Checklist {
 
             // Advance page if no missing entries are detected (due to all provided or :
             if (!this.is_error && this.missing_entries.length === 0) {
+
+                // Activate node:
+                $("#prog-" + curid).addClass("active");
 
                 // Pages before results:
                 if (this.entry_ix < this.q_order.length) {

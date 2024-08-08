@@ -247,7 +247,7 @@ canvas {
     /*width: 800px;*/
 }
 
-.missing-info{
+.missing-info {
     display: none;
 }
 
@@ -350,6 +350,56 @@ canvas {
     padding: 0.7em 0.6em;
 }
 
+/*Progress bar*/
+#checklist-progress {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-evenly;
+    margin: 0.3em;
+}
+
+#checklist-progress > hr {
+    position: absolute;
+    color: lightsteelblue;
+    background-color: lightsteelblue;
+    border: none;
+    width: 80%;
+    height: 2px;
+    z-index: -1;
+}
+
+.prog-item {
+    height: 1.2em;
+    width: 1.2em;
+    background-color: #bbb;
+    border: 2px solid var(---bg-general);
+    border-radius: 50%;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.prog-item.active {
+    background-color: darkred;
+}
+
+.tooltip.tooltip-prog .tooltiptext {
+    width: 2em;
+    bottom: 100%;
+    /*left: 50%;*/
+    margin-left: 0.3em; /* Use half of the width (120/2 = 60), to center the tooltip */
+    background-color: transparent;
+    border: none;
+    color: var(---text-color-primary);
+    font-size: 8px;
+}
+
+.tooltip.tooltip-q .tooltiptext::after {
+    border-color: transparent;
+    background: none;
+    color: transparent;
+}
+
+
 /*TOOLTIPS*/
 
 .tooltip.tooltip-q .tooltiptext {
@@ -413,7 +463,6 @@ canvas {
     /*.checklist-question {*/
     /*    width: 90%;*/
     /*}*/
-
     #noentry-popup {
         width: 90%;
     }
