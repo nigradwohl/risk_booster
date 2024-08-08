@@ -1133,87 +1133,97 @@ class Checklist {
 
         // TODO: Adjust for test case!
 
-        // Check if 1 or 2 absolute risks could not be determined:
-        const eff_ar_missing = [0, 1].filter(x => eff_group_risks[x].includes(NaN));
 
-        // If yes:
-        if (eff_ar_missing.length > 0) {
+        function get_missing_info(group_risks, risk_obj, type) {
+            // Check if 1 or 2 absolute risks could not be determined:
+            const ar_missing = [0, 1].filter(x => group_risks[x].includes(NaN));
 
-            console.warn(eff_ar_missing);
+            // If yes:
+            if (ar_missing.length > 0) {
 
-            let feedback_props = "";
-            let feedback_ar = [];
-            const groupnames = ["Behandlungsgruppe", "Vergleichsgruppe"];  // grops, where info can be missing.
-            const missgroup = eff_ar_missing.map((x) => groupnames[x]);
+                console.warn(ar_missing);
 
-            // Check if the reference is missing:
-            const eff_ref_missing_p = [0, 1].filter(x => isNaN(this.check_risk.ptab.msums2[x]));
-            const eff_ref_missing_n = [0, 1].filter(x => isNaN(this.check_risk.ntab.msums2[x]));
+                let feedback_props = "";
+                let feedback_ar = [];
+                const groupnames = ["Behandlungsgruppe", "Vergleichsgruppe"];  // grops, where info can be missing.
+                const missgroup = ar_missing.map((x) => groupnames[x]);
 
-            // For each missing risk check:
-            // Groupsize or count present? --> supply one; else supply both
+                // Check if the reference is missing:
+                const ref_missing_p = [0, 1].filter(x => isNaN(risk_obj.ptab.msums2[x]));
+                const ref_missing_n = [0, 1].filter(x => isNaN(risk_obj.ntab.msums2[x]));
 
-            // If reference PROPORTIONS are missing (eff_ref_missing_p): supply proportions or numbers in group.
-            if (eff_ref_missing_p.length > 0) {
-                // Es können fehlen: eine Gruppengröße, beide Gruppengrößen (oder die Anteile)
-                feedback_props = "<p>Den Anteil in den Gruppen als: </p>" +
-                    // OR: "Dabei konnten die Anteile in den Gruppen nicht bestimmt werden. "
-                    "<ul>" +
-                    "<li>den Anteil der Behandelten/Geimpften [FRAGENNAME IN NAVIGATION?]</li>" +
-                    "<li> oder die Anzahl" +
-                    (eff_ref_missing_n.length === 2 ? "en in beiden Gruppen" : ` in der ${groupnames[eff_ref_missing_n[0]]}`) +
-                    "</li>" +
-                    "</ul>" +
-                    "<p>Und zusätzlich: </p>";
+                // For each missing risk check:
+                // Groupsize or count present? --> supply one; else supply both
+
+                // If reference PROPORTIONS are missing (ref_missing_p): supply proportions or numbers in group.
+                if (ref_missing_p.length > 0) {
+                    // Es können fehlen: eine Gruppengröße, beide Gruppengrößen (oder die Anteile)
+                    feedback_props = "<p>Den Anteil in den Gruppen als: </p>" +
+                        // OR: "Dabei konnten die Anteile in den Gruppen nicht bestimmt werden. "
+                        "<ul>" +
+                        "<li>den Anteil der Behandelten/Geimpften [FRAGENNAME IN NAVIGATION?]</li>" +
+                        "<li> oder die Anzahl" +
+                        (ref_missing_n.length === 2 ? "en in beiden Gruppen" : ` in der ${groupnames[ref_missing_n[0]]}`) +
+                        "</li>" +
+                        "</ul>" +
+                        "<p>Und zusätzlich: </p>";
+                }
+
+
+                // Check if relative reduction could be supplied:
+                // TODO: Make wording flexible!
+                let event_props = `den Anteil an Ereignissen in der ${missgroup[0]}`;
+                let event_counts = `die Anzahl an Ereignissen in der ${missgroup[0]}`;
+
+                if (ar_missing.length === 1) {
+                    // Absolute risk:
+                    feedback_ar = feedback_ar.concat(`${event_props}`);
+                    // Counts:
+                    feedback_ar = feedback_ar.concat(`oder ${event_counts}`);
+                    // Relative information:
+                    feedback_ar = feedback_ar.concat("oder eine relative Angabe (Relativer Anstieg/-reduktion)");
+                } else if (!risk_obj.mtab2.rel2.includes(NaN)) {
+                    // ONLY REL SUPPLIED.
+                    // Absolute risk:
+                    feedback_ar = feedback_ar.concat(`${event_props} oder in der ${missgroup[1]}`);
+                    // Counts:
+                    feedback_ar = feedback_ar.concat(`oder ${event_counts} in der ${missgroup[0]} oder in der ${missgroup[1]}`);
+                } else {
+                    feedback_ar = feedback_ar.concat(`${event_props} und in der ${missgroup[1]}`);
+
+                    feedback_ar = feedback_ar.concat(`oder ${event_counts} in der ${missgroup[0]} und in der ${missgroup[1]}`);
+                    // Relative information plus:
+                    feedback_ar = feedback_ar.concat("oder eine relative Angabe (Relativer Anstieg/-reduktion) und " +
+                        "den Anteil oder die Anzahl an Ereignissen in mindestens einer Gruppe");
+                }
+
+                ar_missing.filter(x => isNaN(risk_obj.ntab.msums2[x]));
+                // find where count information is missing --> both counts or proportion needed!
+                // One groupsize is not enough!
+
+                // Generate the feedback text:
+                const miss_text = "<p>Es konnte kein " +
+                    "absolutes Risiko[LINK?] für die " +
+                    missgroup.join(" und die ") +
+                    " ermittelt werden." +
+                    " Prüfen Sie, ob Sie die folgenden Informationen auffinden können:</p> " +
+                    feedback_props +
+                    "<ul><li>" +
+                    feedback_ar.join("</li><li>") +
+                    "</li></ul>";
+
+                // Update text and show:
+                $("#reason-" + type)
+                    .html(miss_text)
+                    .show();
             }
+        }  // eof. function.
+        // TODO: Migrate function?
 
+        // Get the information:
+        get_missing_info(eff_group_risks, this.check_risk, "eff");
+        get_missing_info(side_group_risks, this.check_side, "side");
 
-            // Check if relative reduction could be supplied:
-            // TODO: Make wording flexible!
-            let event_props = `den Anteil an Ereignissen in der ${missgroup[0]}`;
-            let event_counts = `die Anzahl an Ereignissen in der ${missgroup[0]}`;
-
-            if (eff_ar_missing.length === 1) {
-                // Absolute risk:
-                feedback_ar = feedback_ar.concat(`${event_props}`);
-                // Counts:
-                feedback_ar = feedback_ar.concat(`oder ${event_counts}`);
-                // Relative information:
-                feedback_ar = feedback_ar.concat("oder eine relative Angabe (Relativer Anstieg/-reduktion)");
-            } else if (!this.check_risk.mtab2.rel2.includes(NaN)) {
-                // ONLY REL SUPPLIED.
-                // Absolute risk:
-                feedback_ar = feedback_ar.concat(`${event_props} oder in der ${missgroup[1]}`);
-                // Counts:
-                feedback_ar = feedback_ar.concat(`oder ${event_counts} in der ${missgroup[0]} oder in der ${missgroup[1]}`);
-            } else {
-                 feedback_ar = feedback_ar.concat(`${event_props} und in der ${missgroup[1]}`);
-
-                 feedback_ar = feedback_ar.concat(`oder ${event_counts} in der ${missgroup[0]} und in der ${missgroup[1]}`);
-                // Relative information plus:
-                feedback_ar = feedback_ar.concat("oder eine relative Angabe (Relativer Anstieg/-reduktion) und " +
-                    "den Anteil oder die Anzahl an Ereignissen in mindestens einer Gruppe");
-            }
-
-            eff_ar_missing.filter(x => isNaN(this.check_risk.ntab.msums2[x]));
-            // find where count information is missing --> both counts or proportion needed!
-            // One groupsize is not enough!
-
-            // Generate the feedback text:
-            const miss_text = "<p>Es konnte kein absolutes Risiko für die " +
-                missgroup.join(" und die ") +
-                " ermittelt werden." +
-                " Prüfen Sie, ob Sie die folgenden Informationen auffinden können:</p> " +
-                feedback_props +
-                "<ul><li>" +
-                feedback_ar.join("</li><li>") +
-                "</li></ul>";
-
-            // Update text and show:
-            $("#reason-eff")
-                .html(miss_text)
-                .show();
-        }
 
         // Also assign the side effect risks in the control group (or among the nagtively tested):
         $("#risk-control-side").html(this.outcome_side.verb.aux + "<br>" + cur_side_control + " " + this.outcome_side.verb.main);
