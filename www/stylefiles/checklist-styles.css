@@ -375,11 +375,11 @@ canvas {
     border: 2px solid var(---bg-general);
     border-radius: 50%;
     display: inline-block;
-    cursor: pointer;
 }
 
 .prog-item.active {
     background-color: darkred;
+    cursor: pointer;
 }
 
 .tooltip.tooltip-prog .tooltiptext {

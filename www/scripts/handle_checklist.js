@@ -361,6 +361,7 @@ $(document).ready(function () {
 
     // Using navigation:
     // Only do for active ones!
+
     $(".prog-item").on("click", function (e) {
         const cur_ix = cur_checklist.entry_ix;
         const node_id = $(this).attr("id").replace("prog-", "");
@@ -376,12 +377,20 @@ $(document).ready(function () {
             $(".checklist-question").hide();  // hide all questions.
         }
 
-        // Handle going back and forth:
-        if (node_ix < cur_ix) {
-            cur_checklist.handle_back();
-        } else if (node_ix > cur_ix) {
-            cur_checklist.is_reload = true;
-            cur_checklist.continue_page(e);
+        if (node_ix === cur_checklist.q_order.length - 1) {
+            cur_checklist.handle_final_page();
+            $(".arrow-btn.continue").css('visibility', 'hidden');
+            $(".continue-btn").removeClass('active');
+            $("#results-q").show();
+        } else {
+            // If not final page:
+            // Handle going back and forth:
+            if (node_ix < cur_ix) {
+                cur_checklist.handle_back();
+            } else if (node_ix > cur_ix) {
+                cur_checklist.is_reload = true;
+                cur_checklist.continue_page(e);
+            }
         }
 
 
@@ -633,11 +642,15 @@ class Checklist {
             $("#incompatible-popup").hide();
             $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
 
+            // Allow navigation:
+            // TODO: Maybe show navigation only now?
+            $(".prog-item").addClass("active");
+
 
         } else {
             // For all subsequent pages:
             // 1. Get the inputs on current page: ~~~~~~~~~~~~~~~~~~~~~~~~
-            if (curid !== "start" && curid !== "results") {
+            if (curid !== "start") {
                 // Save the previous instances:
                 // const risk_prev = JSON.stringify(this.check_risk);
                 // const side_prev = JSON.stringify(this.check_side);
@@ -728,6 +741,7 @@ class Checklist {
                     // $(".continue-btn").hide();
                     $(".arrow-btn.continue").css('visibility', 'hidden');
                     $(".continue-btn").removeClass('active');
+                    $("#prog-results").addClass("active");
                 }
 
 
@@ -1383,7 +1397,7 @@ class Checklist {
         // console.log("Skipped inputs were:");
         this.skipped_inputs = this.skipped_inputs.filter(x => x < this.entry_ix);  // remove future skips!
         // console.log(this.skipped_inputs);
-        const skipped_ids = this.q_order.filter((x, ix) => this.skipped_inputs.includes(ix)).concat("results");
+        const skipped_ids = this.q_order.filter((x, ix) => this.skipped_inputs.includes(ix));
         console.log(skipped_ids);
 
         // Loop over defined input fields (omit the first 2 uninformative questions):
