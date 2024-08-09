@@ -62,7 +62,7 @@ $(document).ready(function () {
                 "direction": "prevent"
             },
             {
-                "verb": new Verblist("???", "???", "???"),
+                "verb": new Verblist("erleiden das negative Ereignis", "erleiden", "das negative Ereignis"),
                 "noun": "negative Ereignisse",
                 "qpart": ["das negative Ereignis", "erlitt", "erlitten"],
                 "red_incr": "des negativen Ereignisses",
@@ -98,7 +98,6 @@ $(document).ready(function () {
             }
         ]
     };
-    // TODO:
 
 
     if (text === "treat") {
@@ -271,7 +270,8 @@ $(document).ready(function () {
     }
 
     // Add examples:
-    $("#examples-eff").text(outcome_list.eff.map((x) => x.noun).join(", "));
+    // $("#examples-eff").text(outcome_list.eff.map((x) => x.noun).join(", "));
+    $("#examples-eff").text(outcome_list.eff.slice(0, 2).map((x) => x.noun).join(" oder "));
 
     // Assign the words determined above to the ids and classes:
     $("#case-test").text(typeword);
