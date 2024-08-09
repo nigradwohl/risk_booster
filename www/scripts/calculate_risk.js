@@ -617,6 +617,9 @@ class Margintable {
         // TODO: May be simplified a lot!
 
         // Complete the relations:
+        // TODO: Here now! Improve representation of relative information (represent as relative risks!)
+
+        // Complements:
         this.rel2[0] = isNaN(this.rel2[0]) ? 1 / this.rel2[1] : this.rel2[0];
         this.rel2[1] = isNaN(this.rel2[1]) ? 1 / this.rel2[0] : this.rel2[1];
 
@@ -625,6 +628,7 @@ class Margintable {
         // console.log("Margintable after getting from relative information:");
         // console.log(JSON.stringify(this));
     }
+
 
     get_from_diff() {
 

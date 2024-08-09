@@ -1383,7 +1383,7 @@ $(document).ready(function () {
         $("#text-result").html('<h4>Erklärungen zu den statistischen Zahlenangaben im Text</h4>' +
             '<div class="fillout-info">' +
             '<p class="instruction-par">Fahren Sie mit dem Mauszeiger über die hervorgehobenen Zahlen, um zu erfahren, ' +
-            'welchem Format wir die Zahl zugeordnet haben.' +
+            'welchem Format die Zahl zugeordnet wurde.' +
             '<br>Klicken Sie auf die Zahl, um mehr zu erfahren.</p>' +
             '</div>' +
             '<div class="highlighted-text">' +
@@ -1442,7 +1442,7 @@ $(document).ready(function () {
                 // `${(/_sub/.test(infokey) ? ("<p>Die Zahl bezieht sich auf eine Subgruppe. " +
                 //     "Stellen Sie sicher, das klar ist auf welche übergeordnete Gruppe sie sich bezieht.</p>") : "")}` +
                 // `<p><ul><li>${curinfo.popup.join("</li><li>")}</li></ul></p>`  // to process an array as list.
-                `${!curinfo.popup ? "<p>Diese Zahl konnten wir leider nicht näher identifizieren.</p>" : curinfo.popup}`
+                `${!curinfo.popup ? "<p>Diese Zahl konnte leider nicht näher identifiziert werden.</p>" : curinfo.popup}`
 
                 // +++ `<p>[Place to add more info, if needed!]</p>`+++
             );
