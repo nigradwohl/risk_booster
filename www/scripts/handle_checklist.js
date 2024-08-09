@@ -318,7 +318,7 @@ $(document).ready(function () {
     const cur_checklist = new Checklist(cur_order, outcome_list, text);  // create a new checklist instance.
     // const check_risk = new RiskCollection();
 
-    cur_checklist.show_progress();  // display the progress bar.
+    // cur_checklist.show_progress();  // display the progress bar.
 
     console.log("CURRENT CHECKLIST");
     console.log(cur_checklist);
@@ -362,39 +362,39 @@ $(document).ready(function () {
     // Using navigation:
     // Only do for active ones!
 
-    $(".prog-item").on("click", function (e) {
-        const cur_ix = cur_checklist.entry_ix;
-        const node_id = $(this).attr("id").replace("prog-", "");
-        const node_ix = cur_checklist.q_order.indexOf(node_id);
-        console.warn(node_id.replace("prog-", ""));
-
-        cur_checklist.entry_ix = node_ix + 1;
-
-        console.warn(node_ix + ", " + cur_ix);
-
-        // Hide only if not the same:
-        if (node_ix !== cur_ix) {
-            $(".checklist-question").hide();  // hide all questions.
-        }
-
-        if (node_ix === cur_checklist.q_order.length - 1) {
-            cur_checklist.handle_final_page();
-            $(".arrow-btn.continue").css('visibility', 'hidden');
-            $(".continue-btn").removeClass('active');
-            $("#results-q").show();
-        } else {
-            // If not final page:
-            // Handle going back and forth:
-            if (node_ix < cur_ix) {
-                cur_checklist.handle_back();
-            } else if (node_ix > cur_ix) {
-                cur_checklist.is_reload = true;
-                cur_checklist.continue_page(e);
-            }
-        }
-
-
-    });
+    // $(".prog-item").on("click", function (e) {
+    //     const cur_ix = cur_checklist.entry_ix;
+    //     const node_id = $(this).attr("id").replace("prog-", "");
+    //     const node_ix = cur_checklist.q_order.indexOf(node_id);
+    //     console.warn(node_id.replace("prog-", ""));
+    //
+    //     cur_checklist.entry_ix = node_ix + 1;
+    //
+    //     console.warn(node_ix + ", " + cur_ix);
+    //
+    //     // Hide only if not the same:
+    //     if (node_ix !== cur_ix) {
+    //         $(".checklist-question").hide();  // hide all questions.
+    //     }
+    //
+    //     if (node_ix === cur_checklist.q_order.length - 1) {
+    //         cur_checklist.handle_final_page();
+    //         $(".arrow-btn.continue").css('visibility', 'hidden');
+    //         $(".continue-btn").removeClass('active');
+    //         $("#results-q").show();
+    //     } else {
+    //         // If not final page:
+    //         // Handle going back and forth:
+    //         if (node_ix < cur_ix) {
+    //             cur_checklist.handle_back();
+    //         } else if (node_ix > cur_ix) {
+    //             cur_checklist.is_reload = true;
+    //             cur_checklist.continue_page(e);
+    //         }
+    //     }
+    //
+    //
+    // });
 
     // ~~~ HANDLING OTHER ~~~
 
@@ -567,16 +567,16 @@ class Checklist {
     }
 
     // Method to show progress:
-    show_progress() {
-        for (const q of this.q_order) {
-
-            const tooltip = `<span class="tooltiptext">${q}</span>`;
-            const prog_node = `<div class="prog-item tooltip tooltip-prog" id="prog-${q}">${tooltip}</div>`;
-
-            $("#checklist-progress")
-                .append(prog_node);
-        }
-    }
+    // show_progress() {
+    //     for (const q of this.q_order) {
+    //
+    //         const tooltip = `<span class="tooltiptext">${q}</span>`;
+    //         const prog_node = `<div class="prog-item tooltip tooltip-prog" id="prog-${q}">${tooltip}</div>`;
+    //
+    //         $("#checklist-progress")
+    //             .append(prog_node);
+    //     }
+    // }
 
     assign_words(out_eff, out_side) {
         this.outcome = this.outcome_list.eff[out_eff];  // assign the selected outcome.
@@ -643,8 +643,8 @@ class Checklist {
             $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
 
             // Allow navigation:
-            // TODO: Maybe show navigation only now?
-            $(".prog-item").addClass("active");
+            // TODO: Maybe show navigation only now? Could solve some issues.
+            // $(".prog-item").addClass("active");
 
 
         } else {
