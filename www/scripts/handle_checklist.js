@@ -360,14 +360,30 @@ $(document).ready(function () {
     });
 
     // Using navigation:
-    // TODO: Only do for active ones!
-    $(".prog-item active").on("click", function () {
-        const node_id = $(this).attr("id");
-        const node_ix = node_id.replace("prog-", "");
+    // Only do for active ones!
+    $(".prog-item").on("click", function (e) {
+        const cur_ix = cur_checklist.entry_ix;
+        const node_id = $(this).attr("id").replace("prog-", "");
+        const node_ix = cur_checklist.q_order.indexOf(node_id);
         console.warn(node_id.replace("prog-", ""));
-        cur_checklist.entry_ix = cur_checklist.q_order.indexOf(node_ix);
-        $(".checklist-question").hide();  // hide all questions.
-        cur_checklist.handle_back();
+
+        cur_checklist.entry_ix = node_ix + 1;
+
+        console.warn(node_ix + ", " + cur_ix);
+
+        // Hide only if not the same:
+        if (node_ix !== cur_ix) {
+            $(".checklist-question").hide();  // hide all questions.
+        }
+
+        // Handle going back and forth:
+        if (node_ix < cur_ix) {
+            cur_checklist.handle_back();
+        } else if (node_ix > cur_ix) {
+            cur_checklist.is_reload = true;
+            cur_checklist.continue_page(e);
+        }
+
 
     });
 
@@ -621,7 +637,7 @@ class Checklist {
         } else {
             // For all subsequent pages:
             // 1. Get the inputs on current page: ~~~~~~~~~~~~~~~~~~~~~~~~
-            if (curid !== "start") {
+            if (curid !== "start" && curid !== "results") {
                 // Save the previous instances:
                 // const risk_prev = JSON.stringify(this.check_risk);
                 // const side_prev = JSON.stringify(this.check_side);
@@ -1367,7 +1383,7 @@ class Checklist {
         // console.log("Skipped inputs were:");
         this.skipped_inputs = this.skipped_inputs.filter(x => x < this.entry_ix);  // remove future skips!
         // console.log(this.skipped_inputs);
-        const skipped_ids = this.q_order.filter((x, ix) => this.skipped_inputs.includes(ix));
+        const skipped_ids = this.q_order.filter((x, ix) => this.skipped_inputs.includes(ix)).concat("results");
         console.log(skipped_ids);
 
         // Loop over defined input fields (omit the first 2 uninformative questions):
