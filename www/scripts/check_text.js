@@ -1161,7 +1161,7 @@ $(document).ready(function () {
 
                 if (eff_num && side_num) {
                     feature_num += "<i class=\"fa fa-check in-text-icon good\"></i> " +
-                        "Sowohl zum Nutzen, als auch zum Schaden wurden Zahlen angegeben."
+                        "Sowohl zum Nutzen als auch zum Schaden wurden Zahlen angegeben."
                 } else {
                     if (eff_num || side_num) {
                         feature_num += "<i class=\"fa fa-exclamation-triangle in-text-icon warning\"></i> " +
@@ -1176,7 +1176,7 @@ $(document).ready(function () {
                     // Add explanatory popup:
                     feature_num += "<div id=\"noeffnum-tt\" class=\"tooltip\">" +
                         "<span class=\"tooltiptext tooltip-overview\">" +
-                        "Nur wenn sowohl der Nutzen, als auch der Schaden mit transprarenten Zahlen belegt werden, " +
+                        "Nur wenn sowohl der Nutzen als auch der Schaden mit transprarenten Zahlen belegt werden, " +
                         "ist eine informierte Beurteilung möglich, wie groß der Nutzen im Vergleich zu anderen " +
                         "Interventionen und zum Schaden ist " +
                         "</span> (Warum ist das ein Problem?)</div>";
@@ -1223,7 +1223,7 @@ $(document).ready(function () {
 
                 if (treat_num && contr_num) {
                     feature_num += "<i class=\"fa fa-check in-text-icon good\"></i> " +
-                        "Sowohl zum Untersuchungszeitpunkt, als auch zum Vergleichszeitpunkt wurden Zahlen angegeben."
+                        "Sowohl zum Untersuchungszeitpunkt als auch zum Vergleichszeitpunkt wurden Zahlen angegeben."
                 } else if (treat_num || contr_num) {
                     feature_num += "<i class=\"fa fa-exclamation-triangle in-text-icon warning\"></i> " +
                         "Zahlen nur zum " +
