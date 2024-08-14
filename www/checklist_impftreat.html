@@ -102,9 +102,9 @@
 
         <!--        Progress bar-->
         <!--        TODO: Maybe scroll?-->
-<!--        <div id="checklist-progress">-->
-<!--            <hr>-->
-<!--        </div>-->
+        <!--        <div id="checklist-progress">-->
+        <!--            <hr>-->
+        <!--        </div>-->
 
         <!--        Main checklist content-->
         <table>
@@ -427,7 +427,8 @@
                                 Wie viele waren in der <span class="info-control"></span>?
                             </p>
                             <p>
-                                Bitte geben Sie die Anzahl der Personen in den Gruppen als ganze Zahlen ein. Wenn Ihnen eine Angabe
+                                Bitte geben Sie die Anzahl der Personen in den Gruppen als ganze Zahlen ein. Wenn Ihnen
+                                eine Angabe
                                 nicht vorliegt, lassen Sie das Feld frei.
                                 <!--                                [Sinnvoll?]-->
                             </p>
@@ -691,13 +692,19 @@
 
                             <div class="input-group">
                                 <div class="inner-input-group">
+                                    <div class="input-question">
+                                        <span class="outcome-noun">Erkrankungen</span>
+                                        <span class="info-treat2"></span>
+                                    </div>
                                     <div class="input-and-label">
                                         <fieldset class="float-label-field">
                                             <!--                                    <p>Anzahl&nbsp;<span class="outcome-noun">Erkrankungen</span> unter den <span-->
                                             <!--                                            class="info-treat2"></span>en</p>-->
-                                            <label for="p-case-impf"><span class="outcome-noun">Erkrankungen</span>
-                                                <span
-                                                        class="info-treat2"></span></span></label>
+                                            <!--                                    Fillout info:-->
+
+                                            <label for="p-case-impf">
+                                                Anteil
+                                                <span class="info-treat2"></span></span></label>
                                             <input class="checklist-input" id="p-case-impf" name="p-case-impf"
                                                    type="text"
                                                    pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
@@ -715,14 +722,20 @@
                                     </div>
                                 </div>
                                 <div class="inner-input-group">
+                                    <div class="input-question">
+                                        <span class="outcome-noun">Erkrankungen</span>
+                                        <span class="info-control2"></span>
+                                    </div>
                                     <div class="input-and-label">
                                         <fieldset class="float-label-field">
                                             <!--                                                                            <p>Anzahl&nbsp;<span class="outcome-noun">Erkrankungen</span> in der-->
                                             <!--                                                                                Vergleichsgruppe-->
                                             <!--                                                                                (Placebogruppe/<span class="info-control2"></span>)</p>-->
-                                            <label for="p-case-control"><span class="outcome-noun">Erkrankungen</span>
-                                                <span
-                                                        class="info-control2"></span></label>
+                                            <label for="p-case-control">
+                                                Anteil
+                                                <!--                                                <span class="outcome-noun">Erkrankungen</span>-->
+                                                <span class="info-control2"></span>
+                                            </label>
                                             <input class="checklist-input" id="p-case-control" name="p-case-control"
                                                    type="text" pattern="([0-9]{0,2}(,[0-9]+)?)|(100)"
                                                    title="Zahlen zwischen 1 und 100 mit Nachkommastellen">
@@ -1136,7 +1149,8 @@
 
 
                         <p class="no-print note-par">
-                            Beachten Sie: Die Piktogramme (Icon arrays) sind auf ein Maximum von 1.000 Symbole begrenzt, sodass
+                            Beachten Sie: Die Piktogramme (Icon arrays) sind auf ein Maximum von 1.000 Symbole begrenzt,
+                            sodass
                             die Zahlenangaben und Anzahl der Symbole nicht unbedingt übereinstimmen.
                         </p>
 

@@ -176,7 +176,8 @@ body {
 }
 
 .input-and-label{
-    width: 70%;
+    width: 33%;
+    /*width: 70%;*/
 }
 
 .float-label-field {
@@ -209,6 +210,10 @@ body {
     /*font-size: 0.8em;*/
     cursor: text;
     white-space: nowrap;
+}
+
+.input-question {
+    width: 300px;
 }
 
 .float-label-field.focus label {
