@@ -219,7 +219,7 @@ get_token_data <- function(txt) {
   }
   
   
-# Funciton to detect topic in text: -------------------------------------------
+# Function to detect topic in text: -------------------------------------------
   detect_topic <- function(tokens, key_list){
     
     token_str <- paste0(tokens, collapse = "_")  # collapse all tokens.
