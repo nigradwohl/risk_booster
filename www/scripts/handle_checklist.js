@@ -236,8 +236,8 @@ $(document).ready(function () {
         $(".grid-subhead1#subhead1-r2").text("Unter den negativ getesteten");
         $(".grid-subhead2#subhead2-r2").text("Unter den positiv getesteten");
 
-        $("#which-trans-eff").text("transparente Darstellung der Testgüte");
-        $("#which-trans-side").text("transparente Darstellung der Vorhersagegenauigkeit");
+        $("#which-trans-eff").text("der Testgüte");
+        $("#which-trans-side").text("der Vorhersagegenauigkeit");
 
 
         $("#intro-note").html("Häufig wird nur die Testgüte angegeben, während sich Individuen dafür interessieren, " +
@@ -350,7 +350,6 @@ $(document).ready(function () {
             // entry_ix = out_arr[0];
             // is_skip = out_arr[1];
         }
-
     })
 
     // ~~~ GOING BACK ~~~
@@ -1113,7 +1112,7 @@ class Checklist {
                 meaning_arc;
             console.log("RR change is " + rrc_p);
 
-            const relrisk_out = relrisk === 1 ? " genauso " : Math.round(relrisk * 1000) / 1000 * rr_factor + (rr_factor === 1 ? "" : "%") + " mal so";
+            const relrisk_out = relrisk === 1 ? " genauso " : Math.round(relrisk * 100 * rr_factor) / 100 + (rr_factor === 1 ? "" : "%") + " mal so";
 
             return {
                 "risk_treat_nh": risk_treat_nh, "risk_control_nh": risk_control_nh,
@@ -1310,9 +1309,18 @@ class Checklist {
         // TODO: Migrate function?
 
         // Get the information:
-        get_missing_info(eff_group_risks, this.check_risk, "eff");
-        get_missing_info(side_group_risks, this.check_side, "side");
-
+        if (["test"].includes(this.type)) {
+            $("#results-1-error").append("<p>Um die Testgenauigkeit darstellen zu können, müssen sowohl" +
+                "<a target=\"_blank\" href=\"risk_wiki.html#wiki-sens-spec\">Sensitivität also auch Spezifität</a>" +
+                "angegeben werden.</p>");
+            $("#results-2-error").append("<p>Um die Vorhersagegenauigkeit darstellen zu können, muss die Wahrscheinlichkeit, " +
+                "dass das interessierende Kriterium (z.B. Erkrankung) vorliegt (z.B. die Prävalenz)" +
+                "angegeben werden (zusätzlich zu <a target=\"_blank\" href=\"risk_wiki.html#wiki-sens-spec\">Sensitivität und Spezifität</a>)." +
+                "</p>");
+        } else {
+            get_missing_info(eff_group_risks, this.check_risk, "eff");
+            get_missing_info(side_group_risks, this.check_side, "side");
+        }
 
         // Also assign the side effect risks in the control group (or among the nagtively tested):
         $("#risk-control-side").html(this.outcome_side.verb.aux + "<br>" + cur_side_control + " " + this.outcome_side.verb.main);
