@@ -652,17 +652,19 @@ class Checklist {
                 this.check_risk.save_current_content();
                 this.check_side.save_current_content();
 
-                // If it is not a round where inputs should be skipped:
-                const inp_test = this.get_current_input(curid, this.q_inputs[curid], id_to_num_dict);
-                // After trying to get the inputs, try completing the table:
-                console.log("++++ Getting inputs and complete ++++");
-                console.log(this.type);
+                if (curid !== "results") {
+                    // If it is not a round where inputs should be skipped:
+                    const inp_test = this.get_current_input(curid, this.q_inputs[curid], id_to_num_dict);
+                    // After trying to get the inputs, try completing the table:
+                    console.log("++++ Getting inputs and complete ++++");
+                    console.log(this.type);
 
-                // Set assumed values (currently for test case only):
-                if (this.type === "test" && this.entry_ix === this.q_order.length - 2) {
-                    // Set the margin sums:
-                    console.warn("setting arbitrary sample size!");
-                    this.check_risk.ntab.N = 100000;  // Determine a random N.
+                    // Set assumed values (currently for test case only):
+                    if (this.type === "test" && this.entry_ix === this.q_order.length - 2) {
+                        // Set the margin sums:
+                        console.warn("setting arbitrary sample size!");
+                        this.check_risk.ntab.N = 100000;  // Determine a random N.
+                    }
                 }
 
                 try {
@@ -1096,11 +1098,11 @@ class Checklist {
             // For numbers greater than 2 "x mal mehr" may be more appropriate.
 
             // Relative risk reduction or increase:
-            const rrc_p = Math.round((relrisk > 1 ? relrisk - 1 : 1 - relrisk) * 1000)/10 + "%" +
+            const rrc_p = Math.round((relrisk > 1 ? relrisk - 1 : 1 - relrisk) * 1000) / 10 + "%" +
                 meaning_arc;
             console.log("RR change is " + rrc_p);
 
-            const relrisk_out = Math.round(relrisk * 1000)/1000 + " mal";
+            const relrisk_out = Math.round(relrisk * 1000) / 1000 + " mal";
 
             return {
                 "risk_treat_nh": risk_treat_nh, "risk_control_nh": risk_control_nh,
@@ -1152,8 +1154,8 @@ class Checklist {
                 if (abs) {
                     tt_text = "Die Differenz der absoluten Risiken in den Gruppen";
                 }
-                // else if (rr) {
-                //     // Relative risk:
+                    // else if (rr) {
+                    //     // Relative risk:
                 //     tt_text = "Ein Vielfaches wie viele Personen mehr oder weniger betroffen sind.";
                 else {
                     // Relative risk reduction:
@@ -1308,6 +1310,8 @@ class Checklist {
     get_current_input(curid, input_arr, id_to_num_dict) {
         // Loop over defined input fields:
         this.is_invalid = false;  // flag that input is valid.
+
+        console.warn(input_arr);
 
         for (const cur_input of input_arr) {
 
