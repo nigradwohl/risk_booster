@@ -1230,11 +1230,12 @@ class Checklist {
 
                 // If reference PROPORTIONS are missing (ref_missing_p): supply proportions or numbers in group.
                 if (ref_missing_p.length > 0) {
+                    const groupinfo = $(".info-treat2_g")[0].textContent;
                     // Es können fehlen: eine Gruppengröße, beide Gruppengrößen (oder die Anteile)
                     feedback_props = "<p>Den Anteil in den Gruppen als: </p>" +
                         // OR: "Dabei konnten die Anteile in den Gruppen nicht bestimmt werden. "
                         "<ul>" +
-                        "<li>den Anteil der Behandelten/Geimpften [FRAGENNAME IN NAVIGATION?]</li>" +
+                        `<li>den Anteil der ${groupinfo}</li>` +
                         "<li> oder die Anzahl" +
                         (ref_missing_n.length === 2 ? "en in beiden Gruppen" : ` in der ${groupnames[ref_missing_n[0]]}`) +
                         "</li>" +
@@ -1276,7 +1277,13 @@ class Checklist {
 
                 // Generate the feedback text:
                 const miss_text = "<p>Es konnte kein " +
-                    "absolutes Risiko[LINK?] für die " +
+                    "<span class=\"tooltip\">" +
+                    "<span class=\"tooltiptext tooltip-overview\">" +
+                    "Wahrscheinlichkeit des Ereignisses in einer der Gruppen (z.B. Anteil der erkrankten Personen)" +
+                    "</span>" +
+                    "<a target='_blank' href='risk_wiki.html#wiki-abs'>absolutes Risiko</a>" +
+                    "</span> " +
+                    "für die " +
                     missgroup.join(" und die ") +
                     " ermittelt werden." +
                     " Prüfen Sie, ob Sie die folgenden Informationen auffinden können:</p> " +
