@@ -665,6 +665,8 @@ class Checklist {
                         console.warn("setting arbitrary sample size!");
                         this.check_risk.ntab.N = 100000;  // Determine a random N.
                     }
+                } else {
+                    this.missing_entries = [];
                 }
 
                 try {
