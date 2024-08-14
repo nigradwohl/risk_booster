@@ -1073,7 +1073,7 @@ class Checklist {
             // Risk reduction:
             // Absolute change in risk:
             const arc = group_risks[0][1] - group_risks[1][1];  // risk change in favor of treatment group.
-            const meaning_arc = arc > 0 ? " weniger" : " mehr";
+            const meaning_arc = arc >= 0 ? " weniger" : " mehr";
             console.log(`Absolute change is ${arc}`);
 
             const arr_n = Math.sign(arc) * Math.round(arc * curscale) / curscale;
@@ -1091,7 +1091,7 @@ class Checklist {
 
             const rrr = Math.round(rrc * 1000) / 1000;
             console.log("RRR is " + rrr);
-            const rr_factor = Math.abs(rrr) >= 2 ? 1 : 100;
+            const rr_factor = Math.abs(relrisk) >= 2 ? 1 : 100;
             // const rrr_p = Math.round(rrr * rr_factor) +
             //     (rr_factor === 100 ? "% " : " mal ") +
             //     meaning_arc;
@@ -1102,11 +1102,11 @@ class Checklist {
                 meaning_arc;
             console.log("RR change is " + rrc_p);
 
-            const relrisk_out = Math.round(relrisk * 1000) / 1000 + " mal";
+            const relrisk_out = relrisk === 1 ? " genauso " : Math.round(relrisk * 1000) / 1000 * rr_factor + (rr_factor === 1 ? "" : "%") + " mal so";
 
             return {
                 "risk_treat_nh": risk_treat_nh, "risk_control_nh": risk_control_nh,
-                "arc": arc, "arr_p": arr_p, "rrr_p": rrc_p, "relrisk": relrisk_out
+                "arc": arc, "arr_p": arr_p, "rrr_p": rrc_p, "relrisk": relrisk_out.replace(".", ",")
             }
         }
 
@@ -1139,7 +1139,7 @@ class Checklist {
             const cur_rr = /arr/.test(id) ? "" : `<span class="tooltip">
                         <span class="tooltiptext tooltip-overview">
                         Relatives Risiko: Wie viele Personen mehr (bzw. weniger) betroffen sind.
-                        </span><a target="_blank" href="risk_wiki.html#wiki-relrisk">(also ${num_rr} so viele)</a></span>`;
+                        </span><a target="_blank" href="risk_wiki.html#wiki-relrisk">(also ${num_rr} viele)</a></span>`;
             return ` in der ${group} ${aux} <span class="risk-info" id="${id}">${num_rrc} ${verb}</span> ${cur_rr}`
         }
 
