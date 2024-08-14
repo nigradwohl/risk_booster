@@ -1216,7 +1216,7 @@ $(document).ready(function () {
 
                 feature_num += "<li>";
 
-                console.warning("TEST");
+                // console.warn("TEST");
 
                 const treat_num = feature_arr.includes("treat_num");
                 const contr_num = feature_arr.includes("contr_num");
