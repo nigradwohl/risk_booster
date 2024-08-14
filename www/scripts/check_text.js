@@ -324,6 +324,7 @@ $(document).ready(function () {
         // Add information to object:
         token_dat.add_column(regex_matches.match_id, "match");
         token_dat.add_column(regex_matches.match_type.map((x) => x !== -1 ? x.toString() : x), "unit");  // get unit info from regex matches.
+        // +++ TRANSLATION IS HERE +++
         token_dat.add_number_info();  // add info about numbers.
         token_dat.add_column(token_dat.token.map((x, ix) => (RegExp(collapse_regex_or(numwords), "dg").test(x))), "is_nw");  // is it a number word?
         token_dat.detect_unit();  // get additional unit info from token data.
