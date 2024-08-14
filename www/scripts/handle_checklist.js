@@ -501,10 +501,6 @@ $(document).ready(function () {
  */
 
 
-// ~~~~~~~~~~~~~~~~~~~~~~~ DICTIONARIES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// TODO
-
-
 // ~~~~~~~~~~~~~~~~~~~~~~~ CLASSES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /**
  * Class to create a checklist instance
@@ -561,7 +557,6 @@ class Checklist {
         this.missing_entries = [];
         this.skipped_inputs = [];  // list of inputs that were previously skipped.
 
-        // TODO: Update if input is skipped; also delete inputs that were not skipped a different time!
         this.check_risk = new RiskCollection();
         this.check_side = new RiskCollection();
     }
@@ -708,7 +703,7 @@ class Checklist {
 
             }
 
-            // TODO: Check for errors!
+            // Check for errors!
             console.warn(`There is invalid input ${this.is_invalid}`);
 
             // 2. Handle missing entries:
@@ -1079,9 +1074,12 @@ class Checklist {
             const meaning_arc = arc > 0 ? " weniger" : " mehr";
             console.log(`Absolute change is ${arc}`);
 
-            const arr = Math.sign(arc) * Math.round(arc * curscale) / curscale;
+            const arr_n = Math.sign(arc) * Math.round(arc * curscale) / curscale;
             const arr_p = // arr > 0.01 ? Math.round(arr * 100) + "%" :
                 (Math.sign(arc) * Math.round(arc * curscale) + " aus " + curscale + meaning_arc);
+
+            // Relative risk:
+            const relrisk = group_risks[1][1] / group_risks[0][1];  // treated/untreated.
 
             // Note: If the risk is negative, it corresponds to an increase!
             // For an increase report the multiple!
@@ -1092,14 +1090,21 @@ class Checklist {
             const rrr = Math.round(rrc * 1000) / 1000;
             console.log("RRR is " + rrr);
             const rr_factor = Math.abs(rrr) >= 2 ? 1 : 100;
-            const rrr_p = Math.round(rrr * rr_factor) +
-                (rr_factor === 100 ? "% " : " mal ") +
-                meaning_arc;
+            // const rrr_p = Math.round(rrr * rr_factor) +
+            //     (rr_factor === 100 ? "% " : " mal ") +
+            //     meaning_arc;
             // For numbers greater than 2 "x mal mehr" may be more appropriate.
+
+            // Relative risk reduction or increase:
+            const rrc_p = Math.round((relrisk > 1 ? relrisk - 1 : 1 - relrisk) * 1000)/10 + "%" +
+                meaning_arc;
+            console.log("RR change is " + rrc_p);
+
+            const relrisk_out = Math.round(relrisk * 1000)/1000 + " mal";
 
             return {
                 "risk_treat_nh": risk_treat_nh, "risk_control_nh": risk_control_nh,
-                "arc": arc, "arr_p": arr_p, "rrr_p": rrr_p
+                "arc": arc, "arr_p": arr_p, "rrr_p": rrc_p, "relrisk": relrisk_out
             }
         }
 
@@ -1128,26 +1133,31 @@ class Checklist {
         let cur_side_control = side_risks.risk_control_nh;
 
         // Function to build sentences:
-        function build_riskinfo(group, aux, id, num, verb) {
-            return ` in der ${group} ${aux} <span class="risk-info" id="${id}">${num} ${verb}</span>`
+        function build_riskinfo(group, aux, id, num_rrc, num_rr, verb) {
+            const cur_rr = /arr/.test(id) ? "" : `<span class="tooltip">
+                        <span class="tooltiptext tooltip-overview">
+                        Relatives Risiko: Wie viele Personen mehr (bzw. weniger) betroffen sind.
+                        </span><a target="_blank" href="risk_wiki.html#wiki-relrisk">(also ${num_rr} so viele)</a></span>`;
+            return ` in der ${group} ${aux} <span class="risk-info" id="${id}">${num_rrc} ${verb}</span> ${cur_rr}`
         }
 
         function risk_name_tt(type, incr, add_tt, rr) {
             const abs = type === "abs";
-            const typelet = abs ? "r" : "s";  // letter for type.
+            // const typelet = abs ? "r" : "s";  // letter for type.
             const typeword = abs ? "Absolute" : "Relative";
-            let out = `${typeword}${incr ? (typelet + " Risiko") + (abs ? "anstieg" : "") : " Risikoreduktion"}: `;
+            let out = `${typeword}${incr ? ("r Risikoanstieg") : " Risikoreduktion"}: `;
             // Add a tooltip:
             if (add_tt) {
                 let tt_text = "";
                 if (abs) {
                     tt_text = "Die Differenz der absoluten Risiken in den Gruppen";
-                } else if (rr) {
-                    // Relative risk:
-                    tt_text = "Ein Vielfaches wie viele Personen mehr oder weniger betroffen sind.";
-                } else {
+                }
+                // else if (rr) {
+                //     // Relative risk:
+                //     tt_text = "Ein Vielfaches wie viele Personen mehr oder weniger betroffen sind.";
+                else {
                     // Relative risk reduction:
-                    tt_text = "Der Anteil, der in der Behandlungsgruppe weniger betroffen ist.";
+                    tt_text = `Der Prozentanteil, der in der Behandlungsgruppe ${incr ? "mehr" : "weniger"} betroffen ist.`;
                 }
 
                 out = `<span class="tooltip">
@@ -1164,20 +1174,20 @@ class Checklist {
             // Add some information only in non-testing case:
             $("#abs-change").html(//`Absolute${eff_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: ` +
                 risk_name_tt("abs", eff_risks.arc < 0, true, eff_risks.arc < 0) +
-                build_riskinfo("Behandlungsgruppe", this.outcome.verb.aux, "arr", eff_risks.arr_p, this.outcome.verb.main));
+                build_riskinfo("Behandlungsgruppe", this.outcome.verb.aux, "arr", eff_risks.arr_p, undefined, this.outcome.verb.main));
             $("#rel-change").html(//`Relative${eff_risks.arc < 0 ? "s Risiko" : " Risikoreduktion"}: ` +
                 risk_name_tt("rel", eff_risks.arc < 0, true, eff_risks.arc < 0) +
-                build_riskinfo("Behandlungsgruppe", this.outcome.verb.aux, "rrr", eff_risks.rrr_p, this.outcome.verb.main));
+                build_riskinfo("Behandlungsgruppe", this.outcome.verb.aux, "rrr", eff_risks.rrr_p, eff_risks.relrisk, this.outcome.verb.main));
             // <span class="risk-info" id="rrr">${eff_risks.rrr_p}</span>`);
 
             $("#abs-change-side").html(
                 risk_name_tt("abs", side_risks.arc < 0, true, side_risks.arc < 0) +
-                build_riskinfo("Behandlungsgruppe", this.outcome_side.verb.aux, "arr-side", side_risks.arr_p, this.outcome_side.verb.main)
+                build_riskinfo("Behandlungsgruppe", this.outcome_side.verb.aux, "arr-side", side_risks.arr_p, undefined, this.outcome_side.verb.main)
                 // `Absolute${side_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe ${this.outcome_side.verb.aux} <span class="risk-info" id="arr">${side_risks.arr_p}</span> ${this.outcome_side.verb.main}`
             );
             $("#rel-change-side").html(
                 risk_name_tt("rel", side_risks.arc < 0, true, side_risks.arc < 0) +
-                build_riskinfo("Behandlungsgruppe", this.outcome_side.verb.aux, "rrr-side", side_risks.rrr_p, this.outcome_side.verb.main)
+                build_riskinfo("Behandlungsgruppe", this.outcome_side.verb.aux, "rrr-side", side_risks.rrr_p, side_risks.relrisk, this.outcome_side.verb.main)
                 // `Relative${side_risks.arc < 0 ? "s Risiko" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${side_risks.rrr_p}</span>`
             );
             // TODO: Alternatively switch the reference and always report RRR? (could be done by making "Behandlungsgruppe" a variable).
