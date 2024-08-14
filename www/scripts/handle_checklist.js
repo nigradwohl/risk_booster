@@ -990,15 +990,24 @@ class Checklist {
         // console.log(`N is ${this.check_risk.ntab.N}`);
 
         console.log("~~~~~~ Final risk objects ~~~~~~");
-        console.log("Effectivity:");
-        console.log(this.check_risk);
-        console.log("Side effects:");
-        console.log(this.check_side);
+        console.log("+++Effectivity:+++");
+        this.check_risk.print();
+        console.log("+++Side effects:+++");
+        this.check_side.print();
 
         // Transpose the risks for testing case:
         if (["test"].includes(this.type)) {
             this.check_side.ptab.tab.tab2x2 = transpose(this.check_risk.ptab.tab.tab2x2);
+            this.check_side.ptab.msums2 = this.check_side.ptab.tab.margin2_sum();  // rest this.
+            // this.check_side.ntab.N = this.check_risk.ntab.N;
+            // this.check_side.ntab.complete_margins();
+            // this.check_side.n_from_p();
+            this.check_side.get_margintabs();
+            // this.check_side.
+            console.log("Side effects after:");
+            console.log(this.check_side);
         }
+
 
         console.log("~~~~~~ Calculate the risks ~~~~");
         // Ensure that all information is used:

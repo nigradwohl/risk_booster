@@ -302,10 +302,14 @@ class RiskCollection {
 
         // Ensure that margins are completed beforehand!
         this.ntab.complete_margins();
+        this.ptab.complete_margins();
 
         // console.log("Input margin tables");
         // console.log(JSON.stringify(this.mtab1));
         // console.log(JSON.stringify(this.mtab2));
+
+        console.log("Input object");
+        this.print();
 
         // Get the margin tables:
         this.mtab1.tab.tab2x2 = this.ntab.tab.tab2x2
@@ -314,6 +318,13 @@ class RiskCollection {
         this.mtab2.tab.tab2x2 = transpose(this.ntab.tab.tab2x2)
             .map((x, ix) => x
                 .map((y, iy) => compare_vals(this.mtab2.tab.tab2x2[ix][iy], y / this.ntab.msums2[ix], 0.005)));
+
+        this.mtab1.tab.tab2x2 = this.ptab.tab.tab2x2
+            .map((x, ix) => x
+                .map((y, iy) => compare_vals(this.mtab1.tab.tab2x2[ix][iy], y / this.ptab.msums1[ix], 0.005)));
+        this.mtab2.tab.tab2x2 = transpose(this.ptab.tab.tab2x2)
+            .map((x, ix) => x
+                .map((y, iy) => compare_vals(this.mtab2.tab.tab2x2[ix][iy], y / this.ptab.msums2[ix], 0.005)));
 
         // console.log("Intermediate margin tables");
         // console.log(JSON.stringify(this.mtab1));
