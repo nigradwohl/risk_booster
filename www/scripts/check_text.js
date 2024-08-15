@@ -43,7 +43,7 @@ $(document).ready(function () {
             "mult": regex_mult,
             "mult2": /(?<mult>([Hh]alb|[Dd]oppelt|[Dd]reifach|[Dd]reimal) (so )?(viele|gr[oö]ß|hoch|niedrig|besser|erhöht|höher))/dg,
             "pval": RegExp("(?<pval>p ?[\\<\\=] ?" + pat_num + ")", "dg"),
-            "confint": RegExp("(?<confint>" + pat_num + " ?% ?[CK]I:? \\[?" + pat_num + " ?[-\\u2013;,] ?" + pat_num + "\\]?)", "dg"),
+            "confint": RegExp("(?<confint>" + pat_num + " ?% ?[CK]I:? ?\\[?" + pat_num + " ?[-\\u2013;,] ?" + pat_num + "\\]?)", "dg"),
             "yearnum": /(?<nyear>\d+([.|,]\d+)( Jahr[a-z]*))/dg,  // require comma or point separator!
             "yearnum2": /(?<nyear>\d+( Jahr[a-z]*) ([A-Za-z]+ )?(?=länger|steiger|reduzier))/dg,  // require comma or point separator!
             // "lifeexpectancy":
@@ -93,7 +93,8 @@ $(document).ready(function () {
             "other_num": regex_num
         }
 
-        const person_all = ["Proband", "[Tt]eilnehm", "[Pp]erson", "Mensch", "Frauen", "Männer", "Kind", "Erwachsen", "Mädchen", "Junge"]
+        const person_all = ["Proband", "[Tt]eilnehm", "[Pp]erson", "Mensch", "Frauen", "Männer", "Kind", "Erwachsen", "Mädchen","Junge", "[Ii]nfektion", "[Ii]nfizierte"]
+        // Is "Infektion" necessary?
 
         /**
          * Object that can be looped over to check numbers for number types taht are specific to their units in "number_unit".
@@ -206,7 +207,7 @@ $(document).ready(function () {
                     // The following may only apply to vaccination? (But likely also to treatment!)
                     "schwer.*Verl[aä]uf",
                     "Verbesserung"],
-                "side": ["Nebenwirk", "Komplikation", "unerwünschte.*Effekt", "Herzmuskelentzündung", "Hirnblutung", "Impfreaktion?en?", "[Hh]erpes", "Fieber"],  // more keywords? add "Impfreaktion", "Herbes", "Fieber"
+                "side": ["Nebenwirk", "Komplikation", "unerwünschte.*Effekt", "Herzmuskelentzündung", "Hirnblutung", "Impfreaktion?en?", "[Hh]erpes", "Fieber", "Gehirnentzündung"],  // more keywords? add "Impfreaktion", "Herbes", "Fieber"
                 "damage": ["(Inzidenz|[Ee]rkank|Todesfäll|Risiko).*(erhöht|vielfach)",
                     "(erhöht|vielfach).*(Inzidenz|[Ee]rkank|Todesfäll|Risiko)",
                     "Risiko.*Erkrank",
@@ -424,6 +425,28 @@ $(document).ready(function () {
         // "Davon wurden 9 in der Placebogruppe und **einer** in der BNT162b2-Gruppe beobachtet."
 
         const regex_numwords_raw = RegExp("(?<!\\w)(" + collapse_regex_or(numwords) + ")", "dg");
+        const excludePattern = RegExp(
+            "ein|" +
+            "eine|" +
+            "einer|" +
+            "einen|" +
+            "einem|" +
+            "eines|" +
+            // "(?<![Kk])\\b([Ee]in|[Ee]ine?[rm]?|[Ee]ines(?![gnz]))\\b|" +
+            "[Zz]wei(?!fe)|" +
+            "[Dd]rei|" +
+            "[Vv]ier|" +
+            "[Ff]ünf|" +
+            "[Ss]echs|" +
+            "[Ss]ieben|" +
+            "[Aa]cht(?!e)|" +
+            "[Nn]eun(?!k)|" +
+            "[Zz]ehn|" +
+            "[Ee]lf|" +
+            "[Zz]wölf|" +
+            "[Zz]weieinhalb"
+          , "i");
+
         const is = token_dat.token
             .map((x) => regex_numwords_raw.test(x) && !token_dat.is_num ? x : -1);
 
@@ -434,7 +457,7 @@ $(document).ready(function () {
         // Apply the unit and set number to "true" if applicable!
         for (let i = 0; i < token_dat.nrow; i++) {
             // Is it a candidate?
-            if (regex_numwords_raw.test(token_dat.token[i])) {
+            if (regex_numwords_raw.test(token_dat.token[i]) && !excludePattern.test(token_dat.token[i])) {
                 const cursent = token_dat.sent[i];
                 // const window_start = token_dat.id
                 //     .filter((ix) => token_dat.sent[ix] >= cursent - 1 && token_dat.sent[ix] <= cursent);
@@ -1185,6 +1208,9 @@ $(document).ready(function () {
 
                 feature_num += "</li><li>";
 
+                // TODO? Feedback that one has been done
+                // e.g., Sehr häufige Nebenwirkungen (bei mehr als 10 Prozent der Geimpften) sind Kopfschmerzen
+
                 // Die Wirksamkeit wird (nicht) mit Zahlen aus Behandlungs- und Kontrollgruppe belegt.
                 // Nebenwirkungen werden nicht für Behandlungs- und Kontrollgruppe angegeben
                 let arr_eff_both = feature_arr.includes("eff_treat_num") && feature_arr.includes("eff_contr_num") ?
@@ -1585,14 +1611,21 @@ const month_names = ["Januar", "Februar", "März", "April", "Mai", "Juni",
     "Dezember"];
 const pat_num = "(?:(?<![\\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,:][0-9]+)?))(?!\\\.[0-9A-Za-zÄÖÜäöüß]|[a-zA-Z0-9ÄÖÜäöüß])";
 const numwords = ["[Kk]einen?", "(?<![Kk])[Ee]ine?[rm]?(?![gnz])", "[Zz]wei(?!fe)", "[Dd]rei", "[Vv]ier", "[Ff]ünf", "[Ss]echs",
-    "[Ss]ieben", "[Aa]cht(?!e)", "[Nn]eun(?!k)", "[Zz]ehn", "[Ee]lf", "[Zz]wölf", "[Zz]weieinhalb"];
+    "[Ss]ieben", "[Aa]cht(?!e)", "[Nn]eun(?!k)", "[Zz]ehn", "[Ee]lf", "[Zz]wölf",
+    // Other kinds of number words
+    "[Zz]weieinhalb"];
 const largenums = ["Millionen", "Milliarden"];
 
 const regex_num = new RegExp("(?<unknown>" + pat_num + "( Millionen| Milliarden)?)", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
-const regex_numwords = new RegExp("(?<unknown>(" + collapse_regex_or(numwords) + ") (Person(en)?|F[aä]lle?))", "dg");
+// const regex_numwords = new RegExp("(?<unknown>(" + collapse_regex_or(numwords) + ") (Person(en)?|F[aä]lle?))", "dg");
+
+const person_all = ["Proband", "[Tt]eilnehm", "[Pp]erson", "Mensch", "Frauen", "Männer", "Kind", "Erwachsen", "Mädchen","Junge", "[Ii]nfektion", "[Ii]nfizierte"]
+const person_all_regex = person_all.join("|");
+const regex_numwords = new RegExp("(?<unknown>(" + collapse_regex_or(numwords) + ") (" + person_all_regex + "))", "dg");
+
 const regex_perc = new RegExp("(?<perc>" +
     // pat_num + " bzw\\. )?" + " ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.,?!])" + ")", "dg");
-    pat_num + " ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.,?!])" + ")", "dg");
+    pat_num + " ?(%|\\\-?[Pp]rozent)\\w*(?!\\s*[CK]I)[\\s.,?!]" + ")", "dg");
 const regex_nh = new RegExp("(?<nh>" + pat_num + " (?!%|[Pp]rozent)(\\w+ )?(von|aus|in) (\\w+ )?" + pat_num + ")", "dg");  // TODO: Handle numberwords here.
 const regex_nh2 = new RegExp("(?<nh>(" + collapse_regex_or(numwords) + ") (?!%|[Pp]rozent)(\\w+ )?(von|aus|in) (\\w+ )?" + pat_num + ")", "dg");
 const regex_mult = new RegExp("(?<mult>" + pat_num + "[ \\-]?([Mm]al|[Ff]ach) (so )?( ?viele|gr[oö]ß(er)?|hoch|niedrig(er)?|besser|erhöht|höher)(?=[\\s.,?!])" + ")", "dg");
@@ -2382,6 +2415,9 @@ function investigate_context(token_data, index_arr, keyset, only_pars) {
     // }
     const par_minmax = token_data.par_minmax;
 
+    // Initialize specific end tokens to handle window_size (one direction!)
+    const sentence_end_tokens = ["\\n", ".", "?", "!", ":"];
+
     // For each number query:
     for (const token_ix of index_arr) {
 
@@ -2425,22 +2461,34 @@ function investigate_context(token_data, index_arr, keyset, only_pars) {
         // OPEN THE WINDOW: ~~~~~~~~~~~~~~~~
         while (!description_complete && (lock_start > min_start || lock_end < max_end)) {
 
-            // console.log(`Token ${token_ix}, window start: ${window_start}, lock start: ${lock_start}, window end: ${window_end}, lock end: ${lock_end}; range before: ${token_ix - lock_start}, range after: ${lock_end - token_ix}, current stop tokens: ${stop_tokens.join(" ")}`);
+            // Check if either stop token is a sentence end token
+            const is_sentence_end_end = sentence_end_tokens.includes(token_data.token[window_end]);
 
-            while (window_start > lock_start) {
-                window_start--;
-                // Log if a stop token was encountered:
-                if (stop_tokens.includes(token_data.token[window_start])) {
-                    stop_token_start = true;
-                    break;
+            if (is_sentence_end_end) {
+                // If sentence end token is found, restrict window expansion to left direction only
+                while (window_start > lock_start) {
+                    window_start--;
+                    if (stop_tokens.includes(token_data.token[window_start])) {
+                        stop_token_start = true;
+                        break;
+                    }
+                }
+            } else {
+                // Normal window expansion in both directions
+                while (window_start > lock_start) {
+                    window_start--;
+                    if (stop_tokens.includes(token_data.token[window_start])) {
+                        stop_token_start = true;
+                        break;
+                    }
                 }
 
-            }
-            while (window_end < lock_end) {
-                window_end++;
-                if (stop_tokens.includes(token_data.token[window_end])) {
-                    stop_token_end = true;
-                    break;
+                while (window_end < lock_end) {
+                    window_end++;
+                    if (stop_tokens.includes(token_data.token[window_end])) {
+                        stop_token_end = true;
+                        break;
+                    }
                 }
             }
 
@@ -2515,7 +2563,7 @@ function investigate_context(token_data, index_arr, keyset, only_pars) {
 
 
             // Update the stop tokens:
-            if ((stop_token_start && stop_token_end) || (stop_token_end && lock_start === min_start) || (stop_token_start && lock_end === max_end)) {
+            if ( (is_sentence_end_end) || (stop_token_start && stop_token_end) || (stop_token_end && lock_start === min_start) || (stop_token_start && lock_end === max_end)) {
                 // console.log("UPDATE STOP TOKENS");
                 stop_tokens.pop();  // remove the last stop token and retry.
                 // When both are at the end, reset them.
@@ -2610,7 +2658,7 @@ function detect_unit(token_data) {
     // ALTERNATIVELY use dict etc.?
     const unit_lookup = [
         [/(%|[Pp]rozent\w*)/, "perc"],  // percentages.
-        [/Teilnehm|[Ff][aä]ll|Proband|Person|Mensch|Kind|Mädchen|Junge|Männer|Frauen|Verl[aä]uf|Erwachsen|Patient/, "freq"]  // frequencies.
+        [/[Tt]eilnehm|[Ff][aä]ll|[Ii]nfektion|Proband|Person|Mensch|Kind|Mädchen|Junge|Männer|Frauen|Verl[aä]uf|Erwachsen|[Ii]nfizierte|Patient/, "freq"]  // frequencies.
         // natural/relative frequencies.
     ]
     // Note: Percentage signs may also be contained in the number token!
@@ -2690,16 +2738,24 @@ function detect_unit(token_data) {
                 // console.log(prev_info);
 
 
-                const prev_units = prev_info.filter((x) => x !== -1 && x !== "ucarryforward");
+                const prev_units = prev_info.filter((x) => x !== -1  && x !== "ucarryforward");
                 // unit_info[ix_tok] = prev_units[prev_units.length - 1];
                 // console.log("Previous units");
                 // console.log(prev_units.toString() + ", unit prev: " + prev_units[prev_units.length - 1].toString());
 
+                if (prev_units.length > 0) {
 
-                unit_info.splice(n_reps.begins[ix_tok], n_reps.counts[ix_tok], Array(n_reps.counts[ix_tok]).fill(prev_units[prev_units.length - 1]));
-                unit_info = unit_info.flat();
-                // // console.log(unit_info);
+                    unit_info.splice(n_reps.begins[ix_tok], n_reps.counts[ix_tok], Array(n_reps.counts[ix_tok]).fill(prev_units[prev_units.length - 1]));
+                    unit_info = unit_info.flat();
+                    // console.log(unit_info);
+                } else {
+
+                    const default_unit = "unknown";
+                    unit_info.splice(n_reps.begins[ix_tok], n_reps.counts[ix_tok], Array(n_reps.counts[ix_tok]).fill(default_unit));
+                    unit_info = unit_info.flat();
+                    // console.log(unit_info);
             }
+        }
 
         }
     }
