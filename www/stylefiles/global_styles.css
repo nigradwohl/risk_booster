@@ -155,28 +155,45 @@ body {
 
 /*https://freebiesupply.com/blog/css-inputs/*/
 /* form starting stylings ------------------------------- */
-.input-group {
+.outer-input-group {
     margin-top: 1.2em;
+    margin-left: 1em;
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
     font-size: 0.9em;
+    /*justify-content: center;*/
+    justify-content: space-around;
+}
+
+.question-group {
+    flex-wrap: wrap;
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+
 }
 
 .inner-input-group {
     display: flex;
-  justify-content: flex-start;
-  flex-wrap: wrap;
-  flex-direction: row;
-  align-items: baseline;
+    justify-content: flex-start;
+    /*flex-wrap: wrap;*/
+    flex-direction: row;
+    align-items: baseline;
 }
 
-.input-quantifier > div{
+.input-question {
+    width: 250px;
+    padding-right: 1em;
+}
+
+.input-quantifier > div {
     /*font-size: 0.8em;*/
 }
 
-.input-and-label{
-    width: 33%;
+.input-and-label {
+    /*width: 45%;*/
+    width: 55%;
     /*width: 70%;*/
 }
 
@@ -210,10 +227,6 @@ body {
     /*font-size: 0.8em;*/
     cursor: text;
     white-space: nowrap;
-}
-
-.input-question {
-    width: 300px;
 }
 
 .float-label-field.focus label {
@@ -543,54 +556,48 @@ blockquote cite:before {
 
 select {
 
-  /* styling */
-  background-color: white;
-  border: thin solid var(---col-sepline);
-  border-radius: 4px;
-  display: inline-block;
-  font: inherit;
-  line-height: 1.2em;
-  padding: 0.5em 1.5em 0.5em 1em;
-  /* reset */
-  margin: 0 0.5em;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  -webkit-appearance: none;
-  -moz-appearance: none;
+    /* styling */
+    background-color: white;
+    border: thin solid var(---col-sepline);
+    border-radius: 4px;
+    display: inline-block;
+    font: inherit;
+    line-height: 1.2em;
+    padding: 0.5em 1.5em 0.5em 1em;
+    /* reset */
+    margin: 0 0.5em;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: none;
     width: 350px;
-/*Minimal style*/
-  background-image:
-    linear-gradient(45deg, transparent 50%, gray 50%),
+    /*Minimal style*/
+    background-image: linear-gradient(45deg, transparent 50%, gray 50%),
     linear-gradient(135deg, gray 50%, transparent 50%),
     linear-gradient(to right, #ccc, #ccc);
-  background-position:
-    calc(100% - 20px) calc(1em + 2px),
+    background-position: calc(100% - 20px) calc(1em + 2px),
     calc(100% - 15px) calc(1em + 2px),
     calc(100% - 2.5em) 0.5em;
-  background-size:
-    5px 5px,
+    background-size: 5px 5px,
     5px 5px,
     1px 1.5em;
-  background-repeat: no-repeat;
+    background-repeat: no-repeat;
 }
 
 select:focus {
-  background-image:
-    linear-gradient(45deg, green 50%, transparent 50%),
+    background-image: linear-gradient(45deg, green 50%, transparent 50%),
     linear-gradient(135deg, transparent 50%, green 50%),
     linear-gradient(to right, #ccc, #ccc);
-  background-position:
-    calc(100% - 15px) 1em,
+    background-position: calc(100% - 15px) 1em,
     calc(100% - 20px) 1em,
     calc(100% - 2.5em) 0.5em;
-  background-size:
-    5px 5px,
+    background-size: 5px 5px,
     5px 5px,
     1px 1.5em;
-  background-repeat: no-repeat;
-  border-color: green;
-  outline: 0;
+    background-repeat: no-repeat;
+    border-color: green;
+    outline: 0;
 }
 
 .btn-small {
@@ -981,12 +988,12 @@ h4 {
 
 }
 
-#version-num{
+#version-num {
     font-size: 0.6em;
     font-family: "Lucida Sans Typewriter", sans-serif;
 }
 
-.chevron-down{
+.chevron-down {
     font-size: inherit;
     font-weight: 100;
     display: inline-block;
