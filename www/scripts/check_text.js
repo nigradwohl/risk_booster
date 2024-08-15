@@ -800,9 +800,7 @@ $(document).ready(function () {
 
                     const cur_tooltip = info_tree.traverse(col_info)["tool"];  // traverse the tree toobtain tooltips.
 
-
                     cur_ix = token_dat.end[i + match_len - 1] + 1;  // save index of final character to continue from there.
-
 
                     // Numbers that issue warnings:
                     // Strong warnings:
@@ -844,6 +842,8 @@ $(document).ready(function () {
         // Handle breaks and lists:
         procText = procText.replaceAll(/\n\n/g, "<br><br>");
         procText = procText.replaceAll(/\u2022/g, "<br><br>\u2022  ");
+        procText = procText.replaceAll(/\n/g, "<br><div class='smallskip'></div>");
+        // Note: Here we could also be more lenient and add more space?
 
         // console.log("Text after processing:");
         // console.log(procText);
