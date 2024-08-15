@@ -93,7 +93,7 @@ $(document).ready(function () {
             "other_num": regex_num
         }
 
-        const person_all = ["Proband", "[Tt]eilnehm", "[Pp]erson", "Mensch", "Frauen", "Männer", "Kind", "Erwachsen", "Mädchen","Junge", "[Ii]nfektion", "[Ii]nfizierte"]
+        const person_all = ["Proband", "[Tt]eilnehm", "[Pp]erson", "Mensch", "Frauen", "Männer", "Kind", "Erwachsen", "Mädchen", "Junge", "[Ii]nfektion", "[Ii]nfizierte"]
         // Is "Infektion" necessary?
 
         /**
@@ -138,7 +138,7 @@ $(document).ready(function () {
                 "number_unit": ["freq", "nh"],
                 "keyset": [
                     // TODO: Double check these!
-                    [RegExp("Fälle|Verläufe"), RegExp("insgesamt|nach|Studie")], 
+                    [RegExp("Fälle|Verläufe"), RegExp("insgesamt|nach|Studie")],
                     [RegExp("[Ee]rkrankt|[Bb]etroffen")],
                     [RegExp("Todesfälle")],
                     [RegExp("(ver)?st[aeo]rben"), RegExp(collapse_regex_or(person_all))],
@@ -168,29 +168,29 @@ $(document).ready(function () {
          */
         const window_keys = {
             "grouptype": {
-                "total": ["[Ii]nsgesamt", "alle_", "Basis", "umfass(t|en)", "waren.*jeweils", "etwa.*[Tt]eiln[ae]hme", ], // add case "insgesamt" with Insgesamt
-                "sub": ["[Ii]n_", "[Uu]nter_", "[Dd]avon_", 
+                "total": ["[Ii]nsgesamt", "alle_", "Basis", "umfass(t|en)", "waren.*jeweils", "etwa.*[Tt]eiln[ae]hme",], // add case "insgesamt" with Insgesamt
+                "sub": ["[Ii]n_", "[Uu]nter_", "[Dd]avon_",
                     "der.*[Tt]eilnehmer", "entfielen.*auf"]
                 // Note: Switch from \w* to .*, since \w does not capture % etc.
             },
             "treat_contr": {
                 // Types of subgroups:
-                "contr": [ "(Kontroll|Placebo|Vergleichs|Scheinpräparat)-?.*([Gg]ruppe|[Ee]mpfänger)", // add "Empfänger"
-                    "(?<!Impfstoff|Impf)-(Gruppe|Empfänger)", "(?<!Impfstoff|Impf)(gruppe|empfänger)", 
+                "contr": ["(Kontroll|Placebo|Vergleichs|Scheinpräparat)-?.*([Gg]ruppe|[Ee]mpfänger)", // add "Empfänger"
+                    "(?<!Impfstoff|Impf)-(Gruppe|Empfänger)", "(?<!Impfstoff|Impf)(gruppe|empfänger)",
                     "Prävention.*wenigsten.*befolgte",
                     "kein.*Medika",
-                    "Scheinpräparat_(gespritzt|erhalten|bekommen)",], 
-                "treat": ["[Gg]eimpfte?n?", "Impf-?.*([Gg]ruppe|[Em]mpfänger)", 
+                    "Scheinpräparat_(gespritzt|erhalten|bekommen)",],
+                "treat": ["[Gg]eimpfte?n?", "Impf-?.*([Gg]ruppe|[Em]mpfänger)",
                     // negative definition of treatment group.
                     "(?<!Kontroll|Vergleichs|Placebo|Scheinpräparat)-(Gruppe|Empfänger)", // to cover case ...-... 
                     "(?<!Kontroll|Vergleichs|Placebo|Scheinpräparat)(gruppe|empfänger)", // to cover case ...
                     "Behandlungsgruppe", "Behandelte", "Impfstoff_(gespritzt|erhalten|bekommen)",
                     "([Tt]eilnehmer|Probanden).*Impfung",
-                    "erh(a|ie)lten.*(Präparat|Medikament)", 
+                    "erh(a|ie)lten.*(Präparat|Medikament)",
                     "(Präparat|Medikament|Antidepressiva).*erh(a|ie)lten", "Placebo_geschluckt",
                     "gesündesten.*Lebensstil"],
                 // "all": ["insgesamt.*([Tt]eilnehmer|Probanden)"],
-                "all": ["(aller|insgesamt).*[Tt]eilnehmer|Probanden", 
+                "all": ["(aller|insgesamt).*[Tt]eilnehmer|Probanden",
                     "(Teilnehm|Proband).*rekrutiert",
                     "insgesamt.*(Fälle|Verläufe)", "(Fälle|Verläufe).*insgesamt",
                     "beiden.*Gruppen", "sowohl.*[Gg]ruppe"] // problematic!
@@ -445,7 +445,7 @@ $(document).ready(function () {
             "[Ee]lf|" +
             "[Zz]wölf|" +
             "[Zz]weieinhalb"
-          , "i");
+            , "i");
 
         const is = token_dat.token
             .map((x) => regex_numwords_raw.test(x) && !token_dat.is_num ? x : -1);
@@ -562,7 +562,7 @@ $(document).ready(function () {
                     const token = token_dat.token[ix];
                     console.log(`+++ Current token is ${token}`);
                     const num_ix = num_arr
-                         .filter((ixn) => RegExp(numwords[ixn], "dg").test(token))
+                        .filter((ixn) => RegExp(numwords[ixn], "dg").test(token))
                     // Excludes numbers that occur directly after the number word.
                     if (num_ix !== undefined && num_ix.length > 0) {
                         token_dat.trnum[ix] = num_arr[num_ix[0]].toString(); // to cover multiple matches
@@ -1499,20 +1499,11 @@ $(document).ready(function () {
                 .css({
                     top: top_fixed - popup_height,  // add 2 pixels.
                     // If the popup goes out of bounds, correct.
-                    left: (thispos.left + popup_width > right_bound) ? thispos.left - popup_width / 2 : thispos.left
+                    left: (thispos.left + popup_width > right_bound) ? thispos.left - popup_width / 2 : thispos.left,
                     // position: 'absolute'
-                })
-                // Redo some calculatios after positioning.
-                .css({
-                    // check if the top of the popup overlaps considerably
-                    top: top_fixed - cur_popup.height(),
-                    // If the popup goes out of bounds, correct.
-                    // left: (thispos.left + popup_width > correction_left) ? thispos.left / 2 : thispos.left
-                    // position: 'absolute'
-                })
-            // .addClass("selected-blur")
+                    visibility: "hidden"
+                }).show()
 
-            // TODO: Fix issue with rightmost numbers!
 
             console.log(`top of txt element: ${txt_ele_top}; 
             top of parent: ${txt_ele.parent().position().top}, 
@@ -1528,7 +1519,33 @@ $(document).ready(function () {
                     // left: (thispos.left + popup_width > correction_left) ? thispos.left / 2 : thispos.left
                     // position: 'absolute'
                 })
-                .show();
+
+            console.log(`top of txt element: ${txt_ele_top}; 
+            top of parent: ${txt_ele.parent().position().top}, 
+            popup top: ${cur_popup.position().top}`);
+
+            // If no space above:
+            if (cur_popup.position().top < txt_ele.parent().position().top) {
+                cur_popup
+                    // Redo some calculatios after positioning.
+                    .css({
+                        // check if the top of the popup overlaps considerably
+                        top: top_fixed - cur_popup.height(),
+                        // If the popup goes out of bounds, correct.
+                        // left: (thispos.left + popup_width > correction_left) ? thispos.left / 2 : thispos.left
+                        // position: 'absolute'
+
+                    })
+                // .addClass("selected-blur")
+            }
+
+            console.log(`top of txt element: ${txt_ele_top}; 
+            top of parent: ${txt_ele.parent().position().top}, 
+            popup top: ${cur_popup.position().top}`);
+
+            // Show the popup:
+            cur_popup.css("visibility", "visible");
+            // was: cur_popup.show();
 
 
             // Add selection blur to the number:
@@ -1619,7 +1636,7 @@ const largenums = ["Millionen", "Milliarden"];
 const regex_num = new RegExp("(?<unknown>" + pat_num + "( Millionen| Milliarden)?)", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
 // const regex_numwords = new RegExp("(?<unknown>(" + collapse_regex_or(numwords) + ") (Person(en)?|F[aä]lle?))", "dg");
 
-const person_all = ["Proband", "[Tt]eilnehm", "[Pp]erson", "Mensch", "Frauen", "Männer", "Kind", "Erwachsen", "Mädchen","Junge", "[Ii]nfektion", "[Ii]nfizierte"]
+const person_all = ["Proband", "[Tt]eilnehm", "[Pp]erson", "Mensch", "Frauen", "Männer", "Kind", "Erwachsen", "Mädchen", "Junge", "[Ii]nfektion", "[Ii]nfizierte"]
 const person_all_regex = person_all.join("|");
 const regex_numwords = new RegExp("(?<unknown>(" + collapse_regex_or(numwords) + ") (" + person_all_regex + "))", "dg");
 
@@ -2563,7 +2580,7 @@ function investigate_context(token_data, index_arr, keyset, only_pars) {
 
 
             // Update the stop tokens:
-            if ( (is_sentence_end_end) || (stop_token_start && stop_token_end) || (stop_token_end && lock_start === min_start) || (stop_token_start && lock_end === max_end)) {
+            if ((is_sentence_end_end) || (stop_token_start && stop_token_end) || (stop_token_end && lock_start === min_start) || (stop_token_start && lock_end === max_end)) {
                 // console.log("UPDATE STOP TOKENS");
                 stop_tokens.pop();  // remove the last stop token and retry.
                 // When both are at the end, reset them.
@@ -2738,7 +2755,7 @@ function detect_unit(token_data) {
                 // console.log(prev_info);
 
 
-                const prev_units = prev_info.filter((x) => x !== -1  && x !== "ucarryforward");
+                const prev_units = prev_info.filter((x) => x !== -1 && x !== "ucarryforward");
                 // unit_info[ix_tok] = prev_units[prev_units.length - 1];
                 // console.log("Previous units");
                 // console.log(prev_units.toString() + ", unit prev: " + prev_units[prev_units.length - 1].toString());
@@ -2754,8 +2771,8 @@ function detect_unit(token_data) {
                     unit_info.splice(n_reps.begins[ix_tok], n_reps.counts[ix_tok], Array(n_reps.counts[ix_tok]).fill(default_unit));
                     unit_info = unit_info.flat();
                     // console.log(unit_info);
+                }
             }
-        }
 
         }
     }
