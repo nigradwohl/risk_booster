@@ -307,8 +307,8 @@ class RiskCollection {
         // console.log(JSON.stringify(this.mtab1));
         // console.log(JSON.stringify(this.mtab2));
 
-        console.log("Input object");
-        this.print();
+        // console.log("Input object");
+        // this.print();
 
         // Get the margin tables:
         this.mtab1.tab.tab2x2 = this.ntab.tab.tab2x2
@@ -641,8 +641,8 @@ class Margintable {
     // Get relative information:
     get_rel(){
         const curtab = this.tab.tab2x2;
-        this.rel2[0] = curtab[0][1]/curtab[1][1];
-        this.rel2[1] = curtab[1][1]/curtab[0][1];
+        this.rel2[0] = compare_vals(this.rel2[0], curtab[0][1]/curtab[1][1]);
+        this.rel2[1] = compare_vals(this.rel2[1], curtab[1][1]/curtab[0][1]);
     }
 
 

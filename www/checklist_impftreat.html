@@ -364,6 +364,74 @@
                         </div>
                     </div>
 
+                                        <div class="checklist-question" id="rel-risk-q">
+
+                        <!--                        EbM-Glossar: Wirksamkeit ("efficacy") beschreibt in der EbM, ob eine Maßnahme unter Idealbedingungen-->
+                        <!--                        gute Ergebnisse hervorbringt.-->
+
+                        <div class="question-content">
+                            <!--                            <p>-->
+                            <!--                                ALTERNATIV:-->
+                            <!--                                Bitte geben Sie die Risikoreduktion/den Anstieg im Nutzen(?)-->
+                            <!--                                Interessierendes Ereignis (Tod, Symptomfreiheit, Symptomlinderung)-->
+                            <!--                            </p>-->
+                            <p class="checklist-qtext">
+                                Welches relative Risiko
+                                wurde berichtet?
+                                Das heißt, wie viel häufiger das Ereignis in der Behandlungsgruppe auftritt.
+                                Zahlen kleiner als 1 bedeuten, dass das Ereignis seltener auftritt.
+                            </p>
+
+                            <p>
+                                Bitte geben Sie
+                                das relative Risiko
+                                als Vielfaches ein (also 0,45, 1,2, 4). Wenn Ihnen eine Angabe nicht vorliegt,
+                                lassen Sie das Feld frei.
+                                <!-- Kommazahlen mit bis zu zwei Nachkommastellen sind erlaubt. -->
+                                <!--                                [Sinnvoll?]-->
+                            </p>
+
+
+                            <div class="outer-input-group">
+                                <!--                                PRELIMINARY BLUEPRINT!-->
+                                <div class="inner-input-group">
+                                    <div class="input-and-label">
+                                        <fieldset class="float-label-field">
+                                            <label for="rel-risk-reduction">
+                                                relatives Risiko
+                                            </label>
+                                            <input class="checklist-input" id="rel-risk" type="text"
+                                                   pattern="([0-9]{1,5}(,[0-9]+)?)"
+                                                   title="Vielfaches zwischen 0 und 10.000">
+                                            <span class="alert-invalid"><i
+                                                    class="fa fa-exclamation-circle error"></i> Bitte geben Sie ein gültigs Vielfaches zwischen 0 und 10.000 ein.</span>
+                                        </fieldset>
+                                    </div>
+                                    <div class="input-quantifier">
+                                        <div>mal so viele
+                                            <!--                                            &nbsp;<span class="tooltip tooltip-q">-->
+                                            <!--                                    <span class="tooltiptext tooltip-overview">Relative Risikoveränderung.-->
+                                            <!--                                    </span><i class="fa fa-info-circle"></i></span></div>-->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!--                            <p>-->
+                            <!--                                [Als tooltip!]-->
+                            <!--                                <i class="fa fa-exclamation-triangle"></i>-->
+                            <!--                                Manchmal wird diese Zahl auch als "Impfschutz" bezeichnet.-->
+                            <!--                                <strong>Weitere Begriffe?</strong>-->
+                            <!--                            </p>-->
+
+                            <!--                            <p>Unter dem Begriff der Impfstoffwirksamkeit versteht man in der Regel,-->
+                            <!--                                wie viele Prozent weniger in der Gruppe der Geimpften erkranken.</p>-->
+
+                            <!--                            <p>Anmerkung: Wenn die Information fehlt, wird nachgefragt.</p>-->
+                        </div>
+                    </div>
+
                     <div class="checklist-question" id="n-total-q">
                         <div class="question-content">
                             <p class="checklist-qtext">

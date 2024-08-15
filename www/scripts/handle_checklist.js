@@ -314,7 +314,8 @@ $(document).ready(function () {
             // Move relative reduction to final position:
             cur_order = arraymove(q_order, ix_rrr, ix_ncase);
             // Add rel risk (before rel risk reduction/increase):
-
+            cur_order.splice(cur_order.indexOf("rel-risk-reduction"), 0, "rel-risk");
+            console.warn(cur_order);
         }
     }
 
@@ -1698,6 +1699,7 @@ function arraymove(arr, fromIndex, toIndex) {
  */
 const id_to_num_dict = {
     "rel-risk-reduction": "rrr",
+    "rel-risk": "relrisk",
     "n-total": "N_tot",
     "any-control": "any_control",
     "n-impf": "msumx1",
@@ -1728,6 +1730,7 @@ const eff_keys = ["N_tot",
     "msumx0", "msumx1",
     "msum0x", "msum1x",
     "rrr",
+    "relrisk",
     "p00", "p01", "p10", "p11",
     "mpx0", "mpx1",
     "mtx0", "mtx1",
@@ -1766,6 +1769,7 @@ const side_keys = ["N_tot",
 // "rrr": ["mtab", "rel1", 1]
 const number_dict = {
     "rrr": ["mtab2", "rel2", 1],
+    "relrisk": ["mtab2", "rel2", 1],
     "N_tot": ["ntab", "N"],
     "n00": ["ntab", "tab", "tab2x2", 0, 0],
     "n01": ["ntab", "tab", "tab2x2", 0, 1],
@@ -1822,12 +1826,16 @@ const int_keys = ["N_tot",
     "n00s", "n01s", "n10s", "n11s",
     "msum00", "msum01",
     "msum10", "msum11"];
-const float_keys = ["rrr",
+const float_keys = [
+    "rrr",
+    "relrisk",
     "p00", "p01", "p10", "p11",
     "mpx0",
     "mtx0", "mtx1",
     "mtx0s", "mtx1s"]
-const perc_keys = ["rrr", "mpx1",
+const perc_keys = [
+    "rrr",
+    "mpx1",
     "mtx0", "mtx1",
     "mtx0s", "mtx1s",
     "p00", "p01", "p10", "p11",
