@@ -1207,6 +1207,9 @@ $(document).ready(function () {
 
                 feature_num += "</li><li>";
 
+                // TODO? Feedback that one has been done
+                // e.g., Sehr häufige Nebenwirkungen (bei mehr als 10 Prozent der Geimpften) sind Kopfschmerzen
+
                 // Die Wirksamkeit wird (nicht) mit Zahlen aus Behandlungs- und Kontrollgruppe belegt.
                 // Nebenwirkungen werden nicht für Behandlungs- und Kontrollgruppe angegeben
                 let arr_eff_both = feature_arr.includes("eff_treat_num") && feature_arr.includes("eff_contr_num") ?
