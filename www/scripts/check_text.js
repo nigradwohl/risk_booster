@@ -667,27 +667,27 @@ $(document).ready(function () {
                 "perc": {
                     "abs": new OutputNode("Absolute Prozentzahl", popup_perc("abs") + info_data.prozent.popup),
                     "rel": new OutputNode("Relative Prozentzahl", popup_perc("rel") + info_data.rel.popup + risk_link),
-                    "default": new OutputNode("Prozentzahl", "Diese Prozentzahl konnte leider nicht näher identifiziert werden")
+                    "default": new OutputNode("Prozentzahl", "<p>Diese Prozentzahl konnte leider nicht näher identifiziert werden</p>")
                 },  // Note: This is merely an addition; make its own tree or a condition within the perc-tree?
                 "nh": new OutputNode("Natürliche Häufigkeit.", info_data.nh.popup),
                 "freq": {
                     "ncase": new OutputNode("Fallzahl", popup_freq("ncase") + info_data.freq.popup),
                     "ntot": new OutputNode("Stichprobengröße", popup_freq("ntot") + info_data.sample_size.popup),
-                    "default": new OutputNode("Häufigkeit", "Diese Häufigkeit konnte leider nicht näher identifiziert werden")
+                    "default": new OutputNode("Häufigkeit", "<p>Diese Häufigkeit konnte leider nicht näher identifiziert werden</p>")
                 },
                 "mult": new OutputNode("Relative Veränderung", info_data.rel.popup),
                 "pval": new OutputNode("p-Wert", info_data.pval.popup),
                 "confint": new OutputNode("Konfidenzintervall", info_data.confint.popup),
                 "nyear": {
-                    "decr": new OutputNode("Unterschied in der Lebenserwartung", "Kann zum Vergleich der Sterblichkeit verschiedener Gruppen dienen. " +
-                        "Achten Sie darauf, die Gesamtlebenserwartung anzugeben."),
-                    "incr": new OutputNode("Unterschied in der Lebenserwartung", "Kann zum Vergleich der Sterblichkeit verschiedener Gruppen dienen. " +
-                        "Achten Sie darauf, die Gesamtlebenserwartung anzugeben."),
-                    "other": new OutputNode("Lebenserwartung in Jahren", "Lebenserwartung kann zur Beurteilung der Sterblichkeit dienen."),
-                    "default": new OutputNode("Anzahl an Jahren", "Diese Anzahl an Jahren konnte leider nicht näher identifiziert werden")
+                    "decr": new OutputNode("Unterschied in der Lebenserwartung", "<p>Kann zum Vergleich der Sterblichkeit verschiedener Gruppen dienen. " +
+                        "Achten Sie darauf, die Gesamtlebenserwartung anzugeben.</p>"),
+                    "incr": new OutputNode("Unterschied in der Lebenserwartung", "<p>Kann zum Vergleich der Sterblichkeit verschiedener Gruppen dienen. " +
+                        "Achten Sie darauf, die Gesamtlebenserwartung anzugeben.</p>"),
+                    "other": new OutputNode("Lebenserwartung in Jahren", "<p>Lebenserwartung kann zur Beurteilung der Sterblichkeit dienen.</p>"),
+                    "default": new OutputNode("Anzahl an Jahren", "<p>Diese Anzahl an Jahren konnte leider nicht näher identifiziert werden.</p>")
                 },
-                "age": new OutputNode("Altersangabe", "Kann insbesondere hilfreich sein, um Unterschiede in der Lebenserwartung einzuordnen."),
-                "default": new OutputNode("Zahl.", "Diese Zahl konnte leider nicht näher identifiziert werden")
+                "age": new OutputNode("Altersangabe", "<p>Kann insbesondere hilfreich sein, um Unterschiede in der Lebenserwartung einzuordnen.</p>"),
+                "default": new OutputNode("Zahl.", "<p>Diese Zahl konnte leider nicht näher identifiziert werden</p>")
             },
             "traverse": function (arr) {
 
