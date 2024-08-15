@@ -261,7 +261,6 @@ class RiskCollection {
         // this.print();
         this.get_tab_from_margins("ntab"); // Get elements from margin tables.
         this.get_tab_from_margins("ptab");
-        // TODO: make method to get anything from margins?
         // Here an issue occurs!
         // this.print();
 
@@ -464,7 +463,6 @@ class Basetable {
         //
         this.msums1 = msums1;  // this.tab.margin1_sum();
         this.msums2 = msums2;  // this.tab.margin2_sum();
-        // TODO: Eventually compare them with provided info?
         this.N = N;
 
         // Call initial functions:
@@ -494,7 +492,7 @@ class Basetable {
 
     // Function to complete margins:
     complete_margins() {
-        // TODO: Don't do this if all values are NA!
+        // Don't do this if all values are NA!
 
         // console.log(`Complete margins in`);
         // console.log(JSON.stringify(this));
@@ -625,8 +623,6 @@ class Margintable {
 
         // Margins should be designed so that the arrays add up to 1.
 
-        // TODO: May be simplified a lot!
-
         // Complete the relations:
         // TODO: Here now! Improve representation of relative information (represent as relative risks!)
 
@@ -647,18 +643,13 @@ class Margintable {
         // Add other dimensions?
         // console.log("Margintable before getting fromd ifference information:");
         // console.log(JSON.stringify(this));
-
         // Margins should be designed so that the arrays add up to 1.
-
-        // TODO: May be simplified a lot!
 
         // Complete the relations:
         this.diff2[0] = isNaN(this.diff2[0]) ? -this.diff2[1] : this.diff2[0];
         this.diff2[1] = isNaN(this.diff2[1]) ? -this.diff2[0] : this.diff2[1];
 
         this.complete_tab();
-
-
         // console.log("Margintable after getting from difference:");
         // console.log(JSON.stringify(this));
     }
@@ -774,7 +765,6 @@ function compare_vals(val1, val2, tol) {
         if (Math.abs(val1 - val2) > tol) {
             console.error("Provided values do not match. Please check!");
             // no_N = true;
-            // TODO: Proper error handling!
             throw "Provided values do not match. Please check!";
             // val1 = NaN;  // set val1 NaN to return NaN.
         }

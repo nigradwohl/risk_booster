@@ -30,8 +30,8 @@ $(document).ready(function () {
 
     // console.warn(text);
 
-    // TODO: Here the set of wordings has to be adjusted to the case!
-    // Note: The outcome may be selected on a first page?
+    // Note: Here the set of wordings has to be adjusted to the case!
+    // Note: The outcome is selected on the first page.
     let typeword = "Einflussgröße";
     let typeverb = "behandelt";
     let addinfo_rrr = "";
@@ -213,7 +213,10 @@ $(document).ready(function () {
             "Impfreaktionen bezeichnen erwartbare Ereignisse einer Immunreaktion " +
             "(z.B., Schmerzen an der Einstichstelle, Fieber) und sind für die Bewertung der Sicherheit nachrangig.");
         $(".show-impf").show();
-        // TODO: Maybe also to results, if "Impfreaktion" is chosen?
+        // Also add to results:
+        $("<p>Bitte beachten Sie: " +
+            "Impfreaktionen bezeichnen erwartbare Ereignisse einer Immunreaktion " +
+            "(z.B., Schmerzen an der Einstichstelle, Fieber) und sind für die Bewertung der Sicherheit nachrangig.</p>").insertAfter("#report-what");
 
     } else if (text === "test") {
         $(".intro-testscreen").show();
@@ -246,8 +249,6 @@ $(document).ready(function () {
             "Häufig wird nur die Testgüte angegeben, während sich Individuen dafür interessieren, " +
             "was ein positiver (oder negativer) Test aussagt (s. <a target='_blank' href='risk_wiki.html#wiki-cprob'>Wiki</a>). " +
             "PPV und NPV setzen allerdings voraus, dass die Prävalenz der zu testenden Krankheit bekannt ist.");
-        // TODO: Switch perspective?
-        // $("#results-2").html("");  // Second results are not needed for tests.
 
         // Define outcome information:
         outcome_list.eff = [
@@ -886,12 +887,7 @@ class Checklist {
 
         } catch (error) {
             console.warn(error);
-
             console.log(this.check_risk);
-
-            // TODO: Show which info is missing!
-            // Candidates are:
-            // Sizes of the groups:
 
             // Baseline risk/AR in at least one of the groups:
             // Through risk in margins or cases plus number of individuals.
@@ -900,11 +896,9 @@ class Checklist {
                     "Providing a risk in one of the groups throguh a percentage or a number of cases in that group should help!");
             }
 
-
             $("#results-1-error ~ *:not(textarea)").hide();
             $("#results-1-error").show();
             $("p.error-note").show();
-
         }
 
 
@@ -934,17 +928,13 @@ class Checklist {
         } catch (error) {
             console.warn(error);
 
-            // TODO: Show which info is missing!
-
             $("#results-2-error ~ *").hide();
             $("#results-2-error").show();
             $("p.error-note").show();
         }
-        // }
 
-        // ALways show the headings:
+        // Always show the headings:
         $(".grid-head").show();
-
 
         // Adding functionality: ~~~~~~~~~~~~~~~~~~
         // Add button for saving the page:
@@ -1202,19 +1192,15 @@ class Checklist {
                 build_riskinfo("Behandlungsgruppe", this.outcome_side.verb.aux, "rrr-side", side_risks.rrr_p, side_risks.relrisk, this.outcome_side.verb.main)
                 // `Relative${side_risks.arc < 0 ? "s Risiko" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${side_risks.rrr_p}</span>`
             );
-            // TODO: Alternatively switch the reference and always report RRR? (could be done by making "Behandlungsgruppe" a variable).
+            // Note: Alternatively switch the reference and always report RRR? (could be done by making "Behandlungsgruppe" a variable).
 
         }
 
-        // Warnings about missing information:
+        // +++ Warnings about missing information +++:
         // - missing group sizes/proportions (msums2!)
         // - missing proportion of endpoint (AR; ptab/ntab)
         // - present relative information but abselt absolute or vice versa!
         // Warn, if something is missing:
-
-        // TODO: Adjust for test case!
-
-
         function get_missing_info(group_risks, risk_obj, type) {
             // Check if 1 or 2 absolute risks could not be determined:
             const ar_missing = [0, 1].filter(x => group_risks[x].includes(NaN));
@@ -1253,7 +1239,6 @@ class Checklist {
 
 
                 // Check if relative reduction could be supplied:
-                // TODO: Make wording flexible!
                 let event_props = `den Anteil an Ereignissen in der ${missgroup[0]}`;
                 let event_counts = `die Anzahl an Ereignissen in der ${missgroup[0]}`;
 
@@ -1306,7 +1291,7 @@ class Checklist {
                     .show();
             }
         }  // eof. function.
-        // TODO: Migrate function?
+        // Note: Could migrate function?
 
         // Get the information:
         if (["test"].includes(this.type)) {
@@ -1409,7 +1394,6 @@ class Checklist {
                     if (eff_keys.includes(cur_q_key)) {
                         // Change effectivity as a function of prevention vs. achievement:
                         if (cur_q_key === "rrr" && this.outcome.direction === "achieve") {
-                            // TODO: Communicate the directional difference between RRR and relative risk.
                             console.log("Update relative value:");
                             checked_val = 2 - checked_val;
                         }
@@ -1477,7 +1461,6 @@ class Checklist {
             this.is_reload = true;  // set reload flag to true.
 
             // Decrementing the page:
-            // TODO: Skip inputs that were previously skipped
             // Get previously seen input (or skip, if this.q_order[this.entry_ix] in skiplist?)
             // Note: Also must ensure that elements from the skiplist are removed when they are passed upon a back-button click!
             const calling_entry = this.q_order[this.entry_ix];
@@ -1555,7 +1538,6 @@ function handle_missing_input(ev, missing_entries) {
     if (input_field.parent("fieldset").length > 0) {
 
         console.warn("Popup for fieldset");
-        // TODO: Eventually insert before label?
         cur_popup
             .css({
                 top: -cur_popup.outerHeight() - input_height / 2 - 5,
@@ -1856,7 +1838,6 @@ const perc_keys = ["rrr", "mpx1",
  * Evaluate checklist entry.
  */
 function evaluate_entry(curval, cur_q_key) {
-    // TODO: Check format!
     let checked_val;
     let cur_error = "noerr";
 
@@ -1947,7 +1928,6 @@ function create_icon_array(arr_n, id, ncol, col_arr, exf) {
     try {
         // Check for integers (numbers( using "try" for now.
         // Update in time!
-        // TODO: Proper input checking!
         const n_dots = arr_n.reduce((d, i) => d + i);
 
         // Create an array of types:
