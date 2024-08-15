@@ -131,7 +131,7 @@ $(document).ready(function () {
                 "direction": "achieve"
             },
             {
-                "verb": new Verblist("???", "???", "???"),
+                "verb": new Verblist("haben eine reduzierte Erkrankungsdauer", "haben", "eine reduzierte Erkrankungsdauer"),
                 "noun": "Reduktion der Erkrankungsdauer",
                 "qpart": ["eine Reduktion der Erkrankungsdauer", "erreichte", "erreichten"],
                 "red_incr": "an Personen mit reduzierter Erkrankungsdauer",
@@ -151,7 +151,7 @@ $(document).ready(function () {
         // Add stuff to end:
         outcome_list.eff = outcome_list.eff.concat(
             {
-                "verb": new Verblist("???", "???", "???"),
+                "verb": new Verblist("erleben das positive Ereignis", "erleben", "das positive Ereignis"),
                 "noun": "positive Ereignisse",
                 "qpart": ["das positive Ereignis", "zeigte", "zeigten"],
                 "red_incr": "positiven Ereignissen",
@@ -312,7 +312,9 @@ $(document).ready(function () {
             // [cur_order[ix_rrr], cur_order[ix_pcase]] = [cur_order[ix_pcase], cur_order[ix_rrr]];
 
             // Move relative reduction to final position:
-            cur_order = arraymove(q_order, ix_rrr, ix_ncase)
+            cur_order = arraymove(q_order, ix_rrr, ix_ncase);
+            // Add rel risk (before rel risk reduction/increase):
+
         }
     }
 
