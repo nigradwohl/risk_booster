@@ -330,6 +330,8 @@ class RiskCollection {
         // console.log(JSON.stringify(this.mtab2));
 
         // Try to complete the margin tables:
+        this.mtab1.get_rel();
+        this.mtab2.get_rel();
         this.mtab1.get_from_rel();
         this.mtab2.get_from_rel();
 
@@ -603,9 +605,9 @@ class Margintable {
     // A marginal table with known relations:
     constructor(nested_list, rel1, rel2, diff1, diff2) {
         this.tab = new Table2x2(nested_list);
-        // Relative risk changes:
-        this.rel1 = rel1;
-        this.rel2 = rel2;
+        // Relative risks:
+        this.rel1 = rel1;  // unused.
+        this.rel2 = rel2;  // [0][1] to [1][1] and vice versa.
         // Absolute risk differences:
         this.diff1 = diff1;
         this.diff2 = diff2;
@@ -634,6 +636,13 @@ class Margintable {
 
         // console.log("Margintable after getting from relative information:");
         // console.log(JSON.stringify(this));
+    }
+
+    // Get relative information:
+    get_rel(){
+        const curtab = this.tab.tab2x2;
+        this.rel2[0] = curtab[0][1]/curtab[1][1];
+        this.rel2[1] = curtab[1][1]/curtab[0][1];
     }
 
 
