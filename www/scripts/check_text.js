@@ -176,7 +176,8 @@ $(document).ready(function () {
             "treat_contr": {
                 // Types of subgroups:
                 "contr": ["(Kontroll|Placebo|Vergleichs|Scheinpräparat)-?.*([Gg]ruppe|[Ee]mpfänger)", // add "Empfänger"
-                    "(?<!Impfstoff|Impf)-(Gruppe|Empfänger)", "(?<!Impfstoff|Impf)(gruppe|empfänger)",
+                    "(?<!Impfstoff|Impf)-(Gruppe|Empfänger)",
+                    "(?<!Impfstoff|Impf|Behandlungs|Untersuchungs)(gruppe|empfänger)",  // Note: Here negative lookahead pieces may need to be added.
                     "Prävention.*wenigsten.*befolgte",
                     "kein.*Medika",
                     "Scheinpräparat_(gespritzt|erhalten|bekommen)",],
@@ -2604,7 +2605,7 @@ function investigate_context(token_data, index_arr, keyset, only_pars) {
             if (Object.keys(keyset).filter((x) => numberfeats.has(x)).length > 0 &&
                 stop_update_count > 2  // NOTE: KEEP?
             ) {
-                // console.log("FINAL TESTSTRING:\n" + test_str);
+                console.log("FINAL TESTSTRING:\n" + test_str);
                 // console.log(test_tokens);
                 // console.log("DESCRIPTION COMPLETE");
                 description_complete = true;
