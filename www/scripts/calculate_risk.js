@@ -626,7 +626,6 @@ class Margintable {
         // Margins should be designed so that the arrays add up to 1.
 
         // Complete the relations:
-        // TODO: Here now! Improve representation of relative information (represent as relative risks!)
 
         // Complements:
         this.rel2[0] = isNaN(this.rel2[0]) ? 1 / this.rel2[1] : this.rel2[0];
