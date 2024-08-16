@@ -106,7 +106,11 @@ $(document).ready(function () {
                 "keyset": [
                     // A first entry to a domain-general keyset for risk:
                     [RegExp(collapse_regex_or(["[Rr]isiko", "[Ww]ahrscheinlich", "Inzidenz", "Todesfälle"])),
-                        RegExp(collapse_regex_or(["höher", "erhöht"]))],
+                        RegExp(collapse_regex_or(["höher", "erhöht", "so hoch"]))],
+                    // The following entry could cause problems -- observe!
+                    [RegExp(collapse_regex_or(["[Rr]isiko", "[Ww]ahrscheinlich", "Inzidenz", "Todesfälle"])),
+                        RegExp(collapse_regex_or(["so"])),
+                        RegExp(collapse_regex_or(["hoch"]))],
                     [RegExp(collapse_regex_or(["[Uu]nterschied", "höher", "vergrößerte"])),
                         RegExp(collapse_regex_or(["Lebenserwartung", "Abstand"]))],
                     [RegExp(collapse_regex_or(["Anstieg"]))]
@@ -1274,7 +1278,8 @@ $(document).ready(function () {
         // Add purely relative information:
         if (txtfeat_dict["rel_only"]) {
 
-            const whichrel = "Risiken";  // TODO: Identify multiples; risks etc.
+            const whichrel = "Information";
+
 
             arr_li.add(
                 "Der Text verwendet nur relative " +
