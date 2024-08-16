@@ -3,13 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="stylefiles/global_styles.css">
-<!--    <link rel="stylesheet" href="stylefiles/functional_styles.css">-->
+    <!--    <link rel="stylesheet" href="stylefiles/functional_styles.css">-->
     <link rel="stylesheet" href="stylefiles/textcheck-styles.css">
 
     <script src="jquery/jquery-3.7.1.min.js"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <!--    Check whether to download the icon library or the icons-->
+
+    <style>
+        #nav-textcheck {
+            font-weight: bold;
+        }
+    </style>
 
     <script src="global_scripts.js"></script>
     <script src="scripts/info_data.js"></script>
@@ -20,6 +26,8 @@
             display: none;
         }
     </style>
+
+
 </head>
 <body>
 
@@ -56,11 +64,11 @@
                 sowie die Verwendung von transparenter Zahlen)
                 als erfüllt klassifiziert werden können (s. <a href="risk_wiki.html">Wiki</a>).
                 <br>
-                Entsprechenden Zahlen werden im Text unten hervorgehoben.
+                Entsprechende Zahlen werden im Text unten hervorgehoben.
             </p>
             <p class="note-par">
                 Bitte beachten Sie: Es kann passieren, dass das Tool einige Zahlen nicht korrekt identifiziert &ndash;
-                insbesondere wenn die Zahlen nicht aus einer medizinischen randomisiert-kontrollierten Studie stammen.
+                insbesondere, wenn die Zahlen nicht aus einer medizinischen randomisiert-kontrollierten Studie stammen.
                 Der Text und Ihre Anmerkungen werden lokal verarbeitet und nicht auf Servern gespeichert.
                 <!--                [Download-option des HTML anbieten (tabellarisch mit Tooltips als Anmerkungen am Rand?)-->
             </p>
@@ -98,14 +106,26 @@
 
     <div id="text-endnote" class="hidden-result">
         <p>Sie haben den Text nun vollständig anhand der im Text verfügbaren Information geprüft.
-            Wenn Sie darüber hinaus weitere Informationen benötigen,
-            besuchen Sie unser <a target="_blank" href="risk_wiki.html">Wiki</a>.
-            Verwenden Sie den <a target="_blank" href="checklist_main.html">Risikorechner</a>,
-            um zu prüfen, ob man die Zahlen im Text transparenter darstellen kann
-            oder finden Sie hier
-            <a target="_blank" href="link_collection.html">weiterführende Links</a>
-            (z.B. zu Tools, zum Auffinden weiterer Studien, sowie zu weiteren Services und Erklärungen).
+            Wenn Sie darüber hinaus weitere Informationen benötigen, nutzen Sie die anderen Teile des Tools:
         </p>
+        <ul>
+            <li>
+                Mit dem <a target="_blank" href="checklist_main.html">Risikorechner</a>
+                prüfen, ob man die Zahlen im Text transparenter darstellen kann
+                und sich ein Bild davon machen, wie aussagekräftig die verwendeten Zahlen sind,
+                wenn es um die Bewertung von Wirksamkeit und Schadenwirkung geht.
+            </li>
+            <li>
+                Im <a target="_blank" href="risk_wiki.html">Wiki (Glossar)</a>
+                erhalten Sie grundlegende Informationen, was man zur Berichterstattung über medizinische Studien wissen sollte
+            </li>
+            <li>
+                Unter <a target="_blank" href="link_collection.html">weiterführende Links</a> finden Sie
+                journalistische Angebote zur Text-Pflege,
+                Tools, zum Auffinden weiterer Studien
+                und Basis-Wissen für den Umgang mit Studien.
+            </li>
+        </ul>
     </div>
 
 </div>

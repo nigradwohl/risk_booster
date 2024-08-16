@@ -23,10 +23,7 @@ f. maybe: screening case in risk calculator
 Features are sorted by importance and are further split by features that should be implemented soon and those that may be implemented at a later point in time.
 
 ## General 
-
-* Highlight current page in navbar (bold?)
-* Update introduction to 
-* Describe three elements and Wiki as aid and support in introductory text
+* 
 * Typos!
 
 ### Nice to have 
@@ -35,10 +32,8 @@ Features are sorted by importance and are further split by features that should 
 
 ## Text-checking tool 
 
-* Sizes and shades of grey in overview output
 * check for fullstops and spaces
 * popup tooltips to top from beginning
-* Make tooltip links clickable?
 * Increase the number of test-texts that are successfully handled
     + detect absolute risk reductions (e.g., smaller percentages, percentage points): distinguish from unidentified percentages (and mention if they are likely relative)
 * detect if numbers have a reference (e.g., is only the number of infections or percentages in groups reported? 
@@ -47,6 +42,8 @@ Do we also have the group sizes?)
     + HPV: https://www.rki.de/SharedDocs/FAQ/Impfen/HPV/FAQ-Liste_HPV_Impfen.html 
     + https://www.tagesschau.de/wissen/gesundheit/hpv-impfung-102.html
     + https://www.sciencemediacenter.de/alle-angebote/research-in-context/details/news/virusverbreitung-bei-hpv-geimpften/
+
+
 
 ### Nice to have
 
@@ -70,31 +67,32 @@ Do we also have the group sizes?)
   * Note "In der medizinischen Statistik und Infektionsepidemiologie gehört die Ermittlung der Impfstoffwirksamkeit (IW),[1] auch Impfwirksamkeit,[2] Schutzwirkung,[3] (englisch vaccine efficacy) oder Impfeffekt[4] genannt," (Wikipedia)
   * Vaccine effectiveness is a measure of how well vaccination protects people against health outcomes such as infection, symptomatic illness, hospitalization, and death. (CDC)
 * Make clear which (relative) reduction is meant -- double check
-* translate diagnosis to "infection"
 * How do press-releases/articles talk about screenings?
 * Recheck harding center
 * Treatment categories: Reduktion Symptome, Reduktion Krankheitstage, Reduktion der Symptome (z.B., Schmerzen), Symptomlinderung
 
-* fix issue with proportion treated (does not work reliably, especially for side effects)
 * remove or fix "text bearbeiten"
 
 * look for articles and press releases to process (SciMedia center; JAMA network open!; BMJ, JAMA, Lancet, Annals of internal medicine, NEJM; Tim, get endpoints and superordinate terms; Cochrane?)
 * Superordinate statement: "Das uns interessierende **Ereignis**"
 * Implement additional questions as needed (e.g., OR, AR or ARR for side effects)
 * Calculation from AR in 1 group (+ rel) possible?
-* Handle case control studies
-* Handle ORs
 
 ### Nice to have
 
-* allow to show only 1 icon array
-* Make assumptions in case of missing information
+* allow to show only 1 icon array: no, is not fully transparent!
 * add options for ppv and npv; proportion of positive tests; frequencies?
+* Handle case control studies
+* Handle ORs
 
 ## Wiki
 
 * Decide on the central entries and fill them with information
 * Implement navigation on the side (in progress)
+
+### To discuss 
+
+* Swap position of overview and explnatory text?
 
 ### Nice to have
 

@@ -30,8 +30,8 @@ $(document).ready(function () {
 
     // console.warn(text);
 
-    // TODO: Here the set of wordings has to be adjusted to the case!
-    // Note: The outcome may be selected on a first page?
+    // Note: Here the set of wordings has to be adjusted to the case!
+    // Note: The outcome is selected on the first page.
     let typeword = "Einflussgröße";
     let typeverb = "behandelt";
     let addinfo_rrr = "";
@@ -62,7 +62,7 @@ $(document).ready(function () {
                 "direction": "prevent"
             },
             {
-                "verb": new Verblist("???", "???", "???"),
+                "verb": new Verblist("erleiden das negative Ereignis", "erleiden", "das negative Ereignis"),
                 "noun": "negative Ereignisse",
                 "qpart": ["das negative Ereignis", "erlitt", "erlitten"],
                 "red_incr": "des negativen Ereignisses",
@@ -98,7 +98,6 @@ $(document).ready(function () {
             }
         ]
     };
-    // TODO:
 
 
     if (text === "treat") {
@@ -132,7 +131,7 @@ $(document).ready(function () {
                 "direction": "achieve"
             },
             {
-                "verb": new Verblist("???", "???", "???"),
+                "verb": new Verblist("haben eine reduzierte Erkrankungsdauer", "haben", "eine reduzierte Erkrankungsdauer"),
                 "noun": "Reduktion der Erkrankungsdauer",
                 "qpart": ["eine Reduktion der Erkrankungsdauer", "erreichte", "erreichten"],
                 "red_incr": "an Personen mit reduzierter Erkrankungsdauer",
@@ -152,7 +151,7 @@ $(document).ready(function () {
         // Add stuff to end:
         outcome_list.eff = outcome_list.eff.concat(
             {
-                "verb": new Verblist("???", "???", "???"),
+                "verb": new Verblist("erleben das positive Ereignis", "erleben", "das positive Ereignis"),
                 "noun": "positive Ereignisse",
                 "qpart": ["das positive Ereignis", "zeigte", "zeigten"],
                 "red_incr": "positiven Ereignissen",
@@ -214,7 +213,10 @@ $(document).ready(function () {
             "Impfreaktionen bezeichnen erwartbare Ereignisse einer Immunreaktion " +
             "(z.B., Schmerzen an der Einstichstelle, Fieber) und sind für die Bewertung der Sicherheit nachrangig.");
         $(".show-impf").show();
-        // TODO: Maybe also to results, if "Impfreaktion" is chosen?
+        // Also add to results:
+        $("<p>Bitte beachten Sie: " +
+            "Impfreaktionen bezeichnen erwartbare Ereignisse einer Immunreaktion " +
+            "(z.B., Schmerzen an der Einstichstelle, Fieber) und sind für die Bewertung der Sicherheit nachrangig.</p>").insertAfter("#report-what");
 
     } else if (text === "test") {
         $(".intro-testscreen").show();
@@ -237,8 +239,8 @@ $(document).ready(function () {
         $(".grid-subhead1#subhead1-r2").text("Unter den negativ getesteten");
         $(".grid-subhead2#subhead2-r2").text("Unter den positiv getesteten");
 
-        $("#which-trans-eff").text("transparente Darstellung der Testgüte");
-        $("#which-trans-side").text("transparente Darstellung der Vorhersagegenauigkeit");
+        $("#which-trans-eff").text("der Testgüte");
+        $("#which-trans-side").text("der Vorhersagegenauigkeit");
 
 
         $("#intro-note").html("Häufig wird nur die Testgüte angegeben, während sich Individuen dafür interessieren, " +
@@ -247,8 +249,6 @@ $(document).ready(function () {
             "Häufig wird nur die Testgüte angegeben, während sich Individuen dafür interessieren, " +
             "was ein positiver (oder negativer) Test aussagt (s. <a target='_blank' href='risk_wiki.html#wiki-cprob'>Wiki</a>). " +
             "PPV und NPV setzen allerdings voraus, dass die Prävalenz der zu testenden Krankheit bekannt ist.");
-        // TODO: Switch perspective?
-        // $("#results-2").html("");  // Second results are not needed for tests.
 
         // Define outcome information:
         outcome_list.eff = [
@@ -271,7 +271,8 @@ $(document).ready(function () {
     }
 
     // Add examples:
-    $("#examples-eff").text(outcome_list.eff.map((x) => x.noun).join(", "));
+    // $("#examples-eff").text(outcome_list.eff.map((x) => x.noun).join(", "));
+    $("#examples-eff").text(outcome_list.eff.slice(0, 2).map((x) => x.noun).join(" oder "));
 
     // Assign the words determined above to the ids and classes:
     $("#case-test").text(typeword);
@@ -311,12 +312,17 @@ $(document).ready(function () {
             // [cur_order[ix_rrr], cur_order[ix_pcase]] = [cur_order[ix_pcase], cur_order[ix_rrr]];
 
             // Move relative reduction to final position:
-            cur_order = arraymove(q_order, ix_rrr, ix_ncase)
+            cur_order = arraymove(q_order, ix_rrr, ix_ncase);
+            // Add rel risk (before rel risk reduction/increase):
+            cur_order.splice(cur_order.indexOf("rel-risk-reduction"), 0, "rel-risk");
+            console.warn(cur_order);
         }
     }
 
     const cur_checklist = new Checklist(cur_order, outcome_list, text);  // create a new checklist instance.
     // const check_risk = new RiskCollection();
+
+    // cur_checklist.show_progress();  // display the progress bar.
 
     console.log("CURRENT CHECKLIST");
     console.log(cur_checklist);
@@ -348,14 +354,50 @@ $(document).ready(function () {
             // entry_ix = out_arr[0];
             // is_skip = out_arr[1];
         }
-
     })
 
     // ~~~ GOING BACK ~~~
     $(".back-btn").on("click", function () {
         cur_checklist.handle_back();
 
-    })
+    });
+
+    // Using navigation:
+    // Only do for active ones!
+
+    // $(".prog-item").on("click", function (e) {
+    //     const cur_ix = cur_checklist.entry_ix;
+    //     const node_id = $(this).attr("id").replace("prog-", "");
+    //     const node_ix = cur_checklist.q_order.indexOf(node_id);
+    //     console.warn(node_id.replace("prog-", ""));
+    //
+    //     cur_checklist.entry_ix = node_ix + 1;
+    //
+    //     console.warn(node_ix + ", " + cur_ix);
+    //
+    //     // Hide only if not the same:
+    //     if (node_ix !== cur_ix) {
+    //         $(".checklist-question").hide();  // hide all questions.
+    //     }
+    //
+    //     if (node_ix === cur_checklist.q_order.length - 1) {
+    //         cur_checklist.handle_final_page();
+    //         $(".arrow-btn.continue").css('visibility', 'hidden');
+    //         $(".continue-btn").removeClass('active');
+    //         $("#results-q").show();
+    //     } else {
+    //         // If not final page:
+    //         // Handle going back and forth:
+    //         if (node_ix < cur_ix) {
+    //             cur_checklist.handle_back();
+    //         } else if (node_ix > cur_ix) {
+    //             cur_checklist.is_reload = true;
+    //             cur_checklist.continue_page(e);
+    //         }
+    //     }
+    //
+    //
+    // });
 
     // ~~~ HANDLING OTHER ~~~
 
@@ -462,10 +504,6 @@ $(document).ready(function () {
  */
 
 
-// ~~~~~~~~~~~~~~~~~~~~~~~ DICTIONARIES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// TODO
-
-
 // ~~~~~~~~~~~~~~~~~~~~~~~ CLASSES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /**
  * Class to create a checklist instance
@@ -522,10 +560,21 @@ class Checklist {
         this.missing_entries = [];
         this.skipped_inputs = [];  // list of inputs that were previously skipped.
 
-        // TODO: Update if input is skipped; also delete inputs that were not skipped a different time!
         this.check_risk = new RiskCollection();
         this.check_side = new RiskCollection();
     }
+
+    // Method to show progress:
+    // show_progress() {
+    //     for (const q of this.q_order) {
+    //
+    //         const tooltip = `<span class="tooltiptext">${q}</span>`;
+    //         const prog_node = `<div class="prog-item tooltip tooltip-prog" id="prog-${q}">${tooltip}</div>`;
+    //
+    //         $("#checklist-progress")
+    //             .append(prog_node);
+    //     }
+    // }
 
     assign_words(out_eff, out_side) {
         this.outcome = this.outcome_list.eff[out_eff];  // assign the selected outcome.
@@ -591,6 +640,10 @@ class Checklist {
             $("#incompatible-popup").hide();
             $(".missing-input").removeClass("missing-input").removeClass("selected-blur");
 
+            // Allow navigation:
+            // TODO: Maybe show navigation only now? Could solve some issues.
+            // $(".prog-item").addClass("active");
+
 
         } else {
             // For all subsequent pages:
@@ -602,17 +655,21 @@ class Checklist {
                 this.check_risk.save_current_content();
                 this.check_side.save_current_content();
 
-                // If it is not a round where inputs should be skipped:
-                const inp_test = this.get_current_input(curid, this.q_inputs[curid], id_to_num_dict);
-                // After trying to get the inputs, try completing the table:
-                console.log("++++ Getting inputs and complete ++++");
-                console.log(this.type);
+                if (curid !== "results") {
+                    // If it is not a round where inputs should be skipped:
+                    const inp_test = this.get_current_input(curid, this.q_inputs[curid], id_to_num_dict);
+                    // After trying to get the inputs, try completing the table:
+                    console.log("++++ Getting inputs and complete ++++");
+                    console.log(this.type);
 
-                // Set assumed values (currently for test case only):
-                if (this.type === "test" && this.entry_ix === this.q_order.length - 2) {
-                    // Set the margin sums:
-                    console.warn("setting arbitrary sample size!");
-                    this.check_risk.ntab.N = 100000;  // Determine a random N.
+                    // Set assumed values (currently for test case only):
+                    if (this.type === "test" && this.entry_ix === this.q_order.length - 2) {
+                        // Set the margin sums:
+                        console.warn("setting arbitrary sample size!");
+                        this.check_risk.ntab.N = 100000;  // Determine a random N.
+                    }
+                } else {
+                    this.missing_entries = [];
                 }
 
                 try {
@@ -653,7 +710,7 @@ class Checklist {
 
             }
 
-            // TODO: Check for errors!
+            // Check for errors!
             console.warn(`There is invalid input ${this.is_invalid}`);
 
             // 2. Handle missing entries:
@@ -669,6 +726,9 @@ class Checklist {
             // Advance page if no missing entries are detected (due to all provided or :
             if (!this.is_error && this.missing_entries.length === 0) {
 
+                // Activate node:
+                $("#prog-" + curid).addClass("active");
+
                 // Pages before results:
                 if (this.entry_ix < this.q_order.length) {
                     this.increment_or_skip();
@@ -683,6 +743,7 @@ class Checklist {
                     // $(".continue-btn").hide();
                     $(".arrow-btn.continue").css('visibility', 'hidden');
                     $(".continue-btn").removeClass('active');
+                    $("#prog-results").addClass("active");
                 }
 
 
@@ -702,7 +763,7 @@ class Checklist {
     increment_or_skip() {
         // Check whether input can be skipped: ~~~~~~~~~~~~
         console.log("+++ CHECK IF SKIPPABLE +++");
-        const skiplist = ["n-total", "p-treat", "n-case", "p-case", "n-side", "p-side"];  // Make p-side or n-side skippable, if both were provided!
+        const skiplist = ["n-total", "p-treat", "n-case", "p-case", "n-side", "p-side", "rel-risk-reduction"];  // Make p-side or n-side skippable, if both were provided!
         const cur_entry = this.q_order[this.entry_ix];
         let next_entry;
 
@@ -829,12 +890,7 @@ class Checklist {
 
         } catch (error) {
             console.warn(error);
-
             console.log(this.check_risk);
-
-            // TODO: Show which info is missing!
-            // Candidates are:
-            // Sizes of the groups:
 
             // Baseline risk/AR in at least one of the groups:
             // Through risk in margins or cases plus number of individuals.
@@ -843,11 +899,9 @@ class Checklist {
                     "Providing a risk in one of the groups throguh a percentage or a number of cases in that group should help!");
             }
 
-
             $("#results-1-error ~ *:not(textarea)").hide();
             $("#results-1-error").show();
             $("p.error-note").show();
-
         }
 
 
@@ -877,17 +931,13 @@ class Checklist {
         } catch (error) {
             console.warn(error);
 
-            // TODO: Show which info is missing!
-
             $("#results-2-error ~ *").hide();
             $("#results-2-error").show();
             $("p.error-note").show();
         }
-        // }
 
-        // ALways show the headings:
+        // Always show the headings:
         $(".grid-head").show();
-
 
         // Adding functionality: ~~~~~~~~~~~~~~~~~~
         // Add button for saving the page:
@@ -932,15 +982,24 @@ class Checklist {
         // console.log(`N is ${this.check_risk.ntab.N}`);
 
         console.log("~~~~~~ Final risk objects ~~~~~~");
-        console.log("Effectivity:");
-        console.log(this.check_risk);
-        console.log("Side effects:");
-        console.log(this.check_side);
+        console.log("+++Effectivity:+++");
+        this.check_risk.print();
+        console.log("+++Side effects:+++");
+        this.check_side.print();
 
         // Transpose the risks for testing case:
         if (["test"].includes(this.type)) {
             this.check_side.ptab.tab.tab2x2 = transpose(this.check_risk.ptab.tab.tab2x2);
+            this.check_side.ptab.msums2 = this.check_side.ptab.tab.margin2_sum();  // rest this.
+            // this.check_side.ntab.N = this.check_risk.ntab.N;
+            // this.check_side.ntab.complete_margins();
+            // this.check_side.n_from_p();
+            this.check_side.get_margintabs();
+            // this.check_side.
+            console.log("Side effects after:");
+            console.log(this.check_side);
         }
+
 
         console.log("~~~~~~ Calculate the risks ~~~~");
         // Ensure that all information is used:
@@ -1017,12 +1076,15 @@ class Checklist {
             // Risk reduction:
             // Absolute change in risk:
             const arc = group_risks[0][1] - group_risks[1][1];  // risk change in favor of treatment group.
-            const meaning_arc = arc > 0 ? " weniger" : " mehr";
+            const meaning_arc = arc >= 0 ? " weniger" : " mehr";
             console.log(`Absolute change is ${arc}`);
 
-            const arr = Math.sign(arc) * Math.round(arc * curscale) / curscale;
+            const arr_n = Math.sign(arc) * Math.round(arc * curscale) / curscale;
             const arr_p = // arr > 0.01 ? Math.round(arr * 100) + "%" :
                 (Math.sign(arc) * Math.round(arc * curscale) + " aus " + curscale + meaning_arc);
+
+            // Relative risk:
+            const relrisk = group_risks[1][1] / group_risks[0][1];  // treated/untreated.
 
             // Note: If the risk is negative, it corresponds to an increase!
             // For an increase report the multiple!
@@ -1032,15 +1094,22 @@ class Checklist {
 
             const rrr = Math.round(rrc * 1000) / 1000;
             console.log("RRR is " + rrr);
-            const rr_factor = Math.abs(rrr) >= 2 ? 1 : 100;
-            const rrr_p = Math.round(rrr * rr_factor) +
-                (rr_factor === 100 ? "% " : " mal ") +
-                meaning_arc;
+            const rr_factor = Math.abs(relrisk) >= 2 ? 1 : 100;
+            // const rrr_p = Math.round(rrr * rr_factor) +
+            //     (rr_factor === 100 ? "% " : " mal ") +
+            //     meaning_arc;
             // For numbers greater than 2 "x mal mehr" may be more appropriate.
+
+            // Relative risk reduction or increase:
+            const rrc_p = Math.round((relrisk > 1 ? relrisk - 1 : 1 - relrisk) * 1000) / 10 + "%" +
+                meaning_arc;
+            console.log("RR change is " + rrc_p);
+
+            const relrisk_out = relrisk === 1 ? " genauso " : Math.round(relrisk * 100 * rr_factor) / 100 + (rr_factor === 1 ? "" : "%") + " mal so";
 
             return {
                 "risk_treat_nh": risk_treat_nh, "risk_control_nh": risk_control_nh,
-                "arc": arc, "arr_p": arr_p, "rrr_p": rrr_p
+                "arc": arc, "arr_p": arr_p, "rrr_p": rrc_p, "relrisk": relrisk_out.replace(".", ",")
             }
         }
 
@@ -1069,26 +1138,31 @@ class Checklist {
         let cur_side_control = side_risks.risk_control_nh;
 
         // Function to build sentences:
-        function build_riskinfo(group, aux, id, num, verb) {
-            return ` in der ${group} ${aux} <span class="risk-info" id="${id}">${num} ${verb}</span>`
+        function build_riskinfo(group, aux, id, num_rrc, num_rr, verb) {
+            const cur_rr = /arr/.test(id) ? "" : `<span class="tooltip">
+                        <span class="tooltiptext tooltip-overview">
+                        Relatives Risiko: Wie viele Personen mehr (bzw. weniger) betroffen sind.
+                        </span><a target="_blank" href="risk_wiki.html#wiki-relrisk">(also ${num_rr} viele)</a></span>`;
+            return ` in der ${group} ${aux} <span class="risk-info" id="${id}">${num_rrc} ${verb}</span> ${cur_rr}`
         }
 
         function risk_name_tt(type, incr, add_tt, rr) {
             const abs = type === "abs";
-            const typelet = abs ? "r" : "s";  // letter for type.
+            // const typelet = abs ? "r" : "s";  // letter for type.
             const typeword = abs ? "Absolute" : "Relative";
-            let out = `${typeword}${incr ? (typelet + " Risiko") + (abs ? "anstieg" : "") : " Risikoreduktion"}: `;
+            let out = `${typeword}${incr ? ("r Risikoanstieg") : " Risikoreduktion"}: `;
             // Add a tooltip:
             if (add_tt) {
                 let tt_text = "";
                 if (abs) {
                     tt_text = "Die Differenz der absoluten Risiken in den Gruppen";
-                } else if (rr) {
-                    // Relative risk:
-                    tt_text = "Ein Vielfaches wie viele Personen mehr oder weniger betroffen sind.";
-                } else {
+                }
+                    // else if (rr) {
+                    //     // Relative risk:
+                //     tt_text = "Ein Vielfaches wie viele Personen mehr oder weniger betroffen sind.";
+                else {
                     // Relative risk reduction:
-                    tt_text = "Der Anteil, der in der Behandlungsgruppe weniger betroffen ist.";
+                    tt_text = `Der Prozentanteil, der in der Behandlungsgruppe ${incr ? "mehr" : "weniger"} betroffen ist.`;
                 }
 
                 out = `<span class="tooltip">
@@ -1105,114 +1179,135 @@ class Checklist {
             // Add some information only in non-testing case:
             $("#abs-change").html(//`Absolute${eff_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: ` +
                 risk_name_tt("abs", eff_risks.arc < 0, true, eff_risks.arc < 0) +
-                build_riskinfo("Behandlungsgruppe", this.outcome.verb.aux, "arr", eff_risks.arr_p, this.outcome.verb.main));
+                build_riskinfo("Behandlungsgruppe", this.outcome.verb.aux, "arr", eff_risks.arr_p, undefined, this.outcome.verb.main));
             $("#rel-change").html(//`Relative${eff_risks.arc < 0 ? "s Risiko" : " Risikoreduktion"}: ` +
                 risk_name_tt("rel", eff_risks.arc < 0, true, eff_risks.arc < 0) +
-                build_riskinfo("Behandlungsgruppe", this.outcome.verb.aux, "rrr", eff_risks.rrr_p, this.outcome.verb.main));
+                build_riskinfo("Behandlungsgruppe", this.outcome.verb.aux, "rrr", eff_risks.rrr_p, eff_risks.relrisk, this.outcome.verb.main));
             // <span class="risk-info" id="rrr">${eff_risks.rrr_p}</span>`);
 
             $("#abs-change-side").html(
                 risk_name_tt("abs", side_risks.arc < 0, true, side_risks.arc < 0) +
-                build_riskinfo("Behandlungsgruppe", this.outcome_side.verb.aux, "arr-side", side_risks.arr_p, this.outcome_side.verb.main)
+                build_riskinfo("Behandlungsgruppe", this.outcome_side.verb.aux, "arr-side", side_risks.arr_p, undefined, this.outcome_side.verb.main)
                 // `Absolute${side_risks.arc < 0 ? "r Risikoanstieg" : " Risikoreduktion"}: in der Behandlungsgruppe ${this.outcome_side.verb.aux} <span class="risk-info" id="arr">${side_risks.arr_p}</span> ${this.outcome_side.verb.main}`
             );
             $("#rel-change-side").html(
                 risk_name_tt("rel", side_risks.arc < 0, true, side_risks.arc < 0) +
-                build_riskinfo("Behandlungsgruppe", this.outcome_side.verb.aux, "rrr-side", side_risks.rrr_p, this.outcome_side.verb.main)
+                build_riskinfo("Behandlungsgruppe", this.outcome_side.verb.aux, "rrr-side", side_risks.rrr_p, side_risks.relrisk, this.outcome_side.verb.main)
                 // `Relative${side_risks.arc < 0 ? "s Risiko" : " Risikoreduktion"}:<span class="risk-info" id="rrr">${side_risks.rrr_p}</span>`
             );
-            // TODO: Alternatively switch the reference and always report RRR? (could be done by making "Behandlungsgruppe" a variable).
+            // Note: Alternatively switch the reference and always report RRR? (could be done by making "Behandlungsgruppe" a variable).
 
         }
 
-        // Warnings about missing information:
+        // +++ Warnings about missing information +++:
         // - missing group sizes/proportions (msums2!)
         // - missing proportion of endpoint (AR; ptab/ntab)
         // - present relative information but abselt absolute or vice versa!
         // Warn, if something is missing:
+        function get_missing_info(group_risks, risk_obj, type) {
+            // Check if 1 or 2 absolute risks could not be determined:
+            const ar_missing = [0, 1].filter(x => group_risks[x].includes(NaN));
 
-        // TODO: Adjust for test case!
+            // If yes:
+            if (ar_missing.length > 0) {
 
-        // Check if 1 or 2 absolute risks could not be determined:
-        const eff_ar_missing = [0, 1].filter(x => eff_group_risks[x].includes(NaN));
+                console.warn(ar_missing);
 
-        // If yes:
-        if (eff_ar_missing.length > 0) {
+                let feedback_props = "";
+                let feedback_ar = [];
+                const groupnames = ["Behandlungsgruppe", "Vergleichsgruppe"];  // grops, where info can be missing.
+                const missgroup = ar_missing.map((x) => groupnames[x]);
 
-            console.warn(eff_ar_missing);
+                // Check if the reference is missing:
+                const ref_missing_p = [0, 1].filter(x => isNaN(risk_obj.ptab.msums2[x]));
+                const ref_missing_n = [0, 1].filter(x => isNaN(risk_obj.ntab.msums2[x]));
 
-            let feedback_props = "";
-            let feedback_ar = [];
-            const groupnames = ["Behandlungsgruppe", "Vergleichsgruppe"];  // grops, where info can be missing.
-            const missgroup = eff_ar_missing.map((x) => groupnames[x]);
+                // For each missing risk check:
+                // Groupsize or count present? --> supply one; else supply both
 
-            // Check if the reference is missing:
-            const eff_ref_missing_p = [0, 1].filter(x => isNaN(this.check_risk.ptab.msums2[x]));
-            const eff_ref_missing_n = [0, 1].filter(x => isNaN(this.check_risk.ntab.msums2[x]));
+                // If reference PROPORTIONS are missing (ref_missing_p): supply proportions or numbers in group.
+                if (ref_missing_p.length > 0) {
+                    const groupinfo = $(".info-treat2_g")[0].textContent;
+                    // Es können fehlen: eine Gruppengröße, beide Gruppengrößen (oder die Anteile)
+                    feedback_props = "<p>Den Anteil in den Gruppen als: </p>" +
+                        // OR: "Dabei konnten die Anteile in den Gruppen nicht bestimmt werden. "
+                        "<ul>" +
+                        `<li>den Anteil der ${groupinfo}</li>` +
+                        "<li> oder die Anzahl" +
+                        (ref_missing_n.length === 2 ? "en in beiden Gruppen" : ` in der ${groupnames[ref_missing_n[0]]}`) +
+                        "</li>" +
+                        "</ul>" +
+                        "<p>Und zusätzlich: </p>";
+                }
 
-            // For each missing risk check:
-            // Groupsize or count present? --> supply one; else supply both
 
-            // If reference PROPORTIONS are missing (eff_ref_missing_p): supply proportions or numbers in group.
-            if (eff_ref_missing_p.length > 0) {
-                // Es können fehlen: eine Gruppengröße, beide Gruppengrößen (oder die Anteile)
-                feedback_props = "<p>Den Anteil in den Gruppen als: </p>" +
-                    // OR: "Dabei konnten die Anteile in den Gruppen nicht bestimmt werden. "
-                    "<ul>" +
-                    "<li>den Anteil der Behandelten/Geimpften [FRAGENNAME IN NAVIGATION?]</li>" +
-                    "<li> oder die Anzahl" +
-                    (eff_ref_missing_n.length === 2 ? "en in beiden Gruppen" : ` in der ${groupnames[eff_ref_missing_n[0]]}`) +
-                    "</li>" +
-                    "</ul>" +
-                    "<p>Und zusätzlich: </p>";
+                // Check if relative reduction could be supplied:
+                let event_props = `den Anteil an Ereignissen in der ${missgroup[0]}`;
+                let event_counts = `die Anzahl an Ereignissen in der ${missgroup[0]}`;
+
+                if (ar_missing.length === 1) {
+                    // Absolute risk:
+                    feedback_ar = feedback_ar.concat(`${event_props}`);
+                    // Counts:
+                    feedback_ar = feedback_ar.concat(`oder ${event_counts}`);
+                    // Relative information:
+                    feedback_ar = feedback_ar.concat("oder eine relative Angabe (Relativer Anstieg/-reduktion)");
+                } else if (!risk_obj.mtab2.rel2.includes(NaN)) {
+                    // ONLY REL SUPPLIED.
+                    // Absolute risk:
+                    feedback_ar = feedback_ar.concat(`${event_props} oder in der ${missgroup[1]}`);
+                    // Counts:
+                    feedback_ar = feedback_ar.concat(`oder ${event_counts} in der ${missgroup[0]} oder in der ${missgroup[1]}`);
+                } else {
+                    feedback_ar = feedback_ar.concat(`${event_props} und in der ${missgroup[1]}`);
+
+                    feedback_ar = feedback_ar.concat(`oder ${event_counts} in der ${missgroup[0]} und in der ${missgroup[1]}`);
+                    // Relative information plus:
+                    feedback_ar = feedback_ar.concat("oder eine relative Angabe (Relativer Anstieg/-reduktion) und " +
+                        "den Anteil oder die Anzahl an Ereignissen in mindestens einer Gruppe");
+                }
+
+                ar_missing.filter(x => isNaN(risk_obj.ntab.msums2[x]));
+                // find where count information is missing --> both counts or proportion needed!
+                // One groupsize is not enough!
+
+                // Generate the feedback text:
+                const miss_text = "<p>Es konnte kein " +
+                    "<span class=\"tooltip\">" +
+                    "<span class=\"tooltiptext tooltip-overview\">" +
+                    "Wahrscheinlichkeit des Ereignisses in einer der Gruppen (z.B. Anteil der erkrankten Personen)" +
+                    "</span>" +
+                    "<a target='_blank' href='risk_wiki.html#wiki-abs'>absolutes Risiko</a>" +
+                    "</span> " +
+                    "für die " +
+                    missgroup.join(" und die ") +
+                    " ermittelt werden." +
+                    " Prüfen Sie, ob Sie die folgenden Informationen auffinden können:</p> " +
+                    feedback_props +
+                    "<ul><li>" +
+                    feedback_ar.join("</li><li>") +
+                    "</li></ul>";
+
+                // Update text and show:
+                $("#reason-" + type)
+                    .html(miss_text)
+                    .show();
             }
+        }  // eof. function.
+        // Note: Could migrate function?
 
-
-            // Check if relative reduction could be supplied:
-            // TODO: Make wording flexible!
-            let event_props = `den Anteil an Ereignissen in der ${missgroup[0]}`;
-            let event_counts = `die Anzahl an Ereignissen in der ${missgroup[0]}`;
-
-            if (eff_ar_missing.length === 1) {
-                // Absolute risk:
-                feedback_ar = feedback_ar.concat(`${event_props}`);
-                // Counts:
-                feedback_ar = feedback_ar.concat(`oder ${event_counts}`);
-                // Relative information:
-                feedback_ar = feedback_ar.concat("oder eine relative Angabe (Relativer Anstieg/-reduktion)");
-            } else if (!this.check_risk.mtab2.rel2.includes(NaN)) {
-                // ONLY REL SUPPLIED.
-                // Absolute risk:
-                feedback_ar = feedback_ar.concat(`${event_props} oder in der ${missgroup[1]}`);
-                // Counts:
-                feedback_ar = feedback_ar.concat(`oder ${event_counts} in der ${missgroup[0]} oder in der ${missgroup[1]}`);
-            } else {
-                 feedback_ar = feedback_ar.concat(`${event_props} und in der ${missgroup[1]}`);
-
-                 feedback_ar = feedback_ar.concat(`oder ${event_counts} in der ${missgroup[0]} und in der ${missgroup[1]}`);
-                // Relative information plus:
-                feedback_ar = feedback_ar.concat("oder eine relative Angabe (Relativer Anstieg/-reduktion) und " +
-                    "den Anteil oder die Anzahl an Ereignissen in mindestens einer Gruppe");
-            }
-
-            eff_ar_missing.filter(x => isNaN(this.check_risk.ntab.msums2[x]));
-            // find where count information is missing --> both counts or proportion needed!
-            // One groupsize is not enough!
-
-            // Generate the feedback text:
-            const miss_text = "<p>Es konnte kein absolutes Risiko für die " +
-                missgroup.join(" und die ") +
-                " ermittelt werden." +
-                " Prüfen Sie, ob Sie die folgenden Informationen auffinden können:</p> " +
-                feedback_props +
-                "<ul><li>" +
-                feedback_ar.join("</li><li>") +
-                "</li></ul>";
-
-            // Update text and show:
-            $("#reason-eff")
-                .html(miss_text)
-                .show();
+        // Get the information:
+        if (["test"].includes(this.type)) {
+            $("#results-1-error").append("<p>Um die Testgenauigkeit darstellen zu können, müssen sowohl" +
+                "<a target=\"_blank\" href=\"risk_wiki.html#wiki-sens-spec\">Sensitivität also auch Spezifität</a>" +
+                "angegeben werden.</p>");
+            $("#results-2-error").append("<p>Um die Vorhersagegenauigkeit darstellen zu können, muss die Wahrscheinlichkeit, " +
+                "dass das interessierende Kriterium (z.B. Erkrankung) vorliegt (z.B. die Prävalenz)" +
+                "angegeben werden (zusätzlich zu <a target=\"_blank\" href=\"risk_wiki.html#wiki-sens-spec\">Sensitivität und Spezifität</a>)." +
+                "</p>");
+        } else {
+            get_missing_info(eff_group_risks, this.check_risk, "eff");
+            get_missing_info(side_group_risks, this.check_side, "side");
         }
 
         // Also assign the side effect risks in the control group (or among the nagtively tested):
@@ -1229,6 +1324,8 @@ class Checklist {
     get_current_input(curid, input_arr, id_to_num_dict) {
         // Loop over defined input fields:
         this.is_invalid = false;  // flag that input is valid.
+
+        console.warn(input_arr);
 
         for (const cur_input of input_arr) {
 
@@ -1300,7 +1397,6 @@ class Checklist {
                     if (eff_keys.includes(cur_q_key)) {
                         // Change effectivity as a function of prevention vs. achievement:
                         if (cur_q_key === "rrr" && this.outcome.direction === "achieve") {
-                            // TODO: Communicate the directional difference between RRR and relative risk.
                             console.log("Update relative value:");
                             checked_val = 2 - checked_val;
                         }
@@ -1368,7 +1464,6 @@ class Checklist {
             this.is_reload = true;  // set reload flag to true.
 
             // Decrementing the page:
-            // TODO: Skip inputs that were previously skipped
             // Get previously seen input (or skip, if this.q_order[this.entry_ix] in skiplist?)
             // Note: Also must ensure that elements from the skiplist are removed when they are passed upon a back-button click!
             const calling_entry = this.q_order[this.entry_ix];
@@ -1446,7 +1541,6 @@ function handle_missing_input(ev, missing_entries) {
     if (input_field.parent("fieldset").length > 0) {
 
         console.warn("Popup for fieldset");
-        // TODO: Eventually insert before label?
         cur_popup
             .css({
                 top: -cur_popup.outerHeight() - input_height / 2 - 5,
@@ -1605,6 +1699,7 @@ function arraymove(arr, fromIndex, toIndex) {
  */
 const id_to_num_dict = {
     "rel-risk-reduction": "rrr",
+    "rel-risk": "relrisk",
     "n-total": "N_tot",
     "any-control": "any_control",
     "n-impf": "msumx1",
@@ -1635,6 +1730,7 @@ const eff_keys = ["N_tot",
     "msumx0", "msumx1",
     "msum0x", "msum1x",
     "rrr",
+    "relrisk",
     "p00", "p01", "p10", "p11",
     "mpx0", "mpx1",
     "mtx0", "mtx1",
@@ -1673,6 +1769,7 @@ const side_keys = ["N_tot",
 // "rrr": ["mtab", "rel1", 1]
 const number_dict = {
     "rrr": ["mtab2", "rel2", 1],
+    "relrisk": ["mtab2", "rel2", 1],
     "N_tot": ["ntab", "N"],
     "n00": ["ntab", "tab", "tab2x2", 0, 0],
     "n01": ["ntab", "tab", "tab2x2", 0, 1],
@@ -1729,12 +1826,16 @@ const int_keys = ["N_tot",
     "n00s", "n01s", "n10s", "n11s",
     "msum00", "msum01",
     "msum10", "msum11"];
-const float_keys = ["rrr",
+const float_keys = [
+    "rrr",
+    "relrisk",
     "p00", "p01", "p10", "p11",
     "mpx0",
     "mtx0", "mtx1",
     "mtx0s", "mtx1s"]
-const perc_keys = ["rrr", "mpx1",
+const perc_keys = [
+    "rrr",
+    "mpx1",
     "mtx0", "mtx1",
     "mtx0s", "mtx1s",
     "p00", "p01", "p10", "p11",
@@ -1747,7 +1848,6 @@ const perc_keys = ["rrr", "mpx1",
  * Evaluate checklist entry.
  */
 function evaluate_entry(curval, cur_q_key) {
-    // TODO: Check format!
     let checked_val;
     let cur_error = "noerr";
 
@@ -1838,7 +1938,6 @@ function create_icon_array(arr_n, id, ncol, col_arr, exf) {
     try {
         // Check for integers (numbers( using "try" for now.
         // Update in time!
-        // TODO: Proper input checking!
         const n_dots = arr_n.reduce((d, i) => d + i);
 
         // Create an array of types:

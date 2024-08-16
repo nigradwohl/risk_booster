@@ -50,20 +50,20 @@ test_text <- function(txt){
   
   # Text-level: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Detect topics: ------------
-  topic_list <- list(
-    impf = c("(?<!gl|sch)[Ii]mpf"),
-    mask = c("Maske|FFP"),
-    protect = c("Schutzwirkung", "Ansteckungsgefahr", "nur", "besser", "geschützt"),
-    lower_risk = c("mindern", "Risiko", "schützen|Schutz", "Infekt|Ansteck"),
-    cancer_risk = c("[Rr]isiko", "Krebs"),
-    med_risk = c("[Mm]edikament", "Krebs", "[Mm]edikament", "wirk")
-  )
-
-  # Assign to main object attribute:
-  attr(token_dat, "topics") <- names(topic_list)[sapply(topic_list, 
-                                                  FUN = function(top){detect_topic(token_data$token, top)})]
+    topic_list <- list(
+      impf = c("(?<!gl|sch)[Ii]mpf"),
+      mask = c("Maske|FFP"),
+      protect = c("Schutzwirkung", "Ansteckungsgefahr", "nur", "besser", "geschützt"),
+      lower_risk = c("mindern", "Risiko", "schützen|Schutz", "Infekt|Ansteck"),
+      cancer_risk = c("[Rr]isiko", "Krebs"),
+      med_risk = c("[Mm]edikament", "Krebs", "[Mm]edikament", "wirk")
+    )
   
-  if (!"lifex" %in% attr(token_data, "topics")) {
+    # Assign to main object attribute:
+    attr(token_dat, "topics") <- names(topic_list)[sapply(topic_list, 
+                                                    FUN = function(top){detect_topic(token_dat$token, top)})]
+  
+  if (!"lifex" %in% attr(token_dat, "topics")) {
     modifyiable_defs$check_numbers_dict <- with(modifyiable_defs,
          check_numbers_dict[names(check_numbers_dict) != "yearnum"]
          )
@@ -79,14 +79,20 @@ test_text <- function(txt){
   
   
   # Get regex-based matches:
-  # TODO
-  # uses: check_dict <- modifyiable_defs$check_numbers_dict
-  regex_matches <- detect_regex_match(input_txt, token_dat, modifyiable_defs$check_numbers_dict)
+    # uses: check_dict <- modifyiable_defs$check_numbers_dict
+    regex_matches <- detect_regex_match(input_txt, token_dat, modifyiable_defs$check_numbers_dict)
+    
+    token_dat$match <- regex_matches$match_id
+    token_dat$unit <- regex_matches$match_type
+    
+    # TODO:
+    # token_dat.add_number_info();  // add info about numbers.
+    # token_dat.add_column(token_dat.token.map((x, ix) => (RegExp(collapse_regex_or(numwords), "dg").test(x))), "is_nw");  // is it a number word?
+    # token_dat.detect_unit();  // get additional unit info from token data.
   
-  token_dat$match <- regex_matches$match_id
-  token_dat$unit <- regex_matches$match_type
   
-  
+    return(token_dat)
+    
 }
 
 test_text(tsttxt)

@@ -261,7 +261,6 @@ class RiskCollection {
         // this.print();
         this.get_tab_from_margins("ntab"); // Get elements from margin tables.
         this.get_tab_from_margins("ptab");
-        // TODO: make method to get anything from margins?
         // Here an issue occurs!
         // this.print();
 
@@ -302,10 +301,14 @@ class RiskCollection {
 
         // Ensure that margins are completed beforehand!
         this.ntab.complete_margins();
+        this.ptab.complete_margins();
 
         // console.log("Input margin tables");
         // console.log(JSON.stringify(this.mtab1));
         // console.log(JSON.stringify(this.mtab2));
+
+        // console.log("Input object");
+        // this.print();
 
         // Get the margin tables:
         this.mtab1.tab.tab2x2 = this.ntab.tab.tab2x2
@@ -315,11 +318,20 @@ class RiskCollection {
             .map((x, ix) => x
                 .map((y, iy) => compare_vals(this.mtab2.tab.tab2x2[ix][iy], y / this.ntab.msums2[ix], 0.005)));
 
+        this.mtab1.tab.tab2x2 = this.ptab.tab.tab2x2
+            .map((x, ix) => x
+                .map((y, iy) => compare_vals(this.mtab1.tab.tab2x2[ix][iy], y / this.ptab.msums1[ix], 0.005)));
+        this.mtab2.tab.tab2x2 = transpose(this.ptab.tab.tab2x2)
+            .map((x, ix) => x
+                .map((y, iy) => compare_vals(this.mtab2.tab.tab2x2[ix][iy], y / this.ptab.msums2[ix], 0.005)));
+
         // console.log("Intermediate margin tables");
         // console.log(JSON.stringify(this.mtab1));
         // console.log(JSON.stringify(this.mtab2));
 
         // Try to complete the margin tables:
+        this.mtab1.get_rel();
+        this.mtab2.get_rel();
         this.mtab1.get_from_rel();
         this.mtab2.get_from_rel();
 
@@ -453,7 +465,6 @@ class Basetable {
         //
         this.msums1 = msums1;  // this.tab.margin1_sum();
         this.msums2 = msums2;  // this.tab.margin2_sum();
-        // TODO: Eventually compare them with provided info?
         this.N = N;
 
         // Call initial functions:
@@ -483,7 +494,7 @@ class Basetable {
 
     // Function to complete margins:
     complete_margins() {
-        // TODO: Don't do this if all values are NA!
+        // Don't do this if all values are NA!
 
         // console.log(`Complete margins in`);
         // console.log(JSON.stringify(this));
@@ -594,9 +605,9 @@ class Margintable {
     // A marginal table with known relations:
     constructor(nested_list, rel1, rel2, diff1, diff2) {
         this.tab = new Table2x2(nested_list);
-        // Relative risk changes:
-        this.rel1 = rel1;
-        this.rel2 = rel2;
+        // Relative risks:
+        this.rel1 = rel1;  // unused.
+        this.rel2 = rel2;  // [0][1] to [1][1] and vice versa.
         // Absolute risk differences:
         this.diff1 = diff1;
         this.diff2 = diff2;
@@ -614,9 +625,9 @@ class Margintable {
 
         // Margins should be designed so that the arrays add up to 1.
 
-        // TODO: May be simplified a lot!
-
         // Complete the relations:
+
+        // Complements:
         this.rel2[0] = isNaN(this.rel2[0]) ? 1 / this.rel2[1] : this.rel2[0];
         this.rel2[1] = isNaN(this.rel2[1]) ? 1 / this.rel2[0] : this.rel2[1];
 
@@ -626,24 +637,27 @@ class Margintable {
         // console.log(JSON.stringify(this));
     }
 
+    // Get relative information:
+    get_rel(){
+        const curtab = this.tab.tab2x2;
+        this.rel2[0] = compare_vals(this.rel2[0], curtab[0][1]/curtab[1][1]);
+        this.rel2[1] = compare_vals(this.rel2[1], curtab[1][1]/curtab[0][1]);
+    }
+
+
     get_from_diff() {
 
         // Potentially make more concise?
         // Add other dimensions?
         // console.log("Margintable before getting fromd ifference information:");
         // console.log(JSON.stringify(this));
-
         // Margins should be designed so that the arrays add up to 1.
-
-        // TODO: May be simplified a lot!
 
         // Complete the relations:
         this.diff2[0] = isNaN(this.diff2[0]) ? -this.diff2[1] : this.diff2[0];
         this.diff2[1] = isNaN(this.diff2[1]) ? -this.diff2[0] : this.diff2[1];
 
         this.complete_tab();
-
-
         // console.log("Margintable after getting from difference:");
         // console.log(JSON.stringify(this));
     }
@@ -759,7 +773,6 @@ function compare_vals(val1, val2, tol) {
         if (Math.abs(val1 - val2) > tol) {
             console.error("Provided values do not match. Please check!");
             // no_N = true;
-            // TODO: Proper error handling!
             throw "Provided values do not match. Please check!";
             // val1 = NaN;  // set val1 NaN to return NaN.
         }
