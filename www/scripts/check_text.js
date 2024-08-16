@@ -137,7 +137,6 @@ $(document).ready(function () {
             "ncase": {
                 "number_unit": ["freq", "nh"],
                 "keyset": [
-                    // TODO: Double check these!
                     [RegExp("Fälle|Verläufe"), RegExp("insgesamt|nach|Studie")],
                     [RegExp("[Ee]rkrankt|[Bb]etroffen")],
                     [RegExp("Todesfälle")],
@@ -247,7 +246,7 @@ $(document).ready(function () {
                 "rel": ["Wirksamkeit", "Impfschutz", "Schutzwirkung", "verlagsamt"]
             },
             "reference": {
-                // TODO!
+                // Note: Currently not operational. Address in future version.
                 "tot": ["(der|aller)_(Studien)?[Tt]eilnehm"],
                 "sub": ["Kontroll-?.*[Gg]ruppe", "Placebo-?.*[Gg]ruppe",
                     "Vergleichs-?.*[Gg]ruppe",
@@ -405,7 +404,6 @@ $(document).ready(function () {
         // console.log(token_dat.is_num);
 
         // Detect missing units:
-        // TODO: Move up?
         console.log(" +++ detecting missing units +++");
         const no_unit_ix = token_dat.id.filter((d, ix) => token_dat.is_num[ix] && token_dat.unit[ix] === "unknown");
         // console.log(no_unit_ix);
@@ -528,11 +526,6 @@ $(document).ready(function () {
         // First, replace unknown subgroups:
         token_dat.gtype = token_dat.gtype
             .map((gtype, ix) => token_dat.numtype[ix] === "ncase" && ["unknown", "all"].includes(token_dat.group[ix]) ? "total" : gtype);
-
-        // TODO: WHere do we need this? Why should numtype be = group?
-        // token_dat.numtype = token_dat.numtype
-        //     .map((ntype, ix) => token_dat.gtype[ix] === "sub" && ["ncase"].includes(ntype.toString()) ? token_dat.group[ix] : ntype);
-
 
         // Detect whether a change is relative:
         console.log("---------- Detect relative changes: -----------");
@@ -749,7 +742,7 @@ $(document).ready(function () {
         token_dat.unit = token_dat.unit.map((x) => ["ucarryforward", "ucarryback"].includes(x) ? -1 : x);
 
         // Loop over all tokens:
-        // TODO: Turn into a function eventually?
+        // Note: Could be turned into a function eventually.
         for (let i = 0; i < token_dat.nrow; i++) {
 
             if (token_dat.is_num[i]) {
@@ -780,19 +773,13 @@ $(document).ready(function () {
                         match_len++;
                     }
 
-
                     // Get types for each tooltip from dictionary:
-                    let cur_numtype = token_dat.numtype.slice(i, i + match_len).filter((x) => x !== -1);
                     // console.log(token_dat.numtype.slice(i, i + match_len));
 
                     // Signature of current number:
                     const currow = token_dat.get_row(i);
 
                     // This might help: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get?retiredLocale=de
-
-
-                    // const colix = ["relabs", "unit", "numtype"].map(x => token_dat.colnames.indexOf(x));
-
                     const col_info = ["unit", "relabs", "numtype"].map(x => currow[token_dat.colnames.indexOf(x)]);
 
                     console.log(`~~~~~ Traverse tree for ${token_dat.token[i]}: ~~~~~~`);
@@ -856,8 +843,10 @@ $(document).ready(function () {
         let notes_html = "";  // initialize notes.
 
         // ~~~~~~~~~ TOPICS ~~~~~~~~~~~~~~~
-        // TODO: Risiko minderung" is something good, if it is about protection "erhöhter Schutz" is something good"
+        // Risiko minderung" is something good, if it is about protection "erhöhter Schutz" is something good"
         // If it is about incidence of illness or mortality, "increase" is something bad --> "Nutzen" is decrease!
+        // This informaiton could be helpful to handle future issues.
+        // Consider this
         // Notes about topics:
         const key_topic_dict = {
             "impf": "Impfung",
@@ -874,6 +863,7 @@ $(document).ready(function () {
         const n_topics = key_topics.length;
         let norisk = false;
 
+        // Output topic information:
         // if (n_topics === 1) {
         //     key_topics_str += "Dieser Text behandelt das Thema " + key_topic_dict[key_topics[0]];
         // } else if (n_topics > 1) {
@@ -999,7 +989,7 @@ $(document).ready(function () {
         txtfeat_dict["rel"] = ["incr", "decr", "mult"].some((x) => token_dat.numtype.includes(x));  // tests if one of the elements exists.
         txtfeat_dict["rel_only"] = txtfeat_dict.rel && !token_dat.relabs.includes("abs") &&
             // Is there a row that fulfills both criteria?
-            !check_any_arr(risknum_rows, ["freq", "sub"]);
+            !check_any_arr(risknum_rows, ["freq", "sub"]);  // Check for frequencies classsified to be in subgroup.
 
         // Additional information:
         const addfeat_dict = {
@@ -1159,17 +1149,6 @@ $(document).ready(function () {
         // console.log("Any risk num:");
         // console.log(token_dat.unit);
         if (txtfeat_dict.any_risknum) {
-            // feature_num += "<li><i class=\"fa fa-check in-text-icon good\"></i> Der Text scheint Zahlen " +
-            //     (!feature_arr.includes("damage") && feature_set?.damage ? "" :
-            //         "zu den genannten " +
-            //         "<div id=\"risk-tt\" class=\"tooltip\">" +
-            //         "<span class=\"tooltiptext tooltip-overview\">Anders der umgangssprachliche Risikobegriff gleichbedeutend mit \"Wahrscheinlichkeit\" " +
-            //         "(häufig etwa Wahrscheinlichkeit zu erkranken oder versterben; aber auch positiv, z.B., Wahrscheinlichkeit länger zu leben).</span>" +
-            //         "<a target=\"_blank\" href='risk_wiki.html#wiki-risk'>Risiken</a></div> ") +
-            //     "zu berichten.</li>";
-
-            // +++ HERE!
-            // TODO: Remove/adjust Nutzen/Schaden terminology for other kinds of topics (e.g., comparison of risks).
 
             // Differentiate numbers for control and treat group:
             // Do numbers apply to treat and contr group
@@ -1207,10 +1186,8 @@ $(document).ready(function () {
                         "</span> (Warum ist das ein Problem?)</div>";
                 }
 
-                feature_num += "</li><li>";
+                feature_num += "</li><li>";  // intermediate feature-num.
 
-                // TODO? Feedback that one has been done
-                // e.g., Sehr häufige Nebenwirkungen (bei mehr als 10 Prozent der Geimpften) sind Kopfschmerzen
 
                 // Die Wirksamkeit wird (nicht) mit Zahlen aus Behandlungs- und Kontrollgruppe belegt.
                 // Nebenwirkungen werden nicht für Behandlungs- und Kontrollgruppe angegeben
@@ -1644,7 +1621,8 @@ const regex_numwords = new RegExp("(?<unknown>(" + collapse_regex_or(numwords) +
 const regex_perc = new RegExp("(?<perc>" +
     // pat_num + " bzw\\. )?" + " ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.,?!])" + ")", "dg");
     pat_num + " ?(%|\\\-?[Pp]rozent)\\w*(?!\\s*[CK]I)[\\s.,?!]" + ")", "dg");
-const regex_nh = new RegExp("(?<nh>" + pat_num + " (?!%|[Pp]rozent)(\\w+ )?(von|aus|in) (\\w+ )?" + pat_num + ")", "dg");  // TODO: Handle numberwords here.
+const regex_nh = new RegExp("(?<nh>" + pat_num + " (?!%|[Pp]rozent)(\\w+ )?(von|aus|in) (\\w+ )?" + pat_num + ")", "dg");
+// Update to improve handling of numberwords.
 const regex_nh2 = new RegExp("(?<nh>(" + collapse_regex_or(numwords) + ") (?!%|[Pp]rozent)(\\w+ )?(von|aus|in) (\\w+ )?" + pat_num + ")", "dg");
 const regex_mult = new RegExp("(?<mult>" + pat_num + "[ \\-]?([Mm]al|[Ff]ach) (so )?( ?viele|gr[oö]ß(er)?|hoch|niedrig(er)?|besser|erhöht|höher)(?=[\\s.,?!])" + ")", "dg");
 const regex_dur2 = /(?<dur>\d+([,.]\d+)?-?\d*([,.]\d+)?(Minuten?| Stunden?| Tagen?| Wochen?))/dg;
@@ -2072,14 +2050,18 @@ function get_token_data(text) {
     }
     console.log(paragraph_array);
 
+    // Define the delimiter characters:
+    const quote_bullet_uc = ["\u2018", "\u2019", "\u201c", "\u201d"];
+    const delim_chars = ["\\n\\*", ".", ":", ";", ",", "?", "!", "[", "]", "(", ")", "\"", "'", "/", "\-"].concat(quote_bullet_uc);
+    const quote_chars = ["\"", "'"].concat(quote_bullet_uc);
+
     // Assign each token its beginning index:
     for (let i = 0; i < text_tokens.length; i++) {
 
         token_i = text_tokens[i];
 
         // Regex for token to ensure exact matching:
-        // TODO: Translate unicode chars to array!
-        if (["\\n\\*", ".", ":", ";", ",", "?", "!", "[", "]", "(", ")", "\"", "'", "/", "\-", "\u2018", "\u2019", "\u201c", "\u201d"].includes(token_i) ||
+        if (delim_chars.includes(token_i) ||
             /\++/g.test(token_i)  // also test plus signs (and potentially other quantifiers)
         ) {
             // Punctuation follows somewhat different rules.
@@ -2089,10 +2071,10 @@ function get_token_data(text) {
             if (["(", ")", "[", "]"].includes(token_i)) {
                 token_pat = token_i.replace(/([.?()\[\]/])/dgm, "\\$1");
                 // was: token_pat = "(?<=\\s|\\n|^)" + token_i.replace(/([.?()/])/dgm, "\\$1");
-            } else if (["\"", "'", "\u2018", "\u2019", "\u201c", "\u201d"].includes(token_i)) {
+            } else if (quote_chars.includes(token_i)) {
                 token_pat = token_i;  // no requirement to escape?
             } else {
-                token_pat = token_i.replace(/([.?()\[\]/+\-])/dgm, "\\$1") + "(?=\\s|\\n|$|\\.|,|-|[\"'\u2018\u2019\u201c\u201d])";
+                token_pat = token_i.replace(/([.?()\[\]/+\-])/dgm, "\\$1") + "(?=\\s|\\n|$|\\.|,|-|[" + quote_chars.join("") + "])";
             }
 
         } else {
