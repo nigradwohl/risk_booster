@@ -88,7 +88,7 @@ test_text <- function(txt){
     # TODO:
     # token_dat.add_number_info();  // add info about numbers.
     # token_dat.add_column(token_dat.token.map((x, ix) => (RegExp(collapse_regex_or(numwords), "dg").test(x))), "is_nw");  // is it a number word?
-    # token_dat.detect_unit();  // get additional unit info from token data.
+    token_dat$unit <- detect_unit(token_dat)
   
   
     return(token_dat)
