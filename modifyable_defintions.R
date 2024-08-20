@@ -28,6 +28,187 @@ regex_dur2 = "(?<dur>\\d+([,.]\\d+)?-?\\d*([,.]\\d+)?(Minuten?| Stunden?| Tagen?
 # Person words:
 person_all <- c("Proband", "[Tt]eilnehm", "[Pp]erson", "Mensch", "Frauen", "Männer", "Kind", "Erwachsen", "Mädchen", "Junge", "[Ii]nfektion", "[Ii]nfizierte")
 
+# Object that can be looped over to check numbers for number types that are specific to their units in "number_unit" -------
+numtype_keyset <- list(
+  
+  incr = list(
+    number_unit = c("perc", "mult", "nyear"),  # Add other types eventually
+    keyset = list(
+      list(
+        paste0(collapse_regex_or(c("[Rr]isiko", "[Ww]ahrscheinlich", "Inzidenz", "Todesfälle"))),
+        paste0(collapse_regex_or(c("höher", "erhöht", "so hoch")))
+      ),
+      list(
+        paste0(collapse_regex_or(c("[Rr]isiko", "[Ww]ahrscheinlich", "Inzidenz", "Todesfälle"))),
+        paste0(collapse_regex_or(c("so"))),
+        paste0(collapse_regex_or(c("hoch")))
+      ),
+      list(
+        paste0(collapse_regex_or(c("[Uu]nterschied", "höher", "vergrößerte"))),
+        paste0(collapse_regex_or(c("Lebenserwartung", "Abstand")))
+      ),
+      list(
+        paste0(collapse_regex_or(c("Anstieg")))
+      )
+    )
+  ),
+  
+  decr = list(
+    number_unit = c("perc", "mult", "nyear"),  # Add other types eventually
+    keyset = list(
+      list(
+        paste0(collapse_regex_or(c("[Rr]isiko", "Gefahr", "[Ww]ahrscheinlich", "Inzidenz", "Todesfälle", "Erkrank"))),
+        paste0(collapse_regex_or(c("[Rr]eduzier", "minimier", "niedriger", "(ge|ver)ringert?", "s[ae]nk")))
+      ),
+      list(
+        paste0(collapse_regex_or(c("besser"))),
+        paste0(collapse_regex_or(c("geschützt")))
+      ),
+      list(
+        paste0(collapse_regex_or(c("st[aeo]rb"))),
+        paste0(collapse_regex_or(c("früher")))
+      ),
+      list(
+        paste0(collapse_regex_or(c("weniger"))),
+        paste0(collapse_regex_or(c("lebt?en")))
+      ),
+      list(
+        paste0(collapse_regex_or(c("Sterblichkeitslücke"))),
+        paste0(collapse_regex_or(c("vergrößert")))
+      ),
+      list(
+        paste0(collapse_regex_or(c("Demenz", "Krankheit"))),
+        paste0(collapse_regex_or(c("verlangsamt")))
+      )
+    )
+  ),
+  
+  ncase = list(
+    number_unit = c("freq", "nh"),
+    keyset = list(
+      list(
+        paste0("Fälle|Verläufe"), paste0("insgesamt|nach|Studie")
+      ),
+      list(
+        paste0("[Ee]rkrankt|[Bb]etroffen")
+      ),
+      list(
+        paste0("Todesfälle")
+      ),
+      list(
+        paste0("(ver)?st[aeo]rben"), paste0(collapse_regex_or(person_all))
+      ),
+      list(
+        paste0("berichte(te)?n|entwickel|beobacht|meldet(e|en)"), paste0("Unwohlsein|Nebenwirkungen")
+      ),
+      list(
+        paste0("berichte(te)?n"), paste0("wohl"), paste0("fühlen")
+      )
+    )
+  ),
+  
+  ntot = list(
+    number_unit = c("freq"),
+    keyset = list(
+      list(
+        paste0(collapse_regex_or(person_all)),
+        paste0(collapse_regex_or(c("insgesamt", "nahmen", "erh(a|ie)lten", "befragt", "ausgewählt", "umfass(t|en)"))),
+        paste0(collapse_regex_or(c("Studie", "Untersuchung", "Erhebung")))
+      ),
+      list(
+        paste0(collapse_regex_or(c("Daten", "[Bb]efragt"))),
+        paste0(collapse_regex_or(c("von", "über"))),
+        paste0(collapse_regex_or(person_all))
+      ),
+      list(
+        paste0(collapse_regex_or(person_all)),
+        paste0(collapse_regex_or(c("Analyse", "rekrutiert")))
+      )
+    )
+  )
+)
+
+# Sets of keys to be used with window approach. Will be created upon each click! ----------------
+window_keys <- list(
+  grouptype = list(
+    total = c("[Ii]nsgesamt", "alle_", "Basis", "umfass(t|en)", "waren.*jeweils", "etwa.*[Tt]eiln[ae]hme"),
+    sub = c("[Ii]n_", "[Uu]nter_", "[Dd]avon_",
+            "der.*[Tt]eilnehmer", "entfielen.*auf")
+  ),
+  treat_contr = list(
+    contr = c("(Kontroll|Placebo|Vergleichs|Scheinpräparat)-?.*([Gg]ruppe|[Ee]mpfänger)",
+              "(?<!Impfstoff|Impf)-(Gruppe|Empfänger)",
+              "(?<!Impfstoff|Impf|Behandlungs|Untersuchungs)(gruppe|empfänger)",
+              "Prävention.*wenigsten.*befolgte",
+              "kein.*Medika",
+              "Scheinpräparat_(gespritzt|erhalten|bekommen)"),
+    treat = c("[Gg]eimpfte?n?", "Impf-?.*([Gg]ruppe|[Em]pfänger)",
+              "(?<!Kontroll|Vergleichs|Placebo|Scheinpräparat)-(Gruppe|Empfänger)",
+              "(?<!Kontroll|Vergleichs|Placebo|Scheinpräparat)(gruppe|empfänger)",
+              "Behandlungsgruppe", "Behandelte", "Impfstoff_(gespritzt|erhalten|bekommen)",
+              "([Tt]eilnehmer|Probanden).*Impfung",
+              "erh(a|ie)lten.*(Präparat|Medikament)",
+              "(Präparat|Medikament|Antidepressiva).*erh(a|ie)lten", "Placebo_geschluckt",
+              "gesündesten.*Lebensstil"),
+    all = c("(aller|insgesamt).*[Tt]eilnehmer|Probanden",
+            "(Teilnehm|Proband).*rekrutiert",
+            "insgesamt.*(Fälle|Verläufe)", "(Fälle|Verläufe).*insgesamt",
+            "beiden.*Gruppen", "sowohl.*[Gg]ruppe")
+  ),
+  effside = list(
+    eff = c("(?<![Nn]eben)[Ww]irk(?!lich)", "Impfschutz",
+            "Schutz", "geschützt",
+            "(reduziert|verringert|minimiert|gesunken).*(Risiko|[Gg]efahr|Wahrscheinlichkeit).*(Ansteckung|Infektion|[Ee]rkrank)",
+            "((Risiko|[Gg]efahr|Wahrscheinlichkeit).*(Ansteckung|Infektion|[Ee]rkrank)).*(reduziert|verringert|minimiert|gesunken)",
+            "(Risiko|[Gg]efahr|Wahrscheinlichkeit).*(reduziert|verringert|minimiert|gesunken)",
+            "(Ansteckungsgefahr|Infektionsrisiko).*(nur|verringert)",
+            "Reduzierung",
+            "(mindert|reduziert).*Symptome",
+            "schwer.*Verl[aä]uf",
+            "Verbesserung"),
+    side = c("Nebenwirk", "Komplikation", "unerwünschte.*Effekt", "Herzmuskelentzündung", "Hirnblutung", "Impfreaktion?en?", "[Hh]erpes", "Fieber", "Gehirnentzündung"),
+    damage = c("(Inzidenz|[Ee]rkank|Todesfäll|Risiko).*(erhöht|vielfach)",
+               "(erhöht|vielfach).*(Inzidenz|[Ee]rkank|Todesfäll|Risiko)",
+               "Risiko.*Erkrank",
+               "Todesf[aä]ll|gestorben|tödlich|Infektion",
+               "Lebenserwartung.*sink|weniger", "st[aeo]rb.*früher",
+               "[Nn]ur.*Gesundheitszustand.*gut",
+               "([Gg]esundheit|[Ff]inanz|[Pp]sychisch).*Belastung"),
+    all = c("jeweils", "beiden.*Gruppen"),
+    sample = c("im.*Alter")
+  ),
+  incr_decr = list(
+    risk_incr = c("(Risiko|Wahrscheinlichkeit).*(erhöht|steigt)",
+                  "(erhöht|steigt).*(Risiko|Wahrscheinlichkeit)"),
+    risk_decr = c("(Risiko|Wahrscheinlichkeit).*(sinkt|verringert|reduziert)",
+                  "(sinkt|verringert|reduziert).*(Risiko|Wahrscheinlichkeit)",
+                  "schütz(en|t).*(Erkrankung|Ansteckung)")
+  ),
+  conditions = list(
+    pers = c("Krankenakt"),
+    ill = c("erkrank(t|en)", "Verl[äa]uf", "[Ii]nfiziert", "entwickeln"),
+    death = c("st[eao]rben", "Todesfälle", "Todesfall(!?e)")
+  ),
+  units = list(
+    freq = c("Proband", "Teilnehm", "Infektion", "Krankenakt"),
+    death = c("(ge|ver)st[aeo]rben"),
+    medical = c("BMI")
+  ),
+  rel = list(
+    abs = c("[Qq]uote", "Anteil", "mehr_als(?!.*(?:Wirksamkeit|Impfschutz|Schutz(?:wirkung)?|verlangsamt|gesunken|Anstieg|geschützt))"), 
+    rel = c("Wirksamkeit", "Impfschutz", "Schutz(wirkung=?", "verlangsamt", "gesunken", "Anstieg", "geschützt")
+  ),
+  reference = list(
+    tot = c("(der|aller)_(Studien)?[Tt]eilnehm"),
+    sub = c("Kontroll-?.*[Gg]ruppe", "Placebo-?.*[Gg]ruppe",
+            "Vergleichs-?.*[Gg]ruppe",
+            "Prävention.*wenigsten.*befolgte",
+            "kein.*Medika")
+  )
+)
+
+
+
 
 
 # Dictionaries: -------------------------------------------------------------------------

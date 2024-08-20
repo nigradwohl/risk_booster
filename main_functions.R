@@ -321,3 +321,226 @@ get_token_data <- function(txt) {
     return(unit_info)
   }
   
+# Function to detect the type of each number by using its unit and additional context information ------------------
+  detect_number_type <- function(token_data, txt, numtype_dict) {
+    
+    cat("Detecting the number type\n")
+    
+    # If missing, add unit info!
+    if (!"unit" %in% names(token_data)) {
+      token_data$unit <- rep(NA, nrow(token_data))
+    }
+    
+    num_types <- rep(NA, nrow(token_data))
+    
+    # Also check for topics?
+    sentence_set <- unique(token_data$sent)
+    sentence_counts <- table(token_data$sent)
+    
+    # Include topic-specific keywords:
+    if ("impf" %in% token_data$topics) {
+      # Include Impf-specific keys
+      numtype_dict$decr$keyset <- c(numtype_dict$decr$keyset, keyset_impf)
+    }
+    
+    # Define the regex patterns
+    relation_dict <- list(
+      treatre_pre = "(?<treat>(\\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,3}(auf die|unter den) ([a-zA-ZÄÖÜßäöü]+ ){0,2}geimpften (Proband\\w+|Teilnehm\\w+|Kind\\w+|Behandelt)))/dg",
+      controlrel_pre = "(?<contr>\\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,3}(in der|unter den (Teilnehme\\w+ |Proband\\w+){,2} der|auf die (Teilnehme\\w+ |Proband\\w+){,2}) (Kontroll|Placebo|Vergleichs)-?[Gg]ruppe)/dg",
+      treatre_post = "(?<treat>((auf die|unter den) ([a-zA-ZÄÖÜßäöü]+ ){0,2}(geimpften|behandelten) (Proband\\w+|Teilnehm\\w+)) ([a-zA-ZÄÖÜßäöü]+ ){1,2}\\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,2}))/dg",
+      treatre_post2 = "(?<treat>((auf die|unter den) ([a-zA-ZÄÖÜßäöü]+ ){0,2}(Behandelt\\w+)) ([a-zA-ZÄÖÜßäöü]+ ){1,2}\\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,2}))/dg",
+      controlrel_post1 = "(?<contr>(auf die|unter den) (Teilnehme\\w+ |Proband\\w+){,2} ([a-zA-ZÄÖÜßäöü]+ ){1,2}(Kontroll|Placebo|Vergleichs)-?[Gg]ruppe ([a-zA-ZÄÖÜßäöü]+ ){1,2}\\d+ ([a-zA-ZÄÖÜßäöü]+ ){0,2}))/dg",
+      controlrel_post2 = "(?<contr>in der (Kontroll|Placebo|Vergleichs)[- ]?[Gg]ruppe ([a-zA-ZÄÖÜßäöü]+ ){1,2}\\d+( [a-zA-ZÄÖÜßäöü]+){0,2}))/dg"
+    )
+    
+    ref_matches <- detect_regex_match(txt, token_data, relation_dict)
+    
+    prev_token <- 0
+    for (key in names(sentence_counts)) {
+      
+      # Get tokens in sentence
+      final_token <- prev_token + sentence_counts[[key]]
+      
+      token_ids <- token_data$id[prev_token:final_token]
+      num_info <- token_data$is_num[prev_token:final_token]
+      
+      # Only continue if any numbers are present
+      if (any(num_info)) {
+        sentence_tokens <- token_data$token[prev_token:final_token]
+        sentence_units <- token_data$unit[prev_token:final_token]
+        
+        # Get positions of numbers
+        cat("Number positions\n")
+        num_array <- token_ids[num_info]
+        cat(num_array, "\n")
+        
+        for (num in num_array) {
+          curnum_id <- token_data$id[num]
+          numtype <- "other"
+          
+          for (key in names(numtype_dict)) {
+            value <- numtype_dict[[key]]
+            
+            if (token_data$unit[curnum_id] %in% value$number_unit) {
+              keys_present <- sapply(value$keyset, function(keylist) {
+                all(sapply(keylist, function(keyex) {
+                  any(grepl(keyex, sentence_tokens))
+                }))
+              })
+              
+              if (any(keys_present)) {
+                numtype <- key
+              }
+            }
+          }
+          
+          if (numtype == "other") {
+            if (length(ref_matches$match_type[[num]]) > 0) {
+              numtype <- ref_matches$match_type[[num]]
+            }
+          }
+          
+          num_types[curnum_id] <- numtype
+        }
+      }
+      
+      prev_token <- final_token
+    }
+    
+    return(num_types)
+  }
+  
+# Function to investigat a context window around numbers or other entities --------------
+  investigate_context <- function(token_data, index_arr, keyset, only_pars = TRUE) {
+    
+    # Initialize context info vector
+    context_info <- rep(NA, nrow(token_data))  # equivalent to Array(token_data.nrow).fill(-1)
+    
+    # Convert keyset to regex patterns
+    keyset <- lapply(keyset, function(keys) {
+      paste0("\\b(", paste(keys, collapse = "|"), ")\\b")
+    })
+    
+    # Get paragraph min and max
+    par_minmax <- token_data$par_minmax
+    
+    # Define sentence end tokens
+    sentence_end_tokens <- c("\n", ".", "?", "!", ":")
+    
+    for (token_ix in index_arr) {
+      
+      # Prepare the window
+      testcounter <- 0
+      
+      # Define the maximum range for the window
+      min_start <- 1
+      max_end <- nrow(token_data)
+      
+      if (only_pars) {
+        curpar <- token_data$par[token_ix]
+        min_start <- par_minmax[[curpar]][1]
+        max_end <- par_minmax[[curpar]][2]
+      }
+      
+      lock_start <- token_ix
+      lock_end <- token_ix + 2
+      
+      numberfeats <- character()
+      key_info <- list()
+      
+      stop_tokens <- c("\n", ".", "?", "!", ":", "und", ";", "–", ",", "oder", "-")
+      stop_token_start <- FALSE
+      stop_token_end <- FALSE
+      stop_update_count <- 0
+      
+      description_complete <- FALSE
+      
+      window_start <- token_ix
+      window_end <- token_ix
+      
+      while (!description_complete && (lock_start > min_start || lock_end < max_end)) {
+        
+        # Check if stop token is a sentence end token
+        is_sentence_end_end <- token_data$token[window_end] %in% sentence_end_tokens
+        
+        if (is_sentence_end_end) {
+          while (window_start > lock_start) {
+            window_start <- window_start - 1
+            if (token_data$token[window_start] %in% stop_tokens) {
+              stop_token_start <- TRUE
+              break
+            }
+          }
+        } else {
+          while (window_start > lock_start) {
+            window_start <- window_start - 1
+            if (token_data$token[window_start] %in% stop_tokens) {
+              stop_token_start <- TRUE
+              break
+            }
+          }
+          
+          while (window_end < lock_end) {
+            window_end <- window_end + 1
+            if (token_data$token[window_end] %in% stop_tokens) {
+              stop_token_end <- TRUE
+              break
+            }
+          }
+        }
+        
+        # Extract tokens in the current window
+        test_tokens <- token_data$token[window_start:window_end]
+        test_str <- paste(test_tokens, collapse = "_")
+        
+        # Test the tokens here
+        for (key in names(keyset)) {
+          pattern <- keyset[[key]]
+          if (grepl(pattern, test_str)) {
+            if (!(key %in% numberfeats)) {
+              key_info[[key]] <- list(
+                positions = gregexpr(pattern, test_str)[[1]], 
+                stop_update_count = stop_update_count,
+                testcounter = testcounter
+              )
+            }
+            numberfeats <- unique(c(numberfeats, key))
+          }
+        }
+        
+        lock_start <- if (!stop_token_start && lock_start > min_start) lock_start - 1 else lock_start
+        lock_end <- if (!stop_token_end && lock_end < max_end) lock_end + 1 else lock_end
+        
+        if (is_sentence_end_end || (stop_token_start && stop_token_end) || 
+            (stop_token_end && lock_start == min_start) || 
+            (stop_token_start && lock_end == max_end)) {
+          stop_tokens <- head(stop_tokens, -1)
+          stop_token_start <- token_data$token[window_start] %in% stop_tokens
+          stop_token_end <- token_data$token[window_end] %in% stop_tokens
+          stop_update_count <- stop_update_count + 1
+        }
+        
+        if (length(numberfeats) > 0 && stop_update_count > 2) {
+          description_complete <- TRUE
+          if (length(numberfeats) > 1) {
+            numberfeats <- setdiff(numberfeats, "all")
+          }
+        }
+        
+        if (testcounter > 50 || (lock_end == max_end && lock_start == min_start)) {
+          description_complete <- TRUE
+          numberfeats <- unique(c(numberfeats, "unknown"))
+        }
+        
+        testcounter <- testcounter + 1
+      }
+      
+      # Assign the information to the data
+      context_info[token_ix] <- paste(numberfeats, collapse = ",")
+    }
+    
+    return(context_info)
+  }
+  
+  
+  

@@ -8,7 +8,6 @@ collapse_regex_or <- function(key_list) {
   return(keystr)
 }
 
-
 # Word tokenizer: -----------------------------------------------
 word_tokenizer <- function(txt) {
   

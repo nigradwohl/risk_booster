@@ -86,7 +86,21 @@ test_text <- function(txt){
     token_dat$unit <- regex_matches$match_type
     
     # TODO:
+    
     # token_dat.add_number_info();  // add info about numbers.
+    library(stringr)
+    add_number_info <- function(token_dat, modifyiable_defs) {
+      
+      is_num <- str_detect(token_dat$token, "\\d") | 
+        (str_detect(token_dat$token, collapse_regex_or(numwords)) & !is.na(token_dat$unit))
+      token_dat$is_num <- is_num
+      return(token_dat)
+    }
+    token_dat <- add_number_info(token_dat, modifyiable_defs)
+    
+   
+    
+    
     # token_dat.add_column(token_dat.token.map((x, ix) => (RegExp(collapse_regex_or(numwords), "dg").test(x))), "is_nw");  // is it a number word?
     token_dat$unit <- detect_unit(token_dat)
   
