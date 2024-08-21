@@ -468,12 +468,13 @@ detect_unit <- function(token_data) {
     
     # Convert keyset to regex patterns
     keyset <- lapply(keyset, function(keys) {
-      paste0("\\b(", paste(keys, collapse = "|"), ")\\b")
+      # paste0("\\b(", paste(keys, collapse = "|"), ")\\b")  # TODO: Why these \\b-flags? they destroy the functionality.
+      paste0("(", collapse_regex_or(keys), ")")  # TODO: Why these \\b-flags? they destroy the functionality.
     })
     
     # Get paragraph min and max
     # Initialisiere par_minmax basierend auf token_data
-    par_minmax <- tapply(1:nrow(token_data), token_data$par, range)
+    par_minmax <- tapply(1:nrow(token_data), token_data$par, range)  # why tapply()?
     # print(par_minmax)
     
     # Define sentence end tokens
@@ -494,12 +495,14 @@ detect_unit <- function(token_data) {
         max_end <- par_minmax[[as.character(curpar)]][2]
       }
       
+      # Define intitial start and end:
       lock_start <- token_ix
       lock_end <- token_ix + 2
       
       numberfeats <- character()
       key_info <- list()
       
+      # Define stop tokens:
       stop_tokens <- c("\n", ".", "?", "!", ":", "und", ";", "–", ",", "oder", "-")
       stop_token_start <- FALSE
       stop_token_end <- FALSE
@@ -511,15 +514,15 @@ detect_unit <- function(token_data) {
       window_end <- token_ix
       
       
-     
-      
-      
       while (!description_complete && (lock_start > min_start || lock_end < max_end)) {
         
         # Check if stop token is a sentence end token
         is_sentence_end_end <- token_data$token[window_end] %in% sentence_end_tokens
         
+        # Check if either stop token is a sentence end token
         if (is_sentence_end_end) {
+          
+          # If so, extend window only before:
           while (window_start > lock_start) {
             window_start <- window_start - 1
             if (token_data$token[window_start] %in% stop_tokens) {
@@ -528,6 +531,8 @@ detect_unit <- function(token_data) {
             }
           }
         } else {
+          
+          # Normal window expansion in both directions:
           while (window_start > lock_start) {
             window_start <- window_start - 1
             if (token_data$token[window_start] %in% stop_tokens) {
@@ -548,6 +553,8 @@ detect_unit <- function(token_data) {
         # Extract tokens in the current window
         test_tokens <- token_data$token[window_start:window_end]
         test_str <- paste(test_tokens, collapse = "_")
+        
+        cat(test_str, sep = "\n")  # output for testing.
         
         # Test the tokens here
         for (key in names(keyset)) {

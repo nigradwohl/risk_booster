@@ -43,7 +43,8 @@ test_text <- function(txt){
   # TODO: How to save the modifyiable defintions?
   modifyiable_defs <- list(
     units_exc = units_exc,
-    check_numbers_dict = check_numbers_dict  
+    check_numbers_dict = check_numbers_dict,
+    window_keys = window_keys
   )
   
   
@@ -102,6 +103,7 @@ test_text <- function(txt){
     
     
   # Detect topic features -------
+    # TODO: Migrate to (modifyiable) defintions!
     topic_list_features <- list(
       eff = list(c(collapse_regex_or(c("Nutz", "(?<!Neben)[Ww]irks(am|ung)", "Schutz", "schütz", targetconds)))),
       side = list(c("Nebenwirk", "Herzmuskelentzündung")),
@@ -112,28 +114,32 @@ test_text <- function(txt){
                        c("Abstand", "wuchs|vergrößert", "Jahre", "\\d{4}"))
     )
     
-    attr(token_dat, "topics") <- names(topic_list_features)[sapply(topic_list, FUN = function(top) {
+    # Save topics as attr:
+    # Make sure to not overwrite the original topics but to add to them:
+    attr(token_dat, "topics") <- c(attr(token_dat, "topics"),
+                                   names(topic_list_features)[sapply(topic_list_features, FUN = function(top) {
       detect_topic(token_dat$token, top)
-    })]
+    })])
     
   # Add keywords according to the type of comparison (currently collected in the "topic" property): -------
     
     if ("comp_time" %in% attr(token_dat, "topics")) {
       
       year_tokens <- token_dat$token[token_dat$unit == "year"]
-      window_keys$treat_contr$treat <- c(window_keys$treat_contr$treat, "nur_noch")
-      window_keys$treat_contr$contr <- c(window_keys$treat_contr$contr, "zum_Vergleich", "vor_.*Jahren", "[Ww]ährend_.*noch")
+      modifyiable_defs$window_keys$treat_contr$treat <- c(window_keys$treat_contr$treat, "nur_noch")
+      modifyiable_defs$window_keys$treat_contr$contr <- c(window_keys$treat_contr$contr, "zum_Vergleich", "vor_.*Jahren", "[Ww]ährend_.*noch")
     }
     
     if (any(c("treatgroup", "controlgroup", "impf", "protect", "drug") %in% attr(token_dat, "topics"))) {
       attr(token_dat, "topics") <- c(attr(token_dat, "topics"), "comp_treat")
     }
     
-    is_intervention <- all(c("eff", "side") %in% attr(token_dat, "topics"))
+    # is_intervention <- all(c("eff", "side") %in% attr(token_dat, "topics"))  # unused in original code.
     
     if (!"comp_treat" %in% attr(token_dat, "topics")) {
-      window_keys$effside$eff <- NULL
-      window_keys$effside$side <- NULL
+      # TODO: Avoid overwriting the original object -- use modifyiable_defs (we coudl also define something like cur_windowkeys instead!
+      modifyiable_defs$window_keys$effside$eff <- NULL
+      modifyiable_defs$window_keys$effside$side <- NULL
     }
     
     # Remove duplicate topics
@@ -160,7 +166,7 @@ test_text <- function(txt){
     
     cat(" +++ detecting missing units +++\n")
     no_unit_ix <- which(token_dat$is_num & token_dat$unit == "unknown")
-    new_units <- investigate_context(token_dat, no_unit_ix, window_keys$units, FALSE)
+    new_units <- investigate_context(token_dat, no_unit_ix, modifyiable_defs$window_keys$units, FALSE)
     
     
     for (ix in no_unit_ix) {
@@ -168,7 +174,7 @@ test_text <- function(txt){
         token_dat$unit[ix] <- new_units[ix]
       }
     }
-    print(token_dat$unit)
+    # print(token_dat$unit)
     
    # Regex-based again ----------------------
     regex_numwords_raw <- paste0("(?<!\\w)(", paste(numwords, collapse = "|"), ")")
@@ -218,6 +224,7 @@ test_text <- function(txt){
     }
     
     # Filter based on condition
+    # Why this function and not use which() directly?
     filter_ids <- function(data, condition) {
       which(condition)
     }
@@ -226,23 +233,23 @@ test_text <- function(txt){
     allnum_ix <- filter_ids(token_dat, token_dat$is_num & !(token_dat$unit %in% units_exc))
     freq_ix <- filter_ids(token_dat, token_dat$unit == "freq")
     perc_ix <- filter_ids(token_dat, token_dat$unit %in% c("perc", "mult"))
-    token_dat$gtype <- investigate_context(token_dat, allnum_ix, window_keys$grouptype, FALSE)
+    token_dat$gtype <- investigate_context(token_dat, allnum_ix, modifyiable_defs$window_keys$grouptype, FALSE)
     token_dat$gtype <- ifelse(token_dat$unit == "perc", "sub", token_dat$gtype)
-    n_subgroup_ix <- filter_ids(token_dat, token_dat$is_num & !(token_dat$gtype %in% c("total", -1)))
+    n_subgroup_ix <- which(token_dat$is_num & token_dat$gtype != "total" & !is.na(token_dat$gtype))
     
     cat("---------- Get treatment and control: -----------\n")
-    token_dat$group <- investigate_context(token_dat, n_subgroup_ix, window_keys$treat_contr, FALSE)
+    token_dat$group <- investigate_context(token_dat, n_subgroup_ix, modifyiable_defs$window_keys$treat_contr, FALSE)
     print(token_dat$group)
     
     cat("---------- Get effectivity and side effects: -----------\n")
     if ("comp_treat" %in% token_dat$topics) {
-      window_keys$effside$eff <- c(window_keys$effside$eff, targetconds)
+      modifyiable_defs$window_keys$effside$eff <- c(modifyiable_defs$window_keys$effside$eff, targetconds)
     }
-    token_dat$effside <- investigate_context(token_dat, n_subgroup_ix, window_keys$effside, FALSE)
+    token_dat$effside <- investigate_context(token_dat, n_subgroup_ix, modifyiable_defs$window_keys$effside, FALSE)
     print(token_dat$effside)
     
     cat("---------- Get information about the underlying conditions (morbidity, mortality...): -----------\n")
-    token_dat$ftype <- investigate_context(token_dat, freq_ix, window_keys$conditions, FALSE)
+    token_dat$ftype <- investigate_context(token_dat, freq_ix, modifyiable_defs$window_keys$conditions, FALSE)
     print(token_dat$ftype)
     
     # Transformation of `gtype`
@@ -266,7 +273,7 @@ test_text <- function(txt){
    
     cat("---------- Detect relative changes: -----------\n")
     n_change_ix <- which(token_dat$is_num & token_dat$numtype %in% c("incr", "decr"))
-    token_dat$relabs <- investigate_context(token_dat, perc_ix, window_keys$rel, TRUE)
+    token_dat$relabs <- investigate_context(token_dat, perc_ix, modifyiable_defs$window_keys$rel, TRUE)
     token_dat$relabs <- sapply(1:nrow(token_dat), function(ix) {
       if (!is.na(token_dat$numtype[ix]) && token_dat$numtype[ix] %in% c("incr", "decr") && token_dat$relabs[ix] != "abs") {
         return("rel")
@@ -352,7 +359,7 @@ test_text <- function(txt){
     })
     
     # Reference information for absolute percentages and subgroups (WORK IN PROGRESS):
-    token_dat$reference <- investigate_context(token_dat, n_subgroup_ix, window_keys$reference, FALSE)
+    token_dat$reference <- investigate_context(token_dat, n_subgroup_ix, modifyiable_defs$window_keys$reference, FALSE)
     
     # Carry backward number information
     cat("CARRYBACKWARD!\n")
