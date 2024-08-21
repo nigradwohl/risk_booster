@@ -15,6 +15,7 @@ month_names = c("Januar", "Februar", "März", "April", "Mai", "Juni",
 pat_num = "(?:(?<![\\-A-Za-zÄÖÜäöüß0-9_.])(?:[0-9]+(?:[.,:][0-9]+)?))(?!\\.[0-9A-Za-zÄÖÜäöüß]|[a-zA-Z0-9ÄÖÜäöüß])";
 numwords = c("[Kk]einen?", "(?<![Kk])[Ee]ine?[rm]?(?![gnz])", "[Zz]wei(?!fe)", "[Dd]rei", "[Vv]ier", "[Ff]ünf", "[Ss]echs",
                   "[Ss]ieben", "[Aa]cht(?!e)", "[Nn]eun(?!k)", "[Zz]ehn", "[Ee]lf", "[Zz]wölf")
+largenums = c("Hundert", "Tausend", "Millionen", "Milliarden")
 
 regex_num = paste0("(?<unknown>", pat_num, "( Millionen| Milliarden)?)")  # regex to detect numbers; d-flag provides beginning and end!.
 regex_numwords = paste0("(?<unknown>(", collapse_regex_or(numwords), ") (Person(en)?|F[aä]lle?))")
@@ -257,10 +258,14 @@ check_numbers_dict <- list(
     carry_forward_pre = paste0("(?<ucarryforward>((waren|sind) es|[Dd]avon[^.]*) (\\w+ ){0,2}", pat_num, "(?=\\W))"),
   # (\\w+ ){0,2} allows up to 2 more words.
   carry_forward_post = paste0("(?<ucarryforward>", pat_num, " (waren|sind) es)"),
-  carry_back = paste0("(?<ucarryback>", pat_num, " (bzw\\.|und|bis))", "dg"),
+  carry_back = paste0("(?<ucarryback>", pat_num, " (bzw\\.|und|bis))"),
   phone = "(?<phone>[+]?[0-9]* ?([(]?[0-9]{0,3}[)])?[-\\s.]?[0-9]{3,4}[-\\s.]?[0-9]{3,4}[-\\s.]?[0-9]{1,6})",
   # MIscellaneous numbers to be excluded!
     misc = paste0("(?<misc>(", pat_num, " bis )?", pat_num, "\\.? (Grad|Staat|Schritt|Kommentare|.[gC](?= .)))"),
+  vaccdose = paste0("(?<misc>(", pat_num, "( (", collapse_regex_or(largenums), "))? bis )?",
+                       pat_num, "( (", collapse_regex_or(largenums), "))?", "\\.? \\w*[Dd]os[ei])"),
+  vaccdose_word = paste0("(?<misc>(", collapse_regex_or(numwords), "( (", collapse_regex_or(largenums), "))? bis )?",
+                            collapse_regex_or(numwords), "( (", collapse_regex_or(largenums), "))?", " \\w*[Dd]os[ei])"),
   degree = paste0("(?<misc>(", pat_num, " bis )?", pat_num, "\\.?(.[gC](?= .)))"),
   # Enumeration:
     enum = "(?<enum>\\(\\d{1,2}\\))",

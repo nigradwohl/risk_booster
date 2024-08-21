@@ -398,7 +398,7 @@ test_text <- function(txt){
 
 # Run test:
 test_output <- test_text(tsttxt)
-test_output <- test_text(tsttxt2)
+# test_output <- test_text(tsttxt2)
 
 print(test_output, max = 100000)
 
