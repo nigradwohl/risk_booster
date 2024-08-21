@@ -135,11 +135,8 @@ get_regex_matches <- function(regexp, txt) {
 detect_regex_match <- function(txt, token_dat, check_dict){
   
  
-  
-  
   # get all matches:
   arr_match <- unlist(sapply(check_dict, get_regex_matches, txt = txt), recursive = FALSE)
-  
   
   # Prüfen, ob arr_match leer ist
   if (length(arr_match) == 0) {
@@ -147,10 +144,9 @@ detect_regex_match <- function(txt, token_dat, check_dict){
   }
   
   
-  
   # Connect matches to token data:
-  token_match <- NA
-  match_type <- NA
+  token_match <- as.list(rep(NA, nrow(token_dat)))
+  match_type <- as.list(rep(NA, nrow(token_dat)))
   
   dropvec <- integer() 
   
@@ -164,6 +160,7 @@ detect_regex_match <- function(txt, token_dat, check_dict){
     match_end <- token_dat$end <= (curmatch$start_end[2] - 1) & token_dat$end > curmatch$start_end[1]
     
     match_pos <- match_start | match_end
+    match_ix <- which(match_pos)
     
     
     # If one of the indices can be found:
@@ -179,7 +176,7 @@ detect_regex_match <- function(txt, token_dat, check_dict){
       print(cur_type)
       
       # Check if the match has been defined already:
-      if(all(is.na(match_type[range(which(match_pos))]))){
+      if(all(is.na(unlist(match_type[range(match_ix)])))){
         
         # Establish new match:
         token_match[match_pos] <- i  # match_id.
@@ -188,8 +185,8 @@ detect_regex_match <- function(txt, token_dat, check_dict){
       } else if(!curmatch$type %in% c("unknown", "ucarryforward", "ucarryback")){
         
         dropvec <- c(dropvec, i)  # flag for dropping.
-        prev_ix <- token_match[which(match_pos)[1]]
-        prev_type <- arr_match[prev_ix[1]]$type
+        prev_ix <- token_match[[match_ix[1]]]
+        prev_type <- arr_match[[prev_ix]]$type  # alternatively: match_type[which(match_pos)[1]]
         
         
         precedence_list <- c("nyear", "age")  # define precedence.
@@ -198,14 +195,26 @@ detect_regex_match <- function(txt, token_dat, check_dict){
         if(!is.na(prev_ix)){
           # prev_ix = Array.isArray(prev_ix) ? prev_ix : [prev_ix];
           
-          token_match <- list(c(token_match, i))
+          # Handle precedence (if curtype is earlier, give precedence):
+          # Note: This does not work like in javascript because which() does not return -1 if no index is found like indexOf().
+          has_precedence <- which(precedence_list == cur_type) < which(precedence_list == prev_type)
+          has_precedence <- ifelse(length(has_precedence) > 0, has_precedence, FALSE)  # only give precendence, if there canbe any.
           
-          # Handle precedence:
-          if(which(precedence_list == cur_type) < which(precedence_list == prev_type)){
-            token_match[prev_ix[1]]$type <- cur_type
+          if(has_precedence){
+            # Update the previous type with precedence:
+            arr_match[[prev_ix[1]]]$type <- cur_type
           } else {
+            # If no precedence update the current type to be the previous one.
             cur_type <- prev_type
           }  # eof. precedence.
+          
+          # Add the match to data:
+          # TODO: Should maybe rather be a loop over match ix, to save each overlap!
+          # token_match[[match_ix]] <- c(token_match[[match_ix]], i)  # save match as list.
+          for(mix in match_ix){
+            token_match[[mix]] <- c(token_match[[mix]], i)
+            match_type[[mix]] <- unique(c(match_type[[mix]], cur_type))  # save current type (if not the same).
+          }
           
         }
         

@@ -83,7 +83,7 @@ test_text <- function(txt){
     regex_matches <- detect_regex_match(input_txt, token_dat, modifyiable_defs$check_numbers_dict)
     
     token_dat$match <- regex_matches$match_id
-    token_dat$unit <- regex_matches$match_type
+    token_dat$unit <- sapply(regex_matches$match_type, `[`, 1)  # get raw vector of types.
     
     token_dat <- add_number_info(token_dat)
     token_dat$is_nw <- grepl(collapse_regex_or(numwords), token_dat$token, perl = TRUE)
@@ -396,8 +396,11 @@ test_text <- function(txt){
     
 }
 
-test_text(tsttxt)
+# Run test:
+test_output <- test_text(tsttxt)
+test_output <- test_text(tsttxt2)
 
+print(test_output, max = 100000)
 
 
 
