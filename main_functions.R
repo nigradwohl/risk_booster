@@ -134,103 +134,77 @@ get_regex_matches <- function(regexp, txt) {
 # token_dat <- token_data
 detect_regex_match <- function(txt, token_dat, check_dict){
   
- 
-  
-  
-  # get all matches:
+  # Get all matches:
   arr_match <- unlist(sapply(check_dict, get_regex_matches, txt = txt), recursive = FALSE)
   
-  
-  # Prüfen, ob arr_match leer ist
+  # Check if arr_match is empty
   if (length(arr_match) == 0) {
     return(list(arr_match = list(), match_id = NA, match_type = NA))
   }
   
+  # Initialize
+  token_match <- rep(NA, length(arr_match))  # Initialize with NA
+  match_type <- rep(NA, length(arr_match))    # Initialize with NA
+  dropvec <- integer()
   
-  
-  # Connect matches to token data:
-  token_match <- NA
-  match_type <- NA
-  
-  dropvec <- integer() 
-  
-  # curmatch <- arr_match[[2]]  # for testing.
-  
-  # TODO: Loop?
   for(i in 1:length(arr_match)){
     
     curmatch <- arr_match[[i]]
     match_start <- token_dat$start >= curmatch$start_end[1] & token_dat$start < curmatch$start_end[2]
     match_end <- token_dat$end <= (curmatch$start_end[2] - 1) & token_dat$end > curmatch$start_end[1]
-    
     match_pos <- match_start | match_end
     
-    
-    # If one of the indices can be found:
     if(any(match_start) | any(match_end)){
       
-      if(!any(match_end)){match_end <- match_start}
-      if(!any(match_start)){match_start <- match_end}
+      if(!any(match_end)){ match_end <- match_start }
+      if(!any(match_start)){ match_start <- match_end }
       
-      # n_ele  # NEEDED?
-      
-      cur_type <- curmatch$type  # define current type.
+      cur_type <- curmatch$type
       cat("Unit is:") 
       print(cur_type)
       
-      # Check if the match has been defined already:
-      if(all(is.na(match_type[range(which(match_pos))]))){
-        
-        # Establish new match:
-        token_match[match_pos] <- i  # match_id.
-        match_type[match_pos] <- cur_type  # cur_type.
-        
+      if(all(is.na(match_type[match_pos]))){
+        token_match[match_pos] <- i
+        match_type[match_pos] <- cur_type
       } else if(!curmatch$type %in% c("unknown", "ucarryforward", "ucarryback")){
         
-        dropvec <- c(dropvec, i)  # flag for dropping.
+        dropvec <- c(dropvec, i)
         prev_ix <- token_match[which(match_pos)[1]]
-        prev_type <- arr_match[prev_ix[1]]$type
-        
-        
-        precedence_list <- c("nyear", "age")  # define precedence.
-        
-        # Add the match:
-        if(!is.na(prev_ix)){
-          # prev_ix = Array.isArray(prev_ix) ? prev_ix : [prev_ix];
+        if (!is.na(prev_ix)) {
+          prev_type <- arr_match[[prev_ix]]$type
           
-          token_match <- list(c(token_match, i))
+          precedence_list <- c("nyear", "age")
+          cur_precedence <- which(precedence_list == cur_type)
+          prev_precedence <- which(precedence_list == prev_type)
           
-          # Handle precedence:
-          if(which(precedence_list == cur_type) < which(precedence_list == prev_type)){
-            token_match[prev_ix[1]]$type <- cur_type
+          if (length(cur_precedence) == 0) cur_precedence <- Inf
+          if (length(prev_precedence) == 0) prev_precedence <- Inf
+          
+          if (cur_precedence < prev_precedence) {
+            token_match[prev_ix] <- i
+            match_type[prev_ix] <- cur_type
           } else {
             cur_type <- prev_type
-          }  # eof. precedence.
-          
+          }
         }
         
       } else {
-        dropvec <- c(dropvec, i)  # flag for dropping.
+        dropvec <- c(dropvec, i)
       }
       
     }
     
   }
   
-  # Remove the indices that have to be dropped:
-  dropvec <- as.integer(dropvec)  # Ensure dropvec is integer
+  dropvec <- as.integer(dropvec)
   arr_match <- arr_match[-dropvec]
   
-  # Sort the array by the starting position of each match:
   start_positions <- sapply(arr_match, function(x) x$start_end[1])
   arr_match <- arr_match[order(start_positions)]
   
-  
   return(list(arr_match = arr_match, match_id = token_match, match_type = match_type))
-  
-  
-  
 }
+
 
 
 # Function to detect topic in text: -------------------------------------------
@@ -292,7 +266,7 @@ detect_unit <- function(token_data) {
     begins <- numeric()
     counter <- 1
     for (i in seq_along(array)) {
-      if (i < length(array) && array[i] == array[i + 1]) {
+      if (i < length(array) && !is.na(array[i]) && !is.na(array[i + 1]) && array[i] == array[i + 1]) {
         counter <- counter + 1
       } else {
         result <- c(result, rep(counter, counter))
@@ -550,7 +524,7 @@ detect_unit <- function(token_data) {
           if (grepl(pattern, test_str, perl = TRUE)) {
             if (!(key %in% numberfeats)) {
               key_info[[key]] <- list(
-                positions = gregexpr(pattern, test_str)[[1]], 
+                positions = gregexpr(pattern, test_str, perl = TRUE)[[1]], 
                 stop_update_count = stop_update_count,
                 testcounter = testcounter
               )
