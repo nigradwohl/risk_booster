@@ -134,15 +134,22 @@ get_regex_matches <- function(regexp, txt) {
 # token_dat <- token_data
 detect_regex_match <- function(txt, token_dat, check_dict){
   
- 
   # get all matches:
   arr_match <- unlist(sapply(check_dict, get_regex_matches, txt = txt), recursive = FALSE)
   
   # Prüfen, ob arr_match leer ist
+  # Get all matches:
+  arr_match <- unlist(sapply(check_dict, get_regex_matches, txt = txt), recursive = FALSE)
+  
+  # Check if arr_match is empty
   if (length(arr_match) == 0) {
     return(list(arr_match = list(), match_id = NA, match_type = NA))
   }
   
+  # Initialize
+  token_match <- rep(NA, length(arr_match))  # Initialize with NA
+  match_type <- rep(NA, length(arr_match))    # Initialize with NA
+  dropvec <- integer()
   
   # Connect matches to token data:
   token_match <- as.list(rep(NA, nrow(token_dat)))
@@ -151,8 +158,6 @@ detect_regex_match <- function(txt, token_dat, check_dict){
   dropvec <- integer() 
   
   # curmatch <- arr_match[[2]]  # for testing.
-  
-  # TODO: Loop?
   for(i in 1:length(arr_match)){
     
     curmatch <- arr_match[[i]]
@@ -162,16 +167,12 @@ detect_regex_match <- function(txt, token_dat, check_dict){
     match_pos <- match_start | match_end
     match_ix <- which(match_pos)
     
-    
-    # If one of the indices can be found:
     if(any(match_start) | any(match_end)){
       
-      if(!any(match_end)){match_end <- match_start}
-      if(!any(match_start)){match_start <- match_end}
+      if(!any(match_end)){ match_end <- match_start }
+      if(!any(match_start)){ match_start <- match_end }
       
-      # n_ele  # NEEDED?
-      
-      cur_type <- curmatch$type  # define current type.
+      cur_type <- curmatch$type
       cat("Unit is:") 
       print(cur_type)
       
@@ -209,37 +210,32 @@ detect_regex_match <- function(txt, token_dat, check_dict){
           }  # eof. precedence.
           
           # Add the match to data:
-          # TODO: Should maybe rather be a loop over match ix, to save each overlap!
+          # Should be a loop over match ix, to save each overlap!
           # token_match[[match_ix]] <- c(token_match[[match_ix]], i)  # save match as list.
           for(mix in match_ix){
             token_match[[mix]] <- c(token_match[[mix]], i)
             match_type[[mix]] <- unique(c(match_type[[mix]], cur_type))  # save current type (if not the same).
           }
-          
+
         }
         
       } else {
-        dropvec <- c(dropvec, i)  # flag for dropping.
+        dropvec <- c(dropvec, i)
       }
       
     }
     
   }
   
-  # Remove the indices that have to be dropped:
-  dropvec <- as.integer(dropvec)  # Ensure dropvec is integer
+  dropvec <- as.integer(dropvec)
   arr_match <- arr_match[-dropvec]
   
-  # Sort the array by the starting position of each match:
   start_positions <- sapply(arr_match, function(x) x$start_end[1])
   arr_match <- arr_match[order(start_positions)]
   
-  
   return(list(arr_match = arr_match, match_id = token_match, match_type = match_type))
-  
-  
-  
 }
+
 
 
 # Function to detect topic in text: -------------------------------------------
@@ -301,7 +297,7 @@ detect_unit <- function(token_data) {
     begins <- numeric()
     counter <- 1
     for (i in seq_along(array)) {
-      if (i < length(array) && array[i] == array[i + 1]) {
+      if (i < length(array) && !is.na(array[i]) && !is.na(array[i + 1]) && array[i] == array[i + 1]) {
         counter <- counter + 1
       } else {
         result <- c(result, rep(counter, counter))
@@ -559,7 +555,7 @@ detect_unit <- function(token_data) {
           if (grepl(pattern, test_str, perl = TRUE)) {
             if (!(key %in% numberfeats)) {
               key_info[[key]] <- list(
-                positions = gregexpr(pattern, test_str)[[1]], 
+                positions = gregexpr(pattern, test_str, perl = TRUE)[[1]], 
                 stop_update_count = stop_update_count,
                 testcounter = testcounter
               )
