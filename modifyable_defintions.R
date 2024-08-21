@@ -257,6 +257,7 @@ check_numbers_dict <- list(
     carry_forward_pre = paste0("(?<ucarryforward>((waren|sind) es|[Dd]avon[^.]*) (\\w+ ){0,2}", pat_num, "(?=\\W))"),
   # (\\w+ ){0,2} allows up to 2 more words.
   carry_forward_post = paste0("(?<ucarryforward>", pat_num, " (waren|sind) es)"),
+  carry_back = paste0("(?<ucarryback>", pat_num, " (bzw\\.|und|bis))", "dg"),
   phone = "(?<phone>[+]?[0-9]* ?([(]?[0-9]{0,3}[)])?[-\\s.]?[0-9]{3,4}[-\\s.]?[0-9]{3,4}[-\\s.]?[0-9]{1,6})",
   # MIscellaneous numbers to be excluded!
     misc = paste0("(?<misc>(", pat_num, " bis )?", pat_num, "\\.? (Grad|Staat|Schritt|Kommentare|.[gC](?= .)))"),
