@@ -195,8 +195,8 @@ window_keys <- list(
     medical = c("BMI")
   ),
   rel = list(
-    abs = c("[Qq]uote", "Anteil", "mehr_als(?!.*(?:Wirksamkeit|Impfschutz|Schutz(?:wirkung)?|verlangsamt|gesunken|Anstieg|geschützt))"), 
-    rel = c("Wirksamkeit", "Impfschutz", "Schutz(wirkung=?", "verlangsamt", "gesunken", "Anstieg", "geschützt")
+    abs = c("[Qq]uote", "Anteil", "mehr_als(?!.*(?:Wirksamkeit|Impfschutz|Schutz(wirkung)?|verlangsamt|gesunken|Anstieg|geschützt))"), 
+    rel = c("Wirksamkeit", "Impfschutz", "Schutz(wirkung=?)", "verlangsamt", "gesunken", "Anstieg", "geschützt")
   ),
   reference = list(
     tot = c("(der|aller)_(Studien)?[Tt]eilnehm"),
