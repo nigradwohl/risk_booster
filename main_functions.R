@@ -354,19 +354,20 @@ detect_unit <- function(token_data) {
   detect_number_type <- function(token_data, txt, numtype_dict) {
     
     if (!"is_num" %in% colnames(token_data)) {
-      token_dat$unit <- detect_unit()
+      token_dat$unit <- detect_unit(token_data)
     }
  
     
-    num_types <- rep(NA, nrow(token_data))
+    num_types <- rep("NA", nrow(token_data))
     
     # Also check for topics?
     sentence_set <- unique(token_data$sent)
     sentence_counts <- table(token_data$sent)
     
     # Include topic-specific keywords:
-    if ("impf" %in% token_data$topics) {
+    if ("impf" %in% attr(token_data, "topics")) {
       # Include Impf-specific keys
+      keyset_impf <- paste0(collapse_regex_or(c("([Ww]irk(sam|t))", "[Ee]ffektiv", "[Ss]ch[uü]tz")))
       numtype_dict$decr$keyset <- c(numtype_dict$decr$keyset, keyset_impf)
     }
     
@@ -385,7 +386,6 @@ detect_unit <- function(token_data) {
     
     
     prev_token <- 0
-    num_types <- rep("other", length(token_data$id))  # Initialize num_types with default value
     
     for (key in names(sentence_counts)) {
       value <- sentence_counts[[key]]
@@ -455,8 +455,8 @@ detect_unit <- function(token_data) {
     }
     
     # OUTPUT
-    # print("Output numtypes:")
-    # print(num_types)
+    print("Output numtypes:")
+    print(num_types)
     return(num_types)
   }
   
@@ -554,7 +554,7 @@ detect_unit <- function(token_data) {
         test_tokens <- token_data$token[window_start:window_end]
         test_str <- paste(test_tokens, collapse = "_")
         
-        cat(test_str, sep = "\n")  # output for testing.
+       # cat(test_str, sep = "\n")  # output for testing.
         
         # Test the tokens here
         for (key in names(keyset)) {

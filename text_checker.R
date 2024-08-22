@@ -44,7 +44,8 @@ test_text <- function(txt){
   modifyiable_defs <- list(
     units_exc = units_exc,
     check_numbers_dict = check_numbers_dict,
-    window_keys = window_keys
+    window_keys = window_keys,
+    numtype_keyset = numtype_keyset
   )
   
   
@@ -148,8 +149,8 @@ test_text <- function(txt){
     
   # Number level: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
-    numtype_keyset$ncase$keyset <- c(numtype_keyset$ncase$keyset, collapse_regex_or(targetconds))
-    token_dat$numtype <- detect_number_type(token_dat, input_txt, numtype_keyset)
+    modifyiable_defs$numtype_keyset$ncase$keyset <- c(modifyiable_defs$numtype_keyset$ncase$keyset, collapse_regex_or(targetconds))
+    token_dat$numtype <- detect_number_type(token_dat, input_txt, modifyiable_defs$numtype_keyset)
    #  print(token_dat$numtype)
     
   # 
@@ -306,17 +307,18 @@ test_text <- function(txt){
     
     
     # Update information on small percentages:
-    token_dat$smperc <- ifelse(
-      token_dat$unit == "perc" & token_dat$is_num, 
-      {
-        # Extrahiere numerische Teile und ersetze Komma durch Punkt
-        numpart <- gsub(",", ".", gsub(".*?(\\d+\\.?\\d*).*", "\\1", token_dat$trnum))
-        # Konvertiere in numerischen Wert und prüfe, ob er < 1 ist
-        is_small_perc <- suppressWarnings(as.numeric(numpart))
-        ifelse(!is.na(is_small_perc) & is_small_perc < 1, TRUE, -1)
-      }, 
-      -1
-    )
+    regex_num <- "\\d+(\\.\\d+)?"
+    
+    # Neue Spalte `smperc` erstellen
+    token_dat$smperc <- sapply(1:nrow(token_dat), function(ix) {
+      if (token_dat$unit[ix] == "perc" && token_dat$is_num[ix]) {
+        extracted_num <- sub(",", ".", regmatches(token_dat$trnum[ix], regexpr(regex_num, token_dat$trnum[ix])))
+        return(as.numeric(extracted_num) < 1)
+      } else {
+        return(NA)
+      }
+    })
+    
     
     # Investigate change for relative or absolute:
     for (ix in n_change_ix) {
