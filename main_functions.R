@@ -79,7 +79,7 @@ get_token_data <- function(txt) {
 
     token_info <- rbind(token_info, data.frame(token = token_i, 
                                       start = tpos_start, end = tpos_end, 
-                                      sent = sentence_id, par = cur_paragraph_id))
+                                      sent = sentence_id, par = cur_paragraph_id, is_num = grepl("\\d", token_i) ))
     
   }
   
@@ -236,5 +236,88 @@ get_token_data <- function(txt) {
     return(topic_present)
     
     
+  }
+  
+  
+# Function to get additional unit info from token data: ----------------------
+  # Funktion zur Erkennung zusätzlicher Einheitendaten aus den Token-Daten
+  # Function to detect additional unit information from token data
+  detect_unit <- function(token_data) {
+    # Check if 'is_num' column exists, if not add it
+    if (!"is_num" %in% colnames(token_data)) {
+      stop("Token data is missing the 'is_num' column.")
+    }
+    
+    # Check if 'unit' column exists, if not initialize it
+    if (!"unit" %in% colnames(token_data)) {
+      token_data$unit <- rep(NA, nrow(token_data))
+    }
+    
+    # Initialize unit info
+    unit_info <- ifelse(is.na(token_data$unit), rep(NA, nrow(token_data)), token_data$unit)
+    
+    # Define unit lookup patterns
+    unit_lookup <- list(
+      list(pattern = "%|[Pp]rozent\\w*", unit = "perc"),  # Percentages
+      list(pattern = "[Tt]eilnehm|[Ff][aä]ll|[Ii]nfektion|Proband|Person|Mensch|Kind|Mädchen|Junge|Männer|Frauen|Verl[aä]uf|Erwachsen|[Ii]nfizierte|Patient", unit = "freq")  # Frequencies
+    )
+    
+    # Helper function to count consecutive values
+    count_reps <- function(array) {
+      result <- numeric()
+      begins <- numeric()
+      counter <- 1
+      for (i in seq_along(array)) {
+        if (i < length(array) && array[i] == array[i + 1]) {
+          counter <- counter + 1
+        } else {
+          result <- c(result, rep(counter, counter))
+          begins <- c(begins, rep(i - counter + 1, counter))
+          counter <- 1
+        }
+      }
+      list(counts = result, begins = begins)
+    }
+    
+    # Loop through the rows of token_data
+    for (ix_tok in seq_len(nrow(token_data))) {
+      if (token_data$is_num[ix_tok]) {
+        cur_token <- token_data$token[ix_tok]
+        
+        # Check adjacent tokens for unit patterns
+        for (ix_nxt in ix_tok:min(ix_tok + 3, nrow(token_data))) {
+          nxt_token <- token_data$token[ix_nxt]
+          
+          # Check for matches
+          cur_info <- sapply(unit_lookup, function(x) {
+            if (grepl(x$pattern, nxt_token)) x$unit else NA
+          })
+          cur_info <- cur_info[!is.na(cur_info)]
+          
+          if (length(cur_info) > 0 && (is.na(unit_info[ix_tok]) || unit_info[ix_tok] == "unknown")) {
+            # Update unit info
+            n_ele <- ix_nxt - ix_tok + 1
+            unit_info[ix_tok:(ix_tok + n_ele - 1)] <- rep(cur_info[1], n_ele)
+          }
+        }
+        
+        # Handle unknown cases
+        if (is.na(unit_info[ix_tok])) {
+          unit_info[ix_tok] <- "unknown"
+        } else if (unit_info[ix_tok] == "ucarryforward") {
+          n_reps <- count_reps(unit_info)
+          prev_info <- unit_info[seq_len(ix_tok - 1)]
+          prev_units <- prev_info[!is.na(prev_info) & prev_info != "ucarryforward"]
+          
+          if (length(prev_units) > 0) {
+            unit_info[n_reps$begins[ix_tok]:(n_reps$begins[ix_tok] + n_reps$counts[ix_tok] - 1)] <- rep(prev_units[length(prev_units)], n_reps$counts[ix_tok])
+          } else {
+            unit_info[n_reps$begins[ix_tok]:(n_reps$begins[ix_tok] + n_reps$counts[ix_tok] - 1)] <- rep("unknown", n_reps$counts[ix_tok])
+          }
+        }
+      }
+    }
+    
+    return(unit_info)
   }
   

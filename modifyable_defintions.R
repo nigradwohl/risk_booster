@@ -26,7 +26,7 @@ regex_dur2 = "(?<dur>\\d+([,.]\\d+)?-?\\d*([,.]\\d+)?(Minuten?| Stunden?| Tagen?
 
 
 # Person words:
-person_all <- c("Proband", "[Tt]eilnehme", "[Pp]erson", "Menschen", "Frauen", "Männer", "Kinder", "Erwachsene")
+person_all <- c("Proband", "[Tt]eilnehm", "[Pp]erson", "Mensch", "Frauen", "Männer", "Kind", "Erwachsen", "Mädchen", "Junge", "[Ii]nfektion", "[Ii]nfizierte")
 
 
 
