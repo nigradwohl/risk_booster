@@ -66,7 +66,8 @@ $(document).ready(function () {
             "year3": /(?<year>(?<!(,|\.|Jahr |Anfang |Ende |Mitte |Nach ))(19|20)\d{2}(?![|.\w]))/dg,  // 20th and 21st century.
             "monyear": RegExp("(?<year>" + collapse_regex_or(month_names) + " \\d{4})", "dg"),
             "yearrange": /(?<year>(zwischen|von) (18|19|20)\d{2}(?![|.\w]) (und|bis) (18|19|20)?\d{2}(?![|.\w]))/dg,
-            "dur": /(?<dur>[0-9]+(-stündig|-tägig|-monatig| Minuten?| Stunden?| Tagen?| Wochen?| Monate?))/dg,
+            // "dur": /(?<dur>[0-9]+(-stündig|-tägig|-monatig| Minuten?| Stunden?| Tagen?| Wochen?| Monate?))/dg,
+            "dur": /(?<dur>[0-9]+([,.][0-9]+)?(-stündig|-tägig|-monatig| Minuten?| Stunden?| Tagen?| Wochen?| Monate?))/dg, // change it to handle e.g. "2,5 Stunden"
             "dur2": regex_dur2,
             "legal": /(?<legal>(Artikel|§|Absatz|Paragra(ph|f)) ?\d+)/dg,
             "medical": RegExp("(?<medical>(BMI|Diabetes Typ) ?" + pat_num + ")", "dg"),
@@ -93,7 +94,7 @@ $(document).ready(function () {
             "other_num": regex_num
         }
 
-        const person_all = ["Proband", "[Tt]eilnehm", "[Pp]erson", "Mensch", "Frauen", "Männer", "Kind", "Erwachsen", "Mädchen","Junge", "[Ii]nfektion", "[Ii]nfizierte"] 
+        const person_all = ["Proband", "[Tt]eilnehm", "[Pp]erson", "Mensch", "Frauen", "Männer", "Kind", "Erwachsen", "Mädchen","Junge", "[Ii]nfektion", "[Ii]nfizierte", "Patient"] 
         // Is "Infektion" necessary?        
         
         /**
@@ -158,7 +159,7 @@ $(document).ready(function () {
                         RegExp(collapse_regex_or(person_all))],
                     // 2nd set:
                     [RegExp(collapse_regex_or(person_all)),
-                        RegExp(collapse_regex_or(["Analyse", "rekrutiert"]))]
+                        RegExp(collapse_regex_or(["Analyse", "rekrutiert", "untersucht"]))]
                 ]
             }
         }
@@ -196,8 +197,8 @@ $(document).ready(function () {
                     "beiden.*Gruppen", "sowohl.*[Gg]ruppe"] // problematic!
             },
             "effside": {
-                "eff": ["(?<![Nn]eben)[Ww]irk(?!lich)", "Impfschutz",
-                    "Schutz", "geschützt",
+                "eff": ["(?<![Nn]eben)[Ww]irk(?!lich|s[a-z]*)", "Impfschutz", // chane ?!lich with s[a-z]* to hanle case "wirksam"
+                    "Schutz", "geschützt", "Schutzwirkung",
                     "(reduziert|verringert|minimiert|gesunken).*(Risiko|[Gg]efahr|Wahrscheinlichkeit).*(Ansteckung|Infektion|[Ee]rkrank)",
                     "((Risiko|[Gg]efahr|Wahrscheinlichkeit).*(Ansteckung|Infektion|[Ee]rkrank)).*(reduziert|verringert|minimiert|gesunken)",
                     "(Risiko|[Gg]efahr|Wahrscheinlichkeit).*(reduziert|verringert|minimiert|gesunken)",
@@ -211,7 +212,7 @@ $(document).ready(function () {
                 "damage": ["(Inzidenz|[Ee]rkank|Todesfäll|Risiko).*(erhöht|vielfach)",
                     "(erhöht|vielfach).*(Inzidenz|[Ee]rkank|Todesfäll|Risiko)",
                     "Risiko.*Erkrank",
-                    "Todesf[aä]ll|gestorben|tödlich|Infektion", // add tödlich
+                    "Todesf[aä]ll|gestorben|tödlich", // add tödlich
                     "Lebenserwartung.*sink|weniger", "st[aeo]rb.*früher",
                     "[Nn]ur.*Gesundheitszustand.*gut",  // absence of positive!
                     "([Gg]esundheit|[Ff]inanz|[Pp]sychisch).*Belastung"],
@@ -241,9 +242,11 @@ $(document).ready(function () {
                 "medical": ["BMI"]
             },
             "rel": {
-                "abs": ["[Qq]uote", "Anteil", "mehr_als"],  // quotas should always be absolute.
+                // "abs": ["[Qq]uote", "Anteil", "mehr_als"],  // quotas should always be absolute.
+
+                "abs": ["[Qq]uote", "Anteil","mehr_als(?!.*(?:Wirksamkeit|Impfschutz|Schutz(?:wirkung)?|verlangsamt|gesunken|Anstieg|geschützt))"],
                 // MAYBE: "[%|Prozent]_[der|aller]"
-                "rel": ["Wirksamkeit", "Impfschutz", "Schutzwirkung", "verlagsamt"]
+                "rel": ["Wirksamkeit", "Impfschutz", "Schutz(wirkung)?", "verlangsamt", "gesunken", "Anstieg", "geschützt" ] // add "Anstieg" and "Schutz.." 
             },
             "reference": {
                 // TODO!
@@ -1618,15 +1621,15 @@ const largenums = ["Millionen", "Milliarden"];
 const regex_num = new RegExp("(?<unknown>" + pat_num + "( Millionen| Milliarden)?)", "dg");  // regex to detect numbers; d-flag provides beginning and end!.
 // const regex_numwords = new RegExp("(?<unknown>(" + collapse_regex_or(numwords) + ") (Person(en)?|F[aä]lle?))", "dg");
 
-const person_all = ["Proband", "[Tt]eilnehm", "[Pp]erson", "Mensch", "Frauen", "Männer", "Kind", "Erwachsen", "Mädchen","Junge", "[Ii]nfektion", "[Ii]nfizierte"] 
+const person_all = ["Proband", "[Tt]eilnehm", "[Pp]erson", "Mensch", "Frauen", "Männer", "Kind", "Erwachsen", "Mädchen","Junge", "[Ii]nfektion", "[Ii]nfizierte", "Patient"] 
 const person_all_regex = person_all.join("|");
 const regex_numwords = new RegExp("(?<unknown>(" + collapse_regex_or(numwords) + ") (" + person_all_regex + "))", "dg");
 
 const regex_perc = new RegExp("(?<perc>" +
     // pat_num + " bzw\\. )?" + " ?(%|\\\-?[Pp]rozent)\\\w*(?=[\\s.,?!])" + ")", "dg");
     pat_num + " ?(%|\\\-?[Pp]rozent)\\w*(?!\\s*[CK]I)[\\s.,?!]" + ")", "dg");    
-const regex_nh = new RegExp("(?<nh>" + pat_num + " (?!%|[Pp]rozent)(\\w+ )?(von|aus|in) (\\w+ )?" + pat_num + ")", "dg");  // TODO: Handle numberwords here.
-const regex_nh2 = new RegExp("(?<nh>(" + collapse_regex_or(numwords) + ") (?!%|[Pp]rozent)(\\w+ )?(von|aus|in) (\\w+ )?" + pat_num + ")", "dg");
+const regex_nh = new RegExp("(?<nh>" + pat_num + " (?!%|[Pp]rozent|Monat|Rekordzeit)(\\w+ )?(von|aus|in) (\\w+ )?" + pat_num + ")", "dg");  // TODO: Handle numberwords here.
+const regex_nh2 = new RegExp("(?<nh>(" + collapse_regex_or(numwords) + ") (?!%|[Pp]rozent|Monat|Rekordzeit)(\\w+ )?(von|aus|in) (\\w+ )?" + pat_num + ")", "dg");
 const regex_mult = new RegExp("(?<mult>" + pat_num + "[ \\-]?([Mm]al|[Ff]ach) (so )?( ?viele|gr[oö]ß(er)?|hoch|niedrig(er)?|besser|erhöht|höher)(?=[\\s.,?!])" + ")", "dg");
 const regex_dur2 = /(?<dur>\d+([,.]\d+)?-?\d*([,.]\d+)?(Minuten?| Stunden?| Tagen?| Wochen?))/dg;
 // Note: in regex_nh we may also try to get the denominator as a group or as its own entity.
