@@ -94,9 +94,9 @@ $(document).ready(function () {
             "other_num": regex_num
         }
 
-        const person_all = ["Proband", "[Tt]eilnehm", "[Pp]erson", "Mensch", "Frauen", "Männer", "Kind", "Erwachsen", "Mädchen", "Junge", "[Ii]nfektion", "[Ii]nfizierte", "Patient"]
-        // Is "Infektion" necessary?
-
+        const person_all = ["Proband", "[Tt]eilnehm", "[Pp]erson", "Mensch", "Frauen", "Männer", "Kind", "Erwachsen", "Mädchen","Junge", "[Ii]nfektion", "[Ii]nfizierte", "Patient"]
+        // Is "Infektion" necessary?        
+        
         /**
          * Object that can be looped over to check numbers for number types taht are specific to their units in "number_unit".
          * @type {{ncase: {number_unit: string[], keyset: RegExp[][]}, incr: {number_unit: string[], keyset: RegExp[][]}, ntot: {number_unit: string[], keyset: RegExp[][]}, decr: {number_unit: string[], keyset: RegExp[][]}}}
@@ -201,8 +201,8 @@ $(document).ready(function () {
                     "beiden.*Gruppen", "sowohl.*[Gg]ruppe"] // problematic!
             },
             "effside": {
-                "eff": ["(?<![Nn]eben)[Ww]irk(?!lich|s[a-z]*)", "Impfschutz", // change ?!lich with s[a-z]* to hanle case "wirksam"
-                    "Schutz", "geschützt", "Schutzwirkung", 
+                "eff": ["(?<![Nn]eben)[Ww]irk(?!lich|s[a-z])", "Impfschutz", // change ?!lich with s[a-z]* to hanle case "wirksam"
+                    "Schutz", "geschützt", "Schutzwirkung",
                     "(reduziert|verringert|minimiert|gesunken).*(Risiko|[Gg]efahr|Wahrscheinlichkeit).*(Ansteckung|Infektion|[Ee]rkrank)",
                     "((Risiko|[Gg]efahr|Wahrscheinlichkeit).*(Ansteckung|Infektion|[Ee]rkrank)).*(reduziert|verringert|minimiert|gesunken)",
                     "(Risiko|[Gg]efahr|Wahrscheinlichkeit).*(reduziert|verringert|minimiert|gesunken)",
@@ -247,9 +247,10 @@ $(document).ready(function () {
             },
             "rel": {
                 // "abs": ["[Qq]uote", "Anteil", "mehr_als"],  // quotas should always be absolute.
-                "abs": ["[Qq]uote", "Anteil","mehr_als(?!.*(?:Wirksamkeit|Impfschutz|Schutz(?:wirkung)?|verlangsamt|gesunken|Anstieg|geschützt))"],
+
+                "abs": ["[Qq]uote", "Anteil","mehr_als(?!.(?:Wirksamkeit|Impfschutz|Schutz(?:wirkung)?|verlangsamt|gesunken|Anstieg|geschützt))"],
                 // MAYBE: "[%|Prozent]_[der|aller]"
-                "rel": ["Wirksamkeit", "Impfschutz", "Schutz(wirkung)?", "verlangsamt", "gesunken", "Anstieg", "geschützt" ] // add "Anstieg" and "Schutz.." 
+                "rel": ["Wirksamkeit", "Impfschutz", "Schutz(wirkung)?", "verlangsamt", "gesunken", "Anstieg", "geschützt" ] // add "Anstieg" and "Schutz.."
             },
             "reference": {
                 // Note: Currently not operational. Address in future version.
@@ -331,7 +332,6 @@ $(document).ready(function () {
         // Add information to object:
         token_dat.add_column(regex_matches.match_id, "match");
         token_dat.add_column(regex_matches.match_type.map((x) => x !== -1 ? x.toString() : x), "unit");  // get unit info from regex matches.
-        // +++ TRANSLATION IS HERE +++
         token_dat.add_number_info();  // add info about numbers.
         token_dat.add_column(token_dat.token.map((x, ix) => (RegExp(collapse_regex_or(numwords), "dg").test(x))), "is_nw");  // is it a number word?
         token_dat.detect_unit();  // get additional unit info from token data.
@@ -431,27 +431,27 @@ $(document).ready(function () {
 
         const regex_numwords_raw = RegExp("(?<!\\w)(" + collapse_regex_or(numwords) + ")", "dg");
         const excludePattern = RegExp(
-            "ein|" +
-            "eine|" +
-            "einer|" +
-            "einen|" +
+            "ein|" + 
+            "eine|" + 
+            "einer|" + 
+            "einen|" + 
             "einem|" +
-            "eines|" +
-            // "(?<![Kk])\\b([Ee]in|[Ee]ine?[rm]?|[Ee]ines(?![gnz]))\\b|" +
-            "[Zz]wei(?!fe)|" +
-            "[Dd]rei|" +
-            "[Vv]ier|" +
-            "[Ff]ünf|" +
-            "[Ss]echs|" +
-            "[Ss]ieben|" +
-            "[Aa]cht(?!e)|" +
-            "[Nn]eun(?!k)|" +
-            "[Zz]ehn|" +
-            "[Ee]lf|" +
+            "eines|" + 
+            // "(?<![Kk])\\b([Ee]in|[Ee]ine?[rm]?|[Ee]ines(?![gnz]))\\b|" + 
+            "[Zz]wei(?!fe)|" + 
+            "[Dd]rei|" + 
+            "[Vv]ier|" + 
+            "[Ff]ünf|" + 
+            "[Ss]echs|" + 
+            "[Ss]ieben|" + 
+            "[Aa]cht(?!e)|" + 
+            "[Nn]eun(?!k)|" + 
+            "[Zz]ehn|" + 
+            "[Ee]lf|" + 
             "[Zz]wölf|" +
-            "[Zz]weieinhalb"
-            , "i");
-
+            "[Zz]weieinhalb" 
+          , "i"); 
+          
         const is = token_dat.token
             .map((x) => regex_numwords_raw.test(x) && !token_dat.is_num ? x : -1);
 
@@ -2594,7 +2594,7 @@ function investigate_context(token_data, index_arr, keyset, only_pars) {
             if (Object.keys(keyset).filter((x) => numberfeats.has(x)).length > 0 &&
                 stop_update_count > 2  // NOTE: KEEP?
             ) {
-                console.log("FINAL TESTSTRING:\n" + test_str);
+                // console.log("FINAL TESTSTRING:\n" + test_str);
                 // console.log(test_tokens);
                 // console.log("DESCRIPTION COMPLETE");
                 description_complete = true;
