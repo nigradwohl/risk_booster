@@ -3,7 +3,7 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Unicode characters for quotes:
-ucode_quotes <- c("\\x{2018}", "\\x{2019}", "\\x{201c}", "\\x{201d}", "\\x{201e}")
+ucode_quotes <- c("\u{2018}", "\u{2019}", "\u{201c}", "\u{201d}", "\u{201e}")
 
 # Function to create token data: -----------------------
 get_token_data <- function(txt) {
@@ -132,91 +132,69 @@ get_regex_matches <- function(regexp, txt) {
 # For testing:
 # check_dict <- check_numbers_dict
 # token_dat <- token_data
-detect_regex_match <- function(txt, token_dat, check_dict){
+detect_regex_match <- function(txt, token_dat, check_dict) {
   
-  # get all matches:
-  arr_match <- unlist(sapply(check_dict, get_regex_matches, txt = txt), recursive = FALSE)
-  
-  # Prüfen, ob arr_match leer ist
   # Get all matches:
   arr_match <- unlist(sapply(check_dict, get_regex_matches, txt = txt), recursive = FALSE)
-  
+
   # Check if arr_match is empty
   if (length(arr_match) == 0) {
     return(list(arr_match = list(), match_id = NA, match_type = NA))
   }
   
   # Initialize
-  token_match <- rep(NA, length(arr_match))  # Initialize with NA
-  match_type <- rep(NA, length(arr_match))    # Initialize with NA
+  token_match <- rep(NA, nrow(token_dat))  # Initialize with NA
+  match_type <- rep(NA, nrow(token_dat))    # Initialize with NA
   dropvec <- integer()
   
-  # Connect matches to token data:
-  token_match <- as.list(rep(NA, nrow(token_dat)))
-  match_type <- as.list(rep(NA, nrow(token_dat)))
-  
-  dropvec <- integer() 
-  
-  # curmatch <- arr_match[[2]]  # for testing.
-  for(i in 1:length(arr_match)){
+  # Process each match
+  for (i in 1:length(arr_match)) {
     
     curmatch <- arr_match[[i]]
-    match_start <- token_dat$start >= curmatch$start_end[1] & token_dat$start < curmatch$start_end[2]
-    match_end <- token_dat$end <= (curmatch$start_end[2] - 1) & token_dat$end > curmatch$start_end[1]
+    match_start <- token_dat$start >= curmatch$start_end[1] & token_dat$start <= curmatch$start_end[2]
+    match_end <- token_dat$end >= curmatch$start_end[1] & token_dat$end <= curmatch$start_end[2]
     
-    match_pos <- match_start | match_end
+    match_pos <- match_start & match_end
     match_ix <- which(match_pos)
     
-    if(any(match_start) | any(match_end)){
-      
-      if(!any(match_end)){ match_end <- match_start }
-      if(!any(match_start)){ match_start <- match_end }
+    
+    if (length(match_ix) > 0) {
       
       cur_type <- curmatch$type
-      cat("Unit is:") 
-      print(cur_type)
+      cat("Unit is:", cur_type, "\n")
       
       # Check if the match has been defined already:
-      if(all(is.na(unlist(match_type[range(match_ix)])))){
+      if (all(is.na(match_type[match_ix]))) {
         
         # Establish new match:
         token_match[match_pos] <- i  # match_id.
         match_type[match_pos] <- cur_type  # cur_type.
         
-      } else if(!curmatch$type %in% c("unknown", "ucarryforward", "ucarryback")){
+      } else if (!curmatch$type %in% c("unknown", "ucarryforward", "ucarryback")) {
         
         dropvec <- c(dropvec, i)  # flag for dropping.
-        prev_ix <- token_match[[match_ix[1]]]
+        prev_ix <- token_match[match_ix[1]]
         prev_type <- arr_match[[prev_ix]]$type  # alternatively: match_type[which(match_pos)[1]]
-        
         
         precedence_list <- c("nyear", "age")  # define precedence.
         
         # Add the match:
-        if(!is.na(prev_ix)){
-          # prev_ix = Array.isArray(prev_ix) ? prev_ix : [prev_ix];
+        if (!is.na(prev_ix)) {
           
-          # Handle precedence (if curtype is earlier, give precedence):
-          # Note: This does not work like in javascript because which() does not return -1 if no index is found like indexOf().
           has_precedence <- which(precedence_list == cur_type) < which(precedence_list == prev_type)
-          has_precedence <- ifelse(length(has_precedence) > 0, has_precedence, FALSE)  # only give precendence, if there canbe any.
+          has_precedence <- length(has_precedence) > 0 && has_precedence
           
-          if(has_precedence){
-            # Update the previous type with precedence:
-            arr_match[[prev_ix[1]]]$type <- cur_type
+          if (has_precedence) {
+            arr_match[[prev_ix]]$type <- cur_type
           } else {
-            # If no precedence update the current type to be the previous one.
             cur_type <- prev_type
-          }  # eof. precedence.
-          
-          # Add the match to data:
-          # Should be a loop over match ix, to save each overlap!
-          # token_match[[match_ix]] <- c(token_match[[match_ix]], i)  # save match as list.
-          for(mix in match_ix){
-            token_match[[mix]] <- c(token_match[[mix]], i)
-            match_type[[mix]] <- unique(c(match_type[[mix]], cur_type))  # save current type (if not the same).
           }
-
+          
+          for (mix in match_ix) {
+            token_match[mix] <- c(token_match[mix], i)
+            match_type[mix] <- unique(c(match_type[mix], cur_type))
+          }
+          
         }
         
       } else {
@@ -233,8 +211,10 @@ detect_regex_match <- function(txt, token_dat, check_dict){
   start_positions <- sapply(arr_match, function(x) x$start_end[1])
   arr_match <- arr_match[order(start_positions)]
   
+  
   return(list(arr_match = arr_match, match_id = token_match, match_type = match_type))
 }
+
 
 
 
@@ -258,9 +238,7 @@ detect_topic <- function(tokens, key_list){
 }
 
 
-library(stringr)
 add_number_info <- function(token_dat) {
-  
   
   is_num <- grepl("\\d", token_dat$token) | 
     (grepl(collapse_regex_or(numwords), token_dat$token, perl = TRUE) & !is.na(token_dat$unit))
@@ -276,6 +254,7 @@ detect_unit <- function(token_data) {
   if (!"is_num" %in% colnames(token_data)) {
     add_number_info(token_dat)
   }
+ 
   
   # Check if 'unit' column exists, if not initialize it
   if (!"unit" %in% colnames(token_data)) {
@@ -307,6 +286,9 @@ detect_unit <- function(token_data) {
     }
     list(counts = result, begins = begins)
   }
+  
+  print("TEST")
+  print(unit_info)
   
   # Loop through the rows of token_data
   for (ix_tok in seq_len(nrow(token_data))) {
@@ -389,13 +371,14 @@ detect_unit <- function(token_data) {
     
     for (key in names(sentence_counts)) {
       value <- sentence_counts[[key]]
-      
       # Get tokens in sentence:
       final_token <- prev_token + value  # Get the final token of the sentence
+
       
       # Extract relevant slices of token data
       token_ids <- token_data$id[(prev_token + 1):final_token]
       num_info <- token_data$is_num[(prev_token + 1):final_token]
+     
       
       # Only continue if any numbers are present:
       if (any(num_info)) {
@@ -404,9 +387,10 @@ detect_unit <- function(token_data) {
         sentence_units <- token_data$unit[(prev_token + 1):final_token]
         
         # Get positions of numbers
-        # cat("Number positions\n")
+        cat("Number positions\n")
         num_array <- token_ids[num_info]
-        # print(num_array)
+        print(num_array)
+        
         
         for (num in num_array) {
           curnum_id <- which(token_data$id == num)  # Get global ID of current number in sentence
@@ -585,6 +569,7 @@ detect_unit <- function(token_data) {
         
         if (length(numberfeats) > 0 && stop_update_count > 2) {
           description_complete <- TRUE
+          cat("FINAL TESTSTRING:\n", test_str, "\n")
           if (length(numberfeats) > 1) {
             numberfeats <- setdiff(numberfeats, "all")
           }
@@ -595,6 +580,7 @@ detect_unit <- function(token_data) {
           numberfeats <- unique(c(numberfeats, "unknown"))
         }
         
+       
         testcounter <- testcounter + 1
       }
       
@@ -605,5 +591,87 @@ detect_unit <- function(token_data) {
     return(context_info)
   }
   
+
+# ----------------------
+
+OutputNode <- function(tool, popup) {
+  list(tool = tool, popup = popup)
+}
+
+
+
+info_tree <- list(
+  tree = list(
+    perc = list(
+      abs = OutputNode("Absolute Prozentzahl", "Die Prozentzahl scheint absolut zu sein"),
+      rel = OutputNode("Relative Prozentzahl", "Die Prozentzahl scheint relativ zu sein"),
+      default = OutputNode("Prozentzahl", "Diese Prozentzahl konnte leider nicht näher identifiziert werden")
+    ),
+    nh = OutputNode("Natürliche Häufigkeit.", "Diese Häufigkeit bezieht sich auf natürliche Vorkommnisse."),
+    freq = list(
+      ncase = OutputNode("Fallzahl", "Diese Häufigkeit scheint eine Fallzahl zu sein"),
+      ntot = OutputNode("Stichprobengröße", "Diese Häufigkeit scheint eine Stichprobengröße zu sein"),
+      default = OutputNode("Häufigkeit", "Diese Häufigkeit konnte leider nicht näher identifiziert werden.")
+    ),
+    mult = OutputNode("Relative Veränderung", "Diese Zahl zeigt eine relative Veränderung an."),
+    pval = OutputNode("p-Wert", "Diese Zahl ist ein p-Wert."),
+    confint = OutputNode("Konfidenzintervall", "Diese Zahl ist ein Konfidenzintervall."),
+    nyear = list(
+      decr = OutputNode("Unterschied in der Lebenserwartung", "Unterschied in der Lebenserwartung zwischen Gruppen."),
+      incr = OutputNode("Unterschied in der Lebenserwartung", "Unterschied in der Lebenserwartung zwischen Gruppen."),
+      other = OutputNode("Lebenserwartung in Jahren", "Lebenserwartung in Jahren."),
+      default = OutputNode("Anzahl an Jahren", "Diese Anzahl an Jahren konnte leider nicht näher identifiziert werden.")
+    ),
+    age = OutputNode("Altersangabe", "Diese Zahl bezieht sich auf eine Altersangabe."),
+    default = OutputNode("Zahl.", "Diese Zahl konnte leider nicht näher identifiziert werden.")
+  ),
+
+
+traverse = function(arr) {
+  curtree <- info_tree$tree
+  curdefault <- info_tree$tree$default
   
+  for (i in arr) {
+    curentry <- curtree[[i]]
+    
+    if (!is.null(curentry)) {
+      curtree <- curentry
+      curdefault <- curtree$default
+      
+      if (is.list(curtree) && !is.null(curtree$tool)) {
+        break
+      }
+    }
+  }
   
+ 
+  if (!(is.list(curtree) && !is.null(curtree$tool))) {
+    curtree <- curdefault
+  }
+  
+  print("Final tree:");
+  print(curtree);
+  print(curdefault);
+  
+  return(curtree)
+}
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
