@@ -137,25 +137,37 @@ window_keys <- list(
             "der.*[Tt]eilnehmer", "entfielen.*auf")
   ),
   treat_contr = list(
-    contr = c("(Kontroll|Placebo|Vergleichs|Scheinpräparat)-?.*([Gg]ruppe|[Ee]mpfänger)",
-              "(?<!Impfstoff|Impf)-(Gruppe|Empfänger)",
-              "(?<!Impfstoff|Impf|Behandlungs|Untersuchungs)(gruppe|empfänger)",
-              "Prävention.*wenigsten.*befolgte",
-              "kein.*Medika",
-              "Scheinpräparat_(gespritzt|erhalten|bekommen)"),
-    treat = c("[Gg]eimpfte?n?", "Impf-?.*([Gg]ruppe|[Em]pfänger)",
-              "(?<!Kontroll|Vergleichs|Placebo|Scheinpräparat)-(Gruppe|Empfänger)",
-              "(?<!Kontroll|Vergleichs|Placebo|Scheinpräparat)(gruppe|empfänger)",
-              "Behandlungsgruppe", "Behandelte", "Impfstoff_(gespritzt|erhalten|bekommen)",
-              "([Tt]eilnehmer|Probanden).*Impfung",
-              "erh(a|ie)lten.*(Präparat|Medikament)",
-              "(Präparat|Medikament|Antidepressiva).*erh(a|ie)lten", "Placebo_geschluckt",
-              "gesündesten.*Lebensstil"),
-    all = c("(aller|insgesamt).*[Tt]eilnehmer|Probanden",
-            "(Teilnehm|Proband).*rekrutiert",
-            "insgesamt.*(Fälle|Verläufe)", "(Fälle|Verläufe).*insgesamt",
-            "beiden.*Gruppen", "sowohl.*[Gg]ruppe")
-  ),
+    contr = c(
+      "(Kontroll|Placebo|Vergleichs|Scheinpräparat)-?.*([Gg]ruppe|[Ee]mpfänger)",
+      "(?<!Impfstoff|Impf)-(Gruppe|Empfänger)",
+      "(?<!Impfstoff|Impf|Behandlungs|Untersuchungs)(gruppe|empfänger)",
+      "Prävention.*wenigsten.*befolgte",
+      "kein.*Medika",
+      "Scheinpräparat_(gespritzt|erhalten|bekommen)"
+    ),
+    treat = c(
+      "[Gg]eimpfte?n?",
+      "Impf-?.*([Gg]ruppe|[Em]mpfänger)",
+      "(?<!Kontroll|Vergleichs|Placebo|Scheinpräparat)-(Gruppe|Empfänger)",
+      "(?<!Kontroll|Vergleichs|Placebo|Scheinpräparat)(gruppe|empfänger)",
+      "Behandlungsgruppe",
+      "Behandelte",
+      "Impfstoff_(gespritzt|erhalten|bekommen)",
+      "([Tt]eilnehmer|Probanden).*Impfung",
+      "erh(a|ie)lten.*(Präparat|Medikament)",
+      "(Präparat|Medikament|Antidepressiva).*erh(a|ie)lten",
+      "Placebo_geschluckt",
+      "gesündesten.*Lebensstil"
+    ),
+    all = c(
+      "(aller|insgesamt).*[Tt]eilnehmer|Probanden",
+      "(Teilnehm|Proband).*rekrutiert",
+      "insgesamt.*(Fälle|Verläufe)",
+      "(Fälle|Verläufe).*insgesamt",
+      "beiden.*Gruppen",
+      "sowohl.*[Gg]ruppe"
+    )
+  ), 
   effside = list(
     eff = c("(?<![Nn]eben)[Ww]irk(?!lich)", "Impfschutz",
             "Schutz", "geschützt",
@@ -197,7 +209,7 @@ window_keys <- list(
   ),
   rel = list(
     abs = c("[Qq]uote", "Anteil", "mehr_als(?!.*(?:Wirksamkeit|Impfschutz|Schutz(wirkung)?|verlangsamt|gesunken|Anstieg|geschützt))"), 
-    rel = c("Wirksamkeit", "Impfschutz", "Schutz(wirkung=?)", "verlangsamt", "gesunken", "Anstieg", "geschützt")
+    rel = c("Wirksamkeit", "Impfschutz", "Schutz(wirkung)?", "verlangsamt", "gesunken", "Anstieg", "geschützt")
   ),
   reference = list(
     tot = c("(der|aller)_(Studien)?[Tt]eilnehm"),

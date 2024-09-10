@@ -408,7 +408,7 @@ $(document).ready(function () {
         token_dat.is_num = token_dat.is_num.map((x, ix) => x && !nonumpat.test(token_dat.token[ix]));  // was: !token_dat.token[ix].search(nonumpat)
         // console.log(token_dat.token);
         // console.log(token_dat.is_num);
-
+        
         // Detect missing units:
         console.log(" +++ detecting missing units +++");
         const no_unit_ix = token_dat.id.filter((d, ix) => token_dat.is_num[ix] && token_dat.unit[ix] === "unknown");

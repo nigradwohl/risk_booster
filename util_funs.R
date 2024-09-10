@@ -32,7 +32,7 @@ word_tokenizer <- function(txt) {
       txtsplt <- gsub(paste0("([(\"'", paste0(ucode_quotes, collapse = ""), "])"),  # space before quotes.
                       " \\1 ", txtsplt, perl = TRUE)
       
-      txtsplt <- strsplit(txtsplt, "[\\s\\x{2022}]", perl = TRUE)
+      txtsplt <- strsplit(txtsplt, "[\\s\u{2022}]", perl = TRUE)
 
       # Replace abbreviation points:
       out <- gsub("xABBREVx", ".", txtsplt[[1]])  # re-replace the point.

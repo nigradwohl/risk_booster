@@ -4,21 +4,12 @@
 
 
 # An initial testtext:
-tsttxt <- " Die Einreichung basiert auf einem 95 %igen Impfschutz (p<0.0001) in Probanden ohne vorherige SARS-CoV-2-Infektion (erstes Hauptziel der Studie), wie die Phase-3-Studie zeigte. Auch in Probanden mit oder ohne vorheriger SARS-CoV-2-Infektion konnte ein Impfschutz erreicht werden (zweites Hauptziel der Studie). In beiden Fällen wurde der Impfschutz sieben Tage nach Verabreichung der zweiten Dosis erzielt. Die Wirksamkeit des Impfstoffs war über alle Alters- und Geschlechtsgruppen und die gesamte diverse Studienpopulation hin konsistent. Der Impfschutz bei Erwachsenen über 65 Jahren lag bei über 94 %. Die Abschlussanalyse des ersten Hauptziels der Studie wurde nach 170 bestätigten COVID-19-Fällen durchgeführt. Insgesamt wurde der Impfstoff in der Studie gut vertragen und das Data Monitoring Committee (DMC) konnte bisher keine schwerwiegenden Nebenwirkungen feststellen. 41 % der weltweiten Studienteilnehmer und 45 % der amerikanischen Studienteilnehmer sind im Alter von 56 bis 85 Jahren."
+# tsttxt <- " Die Einreichung basiert auf einem 95 %igen Impfschutz (p<0.0001) in Probanden ohne vorherige SARS-CoV-2-Infektion (erstes Hauptziel der Studie), wie die Phase-3-Studie zeigte. Auch in Probanden mit oder ohne vorheriger SARS-CoV-2-Infektion konnte ein Impfschutz erreicht werden (zweites Hauptziel der Studie). In beiden Fällen wurde der Impfschutz sieben Tage nach Verabreichung der zweiten Dosis erzielt. Die Wirksamkeit des Impfstoffs war über alle Alters- und Geschlechtsgruppen und die gesamte diverse Studienpopulation hin konsistent. Der Impfschutz bei Erwachsenen über 65 Jahren lag bei über 94 %. Die Abschlussanalyse des ersten Hauptziels der Studie wurde nach 170 bestätigten COVID-19-Fällen durchgeführt. Insgesamt wurde der Impfstoff in der Studie gut vertragen und das Data Monitoring Committee (DMC) konnte bisher keine schwerwiegenden Nebenwirkungen feststellen. 41 % der weltweiten Studienteilnehmer und 45 % der amerikanischen Studienteilnehmer sind im Alter von 56 bis 85 Jahren."
 
 
-tsttxt2 <- "•	BNT162b2 zeigt in der primären Endpunktanalyse 28 Tage nach der ersten Impfung eine 95%ige Wirksamkeit gegen COVID-19; insgesamt traten 170 bestätigte COVID-19-Fälle auf, mit 162 Fällen in der Placebogruppe und 8 Fällen in der Impfstoffgruppe
-•	Die Wirksamkeit war über alle Alters- und Geschlechtsgruppen und die gesamte diverse Studienpopulation hin konsistent; der Impfschutz bei Erwachsenen über 65 Jahren lag bei über 94 %
-•	Die von der US-amerikanischen Food and Drug Administration (FDA) geforderten Sicherheitsdaten für die Genehmigung einer Notfallzulassung wurden erreicht
-•	Der Impfstoff wurde in allen Teilnehmerpopulationen gut vertragen, insgesamt nahmen 43.000 Probanden an der Studie teil; es wurden keine schwerwiegenden Nebenwirkungen festgestellt; die einzigen Nebenwirkungen dritten Grades die häufiger als 2 % auftraten, waren Erschöpfung mit 3,8 % und Kopfschmerzen mit 2,0 %
-•	Die Unternehmen planen, innerhalb der nächsten Tage den Antrag auf Notfallzulassung bei der FDA einzureichen und werden die Daten mit weiteren Zulassungsbehörden weltweit teilen
-•	Die Unternehmen gehen davon aus, weltweit bis zu 50 Millionen Impfstoffdosen im Jahr 2020 zu produzieren sowie bis zu 1,3 Milliarden Dosen bis Ende 2021
-
-NEW YORK, USA und MAINZ, Deutschland, 18. November 2020 — Pfizer Inc. (NYSE: PFE) und BioNTech SE (Nasdaq: BNTX, „BioNTech”) gaben heute bekannt, dass die Abschlussanalyse im Rahmen ihrer laufenden Phase-3-Studie stattgefunden hat. BioNTechs mRNA-basierter Impfstoffkandidat BNT162b2 gegen COVID-19-Erkrankungen erreichte alle primären Endpunkte der Studie. Die Auswertung der Daten zeigte in Probanden ohne vorherige SARS-CoV-2-Infektion einen 95%tigen Impfschutz (p<0.0001). Auch in Probanden mit oder ohne vorheriger SARS-CoV-2-Infektion konnte ein Impfschutz erreicht werden. In beiden Fällen wurde der Impfschutz sieben Tage nach der zweiten Dosis ermittelt. Die Abschlussanalyse wurde, basierend auf dem Studienprotokoll, nach 170 bestätigten COVID-19-Fällen durchgeführt. Davon wurden 162 Fälle in der Placebogruppe und 8 Fälle in der BNT162b2-Impfstoff-Gruppe nachgewiesen. Die Wirksamkeit der Impfung war über alle Alters- und Geschlechtsgruppen in der gesamten diversen Studienpopulation konsistent. Der Impfschutz bei Erwachsenen über 65 Jahren lag bei über 94 %.
-
-In der Studie traten insgesamt 10 schwere COVID-19-Verläufe auf. Davon wurden 9 in der Placebogruppe und einer in der BNT162b2-Gruppe beobachtet. Bislang konnte das Data Monitoring Committee keine schwerwiegenden Nebenwirkungen feststellen. Eine Untersuchung der entblindeten Daten zur Impfstoffreaktion in einer randomisierten Subgruppe der finalen Phase-2/3-Analyse mit mindestens 8.000 der über 18-jährigen Probanden zeigte, dass der Impfstoff gut verträglich ist. Die meisten Nebenwirkungen traten nur vorübergehend auf. Die einzigen schweren Nebenwirkungen (3. Grades), die in mehr als 2 % der Probanden nach der ersten oder zweiten Impfung auftraten, waren Erschöpfung mit 3,8 % sowie Kopfschmerzen mit 2,0 % nach der zweiten Dosis. Wie auch schon in früheren Analysen traten bei älteren Studienteilnehmern weniger und schwächer ausgeprägte Nebenwirkungen auf.
+tsttxt <- "Aktuelles Beispiel: Masern. Hier schlägt die Weltgesundheitsorganisation (WHO) wegen stark steigender Infektionszahlen Alarm: Im vergangenen Jahr wurden weltweit mehr als 306 000 Fälle gemeldet. Ein Anstieg von 79 Prozent gegenüber dem Vorjahr! Hauptursache für die steigenden Zahlen ist die rückläufige Impfquote. Und auch in Deutschland steigen die Fallzahlen aktuell wieder an. Besonders betroffen: Nordrhein-Westfalen, Bayern und Berlin. Im Januar 2024 wurden dem Robert-Koch-Institut (RKI) 37 Masernfälle gemeldet. Zum Vergleich: 2023 waren es im gesamten Jahr 80 Fälle.
+Das äußerst ansteckende Virus beginnt wie eine normale Grippe, mit sehr hohem Fieber. Darauf folgt der typische rote Hautausschlag. Das Gefährliche: In einem von 1000 Masern-Fällen kommt es zu einer Gehirnentzündung, 20 bis 30 Prozent der Erkrankten leiden anschließend unter schweren Folgeschäden (geistige Behinderung, Lähmungen) 
 "
-
 
 # Get other scripts: -----------------------------
 source("util_funs.R")
@@ -36,7 +27,23 @@ source("main_functions.R")
 
 test_text <- function(txt){
   
-  input_txt <- txt
+  cat("Raw text:\n")
+  cat(jsonlite::toJSON(txt, auto_unbox = TRUE), "\n")
+  
+  # Get spaces before bullet points, not preceded by a fullstop and add the fullstop.
+  inputText <- gsub("(?<![.?!;])\\s\u{2022}", ". \u{2022}", txt, perl = TRUE)
+  inputText <- gsub("\\.\\n\\.", ".\n\n", inputText)  # Replace stray changes.
+  
+  # Check if the text ends with a punctuation mark, and if not, add a full stop.
+  if (!grepl("[.?!;]$", inputText)) {
+    inputText <- paste0(inputText, ".")
+  }
+  
+  cat("Pre-processed text:\n")
+  cat(jsonlite::toJSON(inputText, auto_unbox = TRUE), "\n")
+  
+
+  input_txt <- inputText
   
   token_dat <- get_token_data(input_txt)
   
@@ -58,12 +65,14 @@ test_text <- function(txt){
       protect = c("Schutzwirkung", "Ansteckungsgefahr", "nur", "besser", "geschützt"),
       lower_risk = c("mindern", "Risiko", "schützen|Schutz", "Infekt|Ansteck"),
       cancer_risk = c("[Rr]isiko", "Krebs"),
-      med_risk = c("[Mm]edikament", "Krebs", "[Mm]edikament", "wirk")
+      med_risk = c("[Mm]edikament", "Krebs", "[Mm]edikament", "wirk"), 
+      lifex = "Lebenserwartung"
     )
   
     # Assign to main object attribute:
     attr(token_dat, "topics") <- names(topic_list)[sapply(topic_list, 
                                                     FUN = function(top){detect_topic(token_dat$token, top)})]
+    
   
   if (!"lifex" %in% attr(token_dat, "topics")) {
     modifyiable_defs$check_numbers_dict <- with(modifyiable_defs,
@@ -83,13 +92,14 @@ test_text <- function(txt){
   # Get regex-based matches: -------
     # uses: check_dict <- modifyiable_defs$check_numbers_dict
     regex_matches <- detect_regex_match(input_txt, token_dat, modifyiable_defs$check_numbers_dict)
-    
     token_dat$match <- regex_matches$match_id
     token_dat$unit <- sapply(regex_matches$match_type, `[`, 1)  # get raw vector of types.
     
     token_dat <- add_number_info(token_dat)
     token_dat$is_nw <- grepl(collapse_regex_or(numwords), token_dat$token, perl = TRUE)
+    
     token_dat$unit <- detect_unit(token_dat)
+    
     
     
   
@@ -153,7 +163,7 @@ test_text <- function(txt){
     token_dat$numtype <- detect_number_type(token_dat, input_txt, modifyiable_defs$numtype_keyset)
    #  print(token_dat$numtype)
     
-  # 
+   
     remove_non_numeric_tokens <- function(tokens, is_num, nonumpat) {
       is_num <- mapply(function(token, is_num) {
         is_num && !grepl(nonumpat, token)
@@ -164,7 +174,7 @@ test_text <- function(txt){
     nonumpat <- "[A-Za-zÄäÖöÜüß]+[-\\.]?\\d"
     
     token_dat$is_num <- remove_non_numeric_tokens(token_dat$token, token_dat$is_num, nonumpat)
-    
+   
     cat(" +++ detecting missing units +++\n")
     no_unit_ix <- which(token_dat$is_num & token_dat$unit == "unknown")
     new_units <- investigate_context(token_dat, no_unit_ix, modifyiable_defs$window_keys$units, FALSE)
@@ -205,6 +215,8 @@ test_text <- function(txt){
       }
     })
     
+    
+    
     print("+++ Additional candidate number words: +++");
     for (i in seq_along(token_dat)) {
       # Check if token is a candidate based on regex_numwords_raw and excludePattern
@@ -224,19 +236,13 @@ test_text <- function(txt){
       }
     }
     
-    # Filter based on condition
-    # Why this function and not use which() directly?
-    filter_ids <- function(data, condition) {
-      which(condition)
-    }
-    
-    
-    allnum_ix <- filter_ids(token_dat, token_dat$is_num & !(token_dat$unit %in% units_exc))
-    freq_ix <- filter_ids(token_dat, token_dat$unit == "freq")
-    perc_ix <- filter_ids(token_dat, token_dat$unit %in% c("perc", "mult"))
+    allnum_ix <- which(token_dat$is_num & !(token_dat$unit %in% units_exc))
+    freq_ix <- which(token_dat$unit == "freq")
+    perc_ix <- which(token_dat$unit %in% c("perc", "mult"))
     token_dat$gtype <- investigate_context(token_dat, allnum_ix, modifyiable_defs$window_keys$grouptype, FALSE)
     token_dat$gtype <- ifelse(token_dat$unit == "perc", "sub", token_dat$gtype)
     n_subgroup_ix <- which(token_dat$is_num & token_dat$gtype != "total" & !is.na(token_dat$gtype))
+    print(n_subgroup_ix)
     
     cat("---------- Get treatment and control: -----------\n")
     token_dat$group <- investigate_context(token_dat, n_subgroup_ix, modifyiable_defs$window_keys$treat_contr, FALSE)
@@ -252,6 +258,7 @@ test_text <- function(txt){
     cat("---------- Get information about the underlying conditions (morbidity, mortality...): -----------\n")
     token_dat$ftype <- investigate_context(token_dat, freq_ix, modifyiable_defs$window_keys$conditions, FALSE)
     print(token_dat$ftype)
+    
     
     # Transformation of `gtype`
     token_dat$gtype <- sapply(1:nrow(token_dat), function(ix) {
@@ -288,9 +295,9 @@ test_text <- function(txt){
   
     token_dat$trnum <- token_dat$token
     
-    for (ix in 1:(nrow(token_dat) - 1)) {
-      if (token_dat$is_num[ix] & token_dat$is_nw[ix]) {
-        if (!token_dat$is_num[ix + 1]) {
+    for (ix in 1:(nrow(token_dat))) {
+      if (token_dat$is_num[ix] && token_dat$is_nw[ix]) {
+        if (ix < nrow(token_dat) && !token_dat$is_num[ix + 1]) {
           token <- token_dat$token[ix]
           cat("+++ Current Token is", token, "\n")
           num_ix <- which(sapply(numwords, function(nw) grepl(paste0("\\b", nw, "\\b"), token, perl = TRUE)))
@@ -383,33 +390,119 @@ test_text <- function(txt){
         }
       }
     }
-    
-    # Debuggingn: ~~~~~~~~~~~~~~~~~~
-    # cat("~~~~~ Updated token data: ~~~~~~\n")
-    # print(token_dat)
-    # cat(paste0(nrow(token_dat), " rows and ", ncol(token_dat), " columns\n"))
-    # print(token_dat[allnum_ix, ])  
-    
-    
-    
-    
-   
-    
-   
-    
-
-    
+  
     # Code: 531 
     # Return --------
    return(token_dat)
+
+    
     
 }
+
+
+
+
+
+
+
+
 
 # Run test:
 test_output <- test_text(tsttxt)
 # test_output <- test_text(tsttxt2)
 
 print(test_output, max = 100000)
+
+
+
+
+# -------------- HIGHLIGHTING --------------------
+
+# Assuming you have `token_dat` from the `text_checker` function:
+highlight_text <- function(token_dat, input_txt) {
+  cur_ix <- 1  
+  procText <- ""  
+  token_dat$unit[token_dat$unit %in% c("ucarryforward", "ucarryback")] <- -1
+  
+  # Initialisierung der Variable
+  cur_tooltip <- "Kein nennenswerter Wert wurde erwähnt"  # Standardwert
+  cur_popup <- "Keine nennenswerte Wert wurde erwähnt"
+  
+  # Initialisierung der Liste für Ergebnisse
+  results <- list()
+  
+  # Loop over all tokens:
+  for (i in seq_len(nrow(token_dat))) {
+    if (token_dat$is_num[i]) {
+      cur_unit <- token_dat$unit[i]
+      
+      # Handle case where cur_unit could be a vector
+      if (is.list(cur_unit)) {
+        cur_unit <- cur_unit[[1]]  # Take the first element if cur_unit is a list
+      }
+      
+      if (!is.na(cur_unit) && !(cur_unit %in% units_exc)) {
+        # Text prior to match
+        text_pre <- substr(input_txt, cur_ix, token_dat$start[i] - 1)
+        
+        match_len <- 0
+        while (i + match_len <= nrow(token_dat) && !is.na(token_dat$unit[i + match_len])) {
+          match_len <- match_len + 1
+        }
+        
+        currow <- token_dat[i, ]
+        col_info <- c(currow$unit, currow$numtype, currow$relabs)
+        
+        
+        tooltip_info <- info_tree$traverse(col_info)
+        if (!is.null(tooltip_info)) {
+          cur_tooltip <- tooltip_info$tool
+          cur_popup <- tooltip_info$popup
+        }
+        
+        # Speichern des Ergebnisses
+        results[[i]] <- list(
+          token = currow$token, 
+          tooltip = cur_tooltip,         # Tooltip
+          popup = cur_popup   
+        )
+        
+      }
+    }
+  }
+  # Entfernen von leeren Einträgen (optional)
+  results <- Filter(function(x) length(x) > 0, results)
+  
+  return(results)
+}
+
+highlight_text(test_text(tsttxt), tsttxt)
+
+
+highlight_tokens <- function(input_txt, results) {
+  # Erstelle eine leere Zeichenkette für den formatierten Text
+  highlighted_text <- input_txt
+  
+  # Durchlaufe alle Ergebnisse und ersetze die Tokens im Text durch die farbige Markierung
+  for (res in results) {
+    token <- res$token
+    tooltip <- res$tooltip
+    popup <- res$popup
+    
+    # Die Markierung erfolgt hier mit HTML <span> Tags
+    replacement_text <- sprintf('<span title="%s" style="background-color: yellow;">%s</span>', 
+                                tooltip, token)
+    
+    # Ersetze alle Vorkommen des Tokens im Text durch die markierte Version
+    highlighted_text <- gsub(paste0("\\b", token, "\\b"), replacement_text, highlighted_text, perl=TRUE)
+  }
+  
+  return(highlighted_text)
+}
+
+test <- highlight_tokens(tsttxt, highlight_text(test_text(tsttxt), tsttxt))
+print(test)
+
 
 
 
