@@ -594,28 +594,31 @@ detect_unit <- function(token_data) {
 
 # ----------------------
 
+# Class to quickly define output nodes:
 OutputNode <- function(tool, popup) {
   list(tool = tool, popup = popup)
 }
 
 
 
+# Use the data
 info_tree <- list(
+  # Levels:
   tree = list(
     perc = list(
-      abs = OutputNode("Absolute Prozentzahl", "Die Prozentzahl scheint absolut zu sein"),
-      rel = OutputNode("Relative Prozentzahl", "Die Prozentzahl scheint relativ zu sein"),
+      abs = OutputNode("Absolute Prozentzahl", "Die Prozentzahl scheint absolut zu sein. Achten Sie darauf anzugeben, auf welche Gruppe sich der Prozentanteil bezieht."),
+      rel = OutputNode("Relative Prozentzahl", "Die Prozentzahl scheint relativ zu sein. Relative Angaben sind oft intransparent. Achten Sie darauf, dass die Basiswahrscheinlichkeit (bzw. das Basisrisiko) angegeben wurde, auf die sich die Veränderung bezieht."),
       default = OutputNode("Prozentzahl", "Diese Prozentzahl konnte leider nicht näher identifiziert werden")
     ),
-    nh = OutputNode("Natürliche Häufigkeit.", "Diese Häufigkeit bezieht sich auf natürliche Vorkommnisse."),
+    nh = OutputNode("Natürliche Häufigkeit.", "Diese Häufigkeit bezieht sich auf natürliche Vorkommnisse. Natürliche Häufigkeiten sind eine transparente Art, um Risiken auszudrücken. Achten Sie aber darauf, dass die Referenz (d.h., 1 in 1000 oder 1 in 10000) jeweils für alle Risiken konstant ist."),
     freq = list(
-      ncase = OutputNode("Fallzahl", "Diese Häufigkeit scheint eine Fallzahl zu sein"),
-      ntot = OutputNode("Stichprobengröße", "Diese Häufigkeit scheint eine Stichprobengröße zu sein"),
+      ncase = OutputNode("Fallzahl", "Diese Häufigkeit scheint eine Fallzahl zu sein. Wenn es sich nicht um die Gesamtzahl in einer Gruppe handelt, achten Sie darauf diese Gesamtzahl immer anzugeben (z.B., Anzahl der Geimpften). Transparenter für die Kommunkation von Risiken sind natürliche Häufigkeiten mit einer konstanten Referenz (z.B., 15 aus 1000)."),
+      ntot = OutputNode("Stichprobengröße", "Diese Häufigkeit scheint eine Stichprobengröße zu sein. Hilfreiche Angabe. Die Stichprobengröße hilft, die Zuverlässigkeit der Daten zu beurteilen und kann als Bezugsgröße dienen."),
       default = OutputNode("Häufigkeit", "Diese Häufigkeit konnte leider nicht näher identifiziert werden.")
     ),
-    mult = OutputNode("Relative Veränderung", "Diese Zahl zeigt eine relative Veränderung an."),
-    pval = OutputNode("p-Wert", "Diese Zahl ist ein p-Wert."),
-    confint = OutputNode("Konfidenzintervall", "Diese Zahl ist ein Konfidenzintervall."),
+    mult = OutputNode("Relative Veränderung", "Diese Zahl zeigt eine relative Veränderung an. Relative Angaben sind oft intransparent. Achten Sie darauf, dass die Basiswahrscheinlichkeit (bzw. das Basisrisiko) angegeben wurde, auf die sich die Veränderung bezieht."),
+    pval = OutputNode("p-Wert", "Der p-Wert wird in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern. Typischerweise wird ein p-Wert kleiner als 0.05 als statistisch signifikant bezeichtnet, was eine akzeptable Unischerheit ausdrückt. Da der p-Wert auch von Expert*innen häufig missverstanden wird, sollte er in journalistische Publikationen eher nicht verwendet werden."),
+    confint = OutputNode("Konfidenzintervall", "Konfidenzintervalle werden in wissenschaftlichen Publikationen verwendet, um die Unsicherheit eines Ergebnisses zu beziffern. Typischerweise werden Konfidenzintervalle, die nicht null einschließen, was eine akzeptable Unischerheit ausdrückt."),
     nyear = list(
       decr = OutputNode("Unterschied in der Lebenserwartung", "Unterschied in der Lebenserwartung zwischen Gruppen."),
       incr = OutputNode("Unterschied in der Lebenserwartung", "Unterschied in der Lebenserwartung zwischen Gruppen."),
@@ -625,53 +628,35 @@ info_tree <- list(
     age = OutputNode("Altersangabe", "Diese Zahl bezieht sich auf eine Altersangabe."),
     default = OutputNode("Zahl.", "Diese Zahl konnte leider nicht näher identifiziert werden.")
   ),
-
-
-traverse = function(arr) {
-  curtree <- info_tree$tree
-  curdefault <- info_tree$tree$default
   
-  for (i in arr) {
-    curentry <- curtree[[i]]
+  traverse = function(arr) {
+    curtree <- info_tree$tree
+    curdefault <- info_tree$tree$default
     
-    if (!is.null(curentry)) {
-      curtree <- curentry
-      curdefault <- curtree$default
+    for (i in arr) {
+      curentry <- curtree[[i]]
       
-      if (is.list(curtree) && !is.null(curtree$tool)) {
-        break
+      if (!is.null(curentry)) {
+        # Log the default for if the tree is undefined!
+        curtree <- curentry
+        curdefault <- curtree$default
+        
+        # When reaching an output node return:
+        if (is.list(curtree) && !is.null(curtree$tool)) {
+          break
+        }
       }
     }
+    
+    # Replace undefined tree by last encountered default:
+    if (!(is.list(curtree) && !is.null(curtree$tool))) {
+      curtree <- curdefault
+    }
+    
+    print("Final tree:");
+    print(curtree);
+    print(curdefault);
+    
+    return(curtree)
   }
-  
- 
-  if (!(is.list(curtree) && !is.null(curtree$tool))) {
-    curtree <- curdefault
-  }
-  
-  print("Final tree:");
-  print(curtree);
-  print(curdefault);
-  
-  return(curtree)
-}
 )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

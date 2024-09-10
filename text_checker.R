@@ -419,82 +419,189 @@ print(test_output, max = 100000)
 # -------------- HIGHLIGHTING --------------------
 
 # Assuming you have `token_dat` from the `text_checker` function:
+# -------------- HIGHLIGHTING --------------------
+
 highlight_text <- function(token_dat, input_txt) {
-  cur_ix <- 1  
-  procText <- ""  
-  token_dat$unit[token_dat$unit %in% c("ucarryforward", "ucarryback")] <- -1
+  cur_ix <- 1
+  # Get rid of unidentified carryforward and backward units:
+  token_dat$unit[token_dat$unit %in% c("ucarryforward", "ucarryback")] <- NA
   
-  # Initialisierung der Variable
-  cur_tooltip <- "Kein nennenswerter Wert wurde erwähnt"  # Standardwert
+  # Default
+  cur_tooltip <- "Kein nennenswerter Wert wurde erwähnt"
   cur_popup <- "Keine nennenswerte Wert wurde erwähnt"
   
-  # Initialisierung der Liste für Ergebnisse
+  # Initialize an empty list to store the results
   results <- list()
   
-  # Loop over all tokens:
+  excluded_tokens <- c(")", "]", "}", "...", "\n", ".", "?", "!", ":", "\n•\t", "•\t", "und", ";", "–", ",", "oder", "-")
+  
+  # Loop through each token in the data
   for (i in seq_len(nrow(token_dat))) {
     if (token_dat$is_num[i]) {
-      cur_unit <- token_dat$unit[i]
+      cur_unit <- token_dat$unit[i] # determine unit of current token.
       
-      # Handle case where cur_unit could be a vector
       if (is.list(cur_unit)) {
-        cur_unit <- cur_unit[[1]]  # Take the first element if cur_unit is a list
+        cur_unit <- cur_unit[[1]] # for now take the first array element.
       }
       
       if (!is.na(cur_unit) && !(cur_unit %in% units_exc)) {
-        # Text prior to match
         text_pre <- substr(input_txt, cur_ix, token_dat$start[i] - 1)
         
+        # Calculate the length of matching units
         match_len <- 0
         while (i + match_len <= nrow(token_dat) && !is.na(token_dat$unit[i + match_len])) {
           match_len <- match_len + 1
         }
         
+        # Signature of current number:
         currow <- token_dat[i, ]
         col_info <- c(currow$unit, currow$numtype, currow$relabs)
         
-        
+        # Traverse the info_tree to find tooltip and popup information
         tooltip_info <- info_tree$traverse(col_info)
         if (!is.null(tooltip_info)) {
           cur_tooltip <- tooltip_info$tool
           cur_popup <- tooltip_info$popup
         }
         
-        # Speichern des Ergebnisses
+        # Highlight next two tokens if current token is "natürliche Häufigkeit"
+        next_tokens <- c()
+        if (currow$unit == "nh") {
+          for (j in (i + 1):min(nrow(token_dat), i + 2)) { 
+            if (j <= nrow(token_dat)) {
+              if (!(token_dat$token[j] %in% excluded_tokens)) {
+                next_tokens <- c(next_tokens, token_dat$token[j])
+              }
+            }
+          }
+        } else {
+          for (j in (i + 1):min(nrow(token_dat), i + 1)) { 
+            if (j <= nrow(token_dat)) {
+              if (!(token_dat$token[j] %in% excluded_tokens)) {
+                next_tokens <- c(next_tokens, token_dat$token[j])
+              }
+            }
+          }
+        }
+        
+        # Store the result
         results[[i]] <- list(
           token = currow$token, 
-          tooltip = cur_tooltip,         # Tooltip
-          popup = cur_popup   
+          next_tokens = next_tokens,
+          tooltip = cur_tooltip,         
+          popup = cur_popup,
+          # For Warnings
+          group = token_dat$group[i], 
+          cur_unit = cur_unit,         
+          effside = token_dat$effside[i],
+          smperc = token_dat$smperc[i]
         )
         
+        i <- i + match_len 
       }
     }
   }
-  # Entfernen von leeren Einträgen (optional)
+  
   results <- Filter(function(x) length(x) > 0, results)
   
   return(results)
+  print(results)
 }
 
 highlight_text(test_text(tsttxt), tsttxt)
 
 
 highlight_tokens <- function(input_txt, results) {
-  # Erstelle eine leere Zeichenkette für den formatierten Text
+  
+  # Initialize 
+  excluded_tokens <- c(")", "]", "}", "...", "\n", ".", "?", "!", ":", "\n•\t", "•\t", "und", ";", "–", ",", "oder", "-")
   highlighted_text <- input_txt
   
-  # Durchlaufe alle Ergebnisse und ersetze die Tokens im Text durch die farbige Markierung
+  # Sort the results by the length of the token in descending order
+  # This ensures that longer tokens are replaced before shorter ones
+  # results_sorted <- results[order(sapply(results, function(x) nchar(x$token)), decreasing = TRUE)]
+  
+  # Iterate over each result in the sorted list
   for (res in results) {
     token <- res$token
+    # Combine the next tokens into a single string separated by spaces
+    next_tokens <- paste(res$next_tokens, collapse = " ")
+    # Create the full match string by combining the token and next tokens if they exist
+    full_match <- if (nchar(next_tokens) > 0) {
+      paste(token, next_tokens, sep = " ")
+    } else {
+      token
+    }
+    
+    # If the token is in the list of excluded tokens, skip highlighting
+    if (token %in% excluded_tokens) {
+      next
+    }
+    
     tooltip <- res$tooltip
     popup <- res$popup
     
-    # Die Markierung erfolgt hier mit HTML <span> Tags
-    replacement_text <- sprintf('<span title="%s" style="background-color: yellow;">%s</span>', 
-                                tooltip, token)
+    # Determine if a warning about unclear reference should be shown
+    warn_noref <- (!is.na(res$group) && (res$group == "all" || res$group == "")) && 
+      (!is.na(res$cur_unit) && res$cur_unit == "perc") && 
+      (!is.na(res$effside) && res$effside %in% c("eff", "side"))
+    warn_small <- (!is.na(res$smperc) && res$smperc == TRUE)
     
-    # Ersetze alle Vorkommen des Tokens im Text durch die markierte Version
-    highlighted_text <- gsub(paste0("\\b", token, "\\b"), replacement_text, highlighted_text, perl=TRUE)
+    # Debugging for warn_noref
+    # print(paste("warn_noref:", warn_noref))
+    # print(paste("tooltip:", tooltip))
+    
+    # Define the highlighting based on the conditions
+    if (warn_noref == TRUE) {
+      color <- "yellow"
+      highlight <- paste0(
+        "<span class='tooltip-container' style='background-color:", color, 
+        "; cursor: pointer; display: inline-block;' onclick=\"Shiny.setInputValue('popup_info', '", 
+        popup, "', {priority: 'event'})\">",
+        full_match,
+        "<span class='tooltip-text'>",
+        tooltip,
+        "<br>(Bezug unklar)",
+        "</span></span>"
+      )
+    } else if (grepl("p[-]?Wert|Relative Prozentzahl", tooltip, ignore.case = TRUE)) {
+      color <- "yellow"
+      highlight <- paste0(
+        "<span class='tooltip-container' style='background-color:", color, 
+        "; cursor: pointer; display: inline-block;' onclick=\"Shiny.setInputValue('popup_info', '", 
+        popup, "', {priority: 'event'})\">",
+        full_match,
+        "<span class='tooltip-text'>",
+        tooltip,
+        "</span></span>"
+      )
+    } else  if (warn_small == TRUE) {
+      color <- "yellow"
+      highlight <- paste0(
+        "<span class='tooltip-container' style='background-color:", color, 
+        "; cursor: pointer; display: inline-block;' onclick=\"Shiny.setInputValue('popup_info', '", 
+        popup, "', {priority: 'event'})\">",
+        full_match,
+        "<span class='tooltip-text'>",
+        tooltip,
+        "<br>(Prozentzahl < 1%)",
+        "</span></span>"
+      )
+    } else {
+      color <- "lightblue"
+      highlight <- paste0(
+        "<span class='tooltip-container' style='background-color:", color, 
+        "; cursor: pointer; display: inline-block;' onclick=\"Shiny.setInputValue('popup_info', '", 
+        popup, "', {priority: 'event'})\">",
+        full_match,
+        "<span class='tooltip-text'>",
+        tooltip,
+        "</span></span>"
+      )
+    }
+    
+    # Replace the matched text in the highlighted_text with the HTML span for highlighting
+    highlighted_text <- gsub(full_match, highlight, highlighted_text, fixed = TRUE)
   }
   
   return(highlighted_text)

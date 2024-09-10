@@ -123,7 +123,7 @@ numtype_keyset <- list(
       ),
       list(
         paste0(collapse_regex_or(person_all)),
-        paste0(collapse_regex_or(c("Analyse", "rekrutiert")))
+        paste0(collapse_regex_or(c("Analyse", "rekrutiert", "untersucht")))
       )
     )
   )
