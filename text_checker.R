@@ -7,9 +7,8 @@
 # tsttxt <- " Die Einreichung basiert auf einem 95 %igen Impfschutz (p<0.0001) in Probanden ohne vorherige SARS-CoV-2-Infektion (erstes Hauptziel der Studie), wie die Phase-3-Studie zeigte. Auch in Probanden mit oder ohne vorheriger SARS-CoV-2-Infektion konnte ein Impfschutz erreicht werden (zweites Hauptziel der Studie). In beiden Fällen wurde der Impfschutz sieben Tage nach Verabreichung der zweiten Dosis erzielt. Die Wirksamkeit des Impfstoffs war über alle Alters- und Geschlechtsgruppen und die gesamte diverse Studienpopulation hin konsistent. Der Impfschutz bei Erwachsenen über 65 Jahren lag bei über 94 %. Die Abschlussanalyse des ersten Hauptziels der Studie wurde nach 170 bestätigten COVID-19-Fällen durchgeführt. Insgesamt wurde der Impfstoff in der Studie gut vertragen und das Data Monitoring Committee (DMC) konnte bisher keine schwerwiegenden Nebenwirkungen feststellen. 41 % der weltweiten Studienteilnehmer und 45 % der amerikanischen Studienteilnehmer sind im Alter von 56 bis 85 Jahren."
 
 
-tsttxt <- "Aktuelles Beispiel: Masern. Hier schlägt die Weltgesundheitsorganisation (WHO) wegen stark steigender Infektionszahlen Alarm: Im vergangenen Jahr wurden weltweit mehr als 306 000 Fälle gemeldet. Ein Anstieg von 79 Prozent gegenüber dem Vorjahr! Hauptursache für die steigenden Zahlen ist die rückläufige Impfquote. Und auch in Deutschland steigen die Fallzahlen aktuell wieder an. Besonders betroffen: Nordrhein-Westfalen, Bayern und Berlin. Im Januar 2024 wurden dem Robert-Koch-Institut (RKI) 37 Masernfälle gemeldet. Zum Vergleich: 2023 waren es im gesamten Jahr 80 Fälle.
-Das äußerst ansteckende Virus beginnt wie eine normale Grippe, mit sehr hohem Fieber. Darauf folgt der typische rote Hautausschlag. Das Gefährliche: In einem von 1000 Masern-Fällen kommt es zu einer Gehirnentzündung, 20 bis 30 Prozent der Erkrankten leiden anschließend unter schweren Folgeschäden (geistige Behinderung, Lähmungen) 
-"
+tsttxt <- "Ein Junge ist krank."
+
 
 # Get other scripts: -----------------------------
 source("util_funs.R")
@@ -59,15 +58,23 @@ test_text <- function(txt){
   
   # Text-level: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Detect topics: ------------
-    topic_list <- list(
-      impf = c("(?<!gl|sch)[Ii]mpf"),
-      mask = c("Maske|FFP"),
-      protect = c("Schutzwirkung", "Ansteckungsgefahr", "nur", "besser", "geschützt"),
-      lower_risk = c("mindern", "Risiko", "schützen|Schutz", "Infekt|Ansteck"),
-      cancer_risk = c("[Rr]isiko", "Krebs"),
-      med_risk = c("[Mm]edikament", "Krebs", "[Mm]edikament", "wirk"), 
-      lifex = "Lebenserwartung"
-    )
+  # Topic list in R should match Java:
+  topic_list <- list(
+    impf = "(?<!gl|sch)[Ii]mpf",
+    mask = "Maske|FFP",
+    protect = list(
+      c("Schutzwirkung"), c("Ansteckungsgefahr", "nur"), c("besser", "geschützt")
+    ),
+    lower_risk = list(
+      c("mindern", "Risiko"), c("schützen", "Schutz"), c("Infekt", "Ansteck")
+    ),
+    cancer_risk = c("[Rr]isiko", "Krebs"),
+    drug = list(
+      c("[Mm]edikament", "Krebs"), c("[Mm]edikament", "wirk")
+    ),
+    lifex = "Lebenserwartung"
+  )
+  
   
     # Assign to main object attribute:
     attr(token_dat, "topics") <- names(topic_list)[sapply(topic_list, 
@@ -99,6 +106,8 @@ test_text <- function(txt){
     token_dat$is_nw <- grepl(collapse_regex_or(numwords), token_dat$token, perl = TRUE)
     
     token_dat$unit <- detect_unit(token_dat)
+    print("TEST")
+    print(token_dat$unit)
     
     
     
@@ -117,13 +126,15 @@ test_text <- function(txt){
     # TODO: Migrate to (modifyiable) defintions!
     topic_list_features <- list(
       eff = list(c(collapse_regex_or(c("Nutz", "(?<!Neben)[Ww]irks(am|ung)", "Schutz", "schütz", targetconds)))),
-      side = list(c("Nebenwirk", "Herzmuskelentzündung")),
-      treatgroup = list(c("(Impf|Behandlungs)-?.*[Gg]ruppe", "(Antidepressiva|Medika).*erh(a|ie)lten")),
-      controlgroup = list(c("(Kontroll|Placebo|Vergleichs)-?.*[Gg]ruppe", "kein.*Medika")),
-      comp_time = list(c("schlechter|besser", "als", "vor", "Jahren"),
-                       c("veränder|erhöh", "zwischen_\\d{4}"),
-                       c("Abstand", "wuchs|vergrößert", "Jahre", "\\d{4}"))
-    )
+      side = list(c("Nebenwirk"), c("Herzmuskelentzündung")),
+      treatgroup = list(c("(Impf|Behandlungs)(-|\\s)?[Gg]ruppe"), c("(Antidepressiva|Medika).*erh(a|ie)lten")),
+      controlgroup = list(c("(Kontroll|Placebo|Vergleichs)(-|\\s)?[Gg]ruppe"), c("kein\\s?Medika")),
+      comp_time = list(
+        c("(schlechter|besser)", "als", "vor", "Jahren"), 
+        c("(veränder|erhöh)", "zwischen\\s?\\d{4}"), 
+        c("Abstand", "(wuchs|vergrößert)", "Jahre", "\\d{4}")
+      )
+    ) 
     
     # Save topics as attr:
     # Make sure to not overwrite the original topics but to add to them:
@@ -156,6 +167,9 @@ test_text <- function(txt){
     # Remove duplicate topics
     attr(token_dat, "topics") <- unique(attr(token_dat, "topics"))
     
+    # Print final topics
+    cat("Final topics after removing duplicates:\n")
+    print(attr(token_dat, "topics"))
     
   # Number level: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
@@ -393,19 +407,18 @@ test_text <- function(txt){
   
     # Code: 531 
     # Return --------
-   return(token_dat)
+    data_frame <- list(
+      token_dat = token_dat,
+      final_topics = attr(token_dat, "topics")
+    )
+    return(data_frame)
+    print(data_frame)
+    
+   
 
     
     
 }
-
-
-
-
-
-
-
-
 
 # Run test:
 test_output <- test_text(tsttxt)
@@ -414,14 +427,12 @@ test_output <- test_text(tsttxt)
 print(test_output, max = 100000)
 
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# --------- HIGHLIGHTING--------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-# -------------- HIGHLIGHTING --------------------
-
-# Assuming you have `token_dat` from the `text_checker` function:
-# -------------- HIGHLIGHTING --------------------
-
-highlight_text <- function(token_dat, input_txt) {
+highlight_text <- function(data_frame, input_txt) {
+  token_dat <-  data_frame$token_dat
   cur_ix <- 1
   # Get rid of unidentified carryforward and backward units:
   token_dat$unit[token_dat$unit %in% c("ucarryforward", "ucarryback")] <- NA
@@ -610,7 +621,343 @@ highlight_tokens <- function(input_txt, results) {
 test <- highlight_tokens(tsttxt, highlight_text(test_text(tsttxt), tsttxt))
 print(test)
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# --------- FEEDBACK--------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
+feedback <- function(data_frame, input_txt){
+  topic <-  data_frame$final_topics
+  token_dat <- data_frame$token_dat
+  
+  # initialize notes.
+  norisk <- FALSE 
+  key_topics_str <- ""
+  
+  # Define feature aliases
+  feature_aliases <- list(
+    comp_time = list(
+      treat = "Untersuchungszeitpunkt", 
+      # "Zeitpunkt, zu dem sich etwas verändert hat (z.B., Zunahme oder Abnhame von Erkrankungen).", 
+      contr = "Behandlungszeitpunkt"
+      # "Zeitpunkt, mit dem der Untersuchungszeitpunkt verglichen wird."
+    ),
+    comp_treat = list(
+      treat = "Behandlungsgruppe", 
+      # "Gruppe, die die Behandlung erhalten hat oder einem Risiko ausgesetzt war.", 
+      contr = "Vergleichsgruppe"
+      # "Gruppe, die keine Behandlung erhalten hat oder einem Risiko nicht ausgesetzt war."
+    ),
+    comp_default = list(
+      treat = "Behandlungsgruppe",
+      # "Gruppe, in der sich etwas verändert hat (z.B., Zunahme oder Abnhame von Erkrankungen). ",
+      contr = "Vergleichsgruppe"
+      # "Gruppe, mit der verglichen wird." 
+    )
+  )
+  
+  # Filter topics that were detected
+  curcomp <- grep("comp_", topic, value = TRUE)
+  
+  # Determine the current comparison type
+  curcomp <- if ("comp_treat" %in% curcomp) "comp_treat" else if (length(curcomp) > 0) curcomp[1] else "comp_default"
+  curfeats <- feature_aliases[[curcomp]]
+  
+  # Print results
+  print("Curcomp")
+  print(curcomp)
+  print("Curfeats")
+  print(curfeats)
+  
+  feature_dict <- list(
+    eff = "Nutzen", 
+    # "Wirksamkeit einer Behandlung oder Impfung (z.B., verhinderte Erkranungen, Genesung, Vermeidung von Todesfällen). Sollte immer mit Zahlen belegt werden.", # Wiki Nutzen
+    side = "Schaden", 
+    # "Schaden (z.B., Nebenwirkungen) einer Behandlung oder Impfung. Sollte immer mit Zahlen belegt werden.", # Wiki Schaden 
+    damage = "Risiko", 
+    # "Risiko einer negativen Auswirkung (z.B., Erkrankung).", # Wiki Rsik 
+    treat = paste0(curfeats[["treat"]]),
+    contr = paste0(curfeats[["contr"]])
+  )
+  
+  feature_list <- ""
+  text_features <- list() 
+  
+  risknum_ix <- Filter(function(x) {
+    token_dat$unit[x] %in% c("perc", "freq", "nh", "mult", "nyear") && token_dat$is_num[x]
+  }, token_dat$id)
+  
+  print("Risknum indices:")
+  print(risknum_ix)
+  
+  # Get each of these rows
+  risknum_rows <- lapply(risknum_ix, function(x) token_dat[x, ])
+  risknums_flat <- unlist(risknum_rows)
+  
+  # Function to check for any matching elements in the array
+  check_any_arr <- function(arrs, check_arr) {
+    any(sapply(arrs, function(arr) all(check_arr %in% arr)))
+  }
+  
+  # 1. and 2. Global tests: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  txtfeat_dict <- list(
+    any_risknum = length(risknum_ix) > 0,
+    eff_num = "eff" %in% risknums_flat,
+    side_num = "side" %in% risknums_flat,
+    damage_num = "damage" %in% risknums_flat,
+    treat_num = "treat" %in% risknums_flat,
+    contr_num = "contr" %in% risknums_flat,
+    # Interactions:
+    eff_treat_num = check_any_arr(risknum_rows, c("eff", "treat")),
+    side_treat_num = check_any_arr(risknum_rows, c("side", "treat")),
+    eff_contr_num = check_any_arr(risknum_rows, c("eff", "contr")),
+    side_contr_num = check_any_arr(risknum_rows, c("side", "contr"))
+  )
+  
+  print("1")
+  print(txtfeat_dict)
+  
+  # Additional checks using token_dat$topics
+  txtfeat_dict$eff <- txtfeat_dict$eff_num || "eff" %in% topic
+  txtfeat_dict$side <- txtfeat_dict$side_num || "side" %in% topic
+  txtfeat_dict$damage <- txtfeat_dict$damage_num || "damage" %in% topic
+  txtfeat_dict$treat <- txtfeat_dict$treat_num || "treatgroup" %in% topic
+  txtfeat_dict$contr <- txtfeat_dict$contr_num || "controlgroup" %in% topic
+  
+  print("2")
+  print(txtfeat_dict)
+  
+  # Specific number info:
+  txtfeat_dict$rel <- any(c("incr", "decr", "mult") %in% token_dat$numtype)
+  txtfeat_dict$rel_only <- txtfeat_dict$rel && !("abs" %in% token_dat$relabs) &&
+    !check_any_arr(risknum_rows, c("freq", "sub"))
+  
+  print("3")
+  print(txtfeat_dict)
+  
+  # Additional information for efficacy and side effect units/numtypes:
+  addfeat_dict <- list(
+    effunit = unique(token_dat$unit[token_dat$effside == "eff" & !is.na(token_dat$unit)]),
+    effnumtype = unique(token_dat$numtype[token_dat$effside == "eff" & token_dat$numtype != "other" & !is.na(token_dat$numtype)]),
+    sideunit = unique(token_dat$unit[token_dat$effside == "side" & !is.na(token_dat$unit)]),
+    sidenumtype = unique(token_dat$numtype[token_dat$effside == "side" & token_dat$numtype != "other" & !is.na(token_dat$numtype)])
+  )
+  
+  # Handling mismatched framing
+  mismatched_framing <- "none"
+  if (txtfeat_dict$eff_num && txtfeat_dict$side_num) {
+    # Array of relevant indicators
+    mismatch_arr <- c(
+      check_any_arr(risknum_rows, c("side", "abs")), 
+      check_any_arr(risknum_rows, c("side", "rel")),
+      check_any_arr(risknum_rows, c("eff", "abs")),
+      check_any_arr(risknum_rows, c("eff", "rel"))
+    )
+    
+    if (all(mismatch_arr == c(TRUE, FALSE, FALSE, TRUE))) {
+      mismatched_framing <- "side_rel"
+    } else if (all(mismatch_arr == c(FALSE, TRUE, TRUE, FALSE))) {
+      mismatched_framing <- "eff_rel"
+    }
+  }
+  
+  cat("~~~~~~~~~~~~ Text features: ~~~~~~~~~~~~~~~~\n")
+ # print(txtfeat_dict)
+  print(addfeat_dict)
+  
+  # Turn keys into an array
+  feature_arr <- names(txtfeat_dict)[unlist(txtfeat_dict)]
+  
+  cat("Feature array:\n")
+  print(risknum_rows)
+  print(feature_arr)
+  
+  # ++++ Feedback on features: ~~~~
+  print("~~~~~~~~~~~~ Feedback on features: ~~~~~~~~~~~~~~~~")
+  
+  # Define feature sets for testing
+  feature_set <- list(
+    eff_side = list(
+      fset = c("eff", "side"),
+      tool = "Nur indem Lesende vollständig über die Wirksamkeit und mögliche Nebeneffekte informiert werden, können sie sich ein unabhängiges Urteil über die erwünschten und unerwünschten Folgen bilden und eine informierte Entscheidung treffen.",
+      zumzur = "zum "
+    ),
+    damage = list(
+      fset = c("damage"),
+      zumzur = "zu einem "
+    ),
+    treat_contr = list(
+      fset = c("treat", "contr"),
+      tool = "Nur indem die Lesenden die Risiken (Wahrscheinlichkeiten) mit und ohne Intervention kennen, können Sie sich ein unabhängiges Urteil über das Ausmaß von Nutzen und Schaden bilden und eine informierte Entscheidung treffen.",
+      zumzur = "zur "
+    )
+  )
+  
+  # Remove/adjust Nutzen/Schaden terminology based on topics
+  if ("comp_treat" %in% topic) {
+    feature_set$damage <- NULL  
+  } else {
+    key_topics_str <- paste0(
+      "<span style='color: grey;'>",
+      "Der Text berichtet keine Intervention (z.B., Medikamentenbehandlung), ",
+      "die einen Vergleich zwischen einer Behandlungsgruppe und einer Vergleichsgruppe anstellt",
+      ifelse("comp_time" %in% topic,  
+             ", sondern scheint Zeitpunkte zu vergleichen. ", ". "),
+      "Daher sind keine Kausalaussagen möglich.<br> ",
+      "</span>"
+      # Wiki Kausalaussagen
+      # "Kausalaussagen beschreiben, ob ein Faktor ursächlich für ein Ergebnis ist ",
+      # "(z.B., ein Medikament für die Genesung). Das ist nur zuverlässig in Experimenten mit randomisierter Zuteilung möglich."
+    )
+    
+    print("WICHTIG")
+    print(key_topics_str)
+    
+    feature_set$eff_side <- NULL  
+    feature_set$treat_contr <- NULL  
+  }
+  
+  # Overarching text features: ~~~~~~~~~~~~~~~~~~~~~
+  for (key in names(feature_set)) {
+    value <- feature_set[[key]]
+    
+    feature_str <- "Es"
+    
+    # Get present features:
+    feats_present <- value$fset[sapply(value$fset, function(feat) feat %in% feature_arr)]
+    feats_missing <- value$fset[sapply(value$fset, function(feat) !(feat %in% feature_arr))]
+    feats_present <- sapply(feats_present, function(k) feature_dict[[k]])
+    feats_missing <- sapply(feats_missing, function(k) feature_dict[[k]])
+    
+    cat("Features present and missing are:\n")
+    print(feats_present);
+    print(feats_missing); 
+    
+    
+    # Check if all features are present
+    if (length(feats_missing) == 0) {
+      # Add green check mark for good status
+      feature_str <- paste0("✅ ", feature_str)
+      feature_str <- paste0(feature_str, " werden Informationen ", value$zumzur, paste(feats_present, collapse = " und "), " berichtet.<br>")
+      
+    } else if (key == "damage") {
+      feature_str <- paste0( feature_str, " konnte kein Gesundheitsrisiko erkannt werden. ",
+                             " Wenn der Text ein Gesundheitsrisiko behandelt, kontaktieren Sie uns bitte, damit wir den Fehler beheben können.<br>")
+      
+    } else {
+      if (length(feats_missing) == 1) {
+        # Add warning triangle for missing one feature
+        feature_str <- paste0("⚠️ ", feature_str)
+        feature_str <- paste0(feature_str, " werden nur Informationen ", value$zumzur, paste(feats_present, collapse = ", "), 
+                              " berichtet. Es sollten auch Informationen ", value$zumzur, paste(feats_missing, collapse = ", "), " berichtet werden.<br>")
+      } else {
+        # Add red cross for missing multiple features
+        feature_str <- paste0("❌ ", feature_str)
+        feature_str <- paste0(feature_str, " werden weder Informationen ", value$zumzur, 
+                              paste(sapply(value$fset, function(key) feature_dict[[key]]), collapse = " noch "), " berichtet.<br>")
+      }
+      # Append tooltip with inline styles
+      feature_str <- paste0(
+      feature_str,
+      "<span class='tooltip-container' style='cursor: pointer; display: inline-block;' onclick=\"Shiny.setInputValue('popup_info', '", 
+      value$tool, "', {priority: 'event'});\">",
+      "<u>(Warum ist das ein Problem?)</u>",
+      "</span><br>"
+      )
+    }
+    
+    # Append feedback
+    feature_list <- paste0(feature_list, feature_str)
+    # print(feature_list)
+  }
+  
+  
+  # Final output
+  feature_list <- paste0("<strong><h4>Berichtet der Text belastbare Informationen?</h4></strong><br>", feature_list)
+  
+  # print(feature_list)
+  
+  
+  # Flag out the use of numbers: ~~~~~~~~~~~~~~~~~~~~~~~
+  feature_num <- ""
+  any_risk_num <- txtfeat_dict$any_risknum  
+  
+  if (any_risk_num) {
+    
+    # Differentiate: Does it report numbers only about effectivity? Also about side effects?
+    if ("comp_treat" %in% topic) {
+      # Do this only if groups are compared!
+      
+      eff_num <- "eff_num" %in% feature_arr
+      side_num <- "side_num" %in% feature_arr
+      
+      if (eff_num && side_num) {
+        feature_num <- paste0(feature_num, "✅ Sowohl zum Nutzen als auch zum Schaden wurden Zahlen angegeben.<br>")
+      } else {
+        if (eff_num || side_num) {
+          feature_num <- paste0(feature_num, "⚠️ Zahlen nur zum", ifelse(eff_num, " Nutzen", " Schaden"), " angegeben.<br>")
+        } else {
+          feature_num <- paste0(feature_num, "❌ Die verwendeten Zahlen beziehen sich leider weder auf Nutzen noch auf Schaden.<br>")
+        }
+      }
+      
+      arr_eff_both <- if ("eff_treat_num" %in% feature_arr && "eff_contr_num" %in% feature_arr) {
+        c("✅", "", "")
+      } else {
+        c("❌", "nicht erkennbar ", 
+          "Nur indem die Lesenden die Größe des Nutzens mit und ohne Intervention kennen, ",
+          "können Sie sich ein unabhängiges Urteil über das Ausmaß des Nutzens bilden ",
+          "und eine informierte Entscheidung treffen.")
+      }
+      
+      arr_side_both <- if ("side_treat_num" %in% feature_arr && "side_contr_num" %in% feature_arr) {
+        c("✅", "", "")
+      } else {
+        c("❌", "nicht erkennbar ",
+          "Nur indem die Lesenden die Größe des Schadens mit und ohne Intervention kennen, ",
+          "können Sie sich ein unabhängiges Urteil über das Ausmaß des Schadens bilden ",
+          "und eine informierte Entscheidung treffen.")
+      }
+      
+      feature_num <- paste0(feature_num, arr_eff_both[1], " Der Nutzen wird ", arr_eff_both[2], " mit Zahlen für Behandlungs- und Vergleichsgruppe belegt. " , arr_eff_both[3], "<br>")
+      feature_num <- paste0(feature_num, arr_side_both[1], " Die Schadenwirkung wird ", arr_side_both[2], " mit Zahlen für Behandlungs- und Vergleichsgruppe belegt. ", arr_side_both[3], "<br>")
+      
+      
+    } else if ("comp_time" %in% topic) {
+      treat_num <- "treat_num" %in% feature_arr
+      contr_num <- "contr_num" %in% feature_arr
+      
+      if (treat_num && contr_num) {
+        feature_num <- paste0(feature_num, "✅ Sowohl zum Untersuchungszeitpunkt als auch zum Vergleichszeitpunkt wurden Zahlen angegeben.<br>")
+      } else if (treat_num || contr_num) {
+        feature_num <- paste0(feature_num, "⚠️ Zahlen nur zum ", ifelse(treat_num, "Untersuchungszeitpunkt", "Vergleichszeitpunkt"), " angegeben.<br>")
+      } else {
+        feature_num <- paste0(feature_num, "❌ Die Zahlen beziehen sich leider nicht auf die absoluten Risiken zum Untersuchungs- oder Vergleichszeitpunkt.<br>")
+      }
+    }
+    
+  } else {
+    feature_num <- paste0(feature_num,
+                          "❌ Der Text scheint keine Zahlen zu den Risiken zu berichten. ",
+                          "Rein verbale Beschreibungen sollten vermieden werden. ",
+                          "Bitte versuchen Sie Zahlen zu berichten.")
+  }
+  
+  # Only talks about numbers if the text talks about risk:
+  if (!norisk && nchar(feature_num) > 0) {
+    feature_list_number <- paste0("<br> <h4 style='margin-bottom: 5px;'>Welche Zahleninformation wird berichtet?</h4><br>", feature_num)
+  }
+  
+  # Combine the list of text features:
+  feature_list <- paste0(feature_list, feature_list_number, "<br> <br>", 
+                         'Benötigten Sie Hilfe, prüfen Sie mit dem <a href="https://sciencexmedia-riskbooster-8cad5501391b.herokuapp.com/checklist_main.html" target="_blank"><u>Risikorechner</u></a>, ob die Informationen, die Ihnen vorliegen ausreichen, um transparent über die Wirksamkeit und Risiken zu berichten.')
+  return(feature_list)
+  
+  # Code: 1273
+  # ToDo: add "Weitere Anmerkungen, Warum ist das ein Problem?"
+}
+
+
+feedback(test_text(tsttxt), tsttxt)
 
 

@@ -52,7 +52,14 @@ get_token_data <- function(txt) {
     
     # Get position information (start, length):
     pos_info <- rbind(cur_rex[[1]], attr(cur_rex[[1]], "match.length"))
-    pos_info <- cbind(pos_info[, pos_info[1,] > tpos_end])[,1]  # get rid of past entries.
+   # pos_info <- cbind(pos_info[, pos_info[1,] > tpos_end])[,1]  # get rid of past entries.
+    
+    # Ensure that there are matches and pos_info is not empty before subsetting
+    if (ncol(pos_info) > 0 && any(pos_info[1, ] > tpos_end)) {
+      pos_info <- cbind(pos_info[, pos_info[1,] > tpos_end])[, 1]
+    } else {
+      pos_info <- NULL  # Or handle the case where there are no matches appropriately
+    }
     
     # cat(token_i, "\n")
     # print(pos_info)
@@ -60,13 +67,19 @@ get_token_data <- function(txt) {
     # substr(txt, 365, 366)
     
     # Extract info:
-    tpos_start <- pos_info[1]
-    tpos_end <- sum(pos_info) - 1
+    # tpos_start <- pos_info[1]
+    # tpos_end <- sum(pos_info) - 1
+    
+    # Check if pos_info is valid
+    if (!is.null(pos_info) && length(pos_info) > 1) {
+      tpos_start <- pos_info[1]
+      tpos_end <- sum(pos_info) - 1
+      
     
     # print(tpos_end)  # final positions. 
     
     # Assign sentence ID:
-    sentence_id <- sentence_id + token_i %in% c("?", ".", "!", ";")
+    sentence_id <- sentence_id + as.numeric(token_i %in% c("?", ".", "!", ";"))
     # increment the id when a punctuation token is found
     
     # Assign paragraph ID:
@@ -81,6 +94,7 @@ get_token_data <- function(txt) {
                                                start = tpos_start, end = tpos_end, 
                                                sent = sentence_id, par = cur_paragraph_id ))
     
+    }
   }
   
   token_info <- cbind(id = 1:nrow(token_info), token_info)
