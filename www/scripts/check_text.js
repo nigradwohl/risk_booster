@@ -201,7 +201,8 @@ $(document).ready(function () {
                     "beiden.*Gruppen", "sowohl.*[Gg]ruppe"] // problematic!
             },
             "effside": {
-                "eff": ["(?<![Nn]eben)[Ww]irk(?!lich|s[a-z])", "Impfschutz", // change ?!lich with s[a-z]* to hanle case "wirksam"
+                "eff": ["(?<![Nn]eben)[Ww]irk(?!lich|s[a-z])", "Wirksamkeit_von",
+                    "Impfschutz", // change ?!lich with s[a-z]* to hanle case "wirksam"
                     "Schutz", "geschützt", "Schutzwirkung",
                     "(reduziert|verringert|minimiert|gesunken).*(Risiko|[Gg]efahr|Wahrscheinlichkeit).*(Ansteckung|Infektion|[Ee]rkrank)",
                     "((Risiko|[Gg]efahr|Wahrscheinlichkeit).*(Ansteckung|Infektion|[Ee]rkrank)).*(reduziert|verringert|minimiert|gesunken)",
@@ -248,7 +249,8 @@ $(document).ready(function () {
             "rel": {
                 // "abs": ["[Qq]uote", "Anteil", "mehr_als"],  // quotas should always be absolute.
 
-                "abs": ["[Qq]uote", "Anteil","mehr_als(?!.(?:Wirksamkeit|Impfschutz|Schutz(?:wirkung)?|verlangsamt|gesunken|Anstieg|geschützt))"],
+                "abs": ["[Qq]uote", "Anteil","mehr_als(?!.(?:Wirksamkeit|Impfschutz|Schutz(?:wirkung)?|verlangsamt|gesunken|Anstieg|geschützt))",
+                "Prozent_der_(Prob|Teiln)"],
                 // MAYBE: "[%|Prozent]_[der|aller]"
                 "rel": ["Wirksamkeit", "Impfschutz", "Schutz(wirkung)?", "verlangsamt", "gesunken", "Anstieg", "geschützt" ] // add "Anstieg" and "Schutz.."
             },
@@ -2395,8 +2397,8 @@ function investigate_context(token_data, index_arr, keyset, only_pars) {
     // // Maybe also distinguish "waren" vs. "sich ereignen"
 
 
-    // console.log("Testing keyset:");
-    // console.log(keyset);
+    console.log("Testing keyset:");
+    console.log(keyset);
 
     // // console.log(token_ids.filter((d, ind) => num_info[ind]));
     // const num_array_all = token_data.id.filter((d, ix) => token_data.is_num[ix] && !units_exc.includes(token_data.unit[ix]));
@@ -2594,7 +2596,7 @@ function investigate_context(token_data, index_arr, keyset, only_pars) {
             if (Object.keys(keyset).filter((x) => numberfeats.has(x)).length > 0 &&
                 stop_update_count > 2  // NOTE: KEEP?
             ) {
-                // console.log("FINAL TESTSTRING:\n" + test_str);
+                console.log("FINAL TESTSTRING:\n" + test_str);
                 // console.log(test_tokens);
                 // console.log("DESCRIPTION COMPLETE");
                 description_complete = true;
