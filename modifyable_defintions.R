@@ -157,7 +157,7 @@ window_keys <- list(
             "beiden.*Gruppen", "sowohl.*[Gg]ruppe")
   ),
   effside = list(
-    eff = c("(?<![Nn]eben)[Ww]irk(?!lich)", "Impfschutz",
+    eff = c("(?<![Nn]eben)[Ww]irk(?!lich)", "Impfschutz", "Wirksamkeit_von",
             "Schutz", "geschützt",
             "(reduziert|verringert|minimiert|gesunken).*(Risiko|[Gg]efahr|Wahrscheinlichkeit).*(Ansteckung|Infektion|[Ee]rkrank)",
             "((Risiko|[Gg]efahr|Wahrscheinlichkeit).*(Ansteckung|Infektion|[Ee]rkrank)).*(reduziert|verringert|minimiert|gesunken)",
@@ -196,7 +196,8 @@ window_keys <- list(
     medical = c("BMI")
   ),
   rel = list(
-    abs = c("[Qq]uote", "Anteil", "mehr_als(?!.*(?:Wirksamkeit|Impfschutz|Schutz(wirkung)?|verlangsamt|gesunken|Anstieg|geschützt))"), 
+    abs = c("[Qq]uote", "Anteil", "mehr_als(?!.*(?:Wirksamkeit|Impfschutz|Schutz(wirkung)?|verlangsamt|gesunken|Anstieg|geschützt))",
+            "Prozent_der_(Prob|Teiln)"), 
     rel = c("Wirksamkeit", "Impfschutz", "Schutz(wirkung=?)", "verlangsamt", "gesunken", "Anstieg", "geschützt")
   ),
   reference = list(
